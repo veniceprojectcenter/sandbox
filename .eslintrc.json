@@ -1,0 +1,9 @@
+{
+  "extends": "airbnb-base",
+  "plugins": [
+    "eslint-plugin-html"
+  ],
+  "env": {
+    "browser": true
+  }
+}
