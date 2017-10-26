@@ -1,0 +1,14 @@
+header {
+  align-items: center;
+  background: $primary;
+  display: flex;
+  height: 100px;
+  left: 0;
+  position: fixed;
+  top: 0;
+  width: 100%;
+
+  h1 {
+    margin-left: 25px;
+  }
+}
