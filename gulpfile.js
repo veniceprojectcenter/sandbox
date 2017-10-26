@@ -31,7 +31,7 @@ gulp.task('js', () => gulp.src(`${jsDirectory}*.js`)
         filename: 'app.bundle.js',
       },
     }))
-    .pipe(gulp.dest('./assets/prod/js/'));
+    .pipe(gulp.dest('./assets/prod/js/')));
 
 // Cleaning
 gulp.task('clean', ['clean:sass', 'clean:js']);
