@@ -3,7 +3,6 @@ import Visual from './Visual'
 class DonutVisual extends Visual {
   constructor(config) {
     super(config);
-    this.renderID = "body";
   }
 
   renderOn(canvas) {
