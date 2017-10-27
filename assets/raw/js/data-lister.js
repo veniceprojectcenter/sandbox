@@ -7,6 +7,19 @@ const visuals = [
   { name: 'Bar Chart', image: 'http://via.placeholder.com/300x300' },
   { name: 'Pie Chart', image: 'http://via.placeholder.com/300x300' },
   { name: 'Histogram', image: 'http://via.placeholder.com/300x300' },
+  { name: 'Map', image: 'http://via.placeholder.com/300x300' },
+  { name: 'Bar Chart', image: 'http://via.placeholder.com/300x300' },
+  { name: 'Pie Chart', image: 'http://via.placeholder.com/300x300' },
+  { name: 'Histogram', image: 'http://via.placeholder.com/300x300' },
+  { name: 'Map', image: 'http://via.placeholder.com/300x300' },
+  { name: 'Bar Chart', image: 'http://via.placeholder.com/300x300' },
+  { name: 'Pie Chart', image: 'http://via.placeholder.com/300x300' },
+  { name: 'Histogram', image: 'http://via.placeholder.com/300x300' },
+  { name: 'Map', image: 'http://via.placeholder.com/300x300' },
+  { name: 'Bar Chart', image: 'http://via.placeholder.com/300x300' },
+  { name: 'Pie Chart', image: 'http://via.placeholder.com/300x300' },
+  { name: 'Histogram', image: 'http://via.placeholder.com/300x300' },
+  { name: 'Map', image: 'http://via.placeholder.com/300x300' },
 ];
 
 function selectDataset(datasetLink) {
