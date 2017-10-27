@@ -1,8 +1,7 @@
-.data-row {  
+.data-row {
   a {
     align-items: center;
     border-radius: 5px;
-    box-shadow: 0 0 5px $shadow;
     color: $text;
     display: flex;
     height: 75px;
@@ -10,9 +9,10 @@
     margin-bottom: 15px;
     margin-top: 15px;
     text-decoration: none;
+    background-color: $white;
+    
+    &:hover {
+      background-color: $secondary;
+    }
   }
-}
-
-.data-row:hover {
-   background: $secondary;
 }
