@@ -3,6 +3,12 @@ const datasets = [
   { name: 'Rive', description: 'Blah Blah Blah', link: '#rive' },
 ];
 
+
+function selectDataset(datasetName) {
+  const rows = document.querySelector('.data-rows');
+  rows.style.display = 'none';
+}
+
 for (let i = 0; i < datasets.length; i += 1) {
   const row = document.createElement('div');
   row.className = 'data-row';
@@ -19,16 +25,9 @@ for (let i = 0; i < datasets.length; i += 1) {
   row.appendChild(link);
 
   // Add row hiding code:
-  row.addEventListener("click", function(){
+  row.addEventListener('click', () => {
     selectDataset(datasets[i].name);
   });
 
-  document.querySelector('.body').appendChild(row);
-}
-
-function selectDataset(datasetName){
-  const rows = document.getElementsByClassName("data-row");
-  for(let i = 0; i < rows.length; i++){
-      rows[i].style.display = 'none';
-  }
+  document.querySelector('.data-rows').appendChild(row);
 }
