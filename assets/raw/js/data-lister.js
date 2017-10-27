@@ -17,5 +17,18 @@ for (let i = 0; i < datasets.length; i += 1) {
   link.appendChild(name);
   link.appendChild(description);
   row.appendChild(link);
+
+  // Add row hiding code:
+  row.addEventListener("click", function(){
+    selectDataset(datasets[i].name);
+  });
+
   document.querySelector('.body').appendChild(row);
+}
+
+function selectDataset(datasetName){
+  const rows = document.getElementsByClassName("data-row");
+  for(let i = 0; i < rows.length; i++){
+      rows[i].style.display = 'none';
+  }
 }
