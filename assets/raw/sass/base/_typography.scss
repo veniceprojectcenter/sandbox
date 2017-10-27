@@ -3,6 +3,16 @@ h1 {
     family: 'Roboto', sans-serif;
     size: 3em;
   }
+
+  a {
+    color: $text;
+    text-decoration: none;
+
+    &:hover {
+      color: $text;
+      text-decoration: none;
+    }
+  }
 }
 
 body {
@@ -11,6 +21,6 @@ body {
 
 footer {
   font: {
-    size: 0.9em;
+    size: .9em;
   }
 }
