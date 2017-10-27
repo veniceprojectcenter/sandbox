@@ -1,6 +1,7 @@
 .data-row {
   a {
     align-items: center;
+    background-color: $white;
     border-radius: 5px;
     color: $text;
     display: flex;
@@ -9,8 +10,7 @@
     margin-bottom: 15px;
     margin-top: 15px;
     text-decoration: none;
-    background-color: $white;
-    
+
     &:hover {
       background-color: $secondary;
     }
