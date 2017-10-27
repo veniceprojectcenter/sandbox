@@ -15,6 +15,9 @@ function selectDataset(datasetLink) {
   const grid = document.querySelector('.visual-grid');
   grid.style.display = 'block';
   window.history.pushState(datasetLink.name, datasetLink.name, datasetLink.link);
+
+  const breadcrumbs = document.getElementById('breadcrumbs');
+  breadcrumbs.innerHTML = "&nbsp>&nbsp" + datasetLink.name;
 }
 
 for (let i = 0; i < datasets.length; i += 1) {
