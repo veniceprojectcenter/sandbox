@@ -1,4 +1,4 @@
-.data-row {
+.data-row {  
   a {
     align-items: center;
     border-radius: 5px;
@@ -11,4 +11,8 @@
     margin-top: 15px;
     text-decoration: none;
   }
+}
+
+.data-row:hover {
+   background: $secondary;
 }
