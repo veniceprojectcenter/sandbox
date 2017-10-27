@@ -26,6 +26,10 @@ const server = http.createServer((req, res) => {
       mime = 'text/css';
     } else if (path.includes('.js')) {
       mime = 'application/javascript';
+    } else if (path.includes('.jpeg') || path.includes('.jpg')) {
+      mime = 'image/jpeg';
+    } else if (path.includes('.png')) {
+      mime = 'image/png';
     }
     sendFile(res, path, mime);
   } else {
