@@ -17,9 +17,8 @@ const server = http.createServer((req, res) => {
   const uri = url.parse(req.url);
   if (uri.pathname.includes('assets')) {
     let path = uri.pathname;
-    if (path.length > 0 && path[0] === '/') {
-      path = path.substr(1);
-    }
+    path = path.substr(path.indexOf('assets'));
+
     console.log(path);
     let mime = 'text';
     if (path.includes('.css')) {
