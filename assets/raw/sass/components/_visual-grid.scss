@@ -1,0 +1,17 @@
+.visual-grid {
+  display: none;
+
+  .block {
+    cursor: pointer;
+
+    img {
+      width: 100%;
+    }
+
+    .name {
+      display: flex;
+      justify-content: center;
+      padding: 5px;
+    }
+  }
+}
