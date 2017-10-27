@@ -10,3 +10,6 @@
 
 ##Building
 To build the project run '''gulp''' or '''gulp watch''' to build on change
+
+##Server
+Run '''npm run server''' to start a local server on http://localhost:8080
