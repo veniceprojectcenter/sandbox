@@ -11,8 +11,9 @@
     "ignore": [
       "firebase.json",
       "**/.*",
-      "**/node_modules/**"
-      "**/*.log"
+      "**/node_modules/**",
+      "**/*.log",
+      "assets/raw/**"
     ]
   },
   "storage": {
