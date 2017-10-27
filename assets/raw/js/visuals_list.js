@@ -1,3 +1,5 @@
+import update_breadcrumbs from './utils';
+
 const visuals = [
   { name: 'Bar Chart', image: 'http://via.placeholder.com/300x300', link: './barchart' },
   { name: 'Pie Chart', image: 'http://via.placeholder.com/300x300', link: 'piechart' },
