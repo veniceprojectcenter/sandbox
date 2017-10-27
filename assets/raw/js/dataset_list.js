@@ -3,13 +3,13 @@ const datasets = [
   { name: 'Rive', description: 'Blah Blah Blah', link: '/rive/' },
 ];
 
-function render_dataset_list(route){
+function renderDatasetList(route) {
   const page = document.getElementById('page');
   const datarows = document.createElement('div');
-  datarows.className = "data-row";
+  datarows.className = 'data-row';
 
   const selectionHeader = document.createElement('h2');
-  selectionHeader.innerHTML = "Please select a dataset:";
+  selectionHeader.innerHTML = 'Please select a dataset:';
   datarows.appendChild(selectionHeader);
 
   for (let i = 0; i < datasets.length; i += 1) {
@@ -36,4 +36,4 @@ function render_dataset_list(route){
   page.appendChild(datarows);
 }
 
-export default render_dataset_list;
+export default renderDatasetList;

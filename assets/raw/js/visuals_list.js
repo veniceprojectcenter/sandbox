@@ -1,37 +1,37 @@
-import update_breadcrumbs from './utils';
+import updateBreadcrumbs from './utils';
 
 const visuals = [
   { name: 'Bar Chart', image: 'http://via.placeholder.com/300x300', link: './barchart' },
   { name: 'Pie Chart', image: 'http://via.placeholder.com/300x300', link: 'piechart' },
   { name: 'Histogram', image: 'http://via.placeholder.com/300x300', link: 'histogram' },
-  { name: 'Map', image: 'http://via.placeholder.com/300x300', link: 'map'},
+  { name: 'Map', image: 'http://via.placeholder.com/300x300', link: 'map' },
   { name: 'Bar Chart', image: 'http://via.placeholder.com/300x300', link: 'barchart' },
   { name: 'Pie Chart', image: 'http://via.placeholder.com/300x300', link: 'piechart' },
   { name: 'Histogram', image: 'http://via.placeholder.com/300x300', link: 'histogram' },
-  { name: 'Map', image: 'http://via.placeholder.com/300x300', link: 'map'},
+  { name: 'Map', image: 'http://via.placeholder.com/300x300', link: 'map' },
   { name: 'Bar Chart', image: 'http://via.placeholder.com/300x300', link: 'barchart' },
   { name: 'Pie Chart', image: 'http://via.placeholder.com/300x300', link: 'piechart' },
   { name: 'Histogram', image: 'http://via.placeholder.com/300x300', link: 'histogram' },
-  { name: 'Map', image: 'http://via.placeholder.com/300x300', link: 'map'},
+  { name: 'Map', image: 'http://via.placeholder.com/300x300', link: 'map' },
   { name: 'Bar Chart', image: 'http://via.placeholder.com/300x300', link: 'barchart' },
   { name: 'Pie Chart', image: 'http://via.placeholder.com/300x300', link: 'piechart' },
   { name: 'Histogram', image: 'http://via.placeholder.com/300x300', link: 'histogram' },
-  { name: 'Map', image: 'http://via.placeholder.com/300x300', link: 'map'}
+  { name: 'Map', image: 'http://via.placeholder.com/300x300', link: 'map' },
 ];
 
 
-function render_visuals_list(route){
-  update_breadcrumbs(route);
+function renderVisualsList(route) {
+  updateBreadcrumbs(route);
 
   const page = document.getElementById('page');
   const visualBlocks = document.createElement('div');
-  visualBlocks.className = "visual-grid";
+  visualBlocks.className = 'visual-grid';
 
   const gridRow = document.createElement('div');
   gridRow.className = 'row';
 
   const selectionHeader = document.createElement('h2');
-  selectionHeader.innerHTML = "Please select a visual:";
+  selectionHeader.innerHTML = 'Please select a visual:';
   visualBlocks.appendChild(selectionHeader);
 
   visualBlocks.appendChild(gridRow);
@@ -57,4 +57,4 @@ function render_visuals_list(route){
   page.appendChild(visualBlocks);
 }
 
-export default render_visuals_list;
+export default renderVisualsList;

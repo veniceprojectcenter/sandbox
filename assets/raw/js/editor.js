@@ -1,7 +1,7 @@
-import update_breadcrumbs from './utils';
+import updateBreadcrumbs from './utils';
 
-function render_editor(route){
-  update_breadcrumbs(route);
+function renderEditor(route) {
+  updateBreadcrumbs(route);
 
   const visual = document.createElement('div');
   visual.className = 'visual';
@@ -10,4 +10,4 @@ function render_editor(route){
   page.appendChild(visual);
 }
 
-export default render_editor;
+export default renderEditor;
