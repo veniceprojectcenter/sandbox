@@ -3,38 +3,37 @@ const datasets = [
   { name: 'Rive', description: 'Blah Blah Blah', link: '/rive' },
 ];
 
-function selectDataset(datasetLink) {
-  const rows = document.querySelector('.data-rows');
-  rows.style.display = 'none';
-  const grid = document.querySelector('.visual-grid');
-  grid.style.display = 'block';
-  window.history.pushState(datasetLink.name, datasetLink.name, datasetLink.link);
-
-  const breadcrumbs = document.getElementById('breadcrumbs');
-  breadcrumbs.innerHTML = "&nbsp>&nbsp" + datasetLink.name;
-}
-
 function render_dataset_list(route){
+  const page = document.getElementById('page');
+  const datarows = document.createElement('div');
+  datarows.className = "data-row";
+
+  const selectionHeader = document.createElement('h2');
+  selectionHeader.innerHTML = "Please select a dataset:";
+  datarows.appendChild(selectionHeader);
 
   for (let i = 0; i < datasets.length; i += 1) {
     const row = document.createElement('div');
+    const link = document.createElement('a');
+    link.href = datasets[i].link;
+
     row.className = 'data-row';
     const name = document.createElement('div');
     name.className = 'name';
     name.innerHTML = datasets[i].name;
+
     const description = document.createElement('div');
     description.className = 'description';
     description.innerHTML = datasets[i].description;
-    row.appendChild(name);
-    row.appendChild(description);
 
-    // Add row hiding code:
-    row.addEventListener('click', () => {
-      selectDataset(datasets[i]);
-    });
+    link.appendChild(name);
+    link.appendChild(description);
+    row.appendChild(link);
 
-    document.querySelector('.data-rows').appendChild(row);
+    datarows.appendChild(row);
   }
+
+  page.appendChild(datarows);
 }
 
 export default render_dataset_list;

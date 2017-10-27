@@ -4,8 +4,7 @@ import render_editor from './editor.js';
 
 
 function routing(){
-  //const path = window.location.pathname;
-  const path = "/";
+  const path = window.location.pathname;
   const split = path.split("/");
   // Remove empty strings
   let route = [];
@@ -15,7 +14,7 @@ function routing(){
     }
   }
 
-  console.log(route);
+  console.log(route.length);
   switch(route.length){
     case 0:
       render_dataset_list(route);

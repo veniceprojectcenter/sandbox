@@ -18,6 +18,14 @@ const visuals = [
 ];
 
 function render_visuals_list(route){
+  const page = document.getElementById('page');
+  const visualBlocks = document.createElement('div');
+  visualBlocks.className = "visual-grid";
+
+  const selectionHeader = document.createElement('h2');
+  selectionHeader.innerHTML = "Please select a visual:";
+  visualBlocks.appendChild(selectionHeader);
+
   for (let i = 0; i < visuals.length; i += 1) {
     const block = document.createElement('div');
     block.className = 'col-12 col-sm-6 col-md-4 col-lg-3 block';
@@ -29,8 +37,9 @@ function render_visuals_list(route){
     block.appendChild(image);
     block.appendChild(name);
 
-    document.querySelector('.visual-grid .row').appendChild(block);
+    visualBlocks.appendChild(block);
   }
+  page.appendChild(visualBlocks);
 }
 
 export default render_visuals_list;
