@@ -3,7 +3,7 @@
 class Visual {
 
   constructor(config) {
-    this.data = Visual.fetch(config.data);
+    this.data = Visual.fetchData(config.data);
     this.attributes = config.attributes;
   }
 

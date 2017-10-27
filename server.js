@@ -8,7 +8,7 @@ function sendFile(res, filename, contentType) {
   contentType = contentType || 'text/html';
 
   fs.readFile(filename, (error, content) => {
-    res.writeHead(200, { 'Content-type': contentType });
+    res.writeHead(200, { 'Content-Type': contentType });
     res.end(content, 'utf-8');
   });
 }
@@ -21,7 +21,17 @@ const server = http.createServer((req, res) => {
       path = path.substr(1);
     }
     console.log(path);
-    sendFile(res, path);
+    let mime = 'text';
+    if (path.includes('.css')) {
+      mime = 'text/css';
+    } else if (path.includes('.js')) {
+      mime = 'application/javascript';
+    } else if (path.includes('.jpeg') || path.includes('.jpg')) {
+      mime = 'image/jpeg';
+    } else if (path.includes('.png')) {
+      mime = 'image/png';
+    }
+    sendFile(res, path, mime);
   } else {
     console.log('/');
     sendFile(res, 'index.html');
