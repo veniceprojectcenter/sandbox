@@ -5,5 +5,9 @@
   ],
   "env": {
     "browser": true
+  },
+  "globals": {
+        "d3": false,
+        "google": false
   }
 }
