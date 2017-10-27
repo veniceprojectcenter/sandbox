@@ -1,6 +1,6 @@
 class Visual {
-  constructor() {
-    this.attributes = {};
+  constructor(attributes) {
+    this.attributes = attributes;
   }
 }
 
