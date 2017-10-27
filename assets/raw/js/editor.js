@@ -1,5 +1,7 @@
-function render_editor(route){
+import update_breadcrumbs from 'utils';
 
+function render_editor(route){
+  update_breadcrumbs(route);
 
 }
 

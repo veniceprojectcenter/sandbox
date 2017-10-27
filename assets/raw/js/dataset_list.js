@@ -1,6 +1,6 @@
 const datasets = [
-  { name: 'Ponti', description: 'Blah Blah Blah', link: '/ponti' },
-  { name: 'Rive', description: 'Blah Blah Blah', link: '/rive' },
+  { name: 'Ponti', description: 'Blah Blah Blah', link: '/ponti/' },
+  { name: 'Rive', description: 'Blah Blah Blah', link: '/rive/' },
 ];
 
 function render_dataset_list(route){
