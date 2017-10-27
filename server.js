@@ -16,8 +16,14 @@ function sendFile(res, filename, contentType) {
 const server = http.createServer((req, res) => {
   const uri = url.parse(req.url);
   if (uri.pathname.includes('assets')) {
-    sendFile(res, url.pathname);
+    let path = uri.pathname;
+    if (path.length > 0 && path[0] === '/') {
+      path = path.substr(1);
+    }
+    console.log(path);
+    sendFile(res, path);
   } else {
+    console.log('/');
     sendFile(res, 'index.html');
   }
 });
