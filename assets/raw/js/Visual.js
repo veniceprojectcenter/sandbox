@@ -59,13 +59,14 @@ class Visual {
     return results;
   }
 
-  generateConfig() {
+  generateConfigButton(id = 'download') {
     const downloadButton = document.createElement('a');
     downloadButton.className = 'download-button';
-    downloadButton.value = 'Download Config';
-    downloadButton.href = `data:application/octet-stream,${JSON.stringify(this.attributes)}`;
+    downloadButton.innerText = 'Download Config';
+    downloadButton.href = `data:text/json;charset=utf-8,${JSON.stringify(this.attributes)}`;
+    downloadButton.download = 'config.json';
 
-    const downloadContainer = document.getElementById('download');
+    const downloadContainer = document.getElementById(id);
     downloadContainer.appendChild(downloadButton);
   }
 

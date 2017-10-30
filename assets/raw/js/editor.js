@@ -29,8 +29,8 @@ function renderEditor(route) {
 
   rowContainer.appendChild(visualContainer);
   rowContainer.appendChild(controlsContainer);
-  rowContainer.appendChild(downloadContainer);
   page.appendChild(rowContainer);
+  page.appendChild(downloadContainer);
 
   if (route.length === 2) {
     let visual = null;

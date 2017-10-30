@@ -27,13 +27,13 @@ class Donut extends Visual {
     const height = this.attributes.height;
     const radius = Math.min(width, height) / 2;
 
-    const color = d3.scale.ordinal().range(['#98abc5', '#8a89a6', '#7b6888', '#6b486b', '#a05d56', '#d0743c', '#ff8c00']);
+    const color = d3.scaleOrdinal(['#98abc5', '#8a89a6', '#7b6888', '#6b486b', '#a05d56', '#d0743c', '#ff8c00']);
 
-    const arc = d3.svg.arc()
+    const arc = d3.arc()
       .outerRadius(radius - 10)
       .innerRadius(100);
 
-    const pie = d3.layout.pie()
+    const pie = d3.pie()
       .sort(null)
       .value(d => d.value);
 
