@@ -7,13 +7,6 @@
 <!-- Google Fonts -->
 <link href="https://fonts.googleapis.com/css?family=Raleway|Roboto|Rubik" rel="stylesheet">
 
-<!-- Materialize -->
-<link href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/css/materialize.css" rel="stylesheet" />
-<!--Import jQuery before materialize.js-->
-<script type="text/javascript" src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/js/materialize.js"></script>
-
-
 <!-- Custom Styles -->
 <link rel="stylesheet" type="text/css" href="assets/prod/css/style.css">
 
@@ -31,16 +24,16 @@
 <!-- Templates -->
 <script id="text-field-entry" type="text/x-handlebars-template">
   <div class="input-field" id="{{id}}">
-    <input type="text" id="{{id}}-field" class="validate">
+    <input type="text" id="{{id}}-field">
     <label for="{{id}}-field">{{title}}</label>
   </div>
 </script>
 
 <script id="select-entry" type="text/x-handlebars-template">
   <div class="input-field" id="{{id}}">
-    <select>
+    <select id="{{id}}-select">
       <option value="" disabled selected>Choose your option</option>
-      {{#each option}}
+      {{#each options}}
       <option value="{{value}}">{{text}}</option>
       {{/each}}
     </select>

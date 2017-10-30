@@ -16,7 +16,13 @@ class Donut extends Visual {
   renderControls() {
     this.empty(this.renderControlsID);
     const controlsContainer = document.getElementById(this.renderControlsID);
-    ComponentUtils.createTextField(controlsContainer, 'lol', 'Test Field', null);
+
+    ComponentUtils.createSelectBox(controlsContainer, 'lol2', 'Test Select Field',
+      [{ value: '1', text: 'One' },
+      { value: '2', text: 'Two' },
+      { value: '3', text: 'Three' },
+      { value: '4', text: 'Four' }], (e) => { alert('Test'); });
+    ComponentUtils.createTextField(controlsContainer, 'lol', 'Test Field', (e) => { alert('Test'); console.log('AHHH'); });
   }
 
   render() {
