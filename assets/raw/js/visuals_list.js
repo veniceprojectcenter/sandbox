@@ -24,6 +24,9 @@ function renderVisualsList(route) {
   updateBreadcrumbs(route);
 
   const page = document.getElementById('page');
+  page.classList.remove('container-fluid');
+  page.classList.add('container');
+
   const visualBlocks = document.createElement('div');
   visualBlocks.className = 'visual-grid';
 

@@ -4,7 +4,7 @@ class Donut extends Visual {
   constructor(config) {
     super(config);
     this.applyDefaultAttributes({
-      width: 960,
+      width: 500,
       height: 500,
       font_size: '1em',
       colors: [],
@@ -38,6 +38,7 @@ class Donut extends Visual {
       .attr('width', width)
       .attr('height', height)
       .attr('class', 'donut')
+      .attr('viewBox', '0 0 500 500')
       .append('g')
       .attr('transform', `translate(${width / 2},${height / 2})`);
 
