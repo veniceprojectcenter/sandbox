@@ -5,6 +5,9 @@ const datasets = [
 
 function renderDatasetList(route) {
   const page = document.getElementById('page');
+  page.classList.remove('container-fluid');
+  page.classList.add('container');
+
   const datarows = document.createElement('div');
   datarows.className = 'data-row';
 
