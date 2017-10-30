@@ -1,4 +1,4 @@
-import Visual from './Visual';
+import Visual from '../Visual';
 
 class Counter extends Visual {
   constructor(config) {
@@ -21,7 +21,7 @@ class Counter extends Visual {
   displayBridges() {
     let txt = '';
     const selectedAttribute = this.aSelect.options[this.aSelect.selectedIndex].text;
-    const yourSelect = document.getElementsByClassName('Sestiere');
+    const yourSelect = document.getElementsByClassName('CheckChoice');
     let choiceValue = [];
     for (let i = 0; i < yourSelect.length; i += 1) {
       if (yourSelect[yourSelect[i]].checked) {
@@ -50,7 +50,7 @@ class Counter extends Visual {
         tempInput.value = this.data[i][selectedAttribute];
         tempInput.type = 'checkbox';
         tempInput.addEventListener('click', this.displayBridges);
-        tempInput.classList.add('Sestiere');
+        tempInput.classList.add('CheckChoice');
         const newlabel = document.createElement('Label');
         newlabel.setAttribute('for', tempInput.ID);
         newlabel.innerHTML = this.data[i][selectedAttribute];
