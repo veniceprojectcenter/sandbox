@@ -1,4 +1,4 @@
-import Visual from './Visual';
+import Visual from '../Visual';
 
 class Donut extends Visual {
   constructor(config) {
@@ -58,6 +58,8 @@ class Donut extends Visual {
       .text(d => d.data.key);
   }
 }
+
+export default Donut;
 
 // new DonutVisual(
 //   {
