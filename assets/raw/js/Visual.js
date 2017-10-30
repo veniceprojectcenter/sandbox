@@ -1,9 +1,9 @@
-/* eslint class-methods-use-this: ["error", { "exceptMethods": ["render"] }] */
+/* eslint class-methods-use-this: ["error", { "exceptMethods": ["render", "renderControls"] }] */
 
 class Visual {
 
   constructor(config) {
-    this.data = Visual.fetchData(config.data);
+    this.data = Visual.fetchData(config.dataSet);
     this.attributes = config.attributes;
   }
 
@@ -56,15 +56,20 @@ class Visual {
     return results;
   }
 
-  renderControls() {
+  generateConfig() {
+    return this.attributes;
+  }
+
+  renderControls(id) {
     throw new Error('You must implement this method');
   }
 
-  render() {
+  render(id) {
     throw new Error('You must implement this method');
   }
 }
 
-Visual.RENDER_ID = 'visual';
+Visual.DEFAULT_RENDER_ID = 'visual';
+Visual.DEFAULT_RENDER_CONTROLS_ID = 'controls';
 
 export default Visual;
