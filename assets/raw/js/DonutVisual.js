@@ -31,7 +31,7 @@ class DonutVisual extends Visual {
       .attr('transform', `translate(${width / 2},${height / 2})`);
 
     const g = svg.selectAll('.arc')
-      .data(pie(this.generateCategoryCountArray('color')))
+      .data(pie(this.getGroupedListCounts('color')))
       .enter().append('g')
       .attr('class', 'arc ');
 
@@ -59,9 +59,7 @@ new DonutVisual(
       label_field: '',
       category_field: 'population',
       category_order: '',
-      colors: [
-
-      ],
+      colors: [],
     },
   },
 ).render(document.querySelector('#testcanvas'));

@@ -25,7 +25,7 @@ class Visual {
             { id: 15, color: 'blue' }];
   }
 
-  generateCategoryCountArray(columnName) {
+  getGroupedList(columnName) {
     const results = [];
     for (let i = 0; i < this.data.length; i += 1) {
       const categoryVal = this.data[i][columnName];
@@ -33,17 +33,26 @@ class Visual {
       let found = false;
       for (let p = 0; p < results.length; p += 1) {
         if (results[p].key === categoryVal) {
-          results[p].value += 1;
+          results[p].value.push(this.data[i]);
           found = true;
           break;
         }
       }
 
       if (!found) {
-        results.push({ key: categoryVal, value: 1 });
+        results.push({ key: categoryVal, value: [this.data[i]] });
       }
     }
 
+    return results;
+  }
+
+  getGroupedListCounts(columnName) {
+    const data = this.getGroupedList(columnName);
+    const results = [];
+    for (let i = 0; i < data.length; i++) {
+      results.push({ key: data[i].key, value: data[i].value.length });
+    }
     return results;
   }
 
