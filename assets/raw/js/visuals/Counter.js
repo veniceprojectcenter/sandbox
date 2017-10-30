@@ -3,11 +3,22 @@ import Visual from '../Visual';
 class Counter extends Visual {
   constructor(config) {
     super(config);
+    this.applyDefaultAttributes({
+      width: 500,
+      height: 500,
+      font_size: '1em',
+      colors: [],
+      category_order: '',
+    });
+  }
+  renderControls() {
+    this.empty(this.renderControlsID);
   }
   render() {
-    const renderDiv = document.getElementById(Visual.RENDER_ID);
+    const renderDiv = document.getElementById(this.renderID);
     renderDiv.innerHTML = '';
     this.aSelect = document.createElement('select');
+    renderDiv.append(this.aSelect);
     this.aSelect.innerHTML = '';
     this.aSelect.addEventListener('change', this.displayAttributes);
     const keys = Object.keys(this.data[0]);
@@ -62,3 +73,5 @@ class Counter extends Visual {
     }
   }
 }
+
+export default Counter;
