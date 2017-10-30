@@ -5,9 +5,13 @@ class DonutVisual extends Visual {
     super(config);
   }
 
-  render() {
+  renderControls(id) {
+    this.empty(id);
+  }
+
+  render(renderID) {
     // Empty the container, then place the SVG in there
-    document.getElementById(Visual.RENDER_ID).innerHTML = '';
+    this.empty(renderID);
 
     const width = this.attributes.width;
     const height = this.attributes.height;
@@ -23,7 +27,7 @@ class DonutVisual extends Visual {
       .sort(null)
       .value(d => d.value);
 
-    const svg = d3.select(`#${Visual.RENDER_ID}`).append('svg')
+    const svg = d3.select(`#${renderID}`).append('svg')
       .attr('width', width)
       .attr('height', height)
       .attr('class', 'donut')
@@ -31,7 +35,7 @@ class DonutVisual extends Visual {
       .attr('transform', `translate(${width / 2},${height / 2})`);
 
     const g = svg.selectAll('.arc')
-      .data(pie(this.generateCategoryCountArray('color')))
+      .data(pie(this.getGroupedListCounts('color')))
       .enter().append('g')
       .attr('class', 'arc ');
 
@@ -59,9 +63,7 @@ new DonutVisual(
       label_field: '',
       category_field: 'population',
       category_order: '',
-      colors: [
-
-      ],
+      colors: [],
     },
   },
-).render(document.querySelector('#testcanvas'));
+).render('visual');

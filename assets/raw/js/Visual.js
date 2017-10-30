@@ -8,24 +8,24 @@ class Visual {
   }
 
   static fetchData(dataName) {
-    return [{ id: 1, color: 'pink' },
-            { id: 2, color: 'pink' },
-            { id: 3, color: 'green' },
-            { id: 4, color: 'green' },
-            { id: 5, color: 'red' },
-            { id: 6, color: 'red' },
-            { id: 7, color: 'red' },
-            { id: 8, color: 'red' },
-            { id: 9, color: 'blue' },
-            { id: 10, color: 'blue' },
-            { id: 11, color: 'blue' },
-            { id: 12, color: 'blue' },
-            { id: 13, color: 'blue' },
-            { id: 14, color: 'blue' },
-            { id: 15, color: 'blue' }];
+    return [{ id: 1, color: 'pink', height: 10, lat: 0, lng: 0 },
+            { id: 2, color: 'pink', height: 10, lat: 0, lng: 0 },
+            { id: 3, color: 'green', height: 10, lat: 0, lng: 0 },
+            { id: 4, color: 'green', height: 10, lat: 0, lng: 0 },
+            { id: 5, color: 'red', height: 10, lat: 0, lng: 0 },
+            { id: 6, color: 'red', height: 10, lat: 0, lng: 0 },
+            { id: 7, color: 'red', height: 10, lat: 0, lng: 0 },
+            { id: 8, color: 'red', height: 10, lat: 0, lng: 0 },
+            { id: 9, color: 'blue', height: 10, lat: 0, lng: 0 },
+            { id: 10, color: 'blue', height: 10, lat: 0, lng: 0 },
+            { id: 11, color: 'blue', height: 10, lat: 0, lng: 0 },
+            { id: 12, color: 'blue', height: 10, lat: 0, lng: 0 },
+            { id: 13, color: 'blue', height: 10, lat: 0, lng: 0 },
+            { id: 14, color: 'blue', height: 10, lat: 0, lng: 0 },
+            { id: 15, color: 'blue', height: 10, lat: 0, lng: 0 }];
   }
 
-  generateCategoryCountArray(columnName) {
+  getGroupedList(columnName) {
     const results = [];
     for (let i = 0; i < this.data.length; i += 1) {
       const categoryVal = this.data[i][columnName];
@@ -33,17 +33,26 @@ class Visual {
       let found = false;
       for (let p = 0; p < results.length; p += 1) {
         if (results[p].key === categoryVal) {
-          results[p].value += 1;
+          results[p].value.push(this.data[i]);
           found = true;
           break;
         }
       }
 
       if (!found) {
-        results.push({ key: categoryVal, value: 1 });
+        results.push({ key: categoryVal, value: [this.data[i]] });
       }
     }
 
+    return results;
+  }
+
+  getGroupedListCounts(columnName) {
+    const data = this.getGroupedList(columnName);
+    const results = [];
+    for (let i = 0; i < data.length; i += 1) {
+      results.push({ key: data[i].key, value: data[i].value.length });
+    }
     return results;
   }
 
@@ -63,6 +72,21 @@ class Visual {
 
   render(id) {
     throw new Error('You must implement this method');
+  }
+
+  empty(id) {
+    document.getElementById(id).innerHTML = '';
+  }
+
+  applyDefaultAttributes(defaults) {
+    const keys = Object.keys(defaults);
+    for (let i = 0; i < keys.length; i += 1) {
+      if (defaults.hasOwnProperty(keys[i])) {
+        if (!this.attributes.hasOwnProperty(keys[i])) {
+          this.attributes[keys[i]] = defaults[keys[i]];
+        }
+      }
+    }
   }
 }
 
