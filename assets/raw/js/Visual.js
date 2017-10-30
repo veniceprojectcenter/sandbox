@@ -11,21 +11,21 @@ class Visual {
   }
 
   static fetchData(dataName) {
-    return [{ id: 1, color: 'pink', height: 10, lat: 0, lng: 0 },
-            { id: 2, color: 'pink', height: 10, lat: 0, lng: 0 },
-            { id: 3, color: 'green', height: 10, lat: 0, lng: 0 },
-            { id: 4, color: 'green', height: 10, lat: 0, lng: 0 },
-            { id: 5, color: 'red', height: 10, lat: 0, lng: 0 },
-            { id: 6, color: 'red', height: 10, lat: 0, lng: 0 },
-            { id: 7, color: 'red', height: 10, lat: 0, lng: 0 },
-            { id: 8, color: 'red', height: 10, lat: 0, lng: 0 },
-            { id: 9, color: 'blue', height: 10, lat: 0, lng: 0 },
-            { id: 10, color: 'blue', height: 10, lat: 0, lng: 0 },
-            { id: 11, color: 'blue', height: 10, lat: 0, lng: 0 },
-            { id: 12, color: 'blue', height: 10, lat: 0, lng: 0 },
-            { id: 13, color: 'blue', height: 10, lat: 0, lng: 0 },
-            { id: 14, color: 'blue', height: 10, lat: 0, lng: 0 },
-            { id: 15, color: 'blue', height: 10, lat: 0, lng: 0 }];
+    return [{ id: 1, color: 'pink', height: 10, lat: 45.43, lng: 12.33, year: 1934 },
+            { id: 2, color: 'pink', height: 10, lat: 0, lng: 0, year: 1944 },
+            { id: 3, color: 'green', height: 10, lat: 0, lng: 0, year: 1954 },
+            { id: 4, color: 'green', height: 10, lat: 0, lng: 0, year: 1964 },
+            { id: 5, color: 'red', height: 10, lat: 0, lng: 0, year: 1974 },
+            { id: 6, color: 'red', height: 10, lat: 0, lng: 0, year: 1984 },
+            { id: 7, color: 'red', height: 10, lat: 0, lng: 0, year: 1994 },
+            { id: 8, color: 'red', height: 10, lat: 0, lng: 0, year: 1924 },
+            { id: 9, color: 'blue', height: 10, lat: 0, lng: 0, year: 1914 },
+            { id: 10, color: 'blue', height: 10, lat: 0, lng: 0, year: 1904 },
+            { id: 11, color: 'blue', height: 10, lat: 0, lng: 0, year: 1934 },
+            { id: 12, color: 'blue', height: 10, lat: 0, lng: 0, year: 1934 },
+            { id: 13, color: 'blue', height: 10, lat: 0, lng: 0, year: 1934 },
+            { id: 14, color: 'blue', height: 10, lat: 0, lng: 0, year: 1934 },
+            { id: 15, color: 'blue', height: 10, lat: 0, lng: 0, year: 1934 }];
   }
 
   getGroupedList(columnName) {
@@ -84,7 +84,7 @@ class Visual {
     }
   }
 
-  renderControls(id) {
+  renderControls() {
     throw new Error('You must implement this method');
   }
 
