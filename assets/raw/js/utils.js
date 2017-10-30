@@ -7,5 +7,4 @@ function updateBreadcrumbs(route) {
   breadcrumbs.innerHTML = breadcrumbString;
 }
 
-
 export default updateBreadcrumbs;
