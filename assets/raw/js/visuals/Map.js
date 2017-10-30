@@ -24,7 +24,7 @@ class Map extends Visual {
     if (data.lat && data.lng) {
       const icon = {
         path: 'M-20,0a5,5 0 1,0 10,0a5,5 0 1,0 -10,0',
-        fillColor: this.determineColor(data.approximate_year),
+        fillColor: Map.determineColor(data.approximate_year),
         fillOpacity: 0.6,
         anchor: new google.maps.Point(0, 0),
         strokeWeight: 0,
