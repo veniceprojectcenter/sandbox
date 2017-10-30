@@ -40,7 +40,7 @@ function renderEditor(route) {
     }
 
     if (visual !== null) {
-      visual.render(Visual.DEFAULT_RENDER_ID);
+      visual.render();
     }
   } else {
     visualContainer.innerHTML = '<p>An error occured.';

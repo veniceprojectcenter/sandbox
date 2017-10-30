@@ -2,7 +2,10 @@
 
 class Visual {
 
-  constructor(config) {
+  constructor(config, renderID = Visual.DEFAULT_RENDER_ID,
+    renderControlsID = Visual.DEFAULT_RENDER_CONTROLS_ID) {
+    this.renderID = renderID;
+    this.renderControlsID = renderControlsID;
     this.data = Visual.fetchData(config.dataSet);
     this.attributes = config.attributes;
   }
@@ -66,16 +69,8 @@ class Visual {
     downloadContainer.appendChild(downloadButton);
   }
 
-  renderControls(id) {
-    throw new Error('You must implement this method');
-  }
-
-  render(id) {
-    throw new Error('You must implement this method');
-  }
-
-  empty(id) {
-    document.getElementById(id).innerHTML = '';
+  empty() {
+    document.getElementById(this.renderID).innerHTML = '';
   }
 
   applyDefaultAttributes(defaults) {
@@ -87,6 +82,14 @@ class Visual {
         }
       }
     }
+  }
+
+  renderControls(id) {
+    throw new Error('You must implement this method');
+  }
+
+  render() {
+    throw new Error('You must implement this method');
   }
 }
 

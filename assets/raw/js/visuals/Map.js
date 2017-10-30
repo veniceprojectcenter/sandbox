@@ -80,13 +80,13 @@ class Map extends Visual {
     }
   }
 
-  render(id) {
-    this.map = new google.maps.Map(document.getElementById(id), {
+  render() {
+    this.map = new google.maps.Map(document.getElementById(this.renderID), {
       center: { lat: 45.43, lng: 12.33 },
-      zoom: 14,
+      zoom: 13,
     });
 
-    // this.data.forEach(this.addMarker);
+    this.data.forEach(this.addMarker);
   }
 }
 
