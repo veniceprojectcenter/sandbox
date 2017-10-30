@@ -48,7 +48,13 @@ class Visual {
   }
 
   generateConfig() {
-    return this.attributes;
+    const downloadButton = document.createElement('a');
+    downloadButton.className = 'download-button';
+    downloadButton.value = 'Download Config';
+    downloadButton.href = `data:application/octet-stream,${JSON.stringify(this.attributes)}`;
+
+    const downloadContainer = document.getElementById('download');
+    downloadContainer.appendChild(downloadButton);
   }
 
   renderControls(id) {
