@@ -2,6 +2,8 @@ import updateBreadcrumbs from './utils';
 import Visual from './Visual';
 import Map from './visuals/Map';
 import Donut from './visuals/Donut';
+import Bar from './visuals/Bar';
+import Counter from './visuals/Counter';
 
 function renderEditor(route) {
   updateBreadcrumbs(route);
@@ -19,6 +21,7 @@ function renderEditor(route) {
 
   const downloadContainer = document.createElement('div');
   downloadContainer.className = 'download';
+  downloadContainer.id = 'download';
 
   const page = document.getElementById('page');
   page.classList.remove('container');
@@ -43,12 +46,19 @@ function renderEditor(route) {
       case 'donut':
         visual = new Donut(config);
         break;
+      case 'bar':
+        visual = new Bar(config);
+        break;
+      case 'counter':
+        visual = new Counter(config);
+        break;
       default:
         visualContainer.innerHTML = `<p>Error: could not find visualization: ${route[1]}.`;
     }
 
     if (visual !== null) {
       visual.render();
+      visual.generateConfigButton();
     }
   } else {
     visualContainer.innerHTML = '<p>An error occured.';
