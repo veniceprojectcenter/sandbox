@@ -44,7 +44,7 @@ function renderEditor(route) {
         visual = new Donut(config);
         break;
       default:
-        visualContainer.innerHTML = '<p>An error occured.';
+        visualContainer.innerHTML = `<p>Error: could not find visualization: ${route[1]}.`;
     }
 
     if (visual !== null) {
