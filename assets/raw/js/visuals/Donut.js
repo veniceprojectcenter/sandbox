@@ -1,6 +1,6 @@
 import Visual from './Visual';
 
-class DonutVisual extends Visual {
+class Donut extends Visual {
   constructor(config) {
     super(config);
     this.applyDefaultAttributes({
@@ -59,12 +59,12 @@ class DonutVisual extends Visual {
   }
 }
 
-new DonutVisual(
-  {
-    data: 'Lol!',
-    attributes:
-    {
-      category_field: 'population',
-    },
-  },
-).render('visual');
+// new DonutVisual(
+//   {
+//     data: 'Lol!',
+//     attributes:
+//     {
+//       category_field: 'population',
+//     },
+//   },
+// ).render('visual');
