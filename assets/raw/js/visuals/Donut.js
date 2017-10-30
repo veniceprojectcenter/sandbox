@@ -12,13 +12,13 @@ class Donut extends Visual {
     });
   }
 
-  renderControls(id) {
-    this.empty(id);
+  renderControls() {
+    this.empty(this.renderControlsID);
   }
 
-  render(renderID) {
+  render() {
     // Empty the container, then place the SVG in there
-    this.empty(renderID);
+    this.empty(this.renderID);
 
     const width = this.attributes.width;
     const height = this.attributes.height;
@@ -34,7 +34,7 @@ class Donut extends Visual {
       .sort(null)
       .value(d => d.value);
 
-    const svg = d3.select(`#${renderID}`).append('svg')
+    const svg = d3.select(`#${this.renderID}`).append('svg')
       .attr('width', width)
       .attr('height', height)
       .attr('class', 'donut')
