@@ -3,6 +3,13 @@ import Visual from './Visual';
 class DonutVisual extends Visual {
   constructor(config) {
     super(config);
+    this.applyDefaultAttributes({
+      width: 960,
+      height: 500,
+      font_size: '1em',
+      colors: [],
+      category_order: '',
+    });
   }
 
   renderControls(id) {
@@ -57,13 +64,7 @@ new DonutVisual(
     data: 'Lol!',
     attributes:
     {
-      width: 960,
-      height: 500,
-      font_size: '1em',
-      label_field: '',
       category_field: 'population',
-      category_order: '',
-      colors: [],
     },
   },
 ).render('visual');
