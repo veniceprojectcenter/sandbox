@@ -1,7 +1,7 @@
 import updateBreadcrumbs from './utils';
 import Visual from './Visual';
 import Map from './visuals/Map';
-// import Donut from './visuals/Donut';
+import Donut from './visuals/Donut';
 
 function renderEditor(route) {
   updateBreadcrumbs(route);
@@ -32,9 +32,9 @@ function renderEditor(route) {
       case 'map':
         visual = new Map(config);
         break;
-      // case 'donut':
-      //   visual = new Donut(config);
-      //   break;
+      case 'donut':
+        visual = new Donut(config);
+        break;
       default:
         visualContainer.innerHTML = '<p>An error occured.';
     }

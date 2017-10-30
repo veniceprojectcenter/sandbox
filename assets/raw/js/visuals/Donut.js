@@ -1,10 +1,6 @@
-import Visual from './Visual';
+import Visual from '../Visual';
 
-class DonutVisual extends Visual {
-  constructor(config) {
-    super(config);
-  }
-
+class Donut extends Visual {
   renderControls(id) {
     this.empty(id);
   }
@@ -52,18 +48,18 @@ class DonutVisual extends Visual {
   }
 }
 
-new DonutVisual(
-  {
-    data: 'Lol!',
-    attributes:
-    {
-      width: 960,
-      height: 500,
-      font_size: '1em',
-      label_field: '',
-      category_field: 'population',
-      category_order: '',
-      colors: [],
-    },
-  },
-).render('visual');
+// new DonutVisual(
+//   {
+//     data: 'Lol!',
+//     attributes:
+//     {
+//       width: 960,
+//       height: 500,
+//       font_size: '1em',
+//       label_field: '',
+//       category_field: 'population',
+//       category_order: '',
+//       colors: [],
+//     },
+//   },
+// ).render('visual');
