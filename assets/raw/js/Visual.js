@@ -69,8 +69,8 @@ class Visual {
     downloadContainer.appendChild(downloadButton);
   }
 
-  empty() {
-    document.getElementById(this.renderID).innerHTML = '';
+  empty(id) {
+    document.getElementById(id).innerHTML = '';
   }
 
   applyDefaultAttributes(defaults) {

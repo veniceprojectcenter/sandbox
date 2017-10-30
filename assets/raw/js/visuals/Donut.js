@@ -1,4 +1,5 @@
 import Visual from '../Visual';
+import ComponentUtils from './ComponentUtils';
 
 class Donut extends Visual {
   constructor(config) {
@@ -14,6 +15,8 @@ class Donut extends Visual {
 
   renderControls() {
     this.empty(this.renderControlsID);
+    const controlsContainer = document.getElementById(this.renderControlsID);
+    ComponentUtils.createTextField(controlsContainer, 'lol', 'Test Field', null);
   }
 
   render() {
