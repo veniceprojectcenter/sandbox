@@ -12,4 +12,15 @@ header {
   h1 {
     margin-left: 25px;
   }
+
+  h4 {
+    a {
+      color: $text;
+
+      &:hover {
+        text-decoration: none;
+        color: $text;
+      }
+    }
+  }
 }
