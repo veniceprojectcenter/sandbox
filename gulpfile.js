@@ -19,9 +19,9 @@ gulp.task('watch', ['build'], () => {
 
 // Sass
 gulp.task('sass', () => gulp.src(`${sassDirectory}style.scss`)
-    .pipe(sourcemaps.init())
+    // .pipe(sourcemaps.init())
     .pipe(sass().on('error', sass.logError))
-    .pipe(sourcemaps.write())
+    // .pipe(sourcemaps.write())
     .pipe(gulp.dest('./assets/prod/css')));
 
 // JS

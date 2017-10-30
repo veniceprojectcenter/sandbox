@@ -1,13 +1,24 @@
-import Visual from './Visual';
+import Visual from '../Visual';
 
-class DonutVisual extends Visual {
+class Donut extends Visual {
   constructor(config) {
     super(config);
+    this.applyDefaultAttributes({
+      width: 500,
+      height: 500,
+      font_size: '1em',
+      colors: [],
+      category_order: '',
+    });
   }
 
-  render() {
+  renderControls(id) {
+    this.empty(id);
+  }
+
+  render(renderID) {
     // Empty the container, then place the SVG in there
-    document.getElementById(Visual.RENDER_ID).innerHTML = '';
+    this.empty(renderID);
 
     const width = this.attributes.width;
     const height = this.attributes.height;
@@ -23,15 +34,16 @@ class DonutVisual extends Visual {
       .sort(null)
       .value(d => d.value);
 
-    const svg = d3.select(`#${Visual.RENDER_ID}`).append('svg')
+    const svg = d3.select(`#${renderID}`).append('svg')
       .attr('width', width)
       .attr('height', height)
       .attr('class', 'donut')
+      .attr('viewBox', '0 0 500 500')
       .append('g')
       .attr('transform', `translate(${width / 2},${height / 2})`);
 
     const g = svg.selectAll('.arc')
-      .data(pie(this.generateCategoryCountArray('color')))
+      .data(pie(this.getGroupedListCounts('color')))
       .enter().append('g')
       .attr('class', 'arc ');
 
@@ -48,20 +60,14 @@ class DonutVisual extends Visual {
   }
 }
 
-new DonutVisual(
-  {
-    data: 'Lol!',
-    attributes:
-    {
-      width: 960,
-      height: 500,
-      font_size: '1em',
-      label_field: '',
-      category_field: 'population',
-      category_order: '',
-      colors: [
+export default Donut;
 
-      ],
-    },
-  },
-).render(document.querySelector('#testcanvas'));
+// new DonutVisual(
+//   {
+//     data: 'Lol!',
+//     attributes:
+//     {
+//       category_field: 'population',
+//     },
+//   },
+// ).render('visual');
