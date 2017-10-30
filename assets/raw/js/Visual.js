@@ -11,10 +11,10 @@ class Visual {
   }
 
   static fetchData(dataName) {
-    return [{ id: 1, color: 'pink', height: 10, lat: 45.43, lng: 12.33, year: 1934 },
-            { id: 2, color: 'pink', height: 10, lat: 0, lng: 0, year: 1944 },
-            { id: 3, color: 'green', height: 10, lat: 0, lng: 0, year: 1954 },
-            { id: 4, color: 'green', height: 10, lat: 0, lng: 0, year: 1964 },
+    return [{ id: 1, color: 'pink', height: 10, lat: 45.43, lng: 12.33, year: 1520 },
+            { id: 2, color: 'pink', height: 10, lat: 45.435, lng: 12.335, year: 1750 },
+            { id: 3, color: 'green', height: 10, lat: 45.425, lng: 12.325, year: 1545 },
+            { id: 4, color: 'green', height: 10, lat: 45.439, lng: 12.339, year: 1605 },
             { id: 5, color: 'red', height: 10, lat: 0, lng: 0, year: 1974 },
             { id: 6, color: 'red', height: 10, lat: 0, lng: 0, year: 1984 },
             { id: 7, color: 'red', height: 10, lat: 0, lng: 0, year: 1994 },

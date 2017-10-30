@@ -7,6 +7,8 @@ class Map extends Visual {
     this.map = null;
     this.locations = [];
     this.openInfoWindow = null;
+
+    this.addMarker = this.addMarker.bind(this);
   }
 
   static determineColor(year) {
@@ -24,7 +26,7 @@ class Map extends Visual {
     if (data.lat && data.lng) {
       const icon = {
         path: 'M-20,0a5,5 0 1,0 10,0a5,5 0 1,0 -10,0',
-        fillColor: Map.determineColor(data.approximate_year),
+        fillColor: Map.determineColor(data.year),
         fillOpacity: 0.6,
         anchor: new google.maps.Point(0, 0),
         strokeWeight: 0,
