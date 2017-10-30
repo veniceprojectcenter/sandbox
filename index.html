@@ -7,8 +7,12 @@
 <!-- Google Fonts -->
 <link href="https://fonts.googleapis.com/css?family=Raleway|Roboto|Rubik" rel="stylesheet">
 
-<!-- Materialize CSS -->
+<!-- Materialize -->
 <link href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/css/materialize.css" rel="stylesheet" />
+<!--Import jQuery before materialize.js-->
+<script type="text/javascript" src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/js/materialize.js"></script>
+
 
 <!-- Custom Styles -->
 <link rel="stylesheet" type="text/css" href="assets/prod/css/style.css">
@@ -24,8 +28,29 @@
   Copyright © 2017 · Venice Project Center · All Rights Reserved
 </footer>
 
+<!-- Templates -->
+<script id="text-field-entry" type="text/x-handlebars-template">
+  <div class="input-field" id="{{id}}">
+    <input type="text" id="{{id}}-field" class="validate">
+    <label for="{{id}}-field">{{title}}</label>
+  </div>
+</script>
+
+<script id="select-entry" type="text/x-handlebars-template">
+  <div class="input-field" id="{{id}}">
+    <select>
+      <option value="" disabled selected>Choose your option</option>
+      {{#each option}}
+      <option value="{{value}}">{{text}}</option>
+      {{/each}}
+    </select>
+    <label>{{label}}</label>
+  </div>
+</script>
 
 <!-- Scripts -->
-<script src="https://d3js.org/d3.v3.min.js"></script>
+<!-- Handlebars -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.0.11/handlebars.js"></script>
+<script src="https://d3js.org/d3.v4.min.js"></script>
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDIWqV-QwqZnTNmvw7v89usuReSZOMzoKo"></script>
 <script src="assets/prod/js/app.bundle.js"></script>
