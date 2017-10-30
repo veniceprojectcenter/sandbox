@@ -1,8 +1,8 @@
 import updateBreadcrumbs from './utils';
 
 const visuals = [
-  { name: 'Bar Chart', image: 'http://via.placeholder.com/300x300', link: './barchart' },
-  { name: 'Pie Chart', image: 'http://via.placeholder.com/300x300', link: 'piechart' },
+  { name: 'Bar Chart', image: 'http://via.placeholder.com/300x300', link: 'barchart' },
+  { name: 'Donut Chart', image: 'http://via.placeholder.com/300x300', link: 'donut' },
   { name: 'Histogram', image: 'http://via.placeholder.com/300x300', link: 'histogram' },
   { name: 'Map', image: 'http://via.placeholder.com/300x300', link: 'map' },
   { name: 'Bar Chart', image: 'http://via.placeholder.com/300x300', link: 'barchart' },
