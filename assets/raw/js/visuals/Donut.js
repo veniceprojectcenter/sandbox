@@ -4,26 +4,63 @@ import EditorGenerator from './EditorGenerator';
 class Donut extends Visual {
   constructor(config) {
     super(config);
+    let defaultCat = '';
+    if (this.data.length > 0) {
+      const cats = Object.keys(this.data[0]);
+      if (cats.length > 1) {
+        defaultCat = cats[1];
+        console.log(`Using ${defaultCat}`);
+      }
+    }
     this.applyDefaultAttributes({
       width: 500,
       height: 500,
-      font_size: '1em',
+      font_size: 30,
       colors: [],
       category_order: '',
+      group_by: defaultCat,
+      title: '',
     });
   }
 
   renderControls() {
+    if (this.data.length === 0) {
+      alert('Dataset is empty!');
+      return;
+    }
     Visual.empty(this.renderControlsID);
     const controlsContainer = document.getElementById(this.renderControlsID);
 
     const editor = new EditorGenerator(controlsContainer);
-    editor.createTextField('lol', 'Test Field', () => { alert('Test'); console.log('AHHH'); });
-    editor.createSelectBox('lol2', 'Test Select Field',
-      [{ value: '1', text: 'One' },
-      { value: '2', text: 'Two' },
-      { value: '3', text: 'Three' },
-      { value: '4', text: 'Four' }], () => { alert('Test'); });
+
+    editor.createHeader('Configure Donut Chart');
+
+    editor.createTextField('donut-title', 'Donut Title', (e) => {
+      this.attributes.title = $(e.currentTarget).val();
+      this.render();
+    });
+
+    const cats = [];
+    const catsRaw = Object.keys(this.data[0]);
+    for (let i = 0; i < catsRaw.length; i += 1) {
+      cats.push({ value: catsRaw[i], text: catsRaw[i] });
+    }
+    editor.createSelectBox('lol2', 'Test Select Field', cats, this.attributes.group_by,
+     (e) => {
+       const value = $(e.currentTarget).val();
+       this.attributes.group_by = value;
+       this.render();
+     });
+
+    editor.createNumberSlider('donut-font-size',
+     'Label Font Size',
+      this.attributes.font_size,
+       1, 60,
+     (e) => {
+       const value = $(e.currentTarget).val();
+       this.attributes.font_size = `${value}`;
+       this.render();
+     });
   }
 
   render() {
@@ -44,6 +81,13 @@ class Donut extends Visual {
       .sort(null)
       .value(d => d.value);
 
+    if (this.attributes.title !== '') {
+      const title = d3.select(`#${this.renderID}`).append('h3')
+        .attr('class', 'visual-title');
+      title.html(this.attributes.title);
+    }
+
+
     const svg = d3.select(`#${this.renderID}`).append('svg')
       .attr('width', width)
       .attr('height', height)
@@ -53,7 +97,7 @@ class Donut extends Visual {
       .attr('transform', `translate(${width / 2},${height / 2})`);
 
     const g = svg.selectAll('.arc')
-      .data(pie(this.getGroupedListCounts('color')))
+      .data(pie(this.getGroupedListCounts(this.attributes.group_by)))
       .enter().append('g')
       .attr('class', 'arc ');
 
@@ -65,7 +109,7 @@ class Donut extends Visual {
     g.append('text')
       .attr('transform', d => `translate(${arc.centroid(d)})`)
       .attr('dy', '.35em')
-      .attr('style', `font-size:${this.attributes.font_size}`)
+      .attr('style', `font-size:${this.attributes.font_size}pt`)
       .text(d => d.data.key);
   }
 }

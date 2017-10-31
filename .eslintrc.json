@@ -8,6 +8,8 @@
   },
   "globals": {
         "d3": false,
-        "google": false
+        "google": false,
+        "$": false,
+        "Handlebars": false
   }
 }
