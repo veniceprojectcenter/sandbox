@@ -24,20 +24,27 @@
 <!-- Templates -->
 <script id="text-field-entry" type="text/x-handlebars-template">
   <div class="input-field" id="{{id}}">
-    <input type="text" id="{{id}}-field">
     <label for="{{id}}-field">{{title}}</label>
+    <input type="text" id="{{id}}-field">
   </div>
 </script>
 
 <script id="select-entry" type="text/x-handlebars-template">
   <div class="input-field" id="{{id}}">
+    <label>{{title}}</label>
     <select id="{{id}}-select">
       <option value="" disabled selected>Choose your option</option>
       {{#each options}}
       <option value="{{value}}">{{text}}</option>
       {{/each}}
     </select>
-    <label>{{label}}</label>
+  </div>
+</script>
+
+<script id="range-entry" type="text/x-handlebars-template">
+  <div class="input-field" id="{{id}}">
+    <input type="range" id="{{id}}-field" min="{{min}}" max="{{max}}">
+    <label for="{{id}}-field">{{title}}</label>
   </div>
 </script>
 
