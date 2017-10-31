@@ -58,8 +58,8 @@ function renderEditor(route) {
 
     if (visual !== null) {
       visual.render();
-      // visual.generateConfigButton();
       visual.renderControls();
+      visual.generateConfigButton();
     }
   } else {
     visualContainer.innerHTML = '<p>An error occured.';

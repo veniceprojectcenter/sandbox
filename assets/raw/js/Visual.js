@@ -60,7 +60,7 @@ class Visual {
 
   generateConfigButton(id = 'download') {
     const downloadButton = document.createElement('a');
-    downloadButton.className = 'download-button';
+    downloadButton.className = 'button';
     downloadButton.innerText = 'Download Config';
     downloadButton.href = `data:text/json;charset=utf-8,${JSON.stringify(this.attributes)}`;
     downloadButton.download = 'config.json';
