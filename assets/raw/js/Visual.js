@@ -5,11 +5,20 @@ class Visual {
     renderControlsID = Visual.DEFAULT_RENDER_CONTROLS_ID) {
     this.renderID = renderID;
     this.renderControlsID = renderControlsID;
-    this.data = Visual.fetchData(config.dataSet);
+    this.dataSet = config.dataSet;
+    this.data = Visual.fetchData(this.dataSet);
     this.attributes = config.attributes;
+    this.type = config.type;
   }
 
   static fetchData(dataName) {
+    // const db = firebase.firestore();
+    // db.collection('datasets').get().then((querySnapshot) => {
+    //   querySnapshot.forEach((doc) => {
+    //     console.log(`${doc.id} => ${doc.data()}`);
+    //   });
+    // });
+
     return [{ id: 1, color: 'pink', height: 10, lat: 45.43, lng: 12.33, year: 1520 },
             { id: 2, color: 'pink', height: 119, lat: 45.435, lng: 12.335, year: 1750 },
             { id: 3, color: 'green', height: 12, lat: 45.425, lng: 12.325, year: 1545 },
@@ -59,14 +68,27 @@ class Visual {
   }
 
   generateConfigButton(id = 'download') {
+    const generateButton = document.createElement('button');
+    generateButton.className = 'button';
+    generateButton.innerText = 'Download Config';
+    generateButton.addEventListener('click', this.generateConfig);
+
+    const downloadContainer = document.getElementById(id);
+    downloadContainer.appendChild(generateButton);
+  }
+
+  generateConfig() {
+    const config = {
+      type: this.type,
+      dataSet: this.dataSet,
+      attributes: this.attributes,
+    };
     const downloadButton = document.createElement('a');
     downloadButton.className = 'button';
     downloadButton.innerText = 'Download Config';
-    downloadButton.href = `data:text/json;charset=utf-8,${JSON.stringify(this.attributes)}`;
+    downloadButton.href = `data:text/json;charset=utf-8,${JSON.stringify(config)}`;
     downloadButton.download = 'config.json';
-
-    const downloadContainer = document.getElementById(id);
-    downloadContainer.appendChild(downloadButton);
+    downloadButton.click();
   }
 
   static empty(id) {

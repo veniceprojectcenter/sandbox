@@ -37,6 +37,7 @@ function renderEditor(route) {
     let visual = null;
     const config = {
       dataSet: route[0],
+      type: route[1],
       attributes: {},
     };
 
