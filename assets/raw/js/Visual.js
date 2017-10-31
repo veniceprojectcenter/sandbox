@@ -71,7 +71,7 @@ class Visual {
     const generateButton = document.createElement('button');
     generateButton.className = 'button';
     generateButton.innerText = 'Download Config';
-    generateButton.addEventListener('click', this.generateConfig);
+    generateButton.addEventListener('click', () => this.generateConfig());
 
     const downloadContainer = document.getElementById(id);
     downloadContainer.appendChild(generateButton);
