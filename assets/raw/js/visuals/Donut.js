@@ -16,7 +16,11 @@ class Donut extends Visual {
       width: 500,
       height: 500,
       font_size: 30,
-      colors: [],
+      color: {
+        mode: 'interpolate',
+        colorspace: 'hcl',
+        range: [0, 359],
+      },
       category_order: '',
       group_by: defaultCat,
       title: '',
@@ -71,7 +75,18 @@ class Donut extends Visual {
     const height = this.attributes.height;
     const radius = Math.min(width, height) / 2;
 
-    const color = d3.scaleOrdinal(['#98abc5', '#8a89a6', '#7b6888', '#6b486b', '#a05d56', '#d0743c', '#ff8c00']);
+    const data = this.getGroupedListCounts(this.attributes.group_by);
+
+    let colorspace = null;
+    if (this.attributes.color.mode === 'interpolate') {
+      const crange = this.attributes.color.range;
+      const color = d3.scaleLinear().domain([0, data.length]).range([crange[0], crange[1]]);
+      colorspace = function (n) {
+        return d3.hcl(color(n), 100, 75).rgb();
+      };
+    } else {
+      console.log('Error no color mode found');
+    }
 
     const arc = d3.arc()
       .outerRadius(radius - 10)
@@ -97,14 +112,13 @@ class Donut extends Visual {
       .attr('transform', `translate(${width / 2},${height / 2})`);
 
     const g = svg.selectAll('.arc')
-      .data(pie(this.getGroupedListCounts(this.attributes.group_by)))
+      .data(pie(data))
       .enter().append('g')
       .attr('class', 'arc ');
 
     g.append('path')
       .attr('d', arc)
-      .style('fill', d => '#d0743c', // color(d.data.age);
-      );
+      .style('fill', d => colorspace(d.index));
 
     g.append('text')
       .attr('transform', d => `translate(${arc.centroid(d)})`)
