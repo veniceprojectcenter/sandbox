@@ -1,0 +1,24 @@
+%button {
+  background: $white;
+  border-radius: 5px;
+  color: $text;
+  margin-bottom: 12.5px;
+  margin-top: 12.5px;
+  padding: 10px 15px;
+  text-decoration: none;
+
+  &:hover,
+  &:focus {
+    background: $secondary;
+    color: $text;
+    text-decoration: none;
+  }
+}
+
+.button {
+  @extend %button;
+}
+
+button {
+  @extend %button;
+}

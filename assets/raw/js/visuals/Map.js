@@ -90,6 +90,10 @@ class Map extends Visual {
 
     this.data.forEach(this.addMarker);
   }
+
+  renderControls() {
+    // Render some controls
+  }
 }
 
 export default Map;
