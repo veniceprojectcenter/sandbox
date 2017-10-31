@@ -9,6 +9,8 @@
   "globals": {
         "d3": false,
         "google": false,
+        "$": false,
+        "Handlebars": false,
         "firebase": false
   }
 }

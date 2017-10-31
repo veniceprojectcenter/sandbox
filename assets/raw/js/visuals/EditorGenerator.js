@@ -10,18 +10,27 @@ class EditorGenerator {
     $(`#${id} > input`).on('input', onTextChanged);
   }
 
-  createSelectBox(id, title, options, onOptionChanged) {
+  createSelectBox(id, title, options, current, onOptionChanged) {
     const context = { id, title, options };
     this.handlebarsWithContext('select-entry', context);
-    $(`#${id}-select`).material_select();
+    $(`#${id}-select`).val(current).material_select();
     $(`#${id}-select`).change(onOptionChanged);
-    console.log(document.querySelector(`#${id} > select`));
+    console.log(`Using ${current}`);
   }
 
-  createNumberSlider(id, title, min, max, onValueChanged) {
-    const context = { id, title, min, max };
+  createNumberSlider(id, title, current, min, max, onValueChanged) {
+    const context = { id, title, min, max, current };
     this.handlebarsWithContext('range-entry', context);
-    document.querySelector(`#${id} > input`).addEventListener('change', onValueChanged);
+    $(`#${id} input`).on('input', onValueChanged);
+  }
+
+  createHeader(text) {
+    const context = { text };
+    this.handlebarsWithContext('header-one', context);
+  }
+
+  createCategoryEditor() {
+
   }
 
   handlebarsWithContext(handlebarId, context) {
@@ -31,7 +40,6 @@ class EditorGenerator {
 
     $(this.container).append(html);
   }
-
 }
 
 export default EditorGenerator;

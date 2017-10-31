@@ -12,21 +12,20 @@ class Counter extends Visual {
     });
   }
   renderControls() {
-    this.empty(this.renderControlsID);
   }
   render() {
     this.renderDiv = document.getElementById(this.renderID);
+    this.renderDiv.innerHTML = 'Select an Attribute to Group By:';
     this.tableDiv = document.createElement('div');
-    this.renderDiv.innerHTML = '';
     this.aSelect = document.createElement('select');
     this.checkboxDiv = document.createElement('div');
-    this.renderDiv.appendChild(this.checkboxDiv);
-    this.aSelect.addEventListener('change', () => {this.displayAttributes()});
     this.renderDiv.appendChild(this.aSelect);
-    this.tableDiv.id = 'tableDiv';
+    this.renderDiv.appendChild(this.checkboxDiv);
     this.renderDiv.appendChild(this.tableDiv);
+    this.aSelect.addEventListener('change', () => {this.displayAttributes()});
     this.aSelect.classList.add("browser-default");
     this.aSelect.id = 'AttributeSelect';
+    this.tableDiv.id = 'tableDiv';
   //  this.aSelect.type = 'select';
     const keys = Object.keys(this.data[0]);
     for (let i = 0; i < keys.length; i += 1) {
@@ -37,15 +36,15 @@ class Counter extends Visual {
     }
   }
   displayBridges() {
-  if (this.aSelect.selectedIndex == -1){
-    return;
-  }
+    if (this.aSelect.selectedIndex == -1){
+      return;
+    }
     let txt = '';
     const selectedAttribute = this.aSelect.options[this.aSelect.selectedIndex].text;
     const yourSelect = document.getElementsByClassName('CheckChoice');
     let choiceValue = [];
     for (let i = 0; i < yourSelect.length; i += 1) {
-      if (yourSelect[yourSelect[i]].checked) {
+      if (yourSelect[i].checked) {
         choiceValue += yourSelect[i].value;
       }
     }
@@ -53,7 +52,7 @@ class Counter extends Visual {
     let count = 0;
     for (let i=0; i < this.data.length; i += 1) {
       if (choiceValue.includes(this.data[i][selectedAttribute]) && this.data[i][selectedAttribute] !== '') {
-        txt += `<tr><td>${this.data[i]['Bridge Name']}</td></tr>`;
+        txt += `<tr><td>${this.data[i]['ck_id']}</td></tr>`;
         count += 1;
       }
     }
@@ -65,7 +64,7 @@ class Counter extends Visual {
     if (this.aSelect.selectedIndex == -1){
       return;
     }
-  document.getElementById('tableDiv').innerHTML = '';
+  this.checkboxDiv.innerHTML = '';
     const selectedAttribute = this.aSelect.options[this.aSelect.selectedIndex].text;
     const checkboxes = [];
     for (let i=0; i < this.data.length; i += 1) {
@@ -73,14 +72,15 @@ class Counter extends Visual {
         const tempInput = document.createElement('input');
         tempInput.value = this.data[i][selectedAttribute];
         tempInput.type = 'checkbox';
-        tempInput.style.isContentEditable = true;
+        tempInput.id= 'check'+i;
+        tempInput.classList.add('CheckChoice');
         tempInput.addEventListener('change', () => {this.displayBridges()});
         const newlabel = document.createElement('Label');
-        newlabel.setAttribute('for', tempInput.ID);
+        newlabel.setAttribute('for', tempInput.id);
         newlabel.innerHTML = this.data[i][selectedAttribute];
-        this.tableDiv.append(tempInput);
-        this.tableDiv.append(newlabel);
-        this.tableDiv.append(document.createElement('br'));
+        this.checkboxDiv.append(tempInput);
+        this.checkboxDiv.append(newlabel);
+        this.checkboxDiv.append(document.createElement('br'));
         checkboxes[checkboxes.length] = this.data[i][selectedAttribute];
       }
     }
