@@ -45,7 +45,7 @@ class Donut extends Visual {
     for (let i = 0; i < catsRaw.length; i += 1) {
       cats.push({ value: catsRaw[i], text: catsRaw[i] });
     }
-    editor.createSelectBox('lol2', 'Test Select Field', cats, this.attributes.group_by,
+    editor.createSelectBox('donut-column', 'Select column to display', cats, this.attributes.group_by,
      (e) => {
        const value = $(e.currentTarget).val();
        this.attributes.group_by = value;
