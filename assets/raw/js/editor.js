@@ -4,6 +4,7 @@ import Map from './visuals/Map';
 import Donut from './visuals/Donut';
 import Bar from './visuals/Bar';
 import Counter from './visuals/Counter';
+import PieChartMap from './visuals/PieChartMap';
 
 function renderEditor(route) {
   updateBreadcrumbs(route);
@@ -51,6 +52,9 @@ function renderEditor(route) {
         break;
       case 'counter':
         visual = new Counter(config);
+        break;
+      case 'piechartmap':
+        visual = new PieChartMap(config);
         break;
       default:
         visualContainer.innerHTML = `<p>Error: could not find visualization: ${route[1]}.`;

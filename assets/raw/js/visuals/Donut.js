@@ -1,5 +1,5 @@
 import Visual from '../Visual';
-import ComponentUtils from './ComponentUtils';
+import EditorGenerator from './EditorGenerator';
 
 class Donut extends Visual {
   constructor(config) {
@@ -14,20 +14,21 @@ class Donut extends Visual {
   }
 
   renderControls() {
-    this.empty(this.renderControlsID);
+    Visual.empty(this.renderControlsID);
     const controlsContainer = document.getElementById(this.renderControlsID);
 
-    ComponentUtils.createSelectBox(controlsContainer, 'lol2', 'Test Select Field',
+    const editor = new EditorGenerator(controlsContainer);
+    editor.createTextField('lol', 'Test Field', () => { alert('Test'); console.log('AHHH'); });
+    editor.createSelectBox('lol2', 'Test Select Field',
       [{ value: '1', text: 'One' },
       { value: '2', text: 'Two' },
       { value: '3', text: 'Three' },
-      { value: '4', text: 'Four' }], (e) => { alert('Test'); });
-    ComponentUtils.createTextField(controlsContainer, 'lol', 'Test Field', (e) => { alert('Test'); console.log('AHHH'); });
+      { value: '4', text: 'Four' }], () => { alert('Test'); });
   }
 
   render() {
     // Empty the container, then place the SVG in there
-    this.empty(this.renderID);
+    Visual.empty(this.renderID);
 
     const width = this.attributes.width;
     const height = this.attributes.height;
