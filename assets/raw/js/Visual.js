@@ -1,7 +1,6 @@
 /* eslint class-methods-use-this: ["error", { "exceptMethods": ["render", "renderControls"] }] */
 
 class Visual {
-
   constructor(config, renderID = Visual.DEFAULT_RENDER_ID,
     renderControlsID = Visual.DEFAULT_RENDER_CONTROLS_ID) {
     this.renderID = renderID;
@@ -70,7 +69,7 @@ class Visual {
     downloadContainer.appendChild(downloadButton);
   }
 
-  empty(id) {
+  static empty(id) {
     document.getElementById(id).innerHTML = '';
   }
 
