@@ -83,7 +83,7 @@ class PieChartMap extends Visual {
   render() {
     this.map = new google.maps.Map(document.getElementById(this.renderID), {
       center: { lat: 45.43, lng: 12.33 },
-      zoom: 13,
+      zoom: 12,
       styles: [
         {
           elementType: 'geometry',
