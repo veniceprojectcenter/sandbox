@@ -30,8 +30,8 @@ function renderEditor(route) {
 
   rowContainer.appendChild(visualContainer);
   rowContainer.appendChild(controlsContainer);
-  rowContainer.appendChild(downloadContainer);
   page.appendChild(rowContainer);
+  page.appendChild(downloadContainer);
 
   if (route.length === 2) {
     let visual = null;
@@ -62,7 +62,8 @@ function renderEditor(route) {
 
     if (visual !== null) {
       visual.render();
-      visual.generateConfigButton();
+      // visual.generateConfigButton();
+      visual.renderControls();
     }
   } else {
     visualContainer.innerHTML = '<p>An error occured.';

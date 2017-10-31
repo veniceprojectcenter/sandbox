@@ -1,4 +1,5 @@
 import Visual from '../Visual';
+import EditorGenerator from './EditorGenerator';
 
 class Donut extends Visual {
   constructor(config) {
@@ -13,24 +14,33 @@ class Donut extends Visual {
   }
 
   renderControls() {
-    this.empty(this.renderControlsID);
+    Visual.empty(this.renderControlsID);
+    const controlsContainer = document.getElementById(this.renderControlsID);
+
+    const editor = new EditorGenerator(controlsContainer);
+    editor.createTextField('lol', 'Test Field', () => { alert('Test'); console.log('AHHH'); });
+    editor.createSelectBox('lol2', 'Test Select Field',
+      [{ value: '1', text: 'One' },
+      { value: '2', text: 'Two' },
+      { value: '3', text: 'Three' },
+      { value: '4', text: 'Four' }], () => { alert('Test'); });
   }
 
   render() {
     // Empty the container, then place the SVG in there
-    this.empty(this.renderID);
+    Visual.empty(this.renderID);
 
     const width = this.attributes.width;
     const height = this.attributes.height;
     const radius = Math.min(width, height) / 2;
 
-    const color = d3.scale.ordinal().range(['#98abc5', '#8a89a6', '#7b6888', '#6b486b', '#a05d56', '#d0743c', '#ff8c00']);
+    const color = d3.scaleOrdinal(['#98abc5', '#8a89a6', '#7b6888', '#6b486b', '#a05d56', '#d0743c', '#ff8c00']);
 
-    const arc = d3.svg.arc()
+    const arc = d3.arc()
       .outerRadius(radius - 10)
       .innerRadius(100);
 
-    const pie = d3.layout.pie()
+    const pie = d3.pie()
       .sort(null)
       .value(d => d.value);
 
