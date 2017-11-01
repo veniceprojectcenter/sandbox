@@ -1,22 +1,22 @@
 import updateBreadcrumbs from './utils';
 
 const visuals = [
-  { name: 'Bar Chart', image: 'http://via.placeholder.com/300x300', link: 'bar' },
-  { name: 'Donut Chart', image: 'http://via.placeholder.com/300x300', link: 'donut' },
-  { name: 'Counter', image: 'http://via.placeholder.com/300x300', link: 'counter' },
-  { name: 'Map', image: 'http://via.placeholder.com/300x300', link: 'map' },
-  { name: 'Counter', image: 'http://via.placeholder.com/300x300', link: 'counter' },
-  { name: 'Pie Chart Map', image: 'http://via.placeholder.com/300x300', link: 'piechartmap' },
-  { name: 'Histogram', image: 'http://via.placeholder.com/300x300', link: 'histogram' },
-  { name: 'Map', image: 'http://via.placeholder.com/300x300', link: 'map' },
-  { name: 'Bar Chart', image: 'http://via.placeholder.com/300x300', link: 'barchart' },
-  { name: 'Pie Chart', image: 'http://via.placeholder.com/300x300', link: 'piechart' },
-  { name: 'Histogram', image: 'http://via.placeholder.com/300x300', link: 'histogram' },
-  { name: 'Map', image: 'http://via.placeholder.com/300x300', link: 'map' },
-  { name: 'Bar Chart', image: 'http://via.placeholder.com/300x300', link: 'barchart' },
-  { name: 'Pie Chart', image: 'http://via.placeholder.com/300x300', link: 'piechart' },
-  { name: 'Histogram', image: 'http://via.placeholder.com/300x300', link: 'histogram' },
-  { name: 'Map', image: 'http://via.placeholder.com/300x300', link: 'map' },
+  { name: 'Bar Chart', image: 'http://datavizproject.com/wp-content/uploads/2015/10/4-Bar-Chart-300x300.png', link: 'bar' },
+  { name: 'Donut Chart', image: 'http://datavizproject.com/wp-content/uploads/2015/10/3-Donut-Chart-300x300.png', link: 'donut' },
+  { name: 'Counter', image: 'http://datavizproject.com/wp-content/uploads/2016/01/DVP_101_200-17-300x300.png', link: 'counter' },
+  { name: 'Map', image: 'http://datavizproject.com/wp-content/uploads/2017/08/DVP_101_200-56-300x300.png', link: 'map' },
+  { name: 'Counter', image: 'http://datavizproject.com/wp-content/uploads/2016/01/DVP_101_200-17-300x300.png', link: 'counter' },
+  { name: 'Pie Chart Map', image: 'http://datavizproject.com/wp-content/uploads/2016/06/DVP_101_200-43-300x300.png', link: 'piechartmap' },
+  { name: 'Histogram', image: 'http://datavizproject.com/wp-content/uploads/2016/06/DVP_1_100-16-300x300.png', link: 'histogram' },
+  { name: 'Map', image: 'http://datavizproject.com/wp-content/uploads/2017/08/DVP_101_200-56-300x300.png', link: 'map' },
+  { name: 'Bar Chart', image: 'http://datavizproject.com/wp-content/uploads/2015/10/4-Bar-Chart-300x300.png', link: 'barchart' },
+  { name: 'Pie Chart', image: 'http://datavizproject.com/wp-content/uploads/2015/10/11-Pie-Chart-300x300.png', link: 'piechart' },
+  { name: 'Histogram', image: 'http://datavizproject.com/wp-content/uploads/2016/06/DVP_1_100-16-300x300.png', link: 'histogram' },
+  { name: 'Map', image: 'http://datavizproject.com/wp-content/uploads/2017/08/DVP_101_200-56-300x300.png', link: 'map' },
+  { name: 'Bar Chart', image: 'http://datavizproject.com/wp-content/uploads/2015/10/4-Bar-Chart-300x300.png', link: 'barchart' },
+  { name: 'Pie Chart', image: 'http://datavizproject.com/wp-content/uploads/2015/10/11-Pie-Chart-300x300.png', link: 'piechart' },
+  { name: 'Histogram', image: 'http://datavizproject.com/wp-content/uploads/2016/06/DVP_1_100-16-300x300.png', link: 'histogram' },
+  { name: 'Map', image: 'http://datavizproject.com/wp-content/uploads/2017/08/DVP_101_200-56-300x300.png', link: 'map' },
 ];
 
 
