@@ -69,7 +69,7 @@ class Counter extends Visual {
     this.tableDiv.id = 'tableDiv';
   //  this.aSelect.type = 'select';
     if (this.keys === null) {
-      this.keys = Object.keys(this.data[0]);
+      this.keys = [];
     }
     this.aSelect.appendChild(document.createElement('option'));
     for (let i = 0; i < this.keys.length; i += 1) {
