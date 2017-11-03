@@ -14,6 +14,7 @@ class Counter extends Visual {
   }
 
   renderControls() {
+    this.keys = Object.keys(this.data[0]);
     this.renderControlsDiv = document.getElementById(this.renderControlsID);
     this.renderControlsDiv.innerHTML = 'Controls';
     const brake = document.createElement('br');
@@ -69,9 +70,11 @@ class Counter extends Visual {
     this.tableDiv.id = 'tableDiv';
   //  this.aSelect.type = 'select';
     if (this.keys === null) {
-      this.keys = Object.keys(this.data[0]);
+      this.keys = [];
     }
-    this.aSelect.appendChild(document.createElement('option'));
+    const defaultOption = document.createElement('option');
+    defaultOption.innerHTML = '--Select--';
+    this.aSelect.appendChild(defaultOption);
     for (let i = 0; i < this.keys.length; i += 1) {
       const op = document.createElement('option');
       op.value = this.keys[i];

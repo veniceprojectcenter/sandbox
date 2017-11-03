@@ -115,6 +115,50 @@ class Visual {
   render() {
     throw new Error('You must implement this method');
   }
+  /**
+  *Filters This.data and returns only numeric data columns
+  */
+  getNumericData() {
+    const dataKeys = Object.keys(this.data);
+    const numericData = {};
+    for (let i = 0; i < dataKeys.length; i += 1) {
+      const groupedList = this.getGroupedList(dataKeys[i]);
+      if (groupedList.length > (this.data.size * 0.75)
+       && Number.isFinite(groupedList[dataKeys[i]][0])) {
+        numericData[i] = groupedList;
+      }
+    }
+    return numericData;
+  }
+  /**
+  *Filters This.data and returns only categorical data columns
+  */
+  getCategoricalData() {
+    const dataKeys = Object.keys(this.data);
+    const categoricalData = {};
+    for (let i = 0; i < dataKeys.length; i += 1) {
+      const groupedList = this.getGroupedList(dataKeys[i]);
+      if (groupedList.length <= (this.data.size * 0.75)) {
+        categoricalData[i] = groupedList;
+      }
+    }
+    return categoricalData;
+  }
+  /**
+  *Filters This.data and returns only identifying data columns
+  */
+  getIdData() {
+    const dataKeys = Object.keys(this.data);
+    const categoricalData = {};
+    for (let i = 0; i < dataKeys.length; i += 1) {
+      const groupedList = this.getGroupedList(dataKeys[i]);
+      if (groupedList.length > (this.data.size * 0.75)
+      && !Number.isFinite(groupedList[dataKeys[i]][0])) {
+        categoricalData[i] = groupedList;
+      }
+    }
+    return categoricalData;
+  }
 }
 
 Visual.DEFAULT_RENDER_ID = 'visual';
