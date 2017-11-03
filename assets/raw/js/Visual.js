@@ -6,34 +6,26 @@ class Visual {
     this.renderID = renderID;
     this.renderControlsID = renderControlsID;
     this.dataSet = config.dataSet;
-    this.data = Visual.fetchData(this.dataSet);
+    this.data = [];
     this.attributes = config.attributes;
     this.type = config.type;
   }
 
-  static fetchData(dataName) {
-    // const db = firebase.firestore();
-    // db.collection('datasets').get().then((querySnapshot) => {
-    //   querySnapshot.forEach((doc) => {
-    //     console.log(`${doc.id} => ${doc.data()}`);
-    //   });
-    // });
-
-    return [{ id: 1, color: 'pink', height: 10, lat: 45.43, lng: 12.33, year: 1520 },
-            { id: 2, color: 'pink', height: 119, lat: 45.435, lng: 12.335, year: 1750 },
-            { id: 3, color: 'green', height: 12, lat: 45.425, lng: 12.325, year: 1545 },
-            { id: 4, color: 'green', height: 134, lat: 45.439, lng: 12.339, year: 1605 },
-            { id: 5, color: 'red', height: 145, lat: 0, lng: 0, year: 1974 },
-            { id: 6, color: 'red', height: 15, lat: 0, lng: 0, year: 1984 },
-            { id: 7, color: 'red', height: 162, lat: 0, lng: 0, year: 1994 },
-            { id: 8, color: 'red', height: 107, lat: 0, lng: 0, year: 1924 },
-            { id: 9, color: 'blue', height: 18, lat: 0, lng: 0, year: 1914 },
-            { id: 10, color: 'blue', height: 190, lat: 0, lng: 0, year: 1904 },
-            { id: 11, color: 'blue', height: 130, lat: 0, lng: 0, year: 1934 },
-            { id: 12, color: 'blue', height: 1560, lat: 0, lng: 0, year: 1934 },
-            { id: 13, color: 'blue', height: 120, lat: 0, lng: 0, year: 1934 },
-            { id: 14, color: 'blue', height: 510, lat: 0, lng: 0, year: 1934 },
-            { id: 15, color: 'blue', height: 310, lat: 0, lng: 0, year: 1934 }];
+  async fetchData() {
+    const db = firebase.firestore();
+    const data = [];
+    await db.collection(`datasets/${this.dataSet}/entries`).get().then((querySnapshot) => {
+      querySnapshot.forEach((doc) => {
+        const entry = doc.data();
+        entry.id = doc.id;
+        data.push(entry);
+      });
+      this.data = data;
+      this.onLoadData();
+    })
+    .catch((error) => {
+      console.error(error);
+    });
   }
 
   getGroupedList(columnName) {
@@ -105,6 +97,16 @@ class Visual {
       }
     }
   }
+
+  async fetchAndRender() {
+    await this.fetchData();
+
+    this.render();
+    this.renderControls();
+    this.generateConfigButton();
+  }
+
+  onLoadData() {} //eslint-disable-line
 
   renderControls() {
     throw new Error('You must implement this method');
