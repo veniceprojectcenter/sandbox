@@ -117,13 +117,15 @@ class Visual {
   *Filters This.data and returns only numeric data columns
   */
   getNumericData() {
-    const dataKeys = Object.keys(this.data);
-    const numericData = {};
+    const dataKeys = Object.keys(this.data[0]);
+    const numericData = JSON.parse(JSON.stringify(this.data));
     for (let i = 0; i < dataKeys.length; i += 1) {
       const groupedList = this.getGroupedList(dataKeys[i]);
-      if (groupedList.length > (this.data.size * 0.75)
+      if (groupedList.length <= (this.data.length * 0.75)
        && Number.isFinite(groupedList[dataKeys[i]][0])) {
-        numericData[i] = groupedList;
+        for (let j = 0; j < this.data.length; j += 1) {
+          delete numericData[j][dataKeys[i]];
+        }
       }
     }
     return numericData;
@@ -132,12 +134,14 @@ class Visual {
   *Filters This.data and returns only categorical data columns
   */
   getCategoricalData() {
-    const dataKeys = Object.keys(this.data);
-    const categoricalData = {};
+    const dataKeys = Object.keys(this.data[0]);
+    const categoricalData = JSON.parse(JSON.stringify(this.data));
     for (let i = 0; i < dataKeys.length; i += 1) {
       const groupedList = this.getGroupedList(dataKeys[i]);
-      if (groupedList.length <= (this.data.size * 0.75)) {
-        categoricalData[i] = groupedList;
+      if (groupedList.length > this.data.length * 0.75) {
+        for (let j = 0; j < this.data.length; j += 1) {
+          delete categoricalData[j][dataKeys[i]];
+        }
       }
     }
     return categoricalData;
@@ -146,13 +150,15 @@ class Visual {
   *Filters This.data and returns only identifying data columns
   */
   getIdData() {
-    const dataKeys = Object.keys(this.data);
-    const categoricalData = {};
+    const dataKeys = Object.keys(this.data[0]);
+    const categoricalData = JSON.parse(JSON.stringify(this.data));
     for (let i = 0; i < dataKeys.length; i += 1) {
       const groupedList = this.getGroupedList(dataKeys[i]);
-      if (groupedList.length > (this.data.size * 0.75)
+      if (groupedList.length <= (this.data.size * 0.75)
       && !Number.isFinite(groupedList[dataKeys[i]][0])) {
-        categoricalData[i] = groupedList;
+        for (let j = 0; j < this.data.length; j += 1) {
+          delete categoricalData[j][dataKeys[i]];
+        }
       }
     }
     return categoricalData;

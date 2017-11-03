@@ -24,6 +24,8 @@ class Counter extends Visual {
     this.controlCheckboxDiv2 = document.createElement('div');
     this.renderControlsDiv.appendChild(this.controlCheckboxDiv);
     this.renderControlsDiv.appendChild(this.controlCheckboxDiv2);
+    this.createCheckBoxList(this.controlCheckboxDiv, this.getCategoricalData(), 'selectOptionsCheck');
+/**
     for (let i = 0; i < this.keys.length; i += 1) {
       const checkInput = document.createElement('input');
       checkInput.value = this.keys[i];
@@ -38,8 +40,11 @@ class Counter extends Visual {
       this.controlCheckboxDiv.append(newlabel);
       this.controlCheckboxDiv.append(document.createElement('br'));
     }
+*/
     this.controlCheckboxDiv2.innerHTML = 'Attributes to Display';
     this.controlCheckboxDiv2.appendChild(document.createElement('br'));
+    this.createCheckBoxList(this.controlCheckboxDiv2, this.data, 'displayCheck');
+/**
     for (let i = 0; i < this.keys.length; i += 1) {
       const tempInput = document.createElement('input');
       tempInput.value = this.keys[i];
@@ -54,6 +59,7 @@ class Counter extends Visual {
       this.controlCheckboxDiv2.append(newlabel);
       this.controlCheckboxDiv2.append(document.createElement('br'));
     }
+    */
   }
   render() {
     this.renderDiv = document.getElementById(this.renderID);
@@ -152,6 +158,26 @@ class Counter extends Visual {
       }
     }
     this.render();
+  }
+
+  createCheckBoxList(checkDiv, theData, checkClass) {
+    const keys = Object.keys(theData[0]);
+    for (let i = 0; i < keys.length; i += 1) {
+      if (keys[i] !== '') {
+        const tempInput = document.createElement('input');
+        tempInput.value = keys[i];
+        tempInput.type = 'checkbox';
+        tempInput.id = `${checkClass}${i}`;
+        tempInput.classList.add(checkClass);
+        tempInput.addEventListener('change', () => { this.updateRender(); });
+        const newlabel = document.createElement('Label');
+        newlabel.setAttribute('for', tempInput.id);
+        newlabel.innerHTML = keys[i];
+        checkDiv.append(tempInput);
+        checkDiv.append(newlabel);
+        checkDiv.append(document.createElement('br'));
+      }
+    }
   }
 }
 
