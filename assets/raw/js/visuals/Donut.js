@@ -2,8 +2,7 @@ import Visual from '../Visual';
 import EditorGenerator from './EditorGenerator';
 
 class Donut extends Visual {
-  constructor(config) {
-    super(config);
+  onLoadData() {
     let defaultCat = '';
     if (this.data.length > 0) {
       const cats = Object.keys(this.data[0]);
@@ -12,6 +11,7 @@ class Donut extends Visual {
         console.log(`Using ${defaultCat}`);
       }
     }
+
     this.applyDefaultAttributes({
       width: 500,
       height: 500,
@@ -129,13 +129,3 @@ class Donut extends Visual {
 }
 
 export default Donut;
-
-// new DonutVisual(
-//   {
-//     data: 'Lol!',
-//     attributes:
-//     {
-//       category_field: 'population',
-//     },
-//   },
-// ).render('visual');

@@ -31,6 +31,13 @@ const server = http.createServer((req, res) => {
       mime = 'image/png';
     }
     sendFile(res, path, mime);
+  } else if (uri.pathname.includes('csv')) {
+    let path = uri.pathname;
+    path = path.substr(path.indexOf('csv'));
+    sendFile(res, path, 'text');
+  } else if (uri.pathname === '/import') {
+    console.log('/import');
+    sendFile(res, 'import.html');
   } else {
     console.log('/');
     sendFile(res, 'index.html');

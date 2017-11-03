@@ -3,3 +3,5 @@ package-lock.json
 prod
 firebase-debug.log
 .DS_Store
+import.html
+csv
