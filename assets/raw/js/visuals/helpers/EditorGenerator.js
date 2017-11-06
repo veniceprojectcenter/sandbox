@@ -33,6 +33,12 @@ class EditorGenerator {
 
   }
 
+  createButton(id, text, activationFunction) {
+    const context = { id, text };
+    this.handlebarsWithContext('button', context);
+    $(`#${id}`).on('click', activationFunction);
+  }
+
   handlebarsWithContext(handlebarId, context) {
     const source = document.getElementById(handlebarId).innerHTML;
     const template = Handlebars.compile(source);

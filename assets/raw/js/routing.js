@@ -14,7 +14,6 @@ function routing() {
     }
   }
 
-  console.log(route.length);
   switch (route.length) {
     case 0:
       renderDatasetList(route);

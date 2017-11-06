@@ -1,4 +1,6 @@
 import Visual from '../Visual';
+import DefaultMapStyle from './helpers/DefaultMapStyle';
+import EditorGenerator from './helpers/EditorGenerator';
 
 class PieChartMap extends Visual {
   constructor(config) {
@@ -7,6 +9,8 @@ class PieChartMap extends Visual {
     this.map = null;
     this.locations = [];
     this.openInfoWindow = null;
+
+    this.addMarker = this.addMarker.bind(this);
   }
 
   static determineColor(year) {
@@ -20,16 +24,13 @@ class PieChartMap extends Visual {
     return '#FF0000';
   }
 
-  addMarker(data) {
+  addMarker(data, svgText, anchorx, anchory) {
     if (data.lat && data.lng) {
       const icon = {
-        path: 'M-20,0a5,5 0 1,0 10,0a5,5 0 1,0 -10,0',
-        fillColor: Map.determineColor(data.approximate_year),
-        fillOpacity: 0.6,
-        anchor: new google.maps.Point(0, 0),
-        strokeWeight: 0,
-        scale: 1,
+        url: `data:image/svg+xml;utf-8, ${svgText}`,
+        anchor: new google.maps.Point(anchorx, anchory),
       };
+
       const marker = new google.maps.Marker({
         position: {
           lat: parseFloat(data.lat),
@@ -41,276 +42,58 @@ class PieChartMap extends Visual {
         icon,
       });
 
-      let contentString = `${'<div id="content">' +
-            '<div id="siteNotice">' +
-            '</div>' +
-            '<h1 id="firstHeading" class="firstHeading">'}${data.wiki_friendly_title}</h1>` +
-            '<div id="bodyContent">';
-
-      if (data.description_italian) {
-        contentString += `<p><b>Description: </b>${data.description_italian}</p>`;
-      }
-
-      if (data.approximate_year) {
-        contentString += `<p><b>Approximate Year: </b>${data.approximate_year}</p>`;
-      }
-
-      if (data.risk_factor_metal_description) {
-        contentString += `<p><b>Risk Factor: </b> ${data.risk_factor_metal_description}</p>`;
-      }
-
-      contentString += '</div></div>';
-
-      const infowindow = new google.maps.InfoWindow({
-        content: contentString,
-      });
-
-      marker.addListener('click', () => {
-        if (this.openInfoWindow) {
-          this.openInfoWindow.close();
-        }
-        infowindow.open(this.map, marker);
-        this.openInfoWindow = infowindow;
-      });
-
-      this.locations.push({
+      this.locations.push(
         marker,
-        infowindow,
-      });
+      );
     }
   }
 
   render() {
     this.map = new google.maps.Map(document.getElementById(this.renderID), {
-      center: { lat: 45.43, lng: 12.33 },
-      zoom: 12,
-      styles: [
-        {
-          elementType: 'geometry',
-          stylers: [
-            {
-              color: '#f5f5f5',
-            },
-          ],
-        },
-        {
-          elementType: 'labels',
-          stylers: [
-            {
-              visibility: 'off',
-            },
-          ],
-        },
-        {
-          elementType: 'labels.icon',
-          stylers: [
-            {
-              visibility: 'off',
-            },
-          ],
-        },
-        {
-          elementType: 'labels.text.fill',
-          stylers: [
-            {
-              color: '#616161',
-            },
-          ],
-        },
-        {
-          elementType: 'labels.text.stroke',
-          stylers: [
-            {
-              color: '#f5f5f5',
-            },
-          ],
-        },
-        {
-          featureType: 'administrative',
-          elementType: 'geometry',
-          stylers: [
-            {
-              visibility: 'off',
-            },
-          ],
-        },
-        {
-          featureType: 'administrative.land_parcel',
-          stylers: [
-            {
-              visibility: 'off',
-            },
-          ],
-        },
-        {
-          featureType: 'administrative.land_parcel',
-          elementType: 'labels.text.fill',
-          stylers: [
-            {
-              color: '#bdbdbd',
-            },
-          ],
-        },
-        {
-          featureType: 'administrative.neighborhood',
-          stylers: [
-            {
-              visibility: 'off',
-            },
-          ],
-        },
-        {
-          featureType: 'poi',
-          stylers: [
-            {
-              visibility: 'off',
-            },
-          ],
-        },
-        {
-          featureType: 'poi',
-          elementType: 'geometry',
-          stylers: [
-            {
-              color: '#eeeeee',
-            },
-          ],
-        },
-        {
-          featureType: 'poi',
-          elementType: 'labels.text.fill',
-          stylers: [
-            {
-              color: '#757575',
-            },
-          ],
-        },
-        {
-          featureType: 'poi.park',
-          elementType: 'geometry',
-          stylers: [
-            {
-              color: '#e5e5e5',
-            },
-          ],
-        },
-        {
-          featureType: 'poi.park',
-          elementType: 'labels.text.fill',
-          stylers: [
-            {
-              color: '#9e9e9e',
-            },
-          ],
-        },
-        {
-          featureType: 'road',
-          stylers: [
-            {
-              visibility: 'off',
-            },
-          ],
-        },
-        {
-          featureType: 'road',
-          elementType: 'geometry',
-          stylers: [
-            {
-              color: '#ffffff',
-            },
-          ],
-        },
-        {
-          featureType: 'road',
-          elementType: 'labels.icon',
-          stylers: [
-            {
-              visibility: 'off',
-            },
-          ],
-        },
-        {
-          featureType: 'road.arterial',
-          elementType: 'labels.text.fill',
-          stylers: [
-            {
-              color: '#757575',
-            },
-          ],
-        },
-        {
-          featureType: 'road.highway',
-          elementType: 'geometry',
-          stylers: [
-            {
-              color: '#dadada',
-            },
-          ],
-        },
-        {
-          featureType: 'road.highway',
-          elementType: 'labels.text.fill',
-          stylers: [
-            {
-              color: '#616161',
-            },
-          ],
-        },
-        {
-          featureType: 'road.local',
-          elementType: 'labels.text.fill',
-          stylers: [
-            {
-              color: '#9e9e9e',
-            },
-          ],
-        },
-        {
-          featureType: 'transit',
-          stylers: [
-            {
-              visibility: 'off',
-            },
-          ],
-        },
-        {
-          featureType: 'transit.line',
-          elementType: 'geometry',
-          stylers: [
-            {
-              color: '#e5e5e5',
-            },
-          ],
-        },
-        {
-          featureType: 'transit.station',
-          elementType: 'geometry',
-          stylers: [
-            {
-              color: '#eeeeee',
-            },
-          ],
-        },
-        {
-          featureType: 'water',
-          elementType: 'geometry',
-          stylers: [
-            {
-              color: '#c9c9c9',
-            },
-          ],
-        },
-        {
-          featureType: 'water',
-          elementType: 'labels.text.fill',
-          stylers: [
-            {
-              color: '#9e9e9e',
-            },
-          ],
-        },
-      ],
+      center: { lat: 45.435, lng: 12.335 },
+      zoom: 14,
+      styles: DefaultMapStyle,
     });
+
+    const svgText = '<svg width="32" height="32" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg"> ' +
+        '<circle cx="10" cy ="10" r="5" stroke="blue" stroke-width="3" fill="blue" />' +
+      '</svg>';
+    const x = 10;
+    const y = 10;
+
+    this.data.forEach((data) => {
+      this.addMarker(data, svgText, x, y);
+    });
+  }
+
+  clearMarkers() {
+    this.locations.forEach((marker) => {
+      marker.setMap(null);
+    });
+    this.locations = [];
+  }
+
+  updateOverlay() {
+    this.clearMarkers();
+    const svgText = '<svg width="32" height="32" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg"> ' +
+        '<circle cx="10" cy ="10" r="5" stroke="red" stroke-width="3" fill="red" />' +
+      '</svg>';
+    const x = 10;
+    const y = 10;
+
+    this.data.forEach((data) => {
+      this.addMarker(data, svgText, x, y);
+    });
+  }
+
+  renderControls() {
+    Visual.empty(this.renderControlsID);
+    const controlsContainer = document.getElementById(this.renderControlsID);
+
+    const editor = new EditorGenerator(controlsContainer);
+
+    editor.createHeader('Editor');
+    editor.createButton('updateOverlayButton', 'update overlay', () => { this.updateOverlay(); });
   }
 }
 
