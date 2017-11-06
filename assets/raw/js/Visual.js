@@ -145,7 +145,7 @@ class Visual {
     for (let i = 0; i < dataKeys.length; i += 1) {
       const groupedList = this.getGroupedList(dataKeys[i]);
       if (groupedList.length < maxCategories
-       && Number.isFinite(this.data[0][dataKeys[i]])) {
+       || isNaN(this.data[0][dataKeys[i]])) {
         for (let j = 0; j < this.data.length; j += 1) {
           delete numericData[j][dataKeys[i]];
         }
@@ -182,7 +182,7 @@ class Visual {
     for (let i = 0; i < dataKeys.length; i += 1) {
       const groupedList = this.getGroupedList(dataKeys[i]);
       if (groupedList.length < maxCategories
-      && !Number.isFinite(this.data[0][dataKeys[i]])) {
+      || !isNaN(this.data[0][dataKeys[i]])) {
         for (let j = 0; j < this.data.length; j += 1) {
           delete categoricalData[j][dataKeys[i]];
         }
@@ -196,13 +196,13 @@ class Visual {
   *returns a copy of data with the volume
   */
   makeBin(attribute, binSize, start = 0, theData = this.data, maxBins = 25) {
-    const binData = JSON.parse(JSON.stringify(this.data));
-    const binArray = {};
+    const binData = JSON.parse(JSON.stringify(theData));
+    const binArray = [];
     for (let i = start; i <= maxBins; i += 1) {
       binArray[i] = `${start + (i * binSize)}-${start + ((i + 1) * binSize)}`;
     }
     for (let j = 0; j < theData.length; j += 1) {
-      binData[j][attribute] = binArray[(binData[j][attribute] / binSize) - start];
+      binData[j][attribute] = binArray[Math.floor(binData[j][attribute] / binSize) - start];
     }
     return binData;
   }
