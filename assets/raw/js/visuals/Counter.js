@@ -7,12 +7,14 @@ class Counter extends Visual {
     this.applyDefaultAttributes({
       width: 500,
       height: 500,
-      font_size: '1em',
+      font_size: '2em',
       colors: [],
       category_order: '',
     });
   }
-
+  /** Renders Controls
+  *
+  */
   renderControls() {
     this.keys = Object.keys(this.data[0]);
     this.renderControlsDiv = document.getElementById(this.renderControlsID);
@@ -25,42 +27,14 @@ class Counter extends Visual {
     this.renderControlsDiv.appendChild(this.controlCheckboxDiv);
     this.renderControlsDiv.appendChild(this.controlCheckboxDiv2);
     this.createCheckBoxList(this.controlCheckboxDiv, this.getCategoricalData(), 'selectOptionsCheck');
-/**
-    for (let i = 0; i < this.keys.length; i += 1) {
-      const checkInput = document.createElement('input');
-      checkInput.value = this.keys[i];
-      checkInput.type = 'checkbox';
-      checkInput.id = `controlCheck${i}`;
-      checkInput.classList.add('selectOptionsCheck');
-      checkInput.addEventListener('change', () => { this.updateRender(); });
-      const newlabel = document.createElement('Label');
-      newlabel.setAttribute('for', checkInput.id);
-      newlabel.innerHTML = this.keys[i];
-      this.controlCheckboxDiv.append(checkInput);
-      this.controlCheckboxDiv.append(newlabel);
-      this.controlCheckboxDiv.append(document.createElement('br'));
-    }
-*/
+    this.createCheckBoxList(this.controlCheckboxDiv2, this.getNumericData(), 'displayCheck');
     this.controlCheckboxDiv2.innerHTML = 'Attributes to Display';
     this.controlCheckboxDiv2.appendChild(document.createElement('br'));
     this.createCheckBoxList(this.controlCheckboxDiv2, this.data, 'displayCheck');
-/**
-    for (let i = 0; i < this.keys.length; i += 1) {
-      const tempInput = document.createElement('input');
-      tempInput.value = this.keys[i];
-      tempInput.type = 'checkbox';
-      tempInput.id = `displayCheck${i}`;
-      tempInput.classList.add('displayCheck');
-      tempInput.addEventListener('change', () => { this.updateRender(); });
-      const newlabel = document.createElement('Label');
-      newlabel.setAttribute('for', tempInput.id);
-      newlabel.innerHTML = this.keys[i];
-      this.controlCheckboxDiv2.append(tempInput);
-      this.controlCheckboxDiv2.append(newlabel);
-      this.controlCheckboxDiv2.append(document.createElement('br'));
-    }
-    */
   }
+  /** Renders the App section
+  *
+  */
   render() {
     this.renderDiv = document.getElementById(this.renderID);
     this.renderDiv.innerHTML = 'Select an Attribute to Group By:';
@@ -88,6 +62,9 @@ class Counter extends Visual {
       this.aSelect.appendChild(op);
     }
   }
+  /** Displayes the data table on selected Categories
+  *
+  */
   displayTable() {
     let txt = '';
     if (this.aSelect.selectedIndex < 0) {
@@ -101,7 +78,11 @@ class Counter extends Visual {
         choiceValue += yourSelect[i].value;
       }
     }
-    txt += "<table border='1'>";
+    txt += "<table border='1'> <tr>";
+    for (let j = 0; j < this.attributesList.length; j += 1) {
+      txt += `<td>${this.attributesList[j]}</td>`;
+    }
+    txt += '</tr>';
     let count = 0;
     for (let i = 0; i < this.data.length; i += 1) {
       if (choiceValue.includes(this.data[i][selectedAttribute]) && this.data[i][selectedAttribute] !== '') {
@@ -116,7 +97,9 @@ class Counter extends Visual {
     txt += '</table>';
     document.getElementById('tableDiv').innerHTML = `${txt}Count: ${count}`;
   }
-
+  /** Displays the checkboxes for sorting
+  *
+  */
   displayAttributes() {
     this.checkboxDiv.innerHTML = '';
     if (this.aSelect.selectedIndex < 1) {
@@ -142,6 +125,9 @@ class Counter extends Visual {
       }
     }
   }
+  /** Updates app display when actions are taken in controls
+  *
+  */
   updateRender() {
     const selectOptions = document.getElementsByClassName('selectOptionsCheck');
     this.keys = [];
@@ -159,7 +145,9 @@ class Counter extends Visual {
     }
     this.render();
   }
-
+  /** Function for creating a list of checkboxes for attributes
+  *
+  */
   createCheckBoxList(checkDiv, theData, checkClass) {
     const keys = Object.keys(theData[0]);
     for (let i = 0; i < keys.length; i += 1) {
@@ -173,6 +161,34 @@ class Counter extends Visual {
         const newlabel = document.createElement('Label');
         newlabel.setAttribute('for', tempInput.id);
         newlabel.innerHTML = keys[i];
+        checkDiv.append(tempInput);
+        checkDiv.append(newlabel);
+        checkDiv.append(document.createElement('br'));
+      }
+    }
+  }
+  /** Function for creating a list of checkboxes for bin attributes
+  *
+  */
+  createBinCheckBoxList(checkDiv, theData, checkClass) {
+    const keys = Object.keys(theData[0]);
+    for (let i = 0; i < keys.length; i += 1) {
+      if (keys[i] !== '') {
+        const tempInput = document.createElement('input');
+        tempInput.value = keys[i];
+        tempInput.type = 'checkbox';
+        tempInput.id = `${checkClass}${i}`;
+        tempInput.classList.add(checkClass);
+        tempInput.addEventListener('change', () => { this.updateRender(); });
+        const newlabel = document.createElement('Label');
+        newlabel.setAttribute('for', tempInput.id);
+        newlabel.innerHTML = keys[i];
+        const binStart = document.createElement('input');
+        binStart.classList.add('binStart');
+        binStart.addEventListener('change', () => { this.updateRender(); });
+        const binSize = document.createElement('input');
+        binSize.classList.add('binStart');
+        binSize.addEventListener('change', () => { this.updateRender(); });
         checkDiv.append(tempInput);
         checkDiv.append(newlabel);
         checkDiv.append(document.createElement('br'));

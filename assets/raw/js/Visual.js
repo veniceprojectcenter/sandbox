@@ -117,14 +117,15 @@ class Visual {
   }
   /**
   *Filters This.data and returns only numeric data columns
+  *Any data with more than maxCategories categories and is numeric is diplayed
   */
-  getNumericData() {
+  getNumericData(maxCategories = 25) {
     const dataKeys = Object.keys(this.data[0]);
     const numericData = JSON.parse(JSON.stringify(this.data));
     for (let i = 0; i < dataKeys.length; i += 1) {
       const groupedList = this.getGroupedList(dataKeys[i]);
-      if (groupedList.length <= (this.data.length * 0.75)
-       && Number.isFinite(groupedList[dataKeys[i]][0])) {
+      if (groupedList.length < maxCategories
+       && Number.isFinite(this.data[0][dataKeys[i]])) {
         for (let j = 0; j < this.data.length; j += 1) {
           delete numericData[j][dataKeys[i]];
         }
@@ -134,13 +135,14 @@ class Visual {
   }
   /**
   *Filters This.data and returns only categorical data columns
+  *Any data attribute with less than  or equal to maxCategories categories are displayed
   */
-  getCategoricalData() {
+  getCategoricalData(maxCategories = 25) {
     const dataKeys = Object.keys(this.data[0]);
     const categoricalData = JSON.parse(JSON.stringify(this.data));
     for (let i = 0; i < dataKeys.length; i += 1) {
       const groupedList = this.getGroupedList(dataKeys[i]);
-      if (groupedList.length > this.data.length * 0.75) {
+      if (groupedList.length >= maxCategories) {
         for (let j = 0; j < this.data.length; j += 1) {
           delete categoricalData[j][dataKeys[i]];
         }
@@ -150,20 +152,36 @@ class Visual {
   }
   /**
   *Filters This.data and returns only identifying data columns
+  *Any data with more than maxCategories categories and is not numeric are displayed
   */
-  getIdData() {
+  getIdData(maxCategories = 25) {
     const dataKeys = Object.keys(this.data[0]);
     const categoricalData = JSON.parse(JSON.stringify(this.data));
     for (let i = 0; i < dataKeys.length; i += 1) {
       const groupedList = this.getGroupedList(dataKeys[i]);
-      if (groupedList.length <= (this.data.size * 0.75)
-      && !Number.isFinite(groupedList[dataKeys[i]][0])) {
+      if (groupedList.length < maxCategories
+      && !Number.isFinite(this.data[0][dataKeys[i]])) {
         for (let j = 0; j < this.data.length; j += 1) {
           delete categoricalData[j][dataKeys[i]];
         }
       }
     }
     return categoricalData;
+  }
+  /**
+  *Takes an attribute, binSize, and start of first bin and
+  *returns a copy of data with the volume
+  */
+  makeBin(attribute, binSize, start = 0, theData = this.data, maxBins = 25) {
+    const binData = JSON.parse(JSON.stringify(this.data));
+    const binArray = {};
+    for (let i = start; i <= maxBins; i += 1) {
+      binArray[i] = `${start + (i * binSize)}-${start + ((i + 1) * binSize)}`;
+    }
+    for (let j = 0; j < theData.length; j += 1) {
+      binData[j][attribute] = binArray[(binData[j][attribute] / binSize) - start];
+    }
+    return binData;
   }
 }
 
