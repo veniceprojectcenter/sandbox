@@ -1,8 +1,10 @@
 const gulp = require('gulp');
 const sass = require('gulp-sass');
-const sourcemaps = require('gulp-sourcemaps');
 const clean = require('gulp-clean');
-const webpack = require('webpack2-stream-watch');
+const browserify = require('browserify');
+const source = require('vinyl-source-stream');
+const babelify = require('babelify');
+const sourcemaps = require('gulp-sourcemaps');
 
 const sassDirectory = './assets/raw/sass/';
 const jsDirectory = './assets/raw/js/';
@@ -19,19 +21,27 @@ gulp.task('watch', ['build'], () => {
 
 // Sass
 gulp.task('sass', () => gulp.src(`${sassDirectory}style.scss`)
-    // .pipe(sourcemaps.init())
+    .pipe(sourcemaps.init())
     .pipe(sass().on('error', sass.logError))
-    // .pipe(sourcemaps.write())
+    .pipe(sourcemaps.write())
     .pipe(gulp.dest('./assets/prod/css')));
 
 // JS
-gulp.task('js', () => gulp.src(`${jsDirectory}*.js`)
-    .pipe(webpack({
-      output: {
-        filename: 'app.bundle.js',
-      },
-    }))
-    .pipe(gulp.dest('./assets/prod/js/')));
+gulp.task('js', () => browserify(`${jsDirectory}routing.js`)
+        .on('error', (err) => { console.error(err); })
+        .transform(babelify, {
+          presets: [
+            ['env', {
+              targets: {
+                browsers: ['last 2 Chrome versions'],
+              },
+            }],
+          ],
+          sourceMaps: true,
+        })
+        .bundle()
+        .pipe(source('app.bundle.js'))
+        .pipe(gulp.dest('./assets/prod/js/')));
 
 // Cleaning
 gulp.task('clean', ['clean:sass', 'clean:js']);
