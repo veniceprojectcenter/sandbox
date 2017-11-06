@@ -12,20 +12,25 @@ class Visual {
   }
 
   async fetchData() {
-    const db = firebase.firestore();
-    const data = [];
-    await db.collection(`datasets/${this.dataSet}/entries`).get().then((querySnapshot) => {
-      querySnapshot.forEach((doc) => {
-        const entry = doc.data();
-        entry.id = doc.id;
-        data.push(entry);
+    if (sessionStorage[this.dataSet]) {
+      this.data = JSON.parse(sessionStorage[this.dataSet]);
+    } else {
+      const db = firebase.firestore();
+      const data = [];
+      await db.collection(`datasets/${this.dataSet}/entries`).get().then((querySnapshot) => {
+        querySnapshot.forEach((doc) => {
+          const entry = doc.data();
+          entry.id = doc.id;
+          data.push(entry);
+        });
+        this.data = data;
+        sessionStorage[this.dataSet] = JSON.stringify(this.data);
+        this.onLoadData();
+      })
+      .catch((error) => {
+        console.error(error);
       });
-      this.data = data;
-      this.onLoadData();
-    })
-    .catch((error) => {
-      console.error(error);
-    });
+    }
   }
 
   getGroupedList(columnName) {
@@ -90,8 +95,8 @@ class Visual {
   applyDefaultAttributes(defaults) {
     const keys = Object.keys(defaults);
     for (let i = 0; i < keys.length; i += 1) {
-      if (defaults.hasOwnProperty(keys[i])) {
-        if (!this.attributes.hasOwnProperty(keys[i])) {
+      if (Object.prototype.hasOwnProperty.call(defaults, keys[i])) {
+        if (!Object.prototype.hasOwnProperty.call(this.attributes, keys[i])) {
           this.attributes[keys[i]] = defaults[keys[i]];
         }
       }
@@ -115,6 +120,7 @@ class Visual {
   render() {
     throw new Error('You must implement this method');
   }
+
   /**
   *Filters This.data and returns only numeric data columns
   *Any data with more than maxCategories categories and is numeric is diplayed
@@ -133,6 +139,7 @@ class Visual {
     }
     return numericData;
   }
+
   /**
   *Filters This.data and returns only categorical data columns
   *Any data attribute with less than  or equal to maxCategories categories are displayed
@@ -150,6 +157,7 @@ class Visual {
     }
     return categoricalData;
   }
+
   /**
   *Filters This.data and returns only identifying data columns
   *Any data with more than maxCategories categories and is not numeric are displayed

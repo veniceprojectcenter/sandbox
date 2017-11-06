@@ -1,5 +1,5 @@
 import Visual from '../Visual';
-import EditorGenerator from './EditorGenerator';
+import EditorGenerator from './helpers/EditorGenerator';
 
 class Donut extends Visual {
   onLoadData() {
