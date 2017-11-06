@@ -1,4 +1,5 @@
 import Visual from '../Visual';
+import DefaultMapStyle from './helpers/DefaultMapStyle';
 
 class Map extends Visual {
   constructor(config) {
@@ -86,6 +87,7 @@ class Map extends Visual {
     this.map = new google.maps.Map(document.getElementById(this.renderID), {
       center: { lat: 45.43, lng: 12.33 },
       zoom: 13,
+      styles: DefaultMapStyle,
     });
 
     this.data.forEach(this.addMarker);
