@@ -33,37 +33,6 @@ class Visual {
     }
   }
 
-  getGroupedList(columnName) {
-    const results = [];
-    for (let i = 0; i < this.data.length; i += 1) {
-      const categoryVal = this.data[i][columnName];
-
-      let found = false;
-      for (let p = 0; p < results.length; p += 1) {
-        if (results[p].key === categoryVal) {
-          results[p].value.push(this.data[i]);
-          found = true;
-          break;
-        }
-      }
-
-      if (!found) {
-        results.push({ key: categoryVal, value: [this.data[i]] });
-      }
-    }
-
-    return results;
-  }
-
-  getGroupedListCounts(columnName) {
-    const data = this.getGroupedList(columnName);
-    const results = [];
-    for (let i = 0; i < data.length; i += 1) {
-      results.push({ key: data[i].key, value: data[i].value.length });
-    }
-    return results;
-  }
-
   generateConfigButton(id = 'download') {
     const generateButton = document.createElement('button');
     generateButton.className = 'button';
@@ -121,6 +90,51 @@ class Visual {
     throw new Error('You must implement this method');
   }
 
+  // DATA HELPER FUNCTIONS
+
+  getColumns() {
+    const cols = [];
+    if (this.data.length > 0) {
+      const keys = Object.keys(this.data[0]);
+      for (let i = 0; i < keys.length; i += 1) {
+        cols.push(keys[i]);
+      }
+    }
+
+    return cols;
+  }
+
+  getGroupedList(columnName) {
+    const results = [];
+    for (let i = 0; i < this.data.length; i += 1) {
+      const categoryVal = this.data[i][columnName];
+
+      let found = false;
+      for (let p = 0; p < results.length; p += 1) {
+        if (results[p].key === categoryVal) {
+          results[p].value.push(this.data[i]);
+          found = true;
+          break;
+        }
+      }
+
+      if (!found) {
+        results.push({ key: categoryVal, value: [this.data[i]] });
+      }
+    }
+
+    return results;
+  }
+
+  getGroupedListCounts(columnName) {
+    const data = this.getGroupedList(columnName);
+    const results = [];
+    for (let i = 0; i < data.length; i += 1) {
+      results.push({ key: data[i].key, value: data[i].value.length });
+    }
+    return results;
+  }
+
   /**
   *Filters This.data and returns only numeric data columns
   *Any data with more than maxCategories categories and is numeric is diplayed
@@ -176,6 +190,7 @@ class Visual {
     }
     return categoricalData;
   }
+
   /**
   *Takes an attribute, binSize, and start of first bin and
   *returns a copy of data with the volume
