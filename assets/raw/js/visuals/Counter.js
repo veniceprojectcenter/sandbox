@@ -27,7 +27,7 @@ class Counter extends Visual {
     this.renderControlsDiv.appendChild(this.controlCheckboxDiv);
     this.renderControlsDiv.appendChild(this.controlCheckboxDiv2);
     this.createCheckBoxList(this.controlCheckboxDiv, this.getCategoricalData(), 'selectOptionsCheck');
-    this.createCheckBoxList(this.controlCheckboxDiv2, this.getNumericData(), 'displayCheck');
+    this.createBinCheckBoxList(this.controlCheckboxDiv, this.getNumericData(), 'selectBinOptionsCheck');
     this.controlCheckboxDiv2.innerHTML = 'Attributes to Display';
     this.controlCheckboxDiv2.appendChild(document.createElement('br'));
     this.createCheckBoxList(this.controlCheckboxDiv2, this.data, 'displayCheck');
@@ -51,6 +51,7 @@ class Counter extends Visual {
   //  this.aSelect.type = 'select';
     if (this.keys === null) {
       this.keys = [];
+      this.renderData = JSON.parse(JSON.stringify(this.data));
     }
     const defaultOption = document.createElement('option');
     defaultOption.innerHTML = '--Select--';
@@ -84,11 +85,11 @@ class Counter extends Visual {
     }
     txt += '</tr>';
     let count = 0;
-    for (let i = 0; i < this.data.length; i += 1) {
-      if (choiceValue.includes(this.data[i][selectedAttribute]) && this.data[i][selectedAttribute] !== '') {
+    for (let i = 0; i < this.renderData.length; i += 1) {
+      if (choiceValue.includes(this.renderData[i][selectedAttribute]) && this.renderData[i][selectedAttribute] !== '') {
         txt += '<tr>';
         for (let j = 0; j < this.attributesList.length; j += 1) {
-          txt += `<td>${this.data[i][this.attributesList[j]]}</td>`;
+          txt += `<td>${this.renderData[i][this.attributesList[j]]}</td>`;
         }
         count += 1;
         txt += '</tr>';
@@ -107,21 +108,21 @@ class Counter extends Visual {
     }
     const selectedAttribute = this.aSelect.options[this.aSelect.selectedIndex].text;
     const checkboxes = [];
-    for (let i = 0; i < this.data.length; i += 1) {
-      if (this.data[i][selectedAttribute] !== '' && !(checkboxes.includes(this.data[i][selectedAttribute]))) {
+    for (let i = 0; i < this.renderData.length; i += 1) {
+      if (this.renderData[i][selectedAttribute] !== '' && !(checkboxes.includes(this.renderData[i][selectedAttribute]))) {
         const tempInput = document.createElement('input');
-        tempInput.value = this.data[i][selectedAttribute];
+        tempInput.value = this.renderData[i][selectedAttribute];
         tempInput.type = 'checkbox';
         tempInput.id = `check${i}`;
         tempInput.classList.add('CheckChoice');
         tempInput.addEventListener('change', () => { this.displayTable(); });
         const newlabel = document.createElement('Label');
         newlabel.setAttribute('for', tempInput.id);
-        newlabel.innerHTML = this.data[i][selectedAttribute];
+        newlabel.innerHTML = this.renderData[i][selectedAttribute];
         this.checkboxDiv.append(tempInput);
         this.checkboxDiv.append(newlabel);
         this.checkboxDiv.append(document.createElement('br'));
-        checkboxes[checkboxes.length] = this.data[i][selectedAttribute];
+        checkboxes[checkboxes.length] = this.renderData[i][selectedAttribute];
       }
     }
   }
@@ -136,6 +137,18 @@ class Counter extends Visual {
         this.keys[this.keys.length] = selectOptions[i].value;
       }
     }
+    const displayBinOptions = document.getElementsByClassName('selectBinOptionsCheck');
+    for (let i = 0; i < displayBinOptions.length; i += 1) {
+      if (displayBinOptions[i].checked) {
+        const binSize = document.getElementsByClassName('binSize')[i].value;
+        const start = document.getElementsByClassName('binStart')[i].value;
+        if (!isNaN(start) && !isNaN(binSize)) {
+          this.renderData = this.makeBin(displayBinOptions[i].value, Number(binSize),
+             Number(start), this.renderData);
+          this.keys[this.keys.length] = displayBinOptions[i].value;
+        }
+      }
+    }
     this.attributesList = [];
     const displayOptions = document.getElementsByClassName('displayCheck');
     for (let i = 0; i < displayOptions.length; i += 1) {
@@ -143,6 +156,7 @@ class Counter extends Visual {
         this.attributesList[this.attributesList.length] = displayOptions[i].value;
       }
     }
+
     this.render();
   }
   /** Function for creating a list of checkboxes for attributes
@@ -177,7 +191,7 @@ class Counter extends Visual {
         const tempInput = document.createElement('input');
         tempInput.value = keys[i];
         tempInput.type = 'checkbox';
-        tempInput.id = `${checkClass}${i}`;
+        tempInput.id = `${checkClass}bin${i}`;
         tempInput.classList.add(checkClass);
         tempInput.addEventListener('change', () => { this.updateRender(); });
         const newlabel = document.createElement('Label');
@@ -185,12 +199,26 @@ class Counter extends Visual {
         newlabel.innerHTML = keys[i];
         const binStart = document.createElement('input');
         binStart.classList.add('binStart');
+        binStart.id = `${checkClass}binStart${i}`;
         binStart.addEventListener('change', () => { this.updateRender(); });
+        const binStartLabel = document.createElement('Label');
+        binStartLabel.setAttribute('for', binStart.id);
+        binStartLabel.innerHTML = 'Bin Start:';
         const binSize = document.createElement('input');
-        binSize.classList.add('binStart');
+        binSize.classList.add('binSize');
+        binSize.type = 'number';
+        binSize.id = `${checkClass}binSize${i}`;
         binSize.addEventListener('change', () => { this.updateRender(); });
+        const binSizeLabel = document.createElement('Label');
+        binSizeLabel.setAttribute('for', binSize.id);
+        binSizeLabel.innerHTML = 'Bin Size:';
         checkDiv.append(tempInput);
         checkDiv.append(newlabel);
+        checkDiv.append(document.createElement('br'));
+        checkDiv.append(binStartLabel);
+        checkDiv.append(binStart);
+        checkDiv.append(binSizeLabel);
+        checkDiv.append(binSize);
         checkDiv.append(document.createElement('br'));
       }
     }
