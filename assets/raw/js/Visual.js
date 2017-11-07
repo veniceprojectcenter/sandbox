@@ -14,6 +14,7 @@ class Visual {
   async fetchData() {
     if (sessionStorage[this.dataSet]) {
       this.data = JSON.parse(sessionStorage[this.dataSet]);
+      this.onLoadData();
     } else {
       const db = firebase.firestore();
       const data = [];
