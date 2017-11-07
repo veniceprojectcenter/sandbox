@@ -3,7 +3,7 @@ import Visual from '../Visual';
 class Counter extends Visual {
   constructor(config) {
     super(config);
-    this.keys = null;
+    this.columnOptions = null;
     this.applyDefaultAttributes({
       width: 500,
       height: 500,
@@ -12,11 +12,14 @@ class Counter extends Visual {
       category_order: '',
     });
   }
+  /** ************************************************************************
+    Render Methods
+  *************************************************************************** */
   /** Renders Controls
   *
   */
   renderControls() {
-    this.keys = Object.keys(this.data[0]);
+    this.columnOptions = Object.keys(this.data[0]);
     this.renderControlsDiv = document.getElementById(this.renderControlsID);
     this.renderControlsDiv.innerHTML = 'Controls';
     const brake = document.createElement('br');
@@ -49,54 +52,19 @@ class Counter extends Visual {
     this.aSelect.id = 'AttributeSelect';
     this.tableDiv.id = 'tableDiv';
   //  this.aSelect.type = 'select';
-    if (this.keys === null) {
-      this.keys = [];
+    if (this.columnOptions === null) {
+      this.columnOptions = [];
       this.renderData = JSON.parse(JSON.stringify(this.data));
     }
     const defaultOption = document.createElement('option');
     defaultOption.innerHTML = '--Select--';
     this.aSelect.appendChild(defaultOption);
-    for (let i = 0; i < this.keys.length; i += 1) {
+    for (let i = 0; i < this.columnOptions.length; i += 1) {
       const op = document.createElement('option');
-      op.value = this.keys[i];
-      op.text = this.keys[i];
+      op.value = this.columnOptions[i];
+      op.text = this.columnOptions[i];
       this.aSelect.appendChild(op);
     }
-  }
-  /** Displayes the data table on selected Categories
-  *
-  */
-  displayTable() {
-    let txt = '';
-    if (this.aSelect.selectedIndex < 0) {
-      return;
-    }
-    const selectedAttribute = this.aSelect.options[this.aSelect.selectedIndex].text;
-    const yourSelect = document.getElementsByClassName('CheckChoice');
-    let choiceValue = [];
-    for (let i = 0; i < yourSelect.length; i += 1) {
-      if (yourSelect[i].checked) {
-        choiceValue += yourSelect[i].value;
-      }
-    }
-    txt += "<table border='1'> <tr>";
-    for (let j = 0; j < this.attributesList.length; j += 1) {
-      txt += `<td>${this.attributesList[j]}</td>`;
-    }
-    txt += '</tr>';
-    let count = 0;
-    for (let i = 0; i < this.renderData.length; i += 1) {
-      if (choiceValue.includes(this.renderData[i][selectedAttribute]) && this.renderData[i][selectedAttribute] !== '') {
-        txt += '<tr>';
-        for (let j = 0; j < this.attributesList.length; j += 1) {
-          txt += `<td>${this.renderData[i][this.attributesList[j]]}</td>`;
-        }
-        count += 1;
-        txt += '</tr>';
-      }
-    }
-    txt += '</table>';
-    document.getElementById('tableDiv').innerHTML = `${txt}Count: ${count}`;
   }
   /** Displays the checkboxes for sorting
   *
@@ -129,12 +97,51 @@ class Counter extends Visual {
   /** Updates app display when actions are taken in controls
   *
   */
+  /** Displayes the data table on selected Categories
+  *
+  */
+  displayTable() {
+    let txt = '';
+    if (this.aSelect.selectedIndex < 0) {
+      return;
+    }
+    const selectedAttribute = this.aSelect.options[this.aSelect.selectedIndex].text;
+    const yourSelect = document.getElementsByClassName('CheckChoice');
+    let choiceValue = [];
+    for (let i = 0; i < yourSelect.length; i += 1) {
+      if (yourSelect[i].checked) {
+        choiceValue += yourSelect[i].value;
+      }
+    }
+    txt += "<table border='1'> <tr>";
+    for (let j = 0; j < this.displayColumns.length; j += 1) {
+      txt += `<td>${this.displayColumns[j]}</td>`;
+    }
+    txt += '</tr>';
+    let count = 0;
+    for (let i = 0; i < this.renderData.length; i += 1) {
+      if (choiceValue.includes(this.renderData[i][selectedAttribute]) && this.renderData[i][selectedAttribute] !== '') {
+        txt += '<tr>';
+        for (let j = 0; j < this.displayColumns.length; j += 1) {
+          txt += `<td>${this.renderData[i][this.displayColumns[j]]}</td>`;
+        }
+        count += 1;
+        txt += '</tr>';
+      }
+    }
+    txt += '</table>';
+    document.getElementById('tableDiv').innerHTML = `${txt}Count: ${count}`;
+  }
+/** Updates what will be rendered and config file when something changes
+*
+*/
   updateRender() {
+    this.attributes = {};
     const selectOptions = document.getElementsByClassName('selectOptionsCheck');
-    this.keys = [];
+    this.columnOptions = [];
     for (let i = 0; i < selectOptions.length; i += 1) {
       if (selectOptions[i].checked) {
-        this.keys[this.keys.length] = selectOptions[i].value;
+        this.columnOptions[this.columnOptions.length] = selectOptions[i].value;
       }
     }
     const displayBinOptions = document.getElementsByClassName('selectBinOptionsCheck');
@@ -145,20 +152,27 @@ class Counter extends Visual {
         if (!isNaN(start) && !isNaN(binSize)) {
           this.renderData = this.makeBin(displayBinOptions[i].value, Number(binSize),
              Number(start), this.renderData);
-          this.keys[this.keys.length] = displayBinOptions[i].value;
+          this.columnOptions[this.columnOptions.length] = displayBinOptions[i].value;
         }
       }
     }
-    this.attributesList = [];
+    this.displayColumns = [];
     const displayOptions = document.getElementsByClassName('displayCheck');
     for (let i = 0; i < displayOptions.length; i += 1) {
       if (displayOptions[i].checked) {
-        this.attributesList[this.attributesList.length] = displayOptions[i].value;
+        this.displayColumns[this.displayColumns.length] = displayOptions[i].value;
       }
     }
-
     this.render();
   }
+
+  generateConfig() {
+    this.attributes = { displayColumns: this.displayColumns, columnOptions: this.columnOptions };
+    super.generateConfig();
+  }
+  /** ************************************************************************
+    CheckBox Helper Methods
+  *************************************************************************** */
   /** Function for creating a list of checkboxes for attributes
   *
   */
@@ -199,22 +213,30 @@ class Counter extends Visual {
         newlabel.innerHTML = keys[i];
         const binStart = document.createElement('input');
         binStart.classList.add('binStart');
+        binStart.type = 'number';
+        binStart.style.margin = '0';
+        binStart.style.width = '50';
+        binStart.style.height = '18';
         binStart.id = `${checkClass}binStart${i}`;
         binStart.addEventListener('change', () => { this.updateRender(); });
         const binStartLabel = document.createElement('Label');
         binStartLabel.setAttribute('for', binStart.id);
         binStartLabel.innerHTML = 'Bin Start:';
+        binStartLabel.style.padding = '10px';
         const binSize = document.createElement('input');
         binSize.classList.add('binSize');
         binSize.type = 'number';
+        binSize.style.width = '50';
         binSize.id = `${checkClass}binSize${i}`;
+        binSize.style.height = '18';
+        binSize.style.margin = '0';
         binSize.addEventListener('change', () => { this.updateRender(); });
         const binSizeLabel = document.createElement('Label');
         binSizeLabel.setAttribute('for', binSize.id);
         binSizeLabel.innerHTML = 'Bin Size:';
+        binSizeLabel.style.padding = '10px';
         checkDiv.append(tempInput);
         checkDiv.append(newlabel);
-        checkDiv.append(document.createElement('br'));
         checkDiv.append(binStartLabel);
         checkDiv.append(binStart);
         checkDiv.append(binSizeLabel);
