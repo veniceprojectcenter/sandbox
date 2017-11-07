@@ -165,14 +165,18 @@ class Donut extends Visual {
         d3.select(this)
           .attr('fill-opacity', '0.5');
 
-        svg.append('text')
+        const text = svg.append('text')
           .attr('id', 'donut-tooltip')
           .style('font-size', `${donut.attributes.font_size}pt`)
-          .attr('transform', `translate(${coordinates[0] + 10} ${coordinates[1]})`)
+          .style('pointer-events', 'none')
           .text(d.data.key);
-
-        console.log(d);
-        console.log(coordinates);
+        if (coordinates[0] > 0) {
+          text.attr('transform', `translate(${coordinates[0] - 10} ${coordinates[1]})`)
+          .attr('text-anchor', 'end');
+        } else {
+          text.attr('transform', `translate(${coordinates[0] + 10} ${coordinates[1]})`)
+          .attr('text-anchor', 'start');
+        }
       };
 
       const handleMouseOut = function (d, i) {
