@@ -27,7 +27,9 @@ gulp.task('sass', () => gulp.src(`${sassDirectory}style.scss`)
     .pipe(gulp.dest('./assets/prod/css')));
 
 // JS
-gulp.task('js', () => browserify(`${jsDirectory}routing.js`)
+gulp.task('js', ['js:internal', 'js:external']);
+
+gulp.task('js:internal', () => browserify(`${jsDirectory}routing.js`)
         .on('error', (err) => { console.error(err); })
         .transform(babelify, {
           presets: [
@@ -41,6 +43,22 @@ gulp.task('js', () => browserify(`${jsDirectory}routing.js`)
         })
         .bundle()
         .pipe(source('app.bundle.js'))
+        .pipe(gulp.dest('./assets/prod/js/')));
+
+gulp.task('js:external', () => browserify(`${jsDirectory}external.js`)
+        .on('error', (err) => { console.error(err); })
+        .transform(babelify, {
+          presets: [
+            ['env', {
+              targets: {
+                browsers: ['last 2 Chrome versions'],
+              },
+            }],
+          ],
+          sourceMaps: true,
+        })
+        .bundle()
+        .pipe(source('external.bundle.js'))
         .pipe(gulp.dest('./assets/prod/js/')));
 
 // Cleaning
