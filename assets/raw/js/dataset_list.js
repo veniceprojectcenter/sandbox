@@ -1,9 +1,4 @@
-const datasets = [
-  { name: 'Ponti', description: 'Bridge Data', link: '/ponti/' },
-  { name: 'Rive', description: 'Docks Data', link: '/rive/' },
-];
-
-function renderDatasetList(route) {
+function render(dataSets) {
   const page = document.getElementById('page');
   page.classList.remove('container-fluid');
   page.classList.add('container');
@@ -15,19 +10,19 @@ function renderDatasetList(route) {
   selectionHeader.innerHTML = 'Please select a dataset:';
   datarows.appendChild(selectionHeader);
 
-  for (let i = 0; i < datasets.length; i += 1) {
+  for (let i = 0; i < dataSets.length; i += 1) {
     const row = document.createElement('div');
     const link = document.createElement('a');
-    link.href = datasets[i].link;
+    link.href = `/${dataSets[i].id}/`;
 
     row.className = 'data-row';
     const name = document.createElement('div');
     name.className = 'name';
-    name.innerHTML = datasets[i].name;
+    name.innerHTML = dataSets[i].name;
 
     const description = document.createElement('div');
     description.className = 'description';
-    description.innerHTML = datasets[i].description;
+    description.innerHTML = dataSets[i].description;
 
     link.appendChild(name);
     link.appendChild(description);
@@ -37,6 +32,29 @@ function renderDatasetList(route) {
   }
 
   page.appendChild(datarows);
+}
+
+async function renderDatasetList() {
+  if (sessionStorage.dataSets) {
+    const dataSets = JSON.parse(sessionStorage.dataSets);
+    render(dataSets);
+  } else {
+    const dataSets = [];
+    const db = firebase.firestore();
+    await db.collection('datasets').get().then((querySnapshot) => {
+      querySnapshot.forEach((doc) => {
+        const entry = doc.data();
+        entry.id = doc.id;
+        dataSets.push(entry);
+      });
+
+      sessionStorage.dataSets = JSON.stringify(dataSets);
+      render(dataSets);
+    })
+    .catch((error) => {
+      console.error(error);
+    });
+  }
 }
 
 export default renderDatasetList;
