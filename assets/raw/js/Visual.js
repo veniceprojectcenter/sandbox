@@ -105,15 +105,15 @@ class Visual {
     return cols;
   }
 
-  getGroupedList(columnName) {
+  getGroupedList(columnName, inputData = this.data) {
     const results = [];
-    for (let i = 0; i < this.data.length; i += 1) {
-      const categoryVal = this.data[i][columnName];
+    for (let i = 0; i < inputData.length; i += 1) {
+      const categoryVal = inputData[i][columnName];
 
       let found = false;
       for (let p = 0; p < results.length; p += 1) {
         if (results[p].key === categoryVal) {
-          results[p].value.push(this.data[i]);
+          results[p].value.push(inputData[i]);
           found = true;
           break;
         }
@@ -127,8 +127,8 @@ class Visual {
     return results;
   }
 
-  getGroupedListCounts(columnName) {
-    const data = this.getGroupedList(columnName);
+  getGroupedListCounts(columnName, inputData = this.data) {
+    const data = this.getGroupedList(columnName, inputData);
     const results = [];
     for (let i = 0; i < data.length; i += 1) {
       results.push({ key: data[i].key, value: data[i].value.length });
@@ -155,7 +155,13 @@ class Visual {
     }
     return numericData;
   }
-
+  /**
+  */
+  isNumeric(columnName, maxCategories = 25) {
+    const groupedList = this.getGroupedList(columnName);
+    return (groupedList.length >= maxCategories
+     && !isNaN(this.data[0][columnName]));
+  }
   /**
   *Filters This.data and returns only categorical data columns
   *Any data attribute with less than  or equal to maxCategories categories are displayed

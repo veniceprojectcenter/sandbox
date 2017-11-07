@@ -3,7 +3,9 @@ import Visual from '../Visual';
 class Counter extends Visual {
   constructor(config) {
     super(config);
-    this.columnOptions = null;
+    this.attributes.columnOptions = null;
+    this.attributes.binSizes = [];
+    this.attributes.binStarts = [];
     this.applyDefaultAttributes({
       width: 500,
       height: 500,
@@ -19,7 +21,7 @@ class Counter extends Visual {
   *
   */
   renderControls() {
-    this.columnOptions = Object.keys(this.data[0]);
+    this.attributes.columnOptions = Object.keys(this.data[0]);
     this.renderControlsDiv = document.getElementById(this.renderControlsID);
     this.renderControlsDiv.innerHTML = 'Controls';
     const brake = document.createElement('br');
@@ -39,6 +41,7 @@ class Counter extends Visual {
   *
   */
   render() {
+    let renderData = JSON.parse(JSON.stringify(this.data));
     this.renderDiv = document.getElementById(this.renderID);
     this.renderDiv.innerHTML = 'Select an Attribute to Group By:';
     this.tableDiv = document.createElement('div');
@@ -47,50 +50,56 @@ class Counter extends Visual {
     this.renderDiv.appendChild(this.aSelect);
     this.renderDiv.appendChild(this.checkboxDiv);
     this.renderDiv.appendChild(this.tableDiv);
-    this.aSelect.addEventListener('change', () => { this.displayAttributes(); });
+    this.aSelect.addEventListener('change', () => { this.displayAttributes(renderData); });
     this.aSelect.classList.add('browser-default');
     this.aSelect.id = 'AttributeSelect';
     this.tableDiv.id = 'tableDiv';
   //  this.aSelect.type = 'select';
-    if (this.columnOptions === null) {
-      this.columnOptions = [];
-      this.renderData = JSON.parse(JSON.stringify(this.data));
+    if (this.attributes.columnOptions === null) {
+      this.attributes.columnOptions = [];
+    }
+    const columnOptions = this.attributes.columnOptions;
+    for (let i = 0; i < columnOptions.length; i += 1) {
+      if (this.isNumeric(columnOptions[i])) {
+        renderData = this.makeBin(columnOptions[i], this.attributes.binSizes[columnOptions[i]],
+        this.attributes.binStarts[columnOptions[i]]);
+      }
     }
     const defaultOption = document.createElement('option');
     defaultOption.innerHTML = '--Select--';
     this.aSelect.appendChild(defaultOption);
-    for (let i = 0; i < this.columnOptions.length; i += 1) {
+    for (let i = 0; i < this.attributes.columnOptions.length; i += 1) {
       const op = document.createElement('option');
-      op.value = this.columnOptions[i];
-      op.text = this.columnOptions[i];
+      op.value = this.attributes.columnOptions[i];
+      op.text = this.attributes.columnOptions[i];
       this.aSelect.appendChild(op);
     }
   }
   /** Displays the checkboxes for sorting
   *
   */
-  displayAttributes() {
+  displayAttributes(renderData) {
     this.checkboxDiv.innerHTML = '';
     if (this.aSelect.selectedIndex < 1) {
       return;
     }
     const selectedAttribute = this.aSelect.options[this.aSelect.selectedIndex].text;
     const checkboxes = [];
-    for (let i = 0; i < this.renderData.length; i += 1) {
-      if (this.renderData[i][selectedAttribute] !== '' && !(checkboxes.includes(this.renderData[i][selectedAttribute]))) {
+    for (let i = 0; i < renderData.length; i += 1) {
+      if (renderData[i][selectedAttribute] !== '' && !(checkboxes.includes(renderData[i][selectedAttribute]))) {
         const tempInput = document.createElement('input');
-        tempInput.value = this.renderData[i][selectedAttribute];
+        tempInput.value = renderData[i][selectedAttribute];
         tempInput.type = 'checkbox';
         tempInput.id = `check${i}`;
         tempInput.classList.add('CheckChoice');
-        tempInput.addEventListener('change', () => { this.displayTable(); });
+        tempInput.addEventListener('change', () => { this.displayTable(renderData); });
         const newlabel = document.createElement('Label');
         newlabel.setAttribute('for', tempInput.id);
-        newlabel.innerHTML = this.renderData[i][selectedAttribute];
+        newlabel.innerHTML = renderData[i][selectedAttribute];
         this.checkboxDiv.append(tempInput);
         this.checkboxDiv.append(newlabel);
         this.checkboxDiv.append(document.createElement('br'));
-        checkboxes[checkboxes.length] = this.renderData[i][selectedAttribute];
+        checkboxes[checkboxes.length] = renderData[i][selectedAttribute];
       }
     }
   }
@@ -100,7 +109,7 @@ class Counter extends Visual {
   /** Displayes the data table on selected Categories
   *
   */
-  displayTable() {
+  displayTable(renderData) {
     let txt = '';
     if (this.aSelect.selectedIndex < 0) {
       return;
@@ -114,16 +123,16 @@ class Counter extends Visual {
       }
     }
     txt += "<table border='1'> <tr>";
-    for (let j = 0; j < this.displayColumns.length; j += 1) {
-      txt += `<td>${this.displayColumns[j]}</td>`;
+    for (let j = 0; j < this.attributes.displayColumns.length; j += 1) {
+      txt += `<td>${this.attributes.displayColumns[j]}</td>`;
     }
     txt += '</tr>';
     let count = 0;
-    for (let i = 0; i < this.renderData.length; i += 1) {
-      if (choiceValue.includes(this.renderData[i][selectedAttribute]) && this.renderData[i][selectedAttribute] !== '') {
+    for (let i = 0; i < renderData.length; i += 1) {
+      if (choiceValue.includes(renderData[i][selectedAttribute]) && renderData[i][selectedAttribute] !== '') {
         txt += '<tr>';
-        for (let j = 0; j < this.displayColumns.length; j += 1) {
-          txt += `<td>${this.renderData[i][this.displayColumns[j]]}</td>`;
+        for (let j = 0; j < this.attributes.displayColumns.length; j += 1) {
+          txt += `<td>${renderData[i][this.attributes.displayColumns[j]]}</td>`;
         }
         count += 1;
         txt += '</tr>';
@@ -136,38 +145,40 @@ class Counter extends Visual {
 *
 */
   updateRender() {
-    this.attributes = {};
     const selectOptions = document.getElementsByClassName('selectOptionsCheck');
-    this.columnOptions = [];
+    this.attributes.columnOptions = [];
     for (let i = 0; i < selectOptions.length; i += 1) {
       if (selectOptions[i].checked) {
-        this.columnOptions[this.columnOptions.length] = selectOptions[i].value;
+        this.attributes.columnOptions[this.attributes.columnOptions.length] =
+        selectOptions[i].value;
       }
     }
     const displayBinOptions = document.getElementsByClassName('selectBinOptionsCheck');
     for (let i = 0; i < displayBinOptions.length; i += 1) {
       if (displayBinOptions[i].checked) {
-        const binSize = document.getElementsByClassName('binSize')[i].value;
-        const start = document.getElementsByClassName('binStart')[i].value;
+        const binSize = Number(document.getElementsByClassName('binSize')[i].value);
+        const start = Number(document.getElementsByClassName('binStart')[i].value);
         if (!isNaN(start) && !isNaN(binSize)) {
-          this.renderData = this.makeBin(displayBinOptions[i].value, Number(binSize),
-             Number(start), this.renderData);
-          this.columnOptions[this.columnOptions.length] = displayBinOptions[i].value;
+          const columnName = displayBinOptions[i].value;
+          this.attributes.binSizes[columnName] = binSize;
+          this.attributes.binStarts[columnName] = start;
+          this.attributes.columnOptions[this.attributes.columnOptions.length] =
+           displayBinOptions[i].value;
         }
       }
     }
-    this.displayColumns = [];
+    this.attributes.displayColumns = [];
     const displayOptions = document.getElementsByClassName('displayCheck');
     for (let i = 0; i < displayOptions.length; i += 1) {
       if (displayOptions[i].checked) {
-        this.displayColumns[this.displayColumns.length] = displayOptions[i].value;
+        this.attributes.displayColumns[this.attributes.displayColumns.length] =
+         displayOptions[i].value;
       }
     }
     this.render();
   }
 
   generateConfig() {
-    this.attributes = { displayColumns: this.displayColumns, columnOptions: this.columnOptions };
     super.generateConfig();
   }
   /** ************************************************************************

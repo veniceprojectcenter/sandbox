@@ -45,7 +45,8 @@ class Donut extends Visual {
     });
 
     const cats = [];
-    const catsRaw = Object.keys(this.data[0]);
+    let catsRaw = Object.keys(this.getCategoricalData()[0]);
+    catsRaw = catsRaw.concat(Object.keys(this.getNumericData()[0]));
     for (let i = 0; i < catsRaw.length; i += 1) {
       cats.push({ value: catsRaw[i], text: catsRaw[i] });
     }
@@ -53,8 +54,26 @@ class Donut extends Visual {
      (e) => {
        const value = $(e.currentTarget).val();
        this.attributes.group_by = value;
+       if (this.isNumeric(this.attributes.group_by)) {
+         document.getElementById('bin-start').style.display = 'inherit';
+         document.getElementById('bin-size').style.display = 'inherit';
+       } else {
+         document.getElementById('bin-start').style.display = 'none';
+         document.getElementById('bin-size').style.display = 'none';
+       }
        this.render();
      });
+
+    editor.createTextField('bin-start', 'Low value of First Bin', (e) => {
+      this.attributes.binStart = $(e.currentTarget).val();
+      this.render();
+    });
+    editor.createTextField('bin-size', 'Bin Size', (e) => {
+      this.attributes.binSize = $(e.currentTarget).val();
+      this.render();
+    });
+    document.getElementById('bin-start').style.display = 'none';
+    document.getElementById('bin-size').style.display = 'none';
 
     editor.createNumberSlider('donut-font-size',
      'Label Font Size',
@@ -70,12 +89,15 @@ class Donut extends Visual {
   render() {
     // Empty the container, then place the SVG in there
     Visual.empty(this.renderID);
-
     const width = this.attributes.width;
     const height = this.attributes.height;
     const radius = Math.min(width, height) / 2;
-
-    const data = this.getGroupedListCounts(this.attributes.group_by);
+    let renderData = JSON.parse(JSON.stringify(this.data));
+    if (this.isNumeric(this.attributes.group_by)) {
+      renderData = this.makeBin(this.attributes.group_by, Number(this.attributes.binSize),
+      Number(this.attributes.binStart));
+    }
+    const data = this.getGroupedListCounts(this.attributes.group_by, renderData);
 
     let colorspace = null;
     if (this.attributes.color.mode === 'interpolate') {
