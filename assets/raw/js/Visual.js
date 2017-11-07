@@ -139,6 +139,7 @@ class Visual {
   /**
   *Filters This.data and returns only numeric data columns
   *Any data with more than maxCategories categories and is numeric is diplayed
+  **Data returned is in same format as this.data
   */
   getNumericData(maxCategories = 25) {
     const dataKeys = Object.keys(this.data[0]);
@@ -158,6 +159,7 @@ class Visual {
   /**
   *Filters This.data and returns only categorical data columns
   *Any data attribute with less than  or equal to maxCategories categories are displayed
+  *Data returned is in same format as this.data
   */
   getCategoricalData(maxCategories = 25) {
     const dataKeys = Object.keys(this.data[0]);
@@ -176,6 +178,7 @@ class Visual {
   /**
   *Filters This.data and returns only identifying data columns
   *Any data with more than maxCategories categories and is not numeric are displayed
+  *Data returned is in same format as this.data
   */
   getIdData(maxCategories = 25) {
     const dataKeys = Object.keys(this.data[0]);
@@ -193,17 +196,17 @@ class Visual {
   }
 
   /**
-  *Takes an attribute, binSize, and start of first bin and
+  *Takes a columnName, binSize, and start of first bin and
   *returns a copy of data with the volume
   */
-  makeBin(attribute, binSize, start = 0, theData = this.data, maxBins = 25) {
+  makeBin(columnName, binSize, start = 0, theData = this.data, maxBins = 25) {
     const binData = JSON.parse(JSON.stringify(theData));
     const binArray = [];
     for (let i = start; i <= maxBins; i += 1) {
       binArray[i] = `${start + (i * binSize)}-${start + ((i + 1) * binSize)}`;
     }
     for (let j = 0; j < theData.length; j += 1) {
-      binData[j][attribute] = binArray[Math.floor(binData[j][attribute] / binSize) - start];
+      binData[j][columnName] = binArray[Math.floor(this.data[j][columnName] / binSize) - start];
     }
     return binData;
   }
