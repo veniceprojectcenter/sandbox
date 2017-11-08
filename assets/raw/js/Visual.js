@@ -11,6 +11,11 @@ class Visual {
     this.type = config.type;
   }
 
+  loadStaticData(data) {
+    this.data = data;
+    this.onLoadData();
+  }
+
   async fetchData() {
     if (sessionStorage[this.dataSet]) {
       this.data = JSON.parse(sessionStorage[this.dataSet]);
