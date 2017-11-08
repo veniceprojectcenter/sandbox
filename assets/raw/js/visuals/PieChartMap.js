@@ -4,13 +4,14 @@ import EditorGenerator from './helpers/EditorGenerator';
 import Donut from './Donut';
 
 class DivOverlay extends google.maps.OverlayView {
-  constructor(bounds, divId, map) {
+  constructor(bounds, divId, map, renderfunction) {
     super();
 
     this.bounds_overlay = bounds;
     this.divId_overlay = divId;
     this.map_overlay = map;
     this.div_overlay = null;
+    this.renderfunction = renderfunction;
 
     this.setMap(map);
   }
@@ -27,7 +28,10 @@ class DivOverlay extends google.maps.OverlayView {
 
     // Add the element to the "overlayLayer" pane.
     const panes = this.getPanes();
-    panes.overlayLayer.appendChild(div);
+    // panes.overlayLayer.appendChild(div);
+    panes.overlayMouseTarget.appendChild(div);
+
+    this.renderfunction(this.divId_overlay);
   }
 
   draw() {
@@ -101,27 +105,39 @@ class PieChartMap extends Visual {
     const svgText = '<svg width="32" height="32" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg"> ' +
         '<circle cx="10" cy ="10" r="5" stroke="blue" stroke-width="3" fill="blue" />' +
       '</svg>';
-    const x = 10;
-    const y = 10;
-
-    this.data.forEach((data) => {
-      this.addMarker(data, svgText, x, y);
-    });
 
     google.maps.event.addListener(this.map, 'click', (event) => {
       console.log(`Lat: ${event.latLng.lat()}| Lng: ${event.latLng.lng()}`);
-
-      this.addMarker({ lat: event.latLng.lat(), lng: event.latLng.lng() }, svgText, 10, 10);
-      this.addMarker({ lat: event.latLng.lat() + 0.005, lng: event.latLng.lng() + 0.005 }, svgText, 10, 10);
+      // this.addMarker({ lat: event.latLng.lat(), lng: event.latLng.lng() }, svgText, 10, 10);
+      // this.addMarker({ lat: event.latLng.lat() + 0.01, lng: event.latLng.lng() + 0.01 }, svgText, 10, 10);
 
       const bounds = new google.maps.LatLngBounds(
        new google.maps.LatLng(event.latLng.lat(),
                               event.latLng.lng()),
-       new google.maps.LatLng(event.latLng.lat() + 0.005,
-                              event.latLng.lng() + 0.005),
+       new google.maps.LatLng(event.latLng.lat() + 0.01,
+                              event.latLng.lng() + 0.01),
       );
 
-      const overlay = new DivOverlay(bounds, 'donutChart', this.map);
+      const renderfunction = (id) => {
+        const config = {
+          dataSet: this.dataSet,
+          type: 'donut',
+          attributes: {},
+        };
+
+        const donutVisual = new Donut(config);
+        donutVisual.loadStaticData(this.data);
+        donutVisual.renderID = id;
+        donutVisual.render();
+      };
+
+      if (this.currentId == null) {
+        this.currentId = 1;
+      } else {
+        this.currentId += 1;
+      }
+
+      const overlay = new DivOverlay(bounds, `donut${this.currentId}`, this.map, renderfunction);
     });
   }
 
@@ -141,17 +157,6 @@ class PieChartMap extends Visual {
     /* chartDiv.innerHTML = '<svg width="500" height="500" viewBox="0 0 500 500" xmlns="http://www.w3.org/2000/svg"> ' +
         '<circle cx="10" cy ="10" r="500" stroke="blue" stroke-width="3" fill="blue" />' +
       '</svg>'; */
-
-    const config = {
-      dataSet: this.dataSet,
-      type: 'donut',
-      attributes: {},
-    };
-
-    const donutVisual = new Donut(config);
-    donutVisual.loadStaticData(this.data);
-    donutVisual.renderID = chartDiv.id;
-    donutVisual.render();
   }
 
   renderControls() {
