@@ -42,25 +42,35 @@ class Visual {
   generateConfigButton(id = 'download') {
     const generateButton = document.createElement('button');
     generateButton.className = 'button';
-    generateButton.innerText = 'Download Config';
+    generateButton.innerText = 'Publish Visual';
     generateButton.addEventListener('click', () => this.generateConfig());
 
     const downloadContainer = document.getElementById(id);
     downloadContainer.appendChild(generateButton);
   }
 
-  generateConfig() {
+  async generateConfig() {
     const config = {
       type: this.type,
       dataSet: this.dataSet,
       attributes: this.attributes,
     };
-    const downloadButton = document.createElement('a');
-    downloadButton.className = 'button';
-    downloadButton.innerText = 'Download Config';
-    downloadButton.href = `data:text/json;charset=utf-8,${JSON.stringify(config)}`;
-    downloadButton.download = 'config.json';
-    downloadButton.click();
+    // const downloadButton = document.createElement('a');
+    // downloadButton.className = 'button';
+    // downloadButton.innerText = 'Download Config';
+    // downloadButton.href = `data:text/json;charset=utf-8,${JSON.stringify(config)}`;
+    // downloadButton.download = 'config.json';
+    // downloadButton.click();
+
+    const db = firebase.firestore();
+    await db.collection('configs').add({
+      config: JSON.stringify(config),
+    }).then(() => {
+      console.log('Config saved');
+    })
+    .catch((error) => {
+      console.error(error);
+    });
   }
 
   static empty(id) {
@@ -213,14 +223,31 @@ class Visual {
   makeBin(columnName, binSize, start = 0, theData = this.data, maxBins = 25) {
     const binData = JSON.parse(JSON.stringify(theData));
     const binArray = [];
-    for (let i = start; i <= maxBins; i += 1) {
-      binArray[i] = `${start + (i * binSize)}-${start + ((i + 1) * binSize)}`;
+    for (let i = 0; i <= maxBins; i += 1) {
+      const first = Math.round((start + (i * binSize)) * 100) / 100;
+      const second = Math.round((start + ((i + 1) * binSize)) * 100) / 100;
+      binArray[i] = `${first}-${second}`;
     }
     for (let j = 0; j < theData.length; j += 1) {
-      binData[j][columnName] = binArray[Math.floor(this.data[j][columnName] / binSize) - start];
+      const binVal = Math.floor((this.data[j][columnName] / binSize) - start);
+      binData[j][columnName] = binArray[binVal];
     }
     return binData;
   }
+  /**
+  *Takes a colmnName and returns the lowest value in it numerically
+  */
+  getMin(columnName) {
+    let minVal = this.data[0][columnName];
+    for (let i = 1; i < this.data.length; i += 1) {
+      if (this.data[i][columnName] !== '' && minVal > this.data[i][columnName]) {
+        minVal = this.data[i][columnName];
+      }
+    }
+    return minVal;
+  }
+
+
 }
 
 Visual.DEFAULT_RENDER_ID = 'visual';

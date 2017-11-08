@@ -1,5 +1,6 @@
 import Visual from '../Visual';
 import DefaultMapStyle from './helpers/DefaultMapStyle';
+import EditorGenerator from './helpers/EditorGenerator';
 
 class Map extends Visual {
   constructor(config) {
@@ -12,22 +13,35 @@ class Map extends Visual {
     this.addMarker = this.addMarker.bind(this);
   }
 
-  static determineColor(year) {
-    if (year) {
-      let range = parseFloat(year) - 1500;
-      if (range > 255) {
-        range = 255;
-      }
-      return `#${range.toString(16)}${(255 - range).toString(16)}FF`;
-    }
-    return '#FF0000';
+  onLoadData() {
+    this.applyDefaultAttributes({
+      title: '',
+      center: { lat: 45.43, lng: 12.33 },
+      zoom: 13,
+      styles: DefaultMapStyle,
+      color: {
+        by: 'id',
+        range: [0, 359],
+        type: 'hue',
+      },
+    });
+  }
+
+  determineColor(value) {
+    const data = this.getGroupedListCounts(this.attributes.color.by);
+    console.log(data);
+    const crange = this.attributes.color.range;
+    const color = d3.scaleLinear().domain([0, data.length]).range([crange[0], crange[1]]);
+
+
+    return d3.hcl(color(value), 100, 75).toString();
   }
 
   addMarker(data) {
     if (data.lat && data.lng) {
       const icon = {
         path: 'M-20,0a5,5 0 1,0 10,0a5,5 0 1,0 -10,0',
-        fillColor: Map.determineColor(data.year),
+        fillColor: this.determineColor(data[this.attributes.color.by]),
         fillOpacity: 0.6,
         anchor: new google.maps.Point(0, 0),
         strokeWeight: 0,
@@ -84,17 +98,60 @@ class Map extends Visual {
   }
 
   render() {
-    this.map = new google.maps.Map(document.getElementById(this.renderID), {
-      center: { lat: 45.43, lng: 12.33 },
-      zoom: 13,
-      styles: DefaultMapStyle,
+    const title = document.createElement('h3');
+    title.id = 'map-title';
+    title.innerText = this.attributes.title;
+
+    const mapContainer = document.createElement('div');
+    mapContainer.id = 'map-container';
+    mapContainer.className = 'map-container';
+
+    const visual = document.getElementById(this.renderID);
+    visual.appendChild(title);
+    visual.appendChild(mapContainer);
+
+    this.map = new google.maps.Map(mapContainer, {
+      center: this.attributes.center,
+      zoom: this.attributes.zoom,
+      styles: this.attributes.styles,
     });
 
     this.data.forEach(this.addMarker);
   }
 
   renderControls() {
-    // Render some controls
+    if (this.data.length === 0) {
+      alert('Dataset is empty!');
+      return;
+    }
+
+    Visual.empty(this.renderControlsID);
+    const controlsContainer = document.getElementById(this.renderControlsID);
+
+    const editor = new EditorGenerator(controlsContainer);
+
+    editor.createHeader('Configure Map');
+
+    editor.createTextField('map-title-field', 'Map Title', (e) => {
+      this.attributes.title = $(e.currentTarget).val();
+      document.getElementById('map-title').innerText = this.attributes.title;
+    });
+
+    const columns = this.getColumns();
+    const categories = [];
+    for (let i = 0; i < columns.length; i += 1) {
+      categories.push({
+        value: columns[i],
+        text: columns[i],
+      });
+    }
+
+    editor.createSelectBox('map-color-col', 'Select column to color by', categories, this.attributes.color_by,
+     (e) => {
+      //  const value = $(e.currentTarget).val();
+      //  this.attributes.group_by = value;
+      //  this.render();
+     });
   }
 }
 
