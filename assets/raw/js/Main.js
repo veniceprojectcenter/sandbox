@@ -8,25 +8,25 @@ class Main {
     if (typeof config === 'string') {
       config = JSON.parse(config);
     }
-
+    let visual = null;
     switch (config.type) {
       case 'map':
-        visual = new Map(config, containerID);
+        visual = new window.visualize.Map(config, containerID);
         break;
       case 'donut':
-        visual = new Donut(config, containerID);
+        visual = new window.visualize.Donut(config, containerID);
         break;
       case 'bar':
-        visual = new Bar(config, containerID);
+        visual = new window.visualize.Bar(config, containerID);
         break;
       case 'counter':
-        visual = new Counter(config, containerID);
+        visual = new window.visualize.Counter(config, containerID);
         break;
       case 'piechartmap':
-        visual = new PieChartMap(config, containerID);
+        visual = new window.visualize.PieChartMap(config, containerID);
         break;
       case 'bubble-timeline':
-        visual = new BubbleTimeline(config, containerID);
+        visual = new window.visualize.BubbleTimeline(config, containerID);
         break;
       default:
         const container = document.getElementById(containerID);
@@ -34,8 +34,7 @@ class Main {
     }
 
     if (visual !== null) {
-      visual.fetchData();
-      visual.render();
+      visual.fetchAndRender();
     }
   }
 }

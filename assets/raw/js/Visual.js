@@ -9,6 +9,8 @@ class Visual {
     this.data = [];
     this.attributes = config.attributes;
     this.type = config.type;
+
+    this.useTransitions = true;
   }
 
   async fetchData() {
@@ -58,6 +60,10 @@ class Visual {
     downloadButton.click();
   }
 
+  disableTransitions() {
+    this.useTransitions = false;
+  }
+
   static empty(id) {
     document.getElementById(id).innerHTML = '';
   }
@@ -73,12 +79,18 @@ class Visual {
     }
   }
 
-  async fetchAndRender() {
+  async fetchAndRenderWithControls() {
     await this.fetchData();
 
     this.render();
     this.renderControls();
     this.generateConfigButton();
+  }
+
+  async fetchAndRender() {
+    await this.fetchData();
+
+    this.render();
   }
 
   onLoadData() {} //eslint-disable-line
