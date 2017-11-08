@@ -7,7 +7,7 @@ const visuals = [
   { name: 'Map', image: 'http://datavizproject.com/wp-content/uploads/2017/08/DVP_101_200-56-300x300.png', link: 'map' },
   { name: 'Counter', image: 'http://datavizproject.com/wp-content/uploads/2016/01/DVP_101_200-17-300x300.png', link: 'counter' },
   { name: 'Pie Chart Map', image: 'http://datavizproject.com/wp-content/uploads/2016/06/DVP_101_200-43-300x300.png', link: 'piechartmap' },
-  { name: 'Histogram', image: 'http://datavizproject.com/wp-content/uploads/2016/06/DVP_1_100-16-300x300.png', link: 'histogram' },
+  { name: 'Bubble Timeline', image: 'http://datavizproject.com/wp-content/uploads/2017/09/DVP_101_200-36.png', link: 'bubble-timeline' },
   { name: 'Map', image: 'http://datavizproject.com/wp-content/uploads/2017/08/DVP_101_200-56-300x300.png', link: 'map' },
   { name: 'Bar Chart', image: 'http://datavizproject.com/wp-content/uploads/2015/10/4-Bar-Chart-300x300.png', link: 'barchart' },
   { name: 'Pie Chart', image: 'http://datavizproject.com/wp-content/uploads/2015/10/11-Pie-Chart-300x300.png', link: 'piechart' },
