@@ -32,6 +32,12 @@ class EditorGenerator {
   createCategoryEditor() {
 
   }
+  createMoveableList(id, title, onChange) {
+    const context = { id, title };
+    this.handlebarsWithContext('moveable', context);
+    $(`#${id}-up`).on('click', onChange);
+    $(`#${id}-dn`).on('click', onChange);
+  }
 
   createButton(id, text, activationFunction) {
     const context = { id, text };

@@ -62,6 +62,14 @@
   <input id="{{id}}" type="button" text="{{text}}" />
 </script>
 
+<script id="moveable" type="text/x-handlebars-template">
+  <div class = 'mv' id="{{id}}-div">
+    <label  for="{{id}}-up">{{title}}</label>
+    <input  id="{{id}}-up" category='{{title}}' type="button" value="↑" />
+    <input  id="{{id}}-dn" category='{{title}}' type="button" value="↓" />
+    <p>
+</script>
+
 <!-- Scripts -->
 <!--Import jQuery before materialize.js-->
 <script type="text/javascript" src="https://code.jquery.com/jquery-3.2.1.min.js"></script>

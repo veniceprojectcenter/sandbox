@@ -11,7 +11,7 @@ class Donut extends Visual {
         console.log(`Using ${defaultCat}`);
       }
     }
-
+    this.orderedGroups = null;
     this.applyDefaultAttributes({
       width: 500,
       height: 500,
@@ -55,6 +55,7 @@ class Donut extends Visual {
      (e) => {
        const value = $(e.currentTarget).val();
        this.attributes.group_by = value;
+       this.renderColorOrder(editor, true);
        if (this.isNumeric(this.attributes.group_by)) {
          document.getElementById('bin-start').style.display = 'inherit';
          document.getElementById('bin-size').style.display = 'inherit';
@@ -71,7 +72,6 @@ class Donut extends Visual {
        }
        this.render();
      });
-
     editor.createTextField('bin-start', 'Start Value of first Group', (e) => {
       this.attributes.binStart = $(e.currentTarget).val();
       this.render();
@@ -113,13 +113,21 @@ class Donut extends Visual {
     const width = this.attributes.width;
     const height = this.attributes.height;
     const radius = Math.min(width, height) / 2;
-    let renderData = JSON.parse(JSON.stringify(this.data));
+    this.renderData = JSON.parse(JSON.stringify(this.data));
     if (this.isNumeric(this.attributes.group_by)) {
-      renderData = this.makeBin(this.attributes.group_by, Number(this.attributes.binSize),
+      this.renderData = this.makeBin(this.attributes.group_by, Number(this.attributes.binSize),
       Number(this.attributes.binStart));
     }
-    const data = this.getGroupedListCounts(this.attributes.group_by, renderData);
-
+    let data = null;
+    if (this.orderedGroups == null) {
+      data = this.getGroupedListCounts(this.attributes.group_by, this.renderData);
+    } else {
+      data = [];
+      for (let i = 0; i < this.orderedGroups.length; i += 1) {
+        data.push({ key: this.orderedGroups[i].key, value: this.orderedGroups[i].value.length });
+      }
+    }
+    console.log(data);
     let colorspace = null;
     if (this.attributes.color.mode === 'interpolate') {
       const crange = this.attributes.color.range;
@@ -205,6 +213,43 @@ class Donut extends Visual {
         .text(d => d.data.key);
     }
   }
+  renderColorOrder(editor, isNewColumn) {
+    const mvs = document.getElementsByClassName('mv');
+    while (mvs.length > 0) {
+      $(mvs[0]).remove();
+    }
+    if (isNewColumn) {
+      this.orderedGroups = this.getGroupedList(this.attributes.group_by, this.renderData);
+    }
+    for (let i = 0; i < this.orderedGroups.length; i += 1) {
+      editor.createMoveableList(`Moveable${i}`, this.orderedGroups[i].key, (e) => {
+        const direction = $(e.currentTarget).val();
+        for (let j = 0; j < this.orderedGroups.length; j += 1) {
+          if (this.orderedGroups[j].key ===
+             e.currentTarget.attributes[1].nodeValue) {
+            if (direction === '↑') {
+              if (j === 0) {
+                break;
+              }
+              const temp = this.orderedGroups[j];
+              this.orderedGroups[j] = this.orderedGroups[j - 1];
+              this.orderedGroups[j - 1] = temp;
+              break;
+            } else {
+              if (j === this.orderedGroups.length - 1) {
+                break;
+              }
+              const temp = this.orderedGroups[j];
+              this.orderedGroups[j] = this.orderedGroups[j + 1];
+              this.orderedGroups[j + 1] = temp;
+              break;
+            }
+          }
+        }
+        this.renderColorOrder(editor, false);
+        this.render();
+      });
+    }
+  }
 }
-
 export default Donut;
