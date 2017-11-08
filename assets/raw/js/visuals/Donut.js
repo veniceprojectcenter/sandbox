@@ -61,6 +61,13 @@ class Donut extends Visual {
        if (this.isNumeric(this.attributes.group_by)) {
          document.getElementById('bin-start').style.display = 'inherit';
          document.getElementById('bin-size').style.display = 'inherit';
+         $(document.getElementById('bin-size-field')).val(1);
+         this.attributes.binSize = 1;
+         $(document.getElementById('bin-start-field')).val(this.getMin(value));
+         this.attributes.binStart = this.getMin(value);
+         document.getElementById('bin-start-field').click();
+         document.getElementById('bin-size-field').click();
+         Materialize.updateTextFields();
        } else {
          document.getElementById('bin-start').style.display = 'none';
          document.getElementById('bin-size').style.display = 'none';
@@ -68,16 +75,18 @@ class Donut extends Visual {
        this.render();
      });
 
-    editor.createTextField('bin-start', 'Low value of First Bin', (e) => {
+    editor.createTextField('bin-start', 'Start Value of first Group', (e) => {
       this.attributes.binStart = $(e.currentTarget).val();
       this.render();
     });
-    editor.createTextField('bin-size', 'Bin Size', (e) => {
+    editor.createTextField('bin-size', 'Group Size', (e) => {
       this.attributes.binSize = $(e.currentTarget).val();
       this.render();
     });
-    document.getElementById('bin-start').style.display = 'none';
-    document.getElementById('bin-size').style.display = 'none';
+    const start = document.getElementById('bin-start');
+    const size = document.getElementById('bin-size');
+    start.style.display = 'none';
+    size.style.display = 'none';
 
     editor.createNumberSlider('donut-font-size',
      'Label Font Size',
