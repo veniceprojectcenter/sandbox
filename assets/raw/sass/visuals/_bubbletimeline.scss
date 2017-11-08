@@ -1,0 +1,13 @@
+$line-color: #333;
+
+.bubble-timeline
+{
+  background-color: white;
+  width: 100%;
+  
+  .timeline-bar
+  {
+    stroke-width: 3px;
+    stroke: $line-color;
+  }
+}

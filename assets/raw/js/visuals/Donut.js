@@ -21,6 +21,7 @@ class Donut extends Visual {
         colorspace: 'hcl',
         range: [0, 359],
       },
+      label_mode: 'hover',
       category_order: '',
       group_by: defaultCat,
       title: '',
@@ -93,6 +94,17 @@ class Donut extends Visual {
        this.attributes.font_size = `${value}`;
        this.render();
      });
+
+    const displayModes = [
+      { value: 'hover', text: 'On Hover' },
+      { value: 'always', text: 'Always Visible' },
+      { value: 'hidden', text: 'Hidden' }];
+    editor.createSelectBox('donut-labelmode', 'Label Display', displayModes, this.attributes.label_mode,
+      (e) => {
+        const value = $(e.currentTarget).val();
+        this.attributes.label_mode = value;
+        this.render();
+      });
   }
 
   render() {
@@ -133,7 +145,6 @@ class Donut extends Visual {
       title.html(this.attributes.title);
     }
 
-
     const svg = d3.select(`#${this.renderID}`).append('svg')
       .attr('width', width)
       .attr('height', height)
@@ -147,15 +158,52 @@ class Donut extends Visual {
       .enter().append('g')
       .attr('class', 'arc ');
 
-    g.append('path')
+
+    const path = g.append('path')
       .attr('d', arc)
       .style('fill', d => colorspace(d.index));
 
-    g.append('text')
-      .attr('transform', d => `translate(${arc.centroid(d)})`)
-      .attr('dy', '.35em')
-      .attr('style', `font-size:${this.attributes.font_size}pt`)
-      .text(d => d.data.key);
+    if (this.attributes.label_mode == 'hover') {
+      const donut = this;
+      const handleMouseOver = function (d, i) {
+        let coordinates = [0, 0];
+        coordinates = d3.mouse(this);
+
+        d3.select('#donut-tooltip').remove();
+
+        d3.select(this)
+          .attr('fill-opacity', '0.5');
+
+        const text = svg.append('text')
+          .attr('id', 'donut-tooltip')
+          .style('font-size', `${donut.attributes.font_size}pt`)
+          .style('pointer-events', 'none')
+          .text(d.data.key);
+        if (coordinates[0] > 0) {
+          text.attr('transform', `translate(${coordinates[0] - 5} ${coordinates[1]})`)
+          .attr('text-anchor', 'end');
+        } else {
+          text.attr('transform', `translate(${coordinates[0] + 5} ${coordinates[1]})`)
+          .attr('text-anchor', 'start');
+        }
+      };
+
+      const handleMouseOut = function (d, i) {
+        d3.select(this)
+          .attr('fill-opacity', 1);
+        d3.select('#donut-tooltip').remove();
+      };
+
+      path.on('mousemove', handleMouseOver)
+          .on('mouseout', handleMouseOut);
+    } else if (this.attributes.label_mode == 'always') {
+      g.append('text')
+        .attr('transform', d => `translate(${arc.centroid(d)})`)
+        .attr('dy', '.35em')
+        .attr('style', `font-size:${this.attributes.font_size}pt`)
+        .attr('id', d => `label-${d.data.key}`)
+        .text(d => d.data.key);
+    }
   }
 }
 

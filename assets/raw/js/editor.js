@@ -5,6 +5,7 @@ import Donut from './visuals/Donut';
 import Bar from './visuals/Bar';
 import Counter from './visuals/Counter';
 import PieChartMap from './visuals/PieChartMap';
+import BubbleTimeline from './visuals/BubbleTimeline'
 
 function renderEditor(route) {
   updateBreadcrumbs(route);
@@ -56,6 +57,9 @@ function renderEditor(route) {
         break;
       case 'piechartmap':
         visual = new PieChartMap(config);
+        break;
+      case 'bubble-timeline':
+        visual = new BubbleTimeline(config);
         break;
       default:
         visualContainer.innerHTML = `<p>Error: could not find visualization: ${route[1]}.`;
