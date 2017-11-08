@@ -171,10 +171,10 @@ class Donut extends Visual {
           .style('pointer-events', 'none')
           .text(d.data.key);
         if (coordinates[0] > 0) {
-          text.attr('transform', `translate(${coordinates[0] - 10} ${coordinates[1]})`)
+          text.attr('transform', `translate(${coordinates[0] - 5} ${coordinates[1]})`)
           .attr('text-anchor', 'end');
         } else {
-          text.attr('transform', `translate(${coordinates[0] + 10} ${coordinates[1]})`)
+          text.attr('transform', `translate(${coordinates[0] + 5} ${coordinates[1]})`)
           .attr('text-anchor', 'start');
         }
       };
