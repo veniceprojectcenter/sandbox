@@ -3,7 +3,7 @@ import DefaultMapStyle from './helpers/DefaultMapStyle';
 import EditorGenerator from './helpers/EditorGenerator';
 import Donut from './Donut';
 
-class MapOverlay extends google.maps.OverlayView {
+class DivOverlay extends google.maps.OverlayView {
   constructor(bounds, divId, map) {
     super();
 
@@ -17,9 +17,7 @@ class MapOverlay extends google.maps.OverlayView {
 
   onAdd() {
     const div = document.createElement('div');
-    const h = document.createElement('h1');
-    h.innerHTML = 'hello';
-    div.appendChild(h);
+    div.id = this.divId_overlay;
 
     div.style.borderStyle = 'none';
     div.style.borderWidth = '0px';
@@ -109,6 +107,22 @@ class PieChartMap extends Visual {
     this.data.forEach((data) => {
       this.addMarker(data, svgText, x, y);
     });
+
+    google.maps.event.addListener(this.map, 'click', (event) => {
+      console.log(`Lat: ${event.latLng.lat()}| Lng: ${event.latLng.lng()}`);
+
+      this.addMarker({ lat: event.latLng.lat(), lng: event.latLng.lng() }, svgText, 10, 10);
+      this.addMarker({ lat: event.latLng.lat() + 0.005, lng: event.latLng.lng() + 0.005 }, svgText, 10, 10);
+
+      const bounds = new google.maps.LatLngBounds(
+       new google.maps.LatLng(event.latLng.lat(),
+                              event.latLng.lng()),
+       new google.maps.LatLng(event.latLng.lat() + 0.005,
+                              event.latLng.lng() + 0.005),
+      );
+
+      const overlay = new DivOverlay(bounds, 'donutChart', this.map);
+    });
   }
 
   clearMarkers() {
@@ -119,29 +133,14 @@ class PieChartMap extends Visual {
   }
 
   updateOverlay() {
-    google.maps.event.addListener(this.map, 'click', (event) => {
-      console.log(`Lat: ${event.latLng.lat()}| Lng: ${event.latLng.lng()}`);
-    });
-
-
     this.clearMarkers();
-    const svgText = '<svg width="32" height="32" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg"> ' +
-        '<circle cx="10" cy ="10" r="5" stroke="red" stroke-width="3" fill="red" />' +
-      '</svg>';
-    const x = 10;
-    const y = 10;
-
-    /* this.data.forEach((data) => {
-      this.addMarker(data, svgText, x, y);
-    }); */
-
-    this.addMarker(this.data[0], svgText, x, y);
-
 
     // Render donutcharts
-    const chartDiv = document.createElement('div');
-    chartDiv.id = 'donutchartdiv';
-    document.getElementById('page').appendChild(chartDiv);
+    const chartDiv = document.getElementById('donutChart');
+
+    /* chartDiv.innerHTML = '<svg width="500" height="500" viewBox="0 0 500 500" xmlns="http://www.w3.org/2000/svg"> ' +
+        '<circle cx="10" cy ="10" r="500" stroke="blue" stroke-width="3" fill="blue" />' +
+      '</svg>'; */
 
     const config = {
       dataSet: this.dataSet,
@@ -153,19 +152,6 @@ class PieChartMap extends Visual {
     donutVisual.loadStaticData(this.data);
     donutVisual.renderID = chartDiv.id;
     donutVisual.render();
-
-    const donutText = chartDiv.innerHTML;
-    // console.log(donutText);
-    this.addMarker(this.data[0], donutText, 0, 0);
-    console.log(`${this.data[0].lat} ${this.data[0].lng}`);
-
-    const bounds = new google.maps.LatLngBounds(
-     new google.maps.LatLng(45.438,
-                            12.327),
-     new google.maps.LatLng(45.438,
-                            12.327));
-
-    const overlay = new MapOverlay(bounds, 'test', this.map);
   }
 
   renderControls() {
