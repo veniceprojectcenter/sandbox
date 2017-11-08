@@ -64,7 +64,9 @@ class Visual {
 
     const db = firebase.firestore();
     await db.collection('configs').add({
-      config: JSON.stringify(config),
+      type: config.type,
+      dataSet: config.dataSet,
+      attributes: JSON.stringify(config.attributes),
     }).then(() => {
       console.log('Config saved');
     })

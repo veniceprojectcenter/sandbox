@@ -20,7 +20,15 @@ gulp.task('watch', ['build'], () => {
 });
 
 // Sass
-gulp.task('sass', () => gulp.src(`${sassDirectory}style.scss`)
+gulp.task('sass', ['sass:internal', 'sass:external']);
+
+gulp.task('sass:internal', () => gulp.src(`${sassDirectory}style.scss`)
+    .pipe(sourcemaps.init())
+    .pipe(sass().on('error', sass.logError))
+    .pipe(sourcemaps.write())
+    .pipe(gulp.dest('./assets/prod/css')));
+
+gulp.task('sass:external', () => gulp.src(`${sassDirectory}external.scss`)
     .pipe(sourcemaps.init())
     .pipe(sass().on('error', sass.logError))
     .pipe(sourcemaps.write())
