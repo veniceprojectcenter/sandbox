@@ -37,25 +37,35 @@ class Visual {
   generateConfigButton(id = 'download') {
     const generateButton = document.createElement('button');
     generateButton.className = 'button';
-    generateButton.innerText = 'Download Config';
+    generateButton.innerText = 'Publish Visual';
     generateButton.addEventListener('click', () => this.generateConfig());
 
     const downloadContainer = document.getElementById(id);
     downloadContainer.appendChild(generateButton);
   }
 
-  generateConfig() {
+  async generateConfig() {
     const config = {
       type: this.type,
       dataSet: this.dataSet,
       attributes: this.attributes,
     };
-    const downloadButton = document.createElement('a');
-    downloadButton.className = 'button';
-    downloadButton.innerText = 'Download Config';
-    downloadButton.href = `data:text/json;charset=utf-8,${JSON.stringify(config)}`;
-    downloadButton.download = 'config.json';
-    downloadButton.click();
+    // const downloadButton = document.createElement('a');
+    // downloadButton.className = 'button';
+    // downloadButton.innerText = 'Download Config';
+    // downloadButton.href = `data:text/json;charset=utf-8,${JSON.stringify(config)}`;
+    // downloadButton.download = 'config.json';
+    // downloadButton.click();
+
+    const db = firebase.firestore();
+    await db.collection('configs').add({
+      config: JSON.stringify(config),
+    }).then(() => {
+      console.log('Config saved');
+    })
+    .catch((error) => {
+      console.error(error);
+    });
   }
 
   static empty(id) {
