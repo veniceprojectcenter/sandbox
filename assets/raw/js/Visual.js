@@ -9,6 +9,13 @@ class Visual {
     this.data = [];
     this.attributes = config.attributes;
     this.type = config.type;
+
+    this.useTransitions = true;
+  }
+
+  loadStaticData(data) {
+    this.data = data;
+    this.onLoadData();
   }
 
   async fetchData() {
@@ -59,13 +66,19 @@ class Visual {
 
     const db = firebase.firestore();
     await db.collection('configs').add({
-      config: JSON.stringify(config),
+      type: config.type,
+      dataSet: config.dataSet,
+      attributes: JSON.stringify(config.attributes),
     }).then(() => {
       console.log('Config saved');
     })
     .catch((error) => {
       console.error(error);
     });
+  }
+
+  disableTransitions() {
+    this.useTransitions = false;
   }
 
   static empty(id) {
@@ -83,12 +96,18 @@ class Visual {
     }
   }
 
-  async fetchAndRender() {
+  async fetchAndRenderWithControls() {
     await this.fetchData();
 
     this.render();
     this.renderControls();
     this.generateConfigButton();
+  }
+
+  async fetchAndRender() {
+    await this.fetchData();
+
+    this.render();
   }
 
   onLoadData() {} //eslint-disable-line

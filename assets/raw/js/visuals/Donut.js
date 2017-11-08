@@ -33,6 +33,9 @@ class Donut extends Visual {
       alert('Dataset is empty!');
       return;
     }
+
+    this.disableTransitions();
+
     Visual.empty(this.renderControlsID);
     const controlsContainer = document.getElementById(this.renderControlsID);
 
@@ -166,10 +169,21 @@ class Donut extends Visual {
       .enter().append('g')
       .attr('class', 'arc ');
 
-
+    const tweenPie = function (b) {
+      const i = d3.interpolate({ startAngle: 0, endAngle: 0 }, b);
+      return function (t) { return arc(i(t)); };
+    };
     const path = g.append('path')
-      .attr('d', arc)
       .style('fill', d => colorspace(d.index));
+
+    if (this.useTransitions) {
+      path.transition()
+        .delay(500)
+        .duration(700)
+      	.attrTween('d', tweenPie);
+    } else {
+      path.attr('d', arc);
+    }
 
     if (this.attributes.label_mode == 'hover') {
       const donut = this;

@@ -5,7 +5,7 @@ import Donut from './visuals/Donut';
 import Bar from './visuals/Bar';
 import Counter from './visuals/Counter';
 import PieChartMap from './visuals/PieChartMap';
-import BubbleTimeline from './visuals/BubbleTimeline'
+import BubbleTimeline from './visuals/BubbleTimeline';
 
 function renderEditor(route) {
   updateBreadcrumbs(route);
@@ -66,7 +66,7 @@ function renderEditor(route) {
     }
 
     if (visual !== null) {
-      visual.fetchAndRender();
+      visual.fetchAndRenderWithControls();
     }
   } else {
     visualContainer.innerHTML = '<p>An error occured.';
