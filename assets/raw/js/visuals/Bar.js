@@ -98,14 +98,14 @@ class Bar extends Visual {
         this.attributes.colors.list[0] = `${value}`;
         this.render();
       });
-    editor.createCheckBox('bar-hide-empty', 'Hide empty column?',
-      (e) => {
-        const value = $(e.currentTarget).val();
-        // console.log(value);
-
-        this.attributes.hide_empty = value;
-        this.render();
-      });
+    // editor.createCheckBox('bar-hide-empty', 'Hide empty column?',
+    //   (e) => {
+    //     const value = $(e.currentTarget).val();
+    //     // console.log(value);
+    //
+    //     this.attributes.hide_empty = value;
+    //     this.render();
+    //   });
   }
 
   render() {
@@ -126,10 +126,6 @@ class Bar extends Visual {
     }
 
     const data = this.getGroupedListCounts(this.attributes.group_by_main, renderData);
-
-    if (this.attributes.hide_empty == 'true') {
-
-    }
 
     console.log(data);
     if (this.attributes.title !== '') {
