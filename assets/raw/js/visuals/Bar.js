@@ -16,8 +16,11 @@ class Bar extends Visual {
     this.applyDefaultAttributes({
       width: 600,
       height: 400,
-      font_size: '1em',
-      colors: {
+      font_size: '8',
+      x_font_rotation: 45,
+      x_font_x_offset: 0,
+      x_font_y_offset: 0,
+      ccolors: {
         mode: 'list',
         colorspace: 'hcl',
         list: [0],
@@ -51,26 +54,41 @@ class Bar extends Visual {
     for (let i = 0; i < catsRaw.length; i += 1) {
       cats.push({ value: catsRaw[i], text: catsRaw[i] });
     }
-    editor.createSelectBox('bar-column-x', 'Select main column to display', cats, this.attributes.group_by_main,
+
+    editor.createSelectBox('bar-column-main', 'Select main column to display', cats, this.attributes.group_by_main,
      (e) => {
        const value = $(e.currentTarget).val();
        this.attributes.group_by_main = value;
        this.render();
      });
-    // editor.createSelectBox('bar-column-y', 'Select stack column to display',
-    // cats, this.attributes.group_by_stack,
-    //  (e) => {
-    //    const value = $(e.currentTarget).val();
-    //    this.attributes.group_by_stack = value;
-    //    this.render();
-    //  });
-    editor.createNumberSlider('bar-color',
-      'Color range start',
-       this.attributes.color,
-        1, 359,
+
+    editor.createNumberSlider('bar-font-size',
+      'Label Font Size', this.attributes.font_size, 1, 60,
       (e) => {
         const value = $(e.currentTarget).val();
-        this.attributes.colors.list[0] = `${value}`;
+        this.attributes.font_size = `${value}`;
+        this.render();
+      });
+
+    editor.createNumberSlider('bar-x-font-rotation',
+      'X Axis Font Rotation', this.attributes.x_font_rotation, 0, 90,
+      (e) => {
+        const value = $(e.currentTarget).val();
+        this.attributes.x_font_rotation = `${value}`;
+        this.render();
+      });
+    editor.createNumberSlider('bar-x-font-x-offset',
+      'X Axis Font X Offset', this.attributes.x_font_x_offset, -50, 50,
+      (e) => {
+        const value = $(e.currentTarget).val();
+        this.attributes.x_font_x_offset = `${value}`;
+        this.render();
+      });
+    editor.createNumberSlider('bar-x-font-y-offset',
+      'X Axis Font Y Offset', this.attributes.x_font_y_offset, -50, 50,
+      (e) => {
+        const value = $(e.currentTarget).val();
+        this.attributes.x_font_y_offset = `${value}`;
         this.render();
       });
     editor.createCheckBox('bar-hide-empty', 'Hide empty column?',
@@ -87,16 +105,20 @@ class Bar extends Visual {
     // Empty the container, then place the SVG in there
     Visual.empty(this.renderID);
 
-    // console.log(this.data);
     const margin = { top: 10, right: 10, bottom: 20, left: 20 };
     const width = this.attributes.width - margin.left - margin.right;
     const height = this.attributes.height - margin.top - margin.bottom;
     const x = d3.scaleBand().rangeRound([0, width]).padding(0.1);
     const y = d3.scaleLinear().rangeRound([height, 0]);
 
-    const renderData = JSON.parse(JSON.stringify(this.data));
+    let renderData = JSON.parse(JSON.stringify(this.data));
 
-    const data = this.getGroupedListCounts(this.attributes.group_by_main);
+    if (this.isNumeric(this.attributes.group_by_main)) {
+      renderData = this.makeBin(this.attributes.group_by_main, Number(this.attributes.binSize),
+      Number(this.attributes.binStart));
+    }
+
+    const data = this.getGroupedListCounts(this.attributes.group_by_main, renderData);
 
     if (this.attributes.hide_empty == 'true') {
 
@@ -123,9 +145,15 @@ class Bar extends Visual {
     y.domain([0, d3.max(data, d => d.value)]);
 
     g.append('g')
-      .attr('class', 'axis axis--x')
-      .attr('transform', `translate(0,${height})`)
-      .call(d3.axisBottom(x));
+        .attr('class', 'axis axis--x')
+        .attr('transform', `translate(0,${height})`)
+        .call(d3.axisBottom(x))
+      .selectAll('text')
+        .attr('text-anchor', 'end')
+        .styles({
+          'font-size': `${this.attributes.font_size}pt`,
+          transform: `rotate(-${this.attributes.x_font_rotation}deg) translate(${this.attributes.x_font_x_offset}px,${this.attributes.x_font_y_offset}px)`,
+        });
 
     g.append('g')
         .attr('class', 'axis axis--y')
@@ -135,7 +163,8 @@ class Bar extends Visual {
         .attr('y', 6)
         .attr('dy', '0.71em')
         .attr('text-anchor', 'end')
-        .text('height');
+        .text('height')
+        .style('font-size', `${this.attributes.font_size}pt`);
 
     g.selectAll('.bar')
         .data(data)
@@ -144,8 +173,7 @@ class Bar extends Visual {
           .attr('x', d => x(d.key))
           .attr('y', d => y(d.value))
           .attr('width', x.bandwidth())
-          .attr('height', d => height - y(d.value))
-          .attr('fill', d3.hcl(this.attributes.colors.list[0], 100, 75).rgb());
+          .attr('height', d => height - y(d.value));
   }
 }
 
