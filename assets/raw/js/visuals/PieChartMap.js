@@ -102,46 +102,7 @@ class PieChartMap extends Visual {
     const groupColumn = this.attributes.group_column;
     const chartColumn = this.attributes.chart_column;
 
-    const groups = {};
-    for (let i = 0; i < this.data.length; i += 1) {
-      const currentItem = this.data[i];
-      const groupName = currentItem[groupColumn];
-      if (!Object.keys(groups).includes(groupName)) {
-        groups[groupName] = { data: [] };
-      }
-      groups[groupName].data.push(currentItem);
-    }
-
-    // Calculate the average latitude and longitude
-    const length = Object.keys(groups).length;
-    for (let i = 0; i < length; i += 1) {
-      const groupName = Object.keys(groups)[i];
-      const group = groups[groupName];
-      let lat = 0;
-      let lng = 0;
-      let count = 0;
-      for (let j = 0; j < group.data.length; j += 1) {
-        const currLat = parseFloat(group.data[j].lat);
-        const currLng = parseFloat(group.data[j].lng);
-        if (currLat !== 0 && currLng !== 0) {
-          lat += currLat;
-          lng += currLng;
-          count += 1;
-          console.log(`Adding ${currLat} and ${currLng} | total: ${lat / count} , ${lng / count}`);
-        }
-      }
-      if (count > 0) {
-        lat /= count;
-        lng /= count;
-      }
-      group.lat = lat;
-      group.lng = lng;
-    }
-    console.log(groups);
-
-    const svgText = '<svg width="32" height="32" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg"> ' +
-        '<circle cx="10" cy ="10" r="5" stroke="blue" stroke-width="3" fill="blue" />' +
-      '</svg>';
+    const groups = this.getGroupsByColumn(groupColumn);
 
     /* google.maps.event.addListener(this.map, 'click', (event) => {
       console.log(`Lat: ${event.latLng.lat()}| Lng: ${event.latLng.lng()}`);
@@ -176,6 +137,45 @@ class PieChartMap extends Visual {
 
       const overlay = new DivOverlay(bounds, `donut${this.currentId}`, this.map, renderfunction);
     }); */
+  }
+
+  getGroupsByColumn(groupColumn) {
+    const groups = {};
+    for (let i = 0; i < this.data.length; i += 1) {
+      const currentItem = this.data[i];
+      const groupName = currentItem[groupColumn];
+      if (!Object.keys(groups).includes(groupName)) {
+        groups[groupName] = { data: [] };
+      }
+      groups[groupName].data.push(currentItem);
+    }
+
+    // Calculate the average latitude and longitude
+    const length = Object.keys(groups).length;
+    for (let i = 0; i < length; i += 1) {
+      const groupName = Object.keys(groups)[i];
+      const group = groups[groupName];
+      let lat = 0;
+      let lng = 0;
+      let count = 0;
+      for (let j = 0; j < group.data.length; j += 1) {
+        const currLat = parseFloat(group.data[j].lat);
+        const currLng = parseFloat(group.data[j].lng);
+        if (currLat !== 0 && currLng !== 0) {
+          lat += currLat;
+          lng += currLng;
+          count += 1;
+        }
+      }
+      if (count > 0) {
+        lat /= count;
+        lng /= count;
+      }
+      group.lat = lat;
+      group.lng = lng;
+    }
+
+    return groups;
   }
 
   clearMarkers() {
