@@ -71,7 +71,7 @@ class Bar extends Visual {
     const x = d3.scaleBand().rangeRound([0, width]).padding(0.1);
     const y = d3.scaleLinear().rangeRound([height, 0]);
 
-    let renderData = JSON.parse(JSON.stringify(this.data));
+    const renderData = JSON.parse(JSON.stringify(this.data));
 
     const data = this.getGroupedListCounts(this.attributes.group_by_main);
     console.log(data);
