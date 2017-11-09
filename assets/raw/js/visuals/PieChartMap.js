@@ -56,15 +56,13 @@ class PieChartMap extends Visual {
     this.map = null;
     this.locations = [];
     this.openInfoWindow = null;
-
-    this.addMarker = this.addMarker.bind(this);
   }
 
   onLoadData() {
     const columnNames = Object.keys(this.data[0]);
     this.applyDefaultAttributes({
-      group_column: columnNames[0],
-      chart_column: columnNames[1],
+      group_column: columnNames[52],
+      chart_column: columnNames[76],
     });
   }
 
@@ -78,20 +76,12 @@ class PieChartMap extends Visual {
     const groupColumn = this.attributes.group_column;
     const chartColumn = this.attributes.chart_column;
 
-    const groups = this.getGroupsByColumn(groupColumn);
+    let groups = this.getGroupsByColumn(groupColumn);
+    groups = this.calculatePositions(groups);
+    console.log(groups);
   }
 
-  getGroupsByColumn(groupColumn) {
-    const groups = {};
-    for (let i = 0; i < this.data.length; i += 1) {
-      const currentItem = this.data[i];
-      const groupName = currentItem[groupColumn];
-      if (!Object.keys(groups).includes(groupName)) {
-        groups[groupName] = { data: [] };
-      }
-      groups[groupName].data.push(currentItem);
-    }
-
+  calculatePositions(groups) {
     // Calculate the average latitude and longitude
     const length = Object.keys(groups).length;
     for (let i = 0; i < length; i += 1) {
@@ -120,11 +110,34 @@ class PieChartMap extends Visual {
     return groups;
   }
 
+  getGroupsByColumn(groupColumn) {
+    const groups = {};
+    for (let i = 0; i < this.data.length; i += 1) {
+      const currentItem = this.data[i];
+      const groupName = currentItem[groupColumn];
+      if (!Object.keys(groups).includes(groupName)) {
+        groups[groupName] = { data: [] };
+      }
+      groups[groupName].data.push(currentItem);
+    }
+
+    return groups;
+  }
+
   clearMarkers() {
     this.locations.forEach((marker) => {
       marker.setMap(null);
     });
     this.locations = [];
+  }
+
+  getCategoryNameObjects() {
+    const columnNames = Object.keys(this.data[0]);
+    const categories = [];
+    for (let i = 0; i < columnNames.length; i += 1) {
+      categories.push({ value: columnNames[i], text: columnNames[i] });
+    }
+    return categories;
   }
 
   renderControls() {
@@ -138,11 +151,7 @@ class PieChartMap extends Visual {
 
     const editor = new EditorGenerator(controlsContainer);
 
-    const columnNames = Object.keys(this.data[0]);
-    const categories = [];
-    for (let i = 0; i < columnNames.length; i += 1) {
-      categories.push({ value: columnNames[i], text: columnNames[i] });
-    }
+    const categories = this.getCategoryNameObjects();
 
     editor.createHeader('Editor');
     editor.createSelectBox('group-column', 'Select column to group by',
