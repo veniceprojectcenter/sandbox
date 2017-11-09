@@ -7,6 +7,7 @@ import Counter from './visuals/Counter';
 import DefaultMap from './visuals/helpers/DefaultMap';
 import PieChartMap from './visuals/PieChartMap';
 import BubbleTimeline from './visuals/BubbleTimeline';
+import Isochrone from './visuals/Isochrone';
 
 function renderEditor(route) {
   updateBreadcrumbs(route);
@@ -64,6 +65,9 @@ function renderEditor(route) {
         break;
       case 'defaultmap':
         visual = new DefaultMap(config);
+        break;
+      case 'isochrone':
+        visual = new Isochrone(config);
         break;
       default:
         visualContainer.innerHTML = `<p>Error: could not find visualization: ${route[1]}.`;
