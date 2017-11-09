@@ -60,15 +60,12 @@ class PieChartMap extends Visual {
     this.addMarker = this.addMarker.bind(this);
   }
 
-  static determineColor(year) {
-    if (year) {
-      let range = parseFloat(year) - 1500;
-      if (range > 255) {
-        range = 255;
-      }
-      return `#${range.toString(16)}${(255 - range).toString(16)}FF`;
-    }
-    return '#FF0000';
+  onLoadData() {
+    const columnNames = Object.keys(this.data[0]);
+    this.applyDefaultAttributes({
+      group_column: columnNames[0],
+      chart_column: columnNames[1],
+    });
   }
 
   addMarker(data, svgText, anchorx, anchory) {
@@ -102,11 +99,23 @@ class PieChartMap extends Visual {
       styles: DefaultMapStyle,
     });
 
+    const groupColumn = this.attributes.group_column;
+    const chartColumn = this.attributes.chart_column;
+
+    const groups = {};
+    for (let i = 0; i < this.data.length; i += 1) {
+      const currentItem = this.data[i];
+      const groupName = currentItem[groupColumn];
+      if (!Object.keys(groups).includes(groupName)) {
+        groups[groupName] = [];
+      }
+    }
+
     const svgText = '<svg width="32" height="32" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg"> ' +
         '<circle cx="10" cy ="10" r="5" stroke="blue" stroke-width="3" fill="blue" />' +
       '</svg>';
 
-    google.maps.event.addListener(this.map, 'click', (event) => {
+    /* google.maps.event.addListener(this.map, 'click', (event) => {
       console.log(`Lat: ${event.latLng.lat()}| Lng: ${event.latLng.lng()}`);
       // this.addMarker({ lat: event.latLng.lat(), lng: event.latLng.lng() }, svgText, 10, 10);
       // this.addMarker({ lat: event.latLng.lat() + 0.01, lng: event.latLng.lng() + 0.01 }, svgText, 10, 10);
@@ -138,7 +147,7 @@ class PieChartMap extends Visual {
       }
 
       const overlay = new DivOverlay(bounds, `donut${this.currentId}`, this.map, renderfunction);
-    });
+    }); */
   }
 
   clearMarkers() {
@@ -148,25 +157,34 @@ class PieChartMap extends Visual {
     this.locations = [];
   }
 
-  updateOverlay() {
-    this.clearMarkers();
-
-    // Render donutcharts
-    const chartDiv = document.getElementById('donutChart');
-
-    /* chartDiv.innerHTML = '<svg width="500" height="500" viewBox="0 0 500 500" xmlns="http://www.w3.org/2000/svg"> ' +
-        '<circle cx="10" cy ="10" r="500" stroke="blue" stroke-width="3" fill="blue" />' +
-      '</svg>'; */
-  }
-
   renderControls() {
+    if (this.data.length === 0) {
+      alert('Dataset is empty!');
+      return;
+    }
+
     Visual.empty(this.renderControlsID);
     const controlsContainer = document.getElementById(this.renderControlsID);
 
     const editor = new EditorGenerator(controlsContainer);
 
+    const columnNames = Object.keys(this.data[0]);
+    const categories = [];
+    for (let i = 0; i < columnNames.length; i += 1) {
+      categories.push({ value: columnNames[i], text: columnNames[i] });
+    }
+
     editor.createHeader('Editor');
-    editor.createButton('updateOverlayButton', 'update overlay', () => { this.updateOverlay(); });
+    editor.createSelectBox('group-column', 'Select column to group by',
+      categories, this.attributes.group_column, (e) => {
+        const value = $(e.currentTarget).val();
+        this.attributes.group_column = value;
+      });
+    editor.createSelectBox('piechart-column', 'Select column to display in pie chart',
+      categories, this.attributes.chart_column, (e) => {
+        const value = $(e.currentTarget).val();
+        this.attributes.chart_column = value;
+      });
   }
 }
 

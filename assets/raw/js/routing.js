@@ -1,7 +1,7 @@
 import renderDatasetList from './dataset_list';
 import renderVisualsList from './visuals_list';
 import renderEditor from './editor';
-import Firebase from './firebase';
+import Firebase from './Firebase';
 
 
 function routing() {
