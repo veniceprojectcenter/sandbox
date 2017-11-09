@@ -2,6 +2,7 @@ import Visual from '../Visual';
 import DefaultMapStyle from './helpers/DefaultMapStyle';
 import EditorGenerator from './helpers/EditorGenerator';
 import Donut from './Donut';
+import Bar from './Bar';
 
 class DivOverlay extends google.maps.OverlayView {
   constructor(bounds, divId, map, renderfunction) {
@@ -80,7 +81,6 @@ class PieChartMap extends Visual {
     let groups = this.getGroupsByColumn(groupColumn);
     groups = PieChartMap.calculatePositions2(groups);
 
-    console.log(groups);
 
     const length = Object.keys(groups).length;
     for (let i = 0; i < length; i += 1) {
@@ -88,6 +88,47 @@ class PieChartMap extends Visual {
       const group = groups[groupName];
       this.renderChart(groupName, group, chartColumn);
     }
+
+    this.putBarChart();
+  }
+
+  putBarChart() {
+    const bounds = new google.maps.LatLngBounds(
+       new google.maps.LatLng(45.453,
+                              12.335),
+       new google.maps.LatLng(45.453 + 0.01,
+                              12.335 + 0.01),
+      );
+
+    const renderfunction = (id) => {
+      const config = {
+        dataSet: this.dataSet,
+        type: 'bar',
+        attributes: {
+          width: 600,
+          height: 400,
+          font_size: '8',
+          x_font_rotation: 45,
+          x_font_x_offset: 0,
+          x_font_y_offset: 0,
+          colors: {
+            mode: 'list',
+            colorspace: 'hcl',
+            list: [0],
+          },
+          hide_empty: '',
+          category_order: '',
+          group_by_main: this.attributes.groupColumn,
+          group_by_stack: this.attributes.chartColumn,
+        },
+      };
+
+      const donutVisual = new Bar(config);
+      donutVisual.renderID = id;
+      donutVisual.render();
+    };
+
+    new DivOverlay(bounds, 'barchart', this.map, renderfunction);
   }
 
   renderChart(groupName, group, chartColumn) {
@@ -112,6 +153,7 @@ class PieChartMap extends Visual {
           title: '',
           group_by: chartColumn,
           dontDefineDimensions: true,
+          font_size: 90,
         },
       };
 
@@ -126,9 +168,10 @@ class PieChartMap extends Visual {
     } else {
       this.currentId += 1;
     }
-    const overlay = new DivOverlay(bounds, `donut${this.currentId}`, this.map, renderfunction);
 
-    this.addMarker(group.lat, group.lng);
+    new DivOverlay(bounds, `donut${this.currentId}`, this.map, renderfunction);
+
+    // this.addMarker(group.lat, group.lng);
   }
 
   static calculatePositions(groups) {
