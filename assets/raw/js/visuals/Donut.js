@@ -15,7 +15,7 @@ class Donut extends Visual {
     this.applyDefaultAttributes({
       width: 500,
       height: 500,
-      dontDefineDimensions: false,
+      dontDefineDimensions: true,
       font_size: 30,
       color: {
         mode: 'interpolate',
@@ -178,8 +178,6 @@ class Donut extends Visual {
     }
 
     const svg = d3.select(`#${this.renderID}`).append('svg')
-      .style('width', this.attributes.width)
-      .style('height', this.attributes.height)
       .attr('class', 'donut')
       .attr('viewBox', `0 0 ${width} ${height}`)
       .append('g')
