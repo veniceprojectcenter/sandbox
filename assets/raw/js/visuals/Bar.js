@@ -111,7 +111,7 @@ class Bar extends Visual {
     const x = d3.scaleBand().rangeRound([0, width]).padding(0.1);
     const y = d3.scaleLinear().rangeRound([height, 0]);
 
-    let renderData = JSON.parse(JSON.stringify(this.data));
+    const renderData = JSON.parse(JSON.stringify(this.data));
 
     if (this.isNumeric(this.attributes.group_by_main)) {
       renderData = this.makeBin(this.attributes.group_by_main, Number(this.attributes.binSize),
