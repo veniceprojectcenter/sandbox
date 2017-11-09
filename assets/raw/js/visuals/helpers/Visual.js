@@ -285,7 +285,7 @@ class Visual {
     return groups;
   }
 
-  static groupBy(selection, data) {
+  static groupBy(selection, data = this.data) {
     const groups = {};
     for (let i = 0; i < data.length; i += 1) {
       const groupNames = Object.keys(groups);
