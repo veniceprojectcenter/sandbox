@@ -15,6 +15,7 @@ class Donut extends Visual {
     this.applyDefaultAttributes({
       width: 500,
       height: 500,
+      dontDefineDimensions: false,
       font_size: 30,
       color: {
         mode: 'interpolate',
@@ -183,6 +184,12 @@ class Donut extends Visual {
       .attr('viewBox', `0 0 ${width} ${height}`)
       .append('g')
       .attr('transform', `translate(${width / 2},${height / 2})`);
+
+    if (!this.attributes.dontDefineDimensions) {
+      d3.select(`#${this.renderID} > svg`)
+        .style('width', this.attributes.width)
+        .style('height', this.attributes.height);
+    }
 
     const g = svg.selectAll('.arc')
       .data(pie(data))
