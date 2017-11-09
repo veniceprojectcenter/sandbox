@@ -20,7 +20,7 @@ class Bar extends Visual {
       x_font_rotation: 45,
       x_font_x_offset: 0,
       x_font_y_offset: 0,
-      ccolors: {
+      colors: {
         mode: 'list',
         colorspace: 'hcl',
         list: [0],
@@ -91,14 +91,21 @@ class Bar extends Visual {
         this.attributes.x_font_y_offset = `${value}`;
         this.render();
       });
-    editor.createCheckBox('bar-hide-empty', 'Hide empty column?',
-        (e) => {
-          const value = $(e.currentTarget).val();
-          // console.log(value);
-
-          this.attributes.hide_empty = value;
-          this.render();
-        });
+    editor.createNumberSlider('bar-color',
+      'Bar Color', this.attributes.colors.list[0], 0, 359,
+      (e) => {
+        const value = $(e.currentTarget).val();
+        this.attributes.colors.list[0] = `${value}`;
+        this.render();
+      });
+    // editor.createCheckBox('bar-hide-empty', 'Hide empty column?',
+    //   (e) => {
+    //     const value = $(e.currentTarget).val();
+    //     // console.log(value);
+    //
+    //     this.attributes.hide_empty = value;
+    //     this.render();
+    //   });
   }
 
   render() {
@@ -111,7 +118,7 @@ class Bar extends Visual {
     const x = d3.scaleBand().rangeRound([0, width]).padding(0.1);
     const y = d3.scaleLinear().rangeRound([height, 0]);
 
-    const renderData = JSON.parse(JSON.stringify(this.data));
+    let renderData = JSON.parse(JSON.stringify(this.data));
 
     if (this.isNumeric(this.attributes.group_by_main)) {
       renderData = this.makeBin(this.attributes.group_by_main, Number(this.attributes.binSize),
@@ -120,11 +127,6 @@ class Bar extends Visual {
 
     const data = this.getGroupedListCounts(this.attributes.group_by_main, renderData);
 
-    if (this.attributes.hide_empty == 'true') {
-
-    }
-
-    console.log(data);
     if (this.attributes.title !== '') {
       const title = d3.select(`#${this.renderID}`).append('h3')
         .attr('class', 'visual-title');
@@ -173,7 +175,8 @@ class Bar extends Visual {
           .attr('x', d => x(d.key))
           .attr('y', d => y(d.value))
           .attr('width', x.bandwidth())
-          .attr('height', d => height - y(d.value));
+          .attr('height', d => height - y(d.value))
+          .attr('fill', d3.hcl(this.attributes.colors.list[0], 100, 75).rgb());
   }
 }
 
