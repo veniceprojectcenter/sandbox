@@ -1,4 +1,4 @@
-import Visual from '../Visual';
+import Visual from './helpers/Visual';
 import EditorGenerator from './helpers/EditorGenerator';
 
 class BubbleTimeline extends Visual {

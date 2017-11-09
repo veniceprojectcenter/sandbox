@@ -1,54 +1,12 @@
-import Visual from '../Visual';
-import DefaultMapStyle from './helpers/DefaultMapStyle';
-import EditorGenerator from './helpers/EditorGenerator';
-import Donut from './Donut';
-import Bar from './Bar';
+import Visual from './Visual';
+import DivOverlay from './DivOverlay';
+import DefaultMapStyle from './DefaultMapStyle';
+import EditorGenerator from './EditorGenerator';
+import Donut from '../Donut';
 
-class DivOverlay extends google.maps.OverlayView {
-  constructor(bounds, divId, map, renderfunction) {
-    super();
-
-    this.bounds_overlay = bounds;
-    this.divId_overlay = divId;
-    this.map_overlay = map;
-    this.div_overlay = null;
-    this.renderfunction = renderfunction;
-
-    this.setMap(map);
-  }
-
-  onAdd() {
-    const div = document.createElement('div');
-    div.id = this.divId_overlay;
-
-    div.style.borderStyle = 'none';
-    div.style.borderWidth = '0px';
-    div.style.position = 'absolute';
-
-    this.div_overlay = div;
-
-    // Add the element to the "overlayLayer" pane.
-    const panes = this.getPanes();
-    // panes.overlayLayer.appendChild(div);
-    panes.overlayMouseTarget.appendChild(div);
-
-    this.renderfunction(this.divId_overlay);
-  }
-
-  draw() {
-    const overlayProjection = this.getProjection();
-
-    const sw = overlayProjection.fromLatLngToDivPixel(this.bounds_overlay.getSouthWest());
-    const ne = overlayProjection.fromLatLngToDivPixel(this.bounds_overlay.getNorthEast());
-
-    const div = this.div_overlay;
-    div.style.left = `${sw.x}px`;
-    div.style.top = `${ne.y}px`;
-    div.style.width = `${ne.x - sw.x}px`;
-    div.style.height = `${sw.y - ne.y}px`;
-  }
-
-}
+/* This file is to be used as a default starting point for new map visualizations
+ * that feature adding divs
+*/
 
 class DefaultMap extends Visual {
   constructor(config) {
@@ -60,11 +18,8 @@ class DefaultMap extends Visual {
   }
 
   onLoadData() {
-    const columnNames = Object.keys(this.data[0]);
     this.applyDefaultAttributes({
-      chart_size: 0.005, // In degrees latitude/longitude
-      group_column: columnNames[52],
-      chart_column: columnNames[76],
+      title: '',
     });
   }
 
@@ -75,167 +30,43 @@ class DefaultMap extends Visual {
       styles: DefaultMapStyle,
     });
 
-    const groupColumn = this.attributes.group_column;
-    const chartColumn = this.attributes.chart_column;
-
-    let groups = this.getGroupsByColumn(groupColumn);
-    groups = PieChartMap.calculatePositions2(groups);
-
-
-    const length = Object.keys(groups).length;
-    for (let i = 0; i < length; i += 1) {
-      const groupName = Object.keys(groups)[i];
-      const group = groups[groupName];
-      this.renderChart(groupName, group, chartColumn);
-    }
-
-    this.putBarChart();
+    this.registerDefaultClickAction();
   }
 
-  putBarChart() {
-    const bounds = new google.maps.LatLngBounds(
-       new google.maps.LatLng(45.453,
-                              12.335),
-       new google.maps.LatLng(45.453 + 0.01,
-                              12.335 + 0.01),
+  registerDefaultClickAction() {
+    google.maps.event.addListener(this.map, 'click', (event) => {
+      console.log(`Lat: ${event.latLng.lat()}| Lng: ${event.latLng.lng()}`);
+      this.addMarker(event.latLng.lat(), event.latLng.lng());
+      this.addMarker(event.latLng.lat(), event.latLng.lng());
+
+      const bounds = new google.maps.LatLngBounds(
+       new google.maps.LatLng(event.latLng.lat(),
+                              event.latLng.lng()),
+       new google.maps.LatLng(event.latLng.lat() + 0.01,
+                              event.latLng.lng() + 0.01),
       );
 
-    const renderfunction = (id) => {
-      const config = {
-        dataSet: this.dataSet,
-        type: 'bar',
-        attributes: {
-          width: 600,
-          height: 400,
-          font_size: '8',
-          x_font_rotation: 45,
-          x_font_x_offset: 0,
-          x_font_y_offset: 0,
-          colors: {
-            mode: 'list',
-            colorspace: 'hcl',
-            list: [0],
-          },
-          hide_empty: '',
-          category_order: '',
-          group_by_main: this.attributes.groupColumn,
-          group_by_stack: this.attributes.chartColumn,
-        },
+      const renderfunction = (id) => {
+        const config = {
+          dataSet: this.dataSet,
+          type: 'donut',
+          attributes: {},
+        };
+
+        const donutVisual = new Donut(config);
+        donutVisual.loadStaticData(this.data);
+        donutVisual.renderID = id;
+        donutVisual.render();
       };
 
-      const donutVisual = new Bar(config);
-      donutVisual.renderID = id;
-      donutVisual.render();
-    };
-
-    new DivOverlay(bounds, 'barchart', this.map, renderfunction);
-  }
-
-  renderChart(groupName, group, chartColumn) {
-    const chartSize = this.attributes.chart_size;
-    console.log(`Adding chart: ${group.lat}, ${group.lng}`);
-    if (group.lat === undefined) {
-      return;
-    }
-
-    const bounds = new google.maps.LatLngBounds(
-       new google.maps.LatLng(group.lat,
-                              group.lng),
-       new google.maps.LatLng(group.lat + chartSize,
-                              group.lng + chartSize),
-      );
-
-    const renderfunction = (id) => {
-      const config = {
-        dataSet: this.dataSet,
-        type: 'donut',
-        attributes: {
-          title: '',
-          group_by: chartColumn,
-          dontDefineDimensions: true,
-          font_size: 90,
-        },
-      };
-
-      const donutVisual = new Donut(config);
-      donutVisual.loadStaticData(group.data);
-      donutVisual.renderID = id;
-      donutVisual.render();
-    };
-
-    if (this.currentId == null) {
-      this.currentId = 1;
-    } else {
-      this.currentId += 1;
-    }
-
-    new DivOverlay(bounds, `donut${this.currentId}`, this.map, renderfunction);
-
-    // this.addMarker(group.lat, group.lng);
-  }
-
-  static calculatePositions(groups) {
-    const length = Object.keys(groups).length;
-    for (let i = 0; i < length; i += 1) {
-      const groupName = Object.keys(groups)[i];
-      const group = groups[groupName];
-
-      for (let j = 0; j < group.data.length; j += 1) {
-        const currLat = parseFloat(group.data[j].lat);
-        const currLng = parseFloat(group.data[j].lng);
-        if (currLat !== 0 && currLng !== 0 &&
-            currLat !== undefined && currLng !== undefined) {
-          group.lat = currLat;
-          group.lng = currLng;
-          break;
-        }
+      if (this.currentId == null) {
+        this.currentId = 1;
+      } else {
+        this.currentId += 1;
       }
-    }
 
-    return groups;
-  }
-
-  static calculatePositions2(groups) {
-    // Calculate the average latitude and longitude
-    const length = Object.keys(groups).length;
-    for (let i = 0; i < length; i += 1) {
-      const groupName = Object.keys(groups)[i];
-      const group = groups[groupName];
-      let lat = 0;
-      let lng = 0;
-      let count = 0;
-      for (let j = 0; j < group.data.length; j += 1) {
-        const currLat = parseFloat(group.data[j].lat);
-        const currLng = parseFloat(group.data[j].lng);
-        if (currLat !== 0 && currLng !== 0) {
-          lat += currLat;
-          lng += currLng;
-          count += 1;
-        }
-      }
-      if (count > 0) {
-        lat /= count;
-        lng /= count;
-      }
-      group.lat = lat;
-      group.lng = lng;
-    }
-
-    return groups;
-  }
-
-  getGroupsByColumn(groupColumn) {
-    const groups = {};
-    for (let i = 0; i < this.data.length; i += 1) {
-      const currentItem = this.data[i];
-      const groupName = currentItem[groupColumn];
-      if (!Object.keys(groups).includes(groupName)) {
-        groups[groupName] = { data: [] };
-      }
-      groups[groupName].data.push(currentItem);
-    }
-
-    return groups;
+      new DivOverlay(bounds, `overlay${this.currentId}`, this.map, renderfunction);
+    });
   }
 
   addMarker(lat, lng) {
@@ -254,7 +85,7 @@ class DefaultMap extends Visual {
           lng: parseFloat(lng),
         },
         map: this.map,
-        title: 'tesfsdgds',
+        title: '',
         animation: google.maps.Animation.DROP,
         icon,
       });
@@ -272,15 +103,6 @@ class DefaultMap extends Visual {
     this.locations = [];
   }
 
-  getCategoryNameObjects() {
-    const columnNames = Object.keys(this.data[0]);
-    const categories = [];
-    for (let i = 0; i < columnNames.length; i += 1) {
-      categories.push({ value: columnNames[i], text: columnNames[i] });
-    }
-    return categories;
-  }
-
   renderControls() {
     if (this.data.length === 0) {
       alert('Dataset is empty!');
@@ -292,22 +114,8 @@ class DefaultMap extends Visual {
 
     const editor = new EditorGenerator(controlsContainer);
 
-    const categories = this.getCategoryNameObjects();
-
     editor.createHeader('Editor');
-    editor.createSelectBox('group-column', 'Select column to group by',
-      categories, this.attributes.group_column, (e) => {
-        const value = $(e.currentTarget).val();
-        this.attributes.group_column = value;
-        this.render();
-      });
-    editor.createSelectBox('piechart-column', 'Select column to display in pie chart',
-      categories, this.attributes.chart_column, (e) => {
-        const value = $(e.currentTarget).val();
-        this.attributes.chart_column = value;
-        this.render();
-      });
   }
 }
 
-export default PieChartMap;
+export default DefaultMap;

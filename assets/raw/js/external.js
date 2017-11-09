@@ -1,4 +1,4 @@
-import Visual from './Visual';
+import Visual from './visuals/helpers/Visual';
 import Map from './visuals/Map';
 import Donut from './visuals/Donut';
 import Bar from './visuals/Bar';

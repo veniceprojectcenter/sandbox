@@ -1,5 +1,5 @@
 import updateBreadcrumbs from './utils';
-import Visual from './Visual';
+import Visual from './visuals/helpers/Visual';
 import Map from './visuals/Map';
 import Donut from './visuals/Donut';
 import Bar from './visuals/Bar';
@@ -61,6 +61,9 @@ function renderEditor(route) {
         break;
       case 'bubble-timeline':
         visual = new BubbleTimeline(config);
+        break;
+      case 'defaultmap':
+        visual = new DefaultMap(config);
         break;
       default:
         visualContainer.innerHTML = `<p>Error: could not find visualization: ${route[1]}.`;

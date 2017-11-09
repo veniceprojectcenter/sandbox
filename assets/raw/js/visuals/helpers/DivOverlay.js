@@ -44,3 +44,5 @@ class DivOverlay extends google.maps.OverlayView {
   }
 
 }
+
+export default DivOverlay;
