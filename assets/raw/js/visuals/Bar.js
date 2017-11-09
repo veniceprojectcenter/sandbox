@@ -17,7 +17,11 @@ class Bar extends Visual {
       width: 600,
       height: 400,
       font_size: '1em',
-      colors: [],
+      colors: {
+        mode: 'list',
+        colorspace: 'hcl',
+        list: [0],
+      },
       category_order: '',
       group_by_main: defaultCat1,
       group_by_stack: defaultCat2,
@@ -52,12 +56,22 @@ class Bar extends Visual {
        this.attributes.group_by_main = value;
        this.render();
      });
-    editor.createSelectBox('bar-column-y', 'Select stack column to display', cats, this.attributes.group_by_stack,
-     (e) => {
-       const value = $(e.currentTarget).val();
-       this.attributes.group_by_stack = value;
-       this.render();
-     });
+    // editor.createSelectBox('bar-column-y', 'Select stack column to display',
+    // cats, this.attributes.group_by_stack,
+    //  (e) => {
+    //    const value = $(e.currentTarget).val();
+    //    this.attributes.group_by_stack = value;
+    //    this.render();
+    //  });
+    editor.createNumberSlider('bar-color',
+      'Color range start',
+       this.attributes.color,
+        1, 359,
+      (e) => {
+        const value = $(e.currentTarget).val();
+        this.attributes.colors.list[0] = `${value}`;
+        this.render();
+      });
   }
 
   render() {
@@ -71,7 +85,7 @@ class Bar extends Visual {
     const x = d3.scaleBand().rangeRound([0, width]).padding(0.1);
     const y = d3.scaleLinear().rangeRound([height, 0]);
 
-    let renderData = JSON.parse(JSON.stringify(this.data));
+    const renderData = JSON.parse(JSON.stringify(this.data));
 
     const data = this.getGroupedListCounts(this.attributes.group_by_main);
     console.log(data);
@@ -116,7 +130,8 @@ class Bar extends Visual {
           .attr('x', d => x(d.key))
           .attr('y', d => y(d.value))
           .attr('width', x.bandwidth())
-          .attr('height', d => height - y(d.value));
+          .attr('height', d => height - y(d.value))
+          .attr('fill', d3.hcl(this.attributes.colors.list[0], 100, 75).rgb());
   }
 }
 
