@@ -68,30 +68,6 @@ class PieChartMap extends Visual {
     });
   }
 
-  addMarker(data, svgText, anchorx, anchory) {
-    if (data.lat && data.lng) {
-      const icon = {
-        url: `data:image/svg+xml;utf-8, ${svgText}`,
-        anchor: new google.maps.Point(anchorx, anchory),
-      };
-
-      const marker = new google.maps.Marker({
-        position: {
-          lat: parseFloat(data.lat),
-          lng: parseFloat(data.lng),
-        },
-        map: this.map,
-        title: data.wiki_friendly_title,
-        animation: google.maps.Animation.DROP,
-        icon,
-      });
-
-      this.locations.push(
-        marker,
-      );
-    }
-  }
-
   render() {
     this.map = new google.maps.Map(document.getElementById(this.renderID), {
       center: { lat: 45.435, lng: 12.335 },
@@ -103,40 +79,6 @@ class PieChartMap extends Visual {
     const chartColumn = this.attributes.chart_column;
 
     const groups = this.getGroupsByColumn(groupColumn);
-
-    /* google.maps.event.addListener(this.map, 'click', (event) => {
-      console.log(`Lat: ${event.latLng.lat()}| Lng: ${event.latLng.lng()}`);
-      // this.addMarker({ lat: event.latLng.lat(), lng: event.latLng.lng() }, svgText, 10, 10);
-      // this.addMarker({ lat: event.latLng.lat() + 0.01, lng: event.latLng.lng() + 0.01 }, svgText, 10, 10);
-
-      const bounds = new google.maps.LatLngBounds(
-       new google.maps.LatLng(event.latLng.lat(),
-                              event.latLng.lng()),
-       new google.maps.LatLng(event.latLng.lat() + 0.01,
-                              event.latLng.lng() + 0.01),
-      );
-
-      const renderfunction = (id) => {
-        const config = {
-          dataSet: this.dataSet,
-          type: 'donut',
-          attributes: {},
-        };
-
-        const donutVisual = new Donut(config);
-        donutVisual.loadStaticData(this.data);
-        donutVisual.renderID = id;
-        donutVisual.render();
-      };
-
-      if (this.currentId == null) {
-        this.currentId = 1;
-      } else {
-        this.currentId += 1;
-      }
-
-      const overlay = new DivOverlay(bounds, `donut${this.currentId}`, this.map, renderfunction);
-    }); */
   }
 
   getGroupsByColumn(groupColumn) {
@@ -213,6 +155,7 @@ class PieChartMap extends Visual {
       categories, this.attributes.chart_column, (e) => {
         const value = $(e.currentTarget).val();
         this.attributes.chart_column = value;
+        this.render();
       });
   }
 }
