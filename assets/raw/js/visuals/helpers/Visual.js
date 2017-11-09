@@ -261,6 +261,44 @@ class Visual {
     return minVal;
   }
 
+  /* Input: A list of selections (columns to group by), and the data objects (rows)
+   * Output: A nested list of lists (n levels deep where n is the number of
+   * selection columns in the input)
+   */
+  static groupByMultiple(selections, data) {
+    const groups = Visual.groupBy(selections.shift(), data);
+    return Visual.groupByMultipleHelper(selections, groups);
+  }
+
+  static groupByMultipleHelper(selections, groups) {
+    const selection = selections.shift();
+    const groupNames = Object.keys(groups);
+    for (let i = 0; i < groupNames.length; i += 1) {
+      const currentGroupName = groupNames[i];
+      const currentGroup = groups[currentGroupName];
+      groups[currentGroupName] = Visual.groupBy(selection, currentGroup);
+      if (selections.length > 0) {
+        groups[currentGroupName] =
+          Visual.groupByMultipleHelper(selections.slice(), groups[currentGroupName]);
+      }
+    }
+    return groups;
+  }
+
+  static groupBy(selection, data) {
+    const groups = {};
+    for (let i = 0; i < data.length; i += 1) {
+      const groupNames = Object.keys(groups);
+      const currentData = data[i];
+      const currentDataGroup = currentData[selection];
+      if (!groupNames.includes(currentDataGroup)) {
+        groups[currentDataGroup] = [];
+      }
+      groups[currentDataGroup].push(currentData);
+    }
+    return groups;
+  }
+
 
 }
 
