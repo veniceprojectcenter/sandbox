@@ -78,7 +78,7 @@ class PieChartMap extends Visual {
     const chartColumn = this.attributes.chart_column;
 
     let groups = this.getGroupsByColumn(groupColumn);
-    groups = PieChartMap.calculatePositions(groups);
+    groups = PieChartMap.calculatePositions2(groups);
 
     console.log(groups);
 
@@ -111,6 +111,7 @@ class PieChartMap extends Visual {
         attributes: {
           title: '',
           group_by: chartColumn,
+          dontDefineDimensions: true,
         },
       };
 
