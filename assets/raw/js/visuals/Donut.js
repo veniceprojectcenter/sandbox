@@ -15,7 +15,7 @@ class Donut extends Visual {
     this.applyDefaultAttributes({
       width: 500,
       height: 500,
-      dontDefineDimensions: true,
+      dontDefineDimensions: false,
       font_size: 30,
       color: {
         mode: 'interpolate',
