@@ -107,9 +107,37 @@ class PieChartMap extends Visual {
       const currentItem = this.data[i];
       const groupName = currentItem[groupColumn];
       if (!Object.keys(groups).includes(groupName)) {
-        groups[groupName] = [];
+        groups[groupName] = { data: [] };
       }
+      groups[groupName].data.push(currentItem);
     }
+
+    // Calculate the average latitude and longitude
+    const length = Object.keys(groups).length;
+    for (let i = 0; i < length; i += 1) {
+      const groupName = Object.keys(groups)[i];
+      const group = groups[groupName];
+      let lat = 0;
+      let lng = 0;
+      let count = 0;
+      for (let j = 0; j < group.data.length; j += 1) {
+        const currLat = parseFloat(group.data[j].lat);
+        const currLng = parseFloat(group.data[j].lng);
+        if (currLat !== 0 && currLng !== 0) {
+          lat += currLat;
+          lng += currLng;
+          count += 1;
+          console.log(`Adding ${currLat} and ${currLng} | total: ${lat / count} , ${lng / count}`);
+        }
+      }
+      if (count > 0) {
+        lat /= count;
+        lng /= count;
+      }
+      group.lat = lat;
+      group.lng = lng;
+    }
+    console.log(groups);
 
     const svgText = '<svg width="32" height="32" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg"> ' +
         '<circle cx="10" cy ="10" r="5" stroke="blue" stroke-width="3" fill="blue" />' +
@@ -179,6 +207,7 @@ class PieChartMap extends Visual {
       categories, this.attributes.group_column, (e) => {
         const value = $(e.currentTarget).val();
         this.attributes.group_column = value;
+        this.render();
       });
     editor.createSelectBox('piechart-column', 'Select column to display in pie chart',
       categories, this.attributes.chart_column, (e) => {
