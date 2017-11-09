@@ -4,6 +4,7 @@ import Map from './visuals/Map';
 import Donut from './visuals/Donut';
 import Bar from './visuals/Bar';
 import Counter from './visuals/Counter';
+import DefaultMap from './visuals/helpers/DefaultMap';
 import PieChartMap from './visuals/PieChartMap';
 import BubbleTimeline from './visuals/BubbleTimeline';
 
