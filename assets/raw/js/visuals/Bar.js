@@ -118,7 +118,7 @@ class Bar extends Visual {
     const x = d3.scaleBand().rangeRound([0, width]).padding(0.1);
     const y = d3.scaleLinear().rangeRound([height, 0]);
 
-    const renderData = JSON.parse(JSON.stringify(this.data));
+    let renderData = JSON.parse(JSON.stringify(this.data));
 
     if (this.isNumeric(this.attributes.group_by_main)) {
       renderData = this.makeBin(this.attributes.group_by_main, Number(this.attributes.binSize),
@@ -127,7 +127,6 @@ class Bar extends Visual {
 
     const data = this.getGroupedListCounts(this.attributes.group_by_main, renderData);
 
-    console.log(data);
     if (this.attributes.title !== '') {
       const title = d3.select(`#${this.renderID}`).append('h3')
         .attr('class', 'visual-title');
