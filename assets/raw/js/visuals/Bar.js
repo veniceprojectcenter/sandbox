@@ -22,6 +22,7 @@ class Bar extends Visual {
         colorspace: 'hcl',
         list: [0],
       },
+      hide_empty: '',
       category_order: '',
       group_by_main: defaultCat1,
       group_by_stack: defaultCat2,
@@ -72,6 +73,14 @@ class Bar extends Visual {
         this.attributes.colors.list[0] = `${value}`;
         this.render();
       });
+    editor.createCheckBox('bar-hide-empty', 'Hide empty column?',
+        (e) => {
+          const value = $(e.currentTarget).val();
+          // console.log(value);
+
+          this.attributes.hide_empty = value;
+          this.render();
+        });
   }
 
   render() {
@@ -88,6 +97,11 @@ class Bar extends Visual {
     const renderData = JSON.parse(JSON.stringify(this.data));
 
     const data = this.getGroupedListCounts(this.attributes.group_by_main);
+
+    if (this.attributes.hide_empty == 'true') {
+
+    }
+
     console.log(data);
     if (this.attributes.title !== '') {
       const title = d3.select(`#${this.renderID}`).append('h3')

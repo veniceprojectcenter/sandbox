@@ -18,6 +18,12 @@ class EditorGenerator {
     console.log(`Using ${current}`);
   }
 
+  createCheckBox(id, title, onOptionChanged) {
+    const context = { id, title };
+    this.handlebarsWithContext('check-entry', context);
+    $(`#${id}-check`).change(onOptionChanged);
+  }
+
   createNumberSlider(id, title, current, min, max, onValueChanged) {
     const context = { id, title, min, max, current };
     this.handlebarsWithContext('range-entry', context);
