@@ -61,6 +61,7 @@ class PieChartMap extends Visual {
   onLoadData() {
     const columnNames = Object.keys(this.data[0]);
     this.applyDefaultAttributes({
+      chart_size: 0.005, // In degrees latitude/longitude
       group_column: columnNames[52],
       chart_column: columnNames[76],
     });
@@ -77,11 +78,80 @@ class PieChartMap extends Visual {
     const chartColumn = this.attributes.chart_column;
 
     let groups = this.getGroupsByColumn(groupColumn);
-    groups = this.calculatePositions(groups);
+    groups = PieChartMap.calculatePositions(groups);
+
     console.log(groups);
+
+    const length = Object.keys(groups).length;
+    for (let i = 0; i < length; i += 1) {
+      const groupName = Object.keys(groups)[i];
+      const group = groups[groupName];
+      this.renderChart(groupName, group, chartColumn);
+    }
   }
 
-  calculatePositions(groups) {
+  renderChart(groupName, group, chartColumn) {
+    const chartSize = this.attributes.chart_size;
+    console.log(`Adding chart: ${group.lat}, ${group.lng}`);
+    if (group.lat === undefined) {
+      return;
+    }
+
+    const bounds = new google.maps.LatLngBounds(
+       new google.maps.LatLng(group.lat,
+                              group.lng),
+       new google.maps.LatLng(group.lat + chartSize,
+                              group.lng + chartSize),
+      );
+
+    const renderfunction = (id) => {
+      const config = {
+        dataSet: this.dataSet,
+        type: 'donut',
+        attributes: {
+          title: '',
+          group_by: chartColumn,
+        },
+      };
+
+      const donutVisual = new Donut(config);
+      donutVisual.loadStaticData(group.data);
+      donutVisual.renderID = id;
+      donutVisual.render();
+    };
+
+    if (this.currentId == null) {
+      this.currentId = 1;
+    } else {
+      this.currentId += 1;
+    }
+    const overlay = new DivOverlay(bounds, `donut${this.currentId}`, this.map, renderfunction);
+
+    this.addMarker(group.lat, group.lng);
+  }
+
+  static calculatePositions(groups) {
+    const length = Object.keys(groups).length;
+    for (let i = 0; i < length; i += 1) {
+      const groupName = Object.keys(groups)[i];
+      const group = groups[groupName];
+
+      for (let j = 0; j < group.data.length; j += 1) {
+        const currLat = parseFloat(group.data[j].lat);
+        const currLng = parseFloat(group.data[j].lng);
+        if (currLat !== 0 && currLng !== 0 &&
+            currLat !== undefined && currLng !== undefined) {
+          group.lat = currLat;
+          group.lng = currLng;
+          break;
+        }
+      }
+    }
+
+    return groups;
+  }
+
+  static calculatePositions2(groups) {
     // Calculate the average latitude and longitude
     const length = Object.keys(groups).length;
     for (let i = 0; i < length; i += 1) {
@@ -122,6 +192,33 @@ class PieChartMap extends Visual {
     }
 
     return groups;
+  }
+
+  addMarker(lat, lng) {
+    if (lat && lng) {
+      const icon = {
+        path: 'M-20,0a5,5 0 1,0 10,0a5,5 0 1,0 -10,0',
+        fillColor: 'blue',
+        fillOpacity: 0.6,
+        anchor: new google.maps.Point(0, 0),
+        strokeWeight: 0,
+        scale: 1,
+      };
+      const marker = new google.maps.Marker({
+        position: {
+          lat: parseFloat(lat),
+          lng: parseFloat(lng),
+        },
+        map: this.map,
+        title: 'tesfsdgds',
+        animation: google.maps.Animation.DROP,
+        icon,
+      });
+
+      this.locations.push({
+        marker,
+      });
+    }
   }
 
   clearMarkers() {
