@@ -133,8 +133,8 @@ class Donut extends Visual {
   render() {
     // Empty the container, then place the SVG in there
     Visual.empty(this.renderID);
-    const width = this.attributes.width;
-    const height = this.attributes.height;
+    const width = 500;
+    const height = 500;
     const radius = Math.min(width, height) / 2;
     this.renderData = JSON.parse(JSON.stringify(this.data));
     if (this.isNumeric(this.attributes.group_by)) {
@@ -177,10 +177,10 @@ class Donut extends Visual {
     }
 
     const svg = d3.select(`#${this.renderID}`).append('svg')
-      .attr('width', width)
-      .attr('height', height)
+      .style('width', this.attributes.width)
+      .style('height', this.attributes.height)
       .attr('class', 'donut')
-      .attr('viewBox', '0 0 500 500')
+      .attr('viewBox', `0 0 ${width} ${height}`)
       .append('g')
       .attr('transform', `translate(${width / 2},${height / 2})`);
 
@@ -218,8 +218,8 @@ class Donut extends Visual {
 
         const text = svg.append('text')
           .attr('id', 'donut-tooltip')
+          .attr('class', 'hovertext')
           .style('font-size', `${donut.attributes.font_size}pt`)
-          .style('pointer-events', 'none')
           .text(d.data.key);
         if (coordinates[0] > 0) {
           text.attr('transform', `translate(${coordinates[0] - 5} ${coordinates[1]})`)

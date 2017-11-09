@@ -20,7 +20,12 @@ class Bar extends Visual {
       x_font_rotation: 45,
       x_font_x_offset: 0,
       x_font_y_offset: 0,
-      colors: [],
+      ccolors: {
+        mode: 'list',
+        colorspace: 'hcl',
+        list: [0],
+      },
+      hide_empty: '',
       category_order: '',
       group_by_main: defaultCat1,
       group_by_stack: defaultCat2,
@@ -86,6 +91,14 @@ class Bar extends Visual {
         this.attributes.x_font_y_offset = `${value}`;
         this.render();
       });
+    editor.createCheckBox('bar-hide-empty', 'Hide empty column?',
+        (e) => {
+          const value = $(e.currentTarget).val();
+          // console.log(value);
+
+          this.attributes.hide_empty = value;
+          this.render();
+        });
   }
 
   render() {
@@ -98,7 +111,7 @@ class Bar extends Visual {
     const x = d3.scaleBand().rangeRound([0, width]).padding(0.1);
     const y = d3.scaleLinear().rangeRound([height, 0]);
 
-    let renderData = JSON.parse(JSON.stringify(this.data));
+    const renderData = JSON.parse(JSON.stringify(this.data));
 
     if (this.isNumeric(this.attributes.group_by_main)) {
       renderData = this.makeBin(this.attributes.group_by_main, Number(this.attributes.binSize),
@@ -107,6 +120,11 @@ class Bar extends Visual {
 
     const data = this.getGroupedListCounts(this.attributes.group_by_main, renderData);
 
+    if (this.attributes.hide_empty == 'true') {
+
+    }
+
+    console.log(data);
     if (this.attributes.title !== '') {
       const title = d3.select(`#${this.renderID}`).append('h3')
         .attr('class', 'visual-title');
