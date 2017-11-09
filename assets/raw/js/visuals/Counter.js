@@ -23,17 +23,17 @@ class Counter extends Visual {
   renderControls() {
     this.attributes.columnOptions = Object.keys(this.data[0]);
     this.renderControlsDiv = document.getElementById(this.renderControlsID);
-    this.renderControlsDiv.innerHTML = 'Controls';
-    const brake = document.createElement('br');
-    this.renderControlsDiv.appendChild(brake);
-    this.renderControlsDiv.innerHTML += 'Attributes to group by';
+    this.renderControlsDiv.classList.add('row');
     this.controlCheckboxDiv = document.createElement('div');
     this.controlCheckboxDiv2 = document.createElement('div');
+    this.controlCheckboxDiv.classList.add('col-md-6');
+    this.controlCheckboxDiv2.classList.add('col-md-6');
+    this.controlCheckboxDiv.innerHTML = '<h4 style = "text-align: center">Controls</h4> <br> Properties to Group Data by <br><br>';
     this.renderControlsDiv.appendChild(this.controlCheckboxDiv);
     this.renderControlsDiv.appendChild(this.controlCheckboxDiv2);
     this.createCheckBoxList(this.controlCheckboxDiv, this.getCategoricalData(), 'selectOptionsCheck');
     this.createBinCheckBoxList(this.controlCheckboxDiv, this.getNumericData(), 'selectBinOptionsCheck');
-    this.controlCheckboxDiv2.innerHTML = 'Attributes to Display';
+    this.controlCheckboxDiv2.innerHTML = '<br><br><br> Properties of Data to Appear in Table<br>';
     this.controlCheckboxDiv2.appendChild(document.createElement('br'));
     this.createCheckBoxList(this.controlCheckboxDiv2, this.data, 'displayCheck');
   }
@@ -43,7 +43,7 @@ class Counter extends Visual {
   render() {
     let renderData = JSON.parse(JSON.stringify(this.data));
     this.renderDiv = document.getElementById(this.renderID);
-    this.renderDiv.innerHTML = 'Select an Attribute to Group By:';
+    this.renderDiv.innerHTML = 'Select a Propertiy to Group Data by:';
     this.tableDiv = document.createElement('div');
     this.aSelect = document.createElement('select');
     this.checkboxDiv = document.createElement('div');
@@ -196,10 +196,12 @@ class Counter extends Visual {
         tempInput.type = 'checkbox';
         tempInput.id = `${checkClass}${i}`;
         tempInput.classList.add(checkClass);
+
         tempInput.addEventListener('change', () => { this.updateRender(); });
         const newlabel = document.createElement('Label');
         newlabel.setAttribute('for', tempInput.id);
         newlabel.innerHTML = keys[i];
+        newlabel.style.marginBottom = '20px';
         checkDiv.append(tempInput);
         checkDiv.append(newlabel);
         checkDiv.append(document.createElement('br'));
@@ -234,6 +236,7 @@ class Counter extends Visual {
         binStartLabel.setAttribute('for', binStart.id);
         binStartLabel.innerHTML = 'Bin Start:';
         binStartLabel.style.padding = '10px';
+
         const binSize = document.createElement('input');
         binSize.classList.add('binSize');
         binSize.type = 'number';

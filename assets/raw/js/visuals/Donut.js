@@ -98,6 +98,26 @@ class Donut extends Visual {
        this.render();
      });
 
+    editor.createNumberSlider('donut-color-start',
+      'Color range start',
+       this.attributes.color.range[0],
+        1, 359,
+      (e) => {
+        const value = $(e.currentTarget).val();
+        this.attributes.color.range[0] = `${value}`;
+        this.render();
+      });
+
+    editor.createNumberSlider('donut-color-end',
+        'Color range end',
+         this.attributes.color.range[0],
+          1, 359,
+        (e) => {
+          const value = $(e.currentTarget).val();
+          this.attributes.color.range[1] = `${value}`;
+          this.render();
+        });
+
     const displayModes = [
       { value: 'hover', text: 'On Hover' },
       { value: 'always', text: 'Always Visible' },

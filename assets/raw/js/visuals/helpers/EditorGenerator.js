@@ -24,6 +24,10 @@ class EditorGenerator {
     $(`#${id} input`).on('input', onValueChanged);
   }
 
+  createRangeSlider() {
+
+  }
+
   createHeader(text) {
     const context = { text };
     this.handlebarsWithContext('header-one', context);
