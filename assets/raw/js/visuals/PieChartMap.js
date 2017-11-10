@@ -88,10 +88,12 @@ class PieChartMap extends Visual {
 
   renderChart(groupName, group, chartColumn) {
     const chartSize = this.attributes.chart_size;
-    console.log(`Adding chart: ${group.lat}, ${group.lng}`);
     if (group.lat === undefined) {
       return;
     }
+
+    group.lat -= 0.0032; // These values are used to center the chart divs
+    group.lng -= 0.0037; // to where they look like they should actually be.
 
     const bounds = new google.maps.LatLngBounds(
        new google.maps.LatLng(group.lat,
@@ -108,7 +110,7 @@ class PieChartMap extends Visual {
           title: '',
           group_by: chartColumn,
           dontDefineDimensions: true,
-          font_size: 90,
+          font_size: 60,
         },
       };
 

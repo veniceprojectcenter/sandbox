@@ -11,6 +11,7 @@ class Donut extends Visual {
       }
     }
     this.orderedGroups = null;
+    this.changedBins = false;
     this.applyDefaultAttributes({
       width: 500,
       height: 500,
@@ -42,7 +43,6 @@ class Donut extends Visual {
     const editor = new EditorGenerator(controlsContainer);
 
     editor.createHeader('Configure Donut Chart');
-
     editor.createTextField('donut-title', 'Donut Title', (e) => {
       this.attributes.title = $(e.currentTarget).val();
       this.render();
@@ -58,8 +58,8 @@ class Donut extends Visual {
      (e) => {
        const value = $(e.currentTarget).val();
        this.attributes.group_by = value;
-       this.renderColorOrder(editor, true);
        if (this.isNumeric(this.attributes.group_by)) {
+         this.changedBins = true;
          document.getElementById('bin-start').style.display = 'inherit';
          document.getElementById('bin-size').style.display = 'inherit';
          $(document.getElementById('bin-size-field')).val(1);
@@ -74,14 +74,21 @@ class Donut extends Visual {
          document.getElementById('bin-size').style.display = 'none';
        }
        this.render();
+       this.renderColorOrder(editor, true);
      });
     editor.createTextField('bin-start', 'Start Value of first Group', (e) => {
       this.attributes.binStart = $(e.currentTarget).val();
+      this.changedBins = true;
       this.render();
+      this.renderColorOrder(editor, true);
+      this.changedBins = false;
     });
     editor.createTextField('bin-size', 'Group Size', (e) => {
       this.attributes.binSize = $(e.currentTarget).val();
+      this.changedBins = true;
       this.render();
+      this.renderColorOrder(editor, true);
+      this.changedBins = false;
     });
     const start = document.getElementById('bin-start');
     const size = document.getElementById('bin-size');
@@ -128,6 +135,7 @@ class Donut extends Visual {
         this.attributes.label_mode = value;
         this.render();
       });
+    this.renderColorOrder(editor, true);
   }
 
   render() {
@@ -136,13 +144,14 @@ class Donut extends Visual {
     const width = 500;
     const height = 500;
     const radius = Math.min(width, height) / 2;
+    let data = null;
     this.renderData = JSON.parse(JSON.stringify(this.data));
     if (this.isNumeric(this.attributes.group_by)) {
       this.renderData = this.makeBin(this.attributes.group_by, Number(this.attributes.binSize),
       Number(this.attributes.binStart));
     }
-    let data = null;
-    if (this.orderedGroups == null) {
+
+    if (this.changedBins || this.orderedGroups == null) {
       data = this.getGroupedListCounts(this.attributes.group_by, this.renderData);
     } else {
       data = [];

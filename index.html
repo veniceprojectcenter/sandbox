@@ -45,10 +45,37 @@
   </div>
 </script>
 
+<<<<<<< HEAD
+<script id="select-multiple-entry" type="text/x-handlebars-template">
+  <div class="input-field" id="{{id}}">
+    <select multiple id="{{id}}-select">
+      <option value="" disabled>Choose your option</option>
+      {{#each options}}
+      <option value="{{value}}">{{text}}</option>
+      {{/each}}
+    </select>
+    <label>{{title}}</label>
+  </div>
+</script>
+
+<script id="select-multiple-bin-entry" type="text/x-handlebars-template">
+  <div class="input-field" id="{{id}}">
+    <select multiple id="{{id}}-select">
+      <option value="" disabled>Choose your option</option>
+      {{#each options}}
+      <option value="{{value}}">{{text}} <div class="input-field" id="{{id}}">
+        <input type="text" id="{{id}}-field">
+        <label for="{{id}}-field">{{title}}</label>
+      </div></option>
+      {{/each}}
+    </select>
+    <label>{{title}}</label>
+=======
 <script id="check-entry" type="text/x-handlebars-template">
   <div class="input-field" id="{{id}}">
     <input id="{{id}}-check" type="checkbox"></input>
     <label for="{{id}}-check">{{title}}</label>
+>>>>>>> 53e4e6f4d7e3a46cc5fabb3472e94c3693a56dfa
   </div>
 </script>
 

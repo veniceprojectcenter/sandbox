@@ -17,6 +17,13 @@ class EditorGenerator {
     $(`#${id}-select`).change(onOptionChanged);
     console.log(`Using ${current}`);
   }
+  createMultipleSelectBox(id, title, options, current, onOptionChanged) {
+    const context = { id, title, options };
+    this.handlebarsWithContext('select-multiple-entry', context);
+    $(`#${id}-select`).val(current).material_select();
+    $(`#${id}-select`).change(onOptionChanged);
+    console.log(`Using ${current}`);
+  }
 
   createCheckBox(id, title, onOptionChanged) {
     const context = { id, title };
