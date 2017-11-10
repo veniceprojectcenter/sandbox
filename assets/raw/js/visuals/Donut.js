@@ -1,4 +1,4 @@
-import Visual from '../Visual';
+import Visual from './helpers/Visual';
 import EditorGenerator from './helpers/EditorGenerator';
 
 class Donut extends Visual {
@@ -8,7 +8,6 @@ class Donut extends Visual {
       const cats = Object.keys(this.data[0]);
       if (cats.length > 1) {
         defaultCat = cats[1];
-        console.log(`Using ${defaultCat}`);
       }
     }
     this.orderedGroups = null;
@@ -16,6 +15,7 @@ class Donut extends Visual {
     this.applyDefaultAttributes({
       width: 500,
       height: 500,
+      dontDefineDimensions: true,
       font_size: 30,
       color: {
         mode: 'interpolate',
@@ -105,6 +105,26 @@ class Donut extends Visual {
        this.render();
      });
 
+    editor.createNumberSlider('donut-color-start',
+      'Color range start',
+       this.attributes.color.range[0],
+        1, 359,
+      (e) => {
+        const value = $(e.currentTarget).val();
+        this.attributes.color.range[0] = `${value}`;
+        this.render();
+      });
+
+    editor.createNumberSlider('donut-color-end',
+        'Color range end',
+         this.attributes.color.range[0],
+          1, 359,
+        (e) => {
+          const value = $(e.currentTarget).val();
+          this.attributes.color.range[1] = `${value}`;
+          this.render();
+        });
+
     const displayModes = [
       { value: 'hover', text: 'On Hover' },
       { value: 'always', text: 'Always Visible' },
@@ -121,8 +141,8 @@ class Donut extends Visual {
   render() {
     // Empty the container, then place the SVG in there
     Visual.empty(this.renderID);
-    const width = this.attributes.width;
-    const height = this.attributes.height;
+    const width = 500;
+    const height = 500;
     const radius = Math.min(width, height) / 2;
     let data = null;
     this.renderData = JSON.parse(JSON.stringify(this.data));
@@ -166,12 +186,16 @@ class Donut extends Visual {
     }
 
     const svg = d3.select(`#${this.renderID}`).append('svg')
-      .attr('width', width)
-      .attr('height', height)
       .attr('class', 'donut')
-      .attr('viewBox', '0 0 500 500')
+      .attr('viewBox', `0 0 ${width} ${height}`)
       .append('g')
       .attr('transform', `translate(${width / 2},${height / 2})`);
+
+    if (!this.attributes.dontDefineDimensions) {
+      d3.select(`#${this.renderID} > svg`)
+        .style('width', this.attributes.width)
+        .style('height', this.attributes.height);
+    }
 
     const g = svg.selectAll('.arc')
       .data(pie(data))
@@ -189,7 +213,7 @@ class Donut extends Visual {
       path.transition()
         .delay(500)
         .duration(700)
-      	.attrTween('d', tweenPie);
+        .attrTween('d', tweenPie);
     } else {
       path.attr('d', arc);
     }
@@ -207,8 +231,8 @@ class Donut extends Visual {
 
         const text = svg.append('text')
           .attr('id', 'donut-tooltip')
+          .attr('class', 'hovertext')
           .style('font-size', `${donut.attributes.font_size}pt`)
-          .style('pointer-events', 'none')
           .text(d.data.key);
         if (coordinates[0] > 0) {
           text.attr('transform', `translate(${coordinates[0] - 5} ${coordinates[1]})`)

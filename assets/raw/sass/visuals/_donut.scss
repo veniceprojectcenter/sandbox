@@ -9,6 +9,12 @@ svg.donut {
   .arc path {
     // stroke: $white;
   }
+  
+  text.hovertext
+  {
+    text-shadow: 0px 0px 15px white, 0px 0px 15px white;
+    pointer-events: none;
+  }
 }
 
 .visual-title {

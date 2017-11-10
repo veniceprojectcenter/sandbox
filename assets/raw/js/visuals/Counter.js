@@ -1,5 +1,6 @@
-import Visual from '../Visual';
+
 import EditorGenerator from './helpers/EditorGenerator';
+import Visual from './helpers/Visual';
 
 class Counter extends Visual {
   constructor(config) {
