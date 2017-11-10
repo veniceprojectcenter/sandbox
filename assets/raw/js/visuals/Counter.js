@@ -1,4 +1,4 @@
-import Visual from '../Visual';
+import Visual from './helpers/Visual';
 
 class Counter extends Visual {
   constructor(config) {

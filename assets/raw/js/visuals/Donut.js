@@ -1,4 +1,4 @@
-import Visual from '../Visual';
+import Visual from './helpers/Visual';
 import EditorGenerator from './helpers/EditorGenerator';
 
 class Donut extends Visual {
@@ -8,7 +8,6 @@ class Donut extends Visual {
       const cats = Object.keys(this.data[0]);
       if (cats.length > 1) {
         defaultCat = cats[1];
-        console.log(`Using ${defaultCat}`);
       }
     }
     this.orderedGroups = null;
@@ -205,7 +204,7 @@ class Donut extends Visual {
       path.transition()
         .delay(500)
         .duration(700)
-      	.attrTween('d', tweenPie);
+        .attrTween('d', tweenPie);
     } else {
       path.attr('d', arc);
     }
