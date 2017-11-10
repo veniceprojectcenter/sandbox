@@ -26,7 +26,16 @@ class Isochrone extends Visual {
       styles: DefaultMapStyle,
     });
 
-    this.registerDefaultClickAction();
+    for (let i = 0; i < this.data.length; i += 1) {
+      const currentBridge = this.data[i];
+      const currentSteps = currentBridge['Total Number of Steps'];
+      if (currentSteps === '0' || currentSteps === undefined || currentSteps === '') {
+        this.addMarker(currentBridge.lat, currentBridge.lng);
+        console.log(`Lat: ${currentBridge.lat}, lng: ${currentBridge.lng}`);
+      }
+    }
+
+    // this.registerDefaultClickAction();
   }
 
   registerDefaultClickAction() {
