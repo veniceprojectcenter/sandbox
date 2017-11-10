@@ -234,7 +234,7 @@ class Visual {
   *Takes a columnName, binSize, and start of first bin and
   *returns a copy of data with the volume
   */
-  makeBin(columnName, binSize, start = 0, theData = this.data, maxBins = 25) {
+  makeBin(columnName, binSize, start = 0, theData = this.data, maxBins = 100) {
     const binData = JSON.parse(JSON.stringify(theData));
     const binArray = [];
     for (let i = 0; i <= maxBins; i += 1) {
