@@ -1,4 +1,5 @@
 import Visual from '../Visual';
+import EditorGenerator from './helpers/EditorGenerator';
 
 class Counter extends Visual {
   constructor(config) {
@@ -6,6 +7,7 @@ class Counter extends Visual {
     this.attributes.columnOptions = null;
     this.attributes.binSizes = [];
     this.attributes.binStarts = [];
+    this.attributes.displayColumns = [];
     this.applyDefaultAttributes({
       width: 500,
       height: 500,
@@ -23,19 +25,40 @@ class Counter extends Visual {
   renderControls() {
     this.attributes.columnOptions = Object.keys(this.data[0]);
     this.renderControlsDiv = document.getElementById(this.renderControlsID);
-    this.renderControlsDiv.classList.add('row');
-    this.controlCheckboxDiv = document.createElement('div');
-    this.controlCheckboxDiv2 = document.createElement('div');
-    this.controlCheckboxDiv.classList.add('col-md-6');
-    this.controlCheckboxDiv2.classList.add('col-md-6');
-    this.controlCheckboxDiv.innerHTML = '<h4 style = "text-align: center">Controls</h4> <br> Properties to Group Data by <br><br>';
-    this.renderControlsDiv.appendChild(this.controlCheckboxDiv);
-    this.renderControlsDiv.appendChild(this.controlCheckboxDiv2);
-    this.createCheckBoxList(this.controlCheckboxDiv, this.getCategoricalData(), 'selectOptionsCheck');
-    this.createBinCheckBoxList(this.controlCheckboxDiv, this.getNumericData(), 'selectBinOptionsCheck');
-    this.controlCheckboxDiv2.innerHTML = '<br><br><br> Properties of Data to Appear in Table<br>';
-    this.controlCheckboxDiv2.appendChild(document.createElement('br'));
-    this.createCheckBoxList(this.controlCheckboxDiv2, this.data, 'displayCheck');
+    let cats = [];
+    let rawCats = Object.keys(this.getCategoricalData()[0]);
+    rawCats = rawCats.concat(Object.keys(this.getNumericData()[0]));
+    for (let i = 0; i < rawCats.length; i += 1) {
+      cats.push({ value: rawCats[i], text: rawCats[i] });
+    }
+    this.binDiv = document.createElement('div');
+    const editor = new EditorGenerator(this.renderControlsDiv);
+    this.renderControlsDiv.innerHTML = '<h4 style = "text-align: center">Controls</h4> <br>';
+    editor.createMultipleSelectBox('check1', 'Group By Options', cats, 'durg1', (e) => {
+      this.attributes.columnOptions = $(e.currentTarget).val();
+      this.binDiv.innerHTML = '';
+      for (let i = 0; i < this.attributes.columnOptions.length; i += 1) {
+        if (this.isNumeric(this.attributes.columnOptions[i])) {
+          const tempDiv = document.createElement('div');
+          this.binDiv.appendChild(tempDiv);
+          tempDiv.innerHTML = this.attributes.columnOptions[i];
+          const binEditor = new EditorGenerator(tempDiv);
+          binEditor.createTextField(`${i}start`, 'Enter Start of First Bin }', null);
+          binEditor.createTextField(`${i}size`, 'Enter Size of Bins }', null);
+        }
+      }
+      this.render();
+    });
+    this.renderControlsDiv.appendChild(this.binDiv);
+    cats = [];
+    for (let i = 0; i < this.attributes.columnOptions.length; i += 1) {
+      cats.push({ value: this.attributes.columnOptions[i],
+        text: this.attributes.columnOptions[i] });
+    }
+    editor.createMultipleSelectBox('check2', 'Show Data', cats, 'durg', (e) => {
+      this.attributes.displayColumns = $(e.currentTarget).val();
+      this.render();
+    });
   }
   /** Renders the App section
   *
@@ -54,7 +77,6 @@ class Counter extends Visual {
     this.aSelect.classList.add('browser-default');
     this.aSelect.id = 'AttributeSelect';
     this.tableDiv.id = 'tableDiv';
-  //  this.aSelect.type = 'select';
     if (this.attributes.columnOptions === null) {
       this.attributes.columnOptions = [];
     }
@@ -145,14 +167,6 @@ class Counter extends Visual {
 *
 */
   updateRender() {
-    const selectOptions = document.getElementsByClassName('selectOptionsCheck');
-    this.attributes.columnOptions = [];
-    for (let i = 0; i < selectOptions.length; i += 1) {
-      if (selectOptions[i].checked) {
-        this.attributes.columnOptions[this.attributes.columnOptions.length] =
-        selectOptions[i].value;
-      }
-    }
     const displayBinOptions = document.getElementsByClassName('selectBinOptionsCheck');
     for (let i = 0; i < displayBinOptions.length; i += 1) {
       if (displayBinOptions[i].checked) {
@@ -189,12 +203,15 @@ class Counter extends Visual {
   */
   createCheckBoxList(checkDiv, theData, checkClass) {
     const keys = Object.keys(theData[0]);
+    const select = document.createElement('select');
+    // select.attributes.push('multiple');
+    checkDiv.appendChild(select);
     for (let i = 0; i < keys.length; i += 1) {
       if (keys[i] !== '') {
-        const tempInput = document.createElement('input');
+        const tempInput = document.createElement('option');
         tempInput.value = keys[i];
-        tempInput.type = 'checkbox';
-        tempInput.id = `${checkClass}${i}`;
+        tempInput.innerHTML = keys[i];
+    /**    tempInput.id = `${checkClass}${i}`;
         tempInput.classList.add(checkClass);
 
         tempInput.addEventListener('change', () => { this.updateRender(); });
@@ -202,9 +219,11 @@ class Counter extends Visual {
         newlabel.setAttribute('for', tempInput.id);
         newlabel.innerHTML = keys[i];
         newlabel.style.marginBottom = '20px';
-        checkDiv.append(tempInput);
+
         checkDiv.append(newlabel);
         checkDiv.append(document.createElement('br'));
+        */
+        select.appendChild(tempInput);
       }
     }
   }
