@@ -26,6 +26,12 @@ class Isochrone extends Visual {
       styles: DefaultMapStyle,
     });
 
+    for (let i = 0; i < this.data.length; i += 1) {
+      const point = this.data[i];
+      console.log(`${point.lat}, ${point.lng}`);
+      this.addMarker(parseFloat(point.lat), parseFloat(point.lng), 'blue');
+    }
+
     this.registerDefaultClickAction();
   }
 
