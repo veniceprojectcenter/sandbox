@@ -35,6 +35,26 @@ class Isochrone extends Visual {
       this.addMarker(event.latLng.lat(), event.latLng.lng());
       this.addMarker(event.latLng.lat(), event.latLng.lng());
 
+
+      const directions = new google.maps.DirectionsService();
+
+      directions.route({
+        origin: new google.maps.LatLng(this.lastLat,
+                               this.lastLat),
+        destination: new google.maps.LatLng(event.latLng.lat(),
+                               event.latLng.lng()),
+        travelMode: 'WALKING',
+      }, (response, status) => {
+        if (status === 'OK') {
+          console.log(response);
+        } else {
+          window.alert(`Directions request failed due to ${status}`);
+        }
+      });
+
+      this.lastLat = event.latLng.lat();
+      this.lastLng = event.latLng.lng();
+
       const bounds = new google.maps.LatLngBounds(
        new google.maps.LatLng(event.latLng.lat(),
                               event.latLng.lng()),
