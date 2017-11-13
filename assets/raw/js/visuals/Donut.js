@@ -14,7 +14,7 @@ class Donut extends Visual {
     this.applyDefaultAttributes({
       width: 500,
       height: 500,
-      dontDefineDimensions: true,
+      dontDefineDimensions: false,
       font_size: 30,
       color: {
         mode: 'interpolate',
@@ -150,7 +150,7 @@ class Donut extends Visual {
         data.push({ key: this.orderedGroups[i].key, value: this.orderedGroups[i].value.length });
       }
     }
-    console.log(data);
+
     let colorspace = null;
     if (this.attributes.color.mode === 'interpolate') {
       const crange = this.attributes.color.range;
