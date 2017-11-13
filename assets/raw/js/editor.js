@@ -8,6 +8,7 @@ import DefaultMap from './visuals/helpers/DefaultMap';
 import PieChartMap from './visuals/PieChartMap';
 import BubbleTimeline from './visuals/BubbleTimeline';
 import Isochrone from './visuals/Isochrone';
+import Bridgesnodata from './visuals/Bridgesnodata';
 
 function renderEditor(route) {
   updateBreadcrumbs(route);
@@ -68,6 +69,9 @@ function renderEditor(route) {
         break;
       case 'isochrone':
         visual = new Isochrone(config);
+        break;
+      case 'bridgesnodata':
+        visual = new Bridgesnodata(config);
         break;
       default:
         visualContainer.innerHTML = `<p>Error: could not find visualization: ${route[1]}.`;
