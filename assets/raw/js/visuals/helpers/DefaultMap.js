@@ -36,7 +36,7 @@ class DefaultMap extends Visual {
       styles: DefaultMapStyle,
     });
 
-    this.registerDefaultClickAction();
+    // this.registerDefaultClickAction();
   }
 
   registerDefaultClickAction() {

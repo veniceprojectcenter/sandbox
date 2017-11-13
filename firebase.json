@@ -1,22 +1,24 @@
 {
-  "database": {
-    "rules": "database.rules.json"
-  },
-  "firestore": {
-    "rules": "firestore.rules",
-    "indexes": "firestore.indexes.json"
-  },
   "hosting": {
-    "public": ".",
+    "public": "/",
     "ignore": [
       "firebase.json",
-      "**/.*",
-      "**/node_modules/**",
-      "**/*.log",
+      ".*",
+      "node_modules/**",
+      ".git/**",
+      "gulpfile.js",
+      "server.js",
+      "package.json",
+      "README.md",
+      "import.html",
+      "csv/**",
       "assets/raw/**"
+    ],
+    "rewrites": [
+      {
+        "source": "**",
+        "destination": "/index.html"
+      }
     ]
-  },
-  "storage": {
-    "rules": "storage.rules"
   }
 }
