@@ -32,21 +32,26 @@ class Isochrone extends Visual {
   registerDefaultClickAction() {
     google.maps.event.addListener(this.map, 'click', (event) => {
       console.log(`Lat: ${event.latLng.lat()}| Lng: ${event.latLng.lng()}`);
-      this.addMarker(event.latLng.lat(), event.latLng.lng());
-      this.addMarker(event.latLng.lat(), event.latLng.lng());
+      this.addMarker(event.latLng.lat(), event.latLng.lng(), 'black');
 
 
       const directions = new google.maps.DirectionsService();
 
       directions.route({
         origin: new google.maps.LatLng(this.lastLat,
-                               this.lastLat),
+                               this.lastLng),
         destination: new google.maps.LatLng(event.latLng.lat(),
                                event.latLng.lng()),
         travelMode: 'WALKING',
       }, (response, status) => {
         if (status === 'OK') {
           console.log(response);
+          const steps = response.routes[0].legs[0].steps;
+          for (let i = 0; i < steps.length; i += 1) {
+            const end = steps[i].end_point;
+            this.addMarker(end.lat(), end.lng(), 'green');
+            console.log(`${end.lat()}, ${end.lng()}`);
+          }
         } else {
           window.alert(`Directions request failed due to ${status}`);
         }
