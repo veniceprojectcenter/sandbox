@@ -28,8 +28,5 @@
     "gulp-sass": "^3.1.0",
     "gulp-sourcemaps": "^2.6.0",
     "vinyl-source-stream": "^1.1.0"
-  },
-  "dependencies": {
-    "pick-a-color": "^1.2.3"
   }
 }
