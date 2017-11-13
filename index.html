@@ -9,10 +9,12 @@
 
 <!-- Materialize -->
 <link href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/css/materialize.css" rel="stylesheet" />
-
+<!-- Color picker -->
+<link rel="stylesheet" href="css/bootstrap-4.0.0.min.css">
+<link rel="stylesheet" href="css/pick-a-color-1.2.3.min.css">
 
 <!-- Custom Styles -->
-<link rel="stylesheet" type="text/css" href="assets/prod/css/style.css">
+<link rel="stylesheet" type="text/css" href="/assets/prod/css/style.css">
 
 
 <header>
@@ -45,12 +47,18 @@
   </div>
 </script>
 
-<script id="check-entry" type="text/x-handlebars-template">
+<script id="select-multiple-entry" type="text/x-handlebars-template">
   <div class="input-field" id="{{id}}">
-    <input id="{{id}}-check" type="checkbox"></input>
-    <label for="{{id}}-check">{{title}}</label>
+    <select multiple id="{{id}}-select">
+      <option value="" disabled>Choose your option</option>
+      {{#each options}}
+      <option value="{{value}}">{{text}}</option>
+      {{/each}}
+    </select>
+    <label>{{title}}</label>
   </div>
 </script>
+
 
 <script id="header-one" type="text/x-handlebars-template">
   <h4 class="form-header">{{text}}</h4>
@@ -72,6 +80,7 @@
 <script id="moveable" type="text/x-handlebars-template">
   <div class = 'mv' id="{{id}}-div">
     <label  for="{{id}}-up">{{title}}</label>
+    <input type="color" value="{{color}}" id="{{id}}-color" class="pick-a-color form-control">
     <input  id="{{id}}-up" category='{{title}}' type="button" value="↑" />
     <input  id="{{id}}-dn" category='{{title}}' type="button" value="↓" />
     <p>
@@ -82,10 +91,15 @@
 <script type="text/javascript" src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/js/materialize.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.0.11/handlebars.js"></script>
-<script src='https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/9.0.0/nouislider.js'></script>
 <script src="https://www.gstatic.com/firebasejs/4.6.0/firebase.js"></script>
 <script src="https://www.gstatic.com/firebasejs/4.6.0/firebase-firestore.js"></script>
 <script src="https://d3js.org/d3.v4.min.js"></script>
-<script src="https://d3js.org/d3-selection-multi.v1.min.js"></script>
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDIWqV-QwqZnTNmvw7v89usuReSZOMzoKo"></script>
+<<<<<<< HEAD
 <script src="assets/prod/js/app.bundle.js"></script>
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.0/jquery.min.js"></script>
+<script src="js/tinycolor-0.9.14.min.js"></script>
+<script src="js/pick-a-color-1.2.3.min.js"></script>
+=======
+<script src="/assets/prod/js/app.bundle.js"></script>
+>>>>>>> 96c279ffe01c8c8a4aba11c8a0139b0fbc0232d9

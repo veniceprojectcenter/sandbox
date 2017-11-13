@@ -11,6 +11,10 @@ class Donut extends Visual {
       }
     }
     this.orderedGroups = null;
+    this.changedBins = false;
+    this.colors = ['#ffffff', '#000000', '#ff0000', '#00ff00', '#0000ff', '#ffff00', '#ff00ff', '#00ffff',
+      '#ffffff', '#000000', '#ff0000', '#00ff00', '#0000ff', '#ffff00', '#ff00ff', '#00ffff',
+      '#ffffff', '#000000', '#ff0000', '#00ff00', '#0000ff', '#ffff00', '#ff00ff', '#00ffff'];
     this.applyDefaultAttributes({
       width: 500,
       height: 500,
@@ -42,7 +46,6 @@ class Donut extends Visual {
     const editor = new EditorGenerator(controlsContainer);
 
     editor.createHeader('Configure Donut Chart');
-
     editor.createTextField('donut-title', 'Donut Title', (e) => {
       this.attributes.title = $(e.currentTarget).val();
       this.render();
@@ -58,7 +61,7 @@ class Donut extends Visual {
      (e) => {
        const value = $(e.currentTarget).val();
        this.attributes.group_by = value;
-       this.renderColorOrder(editor, true);
+       this.changedBins = true;
        if (this.isNumeric(this.attributes.group_by)) {
          document.getElementById('bin-start').style.display = 'inherit';
          document.getElementById('bin-size').style.display = 'inherit';
@@ -74,14 +77,22 @@ class Donut extends Visual {
          document.getElementById('bin-size').style.display = 'none';
        }
        this.render();
+       this.renderColorOrder(editor, true);
+       this.changedBins = false;
      });
     editor.createTextField('bin-start', 'Start Value of first Group', (e) => {
       this.attributes.binStart = $(e.currentTarget).val();
+      this.changedBins = true;
       this.render();
+      this.renderColorOrder(editor, true);
+      this.changedBins = false;
     });
     editor.createTextField('bin-size', 'Group Size', (e) => {
       this.attributes.binSize = $(e.currentTarget).val();
+      this.changedBins = true;
       this.render();
+      this.renderColorOrder(editor, true);
+      this.changedBins = false;
     });
     const start = document.getElementById('bin-start');
     const size = document.getElementById('bin-size');
@@ -128,6 +139,7 @@ class Donut extends Visual {
         this.attributes.label_mode = value;
         this.render();
       });
+    this.renderColorOrder(editor, true);
   }
 
   render() {
@@ -136,13 +148,14 @@ class Donut extends Visual {
     const width = 500;
     const height = 500;
     const radius = Math.min(width, height) / 2;
+    let data = null;
     this.renderData = JSON.parse(JSON.stringify(this.data));
     if (this.isNumeric(this.attributes.group_by)) {
       this.renderData = this.makeBin(this.attributes.group_by, Number(this.attributes.binSize),
       Number(this.attributes.binStart));
     }
-    let data = null;
-    if (this.orderedGroups == null) {
+
+    if (this.changedBins || this.orderedGroups == null) {
       data = this.getGroupedListCounts(this.attributes.group_by, this.renderData);
     } else {
       data = [];
@@ -153,10 +166,10 @@ class Donut extends Visual {
 
     let colorspace = null;
     if (this.attributes.color.mode === 'interpolate') {
-      const crange = this.attributes.color.range;
-      const color = d3.scaleLinear().domain([0, data.length]).range([crange[0], crange[1]]);
-      colorspace = function (n) {
-        return d3.hcl(color(n), 100, 75).rgb();
+      // const crange = this.attributes.color.range;
+      // const color = d3.scaleLinear().domain([0, data.length]).range([crange[0], crange[1]]);
+      colorspace = function (n, colors) {
+        return d3.rgb(colors[n]);
       };
     } else {
       console.log('Error no color mode found');
@@ -198,7 +211,7 @@ class Donut extends Visual {
       return function (t) { return arc(i(t)); };
     };
     const path = g.append('path')
-      .style('fill', d => colorspace(d.index));
+      .style('fill', d => colorspace(d.index, this.colors));
 
     if (this.useTransitions) {
       path.transition()
@@ -260,7 +273,7 @@ class Donut extends Visual {
       this.orderedGroups = this.getGroupedList(this.attributes.group_by, this.renderData);
     }
     for (let i = 0; i < this.orderedGroups.length; i += 1) {
-      editor.createMoveableList(`Moveable${i}`, this.orderedGroups[i].key, (e) => {
+      editor.createMoveableList(`Moveable${i}`, this.orderedGroups[i].key, this.colors[i], (e) => {
         const direction = $(e.currentTarget).val();
         for (let j = 0; j < this.orderedGroups.length; j += 1) {
           if (this.orderedGroups[j].key ===
@@ -285,6 +298,11 @@ class Donut extends Visual {
           }
         }
         this.renderColorOrder(editor, false);
+        this.render();
+      }, (e) => {
+        const color = $(e.currentTarget).val();
+        const id = e.currentTarget.id.substring(8);
+        this.colors[parseInt(id)] = color;
         this.render();
       });
     }
