@@ -26,20 +26,7 @@ class Isochrone extends Visual {
       styles: DefaultMapStyle,
     });
 
-    const colors = ['red', 'green', 'blue', 'orange', 'yellow', 'black', 'lime', 'purple', 'fuschia', 'magenta', 'light blue'];
-    let j = 0;
-    for (let i = 0; i < this.data.length; i += 1) {
-      const currentBridge = this.data[i];
-      const currentSteps = currentBridge['Total Number of Steps'];
-      if (currentSteps === '0' || currentSteps === undefined || currentSteps === '') {
-        const color = colors[j];
-        j += 1;
-        this.addMarker(currentBridge.lat, currentBridge.lng, color);
-        console.log(`Lat: ${currentBridge.lat}, lng: ${currentBridge.lng}, bridge name: ${currentBridge['Bridge Name']}, color: ${color}`);
-      }
-    }
-
-    // this.registerDefaultClickAction();
+    this.registerDefaultClickAction();
   }
 
   registerDefaultClickAction() {
@@ -74,7 +61,7 @@ class Isochrone extends Visual {
         this.currentId += 1;
       }
 
-      new DivOverlay(bounds, `overlay${this.currentId}`, this.map, renderfunction);
+      // new DivOverlay(bounds, `overlay${this.currentId}`, this.map, renderfunction);
     });
   }
 
