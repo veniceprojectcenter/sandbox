@@ -28,9 +28,12 @@
     "gulp-sass": "^3.1.0",
     "gulp-sourcemaps": "^2.6.0",
     "vinyl-source-stream": "^1.1.0"
+<<<<<<< HEAD
   },
   "dependencies": {
     "d3-selection-multi": "^1.0.1",
     "pick-a-color": "^1.2.3"
+=======
+>>>>>>> 106bab0193fcddca4b6248f8c3bc3c1acf802523
   }
 }
