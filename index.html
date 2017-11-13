@@ -56,6 +56,12 @@
   </div>
 </script>
 
+<script id="check-entry" type="text/x-handlebars-template">
+  <form action="#" id="{{id}}">
+    <input type="checkbox" id="{{id}}-checkbox" {{checked}}/>
+    <label for="{{id}}-checkbox">{{title}}</label>
+  </div>
+</script>
 
 <script id="header-one" type="text/x-handlebars-template">
   <h4 class="form-header">{{text}}</h4>
