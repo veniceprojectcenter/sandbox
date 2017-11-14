@@ -12,6 +12,24 @@ class Firebase {
     };
     firebase.initializeApp(config);
   }
+
+  static login(email, password, success, failure) {
+    firebase.auth().onAuthStateChanged((user) => {
+      if (user) {
+        if (success) {
+          success();
+        }
+      } else {
+        firebase.auth().signInWithEmailAndPassword(email, password).catch((e) => {
+          console.error(e);
+          Materialize.toast('Unable to Log In', 3000);
+          if (failure) {
+            failure();
+          }
+        });
+      }
+    });
+  }
 }
 
 
