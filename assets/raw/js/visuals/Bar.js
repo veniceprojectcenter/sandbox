@@ -207,6 +207,28 @@ class Bar extends Visual {
         .attr('y', d => y(d[1]))
         .attr('height', d => y(d[0]) - y(d[1]))
         .attr('width', x.bandwidth());
+
+    let legend = svg.append('g')
+      .attr('font-family', 'sans-serif')
+      .attr('font-size', 10)
+      .attr('text-anchor', 'end')
+      .selectAll('g')
+      .data(keys.slice())
+      .enter()
+      .append('g')
+        .attr('transform', (d, i) => `translate(0,${(keys.length - i) * 20})`);
+
+    legend.append('rect')
+      .attr('x', width - 19)
+      .attr('width', 19)
+      .attr('height', 19)
+      .attr('fill', (d, e) => z(e));
+
+    legend.append('text')
+      .attr('x', width - 24)
+      .attr('y', 9.5)
+      .attr('dy', '0.32em')
+      .text(d => d);
   }
 }
 
