@@ -99,7 +99,7 @@ class Isochrone extends Visual {
   // Consumes a list of lat, lng pairs and produces a list of bridges
   // near the given path
   getBridgePath(path) {
-    for (let i = 0; i < path.length - 1; i += 2) {
+    for (let i = 0; i < path.length - 1; i += 1) {
       const first = path[i];
       const second = path[i + 1];
       const pointsOnPath = this.getPointsOnPath(first, second);
