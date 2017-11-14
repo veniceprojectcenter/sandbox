@@ -35,48 +35,88 @@ class Isochrone extends Visual {
 
   registerDefaultClickAction() {
     google.maps.event.addListener(this.map, 'click', (event) => {
-      console.log(`Lat: ${event.latLng.lat()}| Lng: ${event.latLng.lng()}`);
+      this.clickAction(event);
+    });
+  }
+
+  clickAction(event) {
+    console.log(`Lat: ${event.latLng.lat()}| Lng: ${event.latLng.lng()}`);
+
+    if (this.numTimesClicked == null) {
       this.addMarker(event.latLng.lat(), event.latLng.lng(), 'black');
-
-      if (this.numTimesClicked == null) {
-        this.lastLat = event.latLng.lat();
-        this.lastLng = event.latLng.lng();
-        this.numTimesClicked = 1;
-        return;
-      }
-
-      const directions = new google.maps.DirectionsService();
-
-      directions.route({
-        origin: new google.maps.LatLng(this.lastLat,
-                               this.lastLng),
-        destination: new google.maps.LatLng(event.latLng.lat(),
-                               event.latLng.lng()),
-        travelMode: 'WALKING',
-      }, (response, status) => {
-        if (status === 'OK') {
-          const steps = response.routes[0].legs[0].steps;
-          console.log(steps);
-          for (let i = 0; i < steps.length; i += 1) {
-            const start = steps[i].start_point;
-            const end = steps[i].end_point;
-            this.addMarker(end.lat(), end.lng(), 'green');
-            const points = this.getDataPointsWithinParallel(start, end);
-          }
-        } else {
-          window.alert(`Directions request failed due to ${status}`);
-        }
-      });
-
       this.lastLat = event.latLng.lat();
       this.lastLng = event.latLng.lng();
+      this.numTimesClicked = 1;
+      return;
+    } else if (this.numTimesClicked !== null) {
+      this.numTimesClicked += 1;
+      if (this.numTimesClicked % 2 === 1) { // If numTimesClicked is odd
+        this.clearMarkers('green');
+        this.clearMarkers('black');
+        this.lastLat = event.latLng.lat();
+        this.lastLng = event.latLng.lng();
+        this.addMarker(event.latLng.lat(), event.latLng.lng(), 'black');
+        return;
+      }
+      this.addMarker(event.latLng.lat(), event.latLng.lng(), 'black');
+    }
+
+    this.markRoute(this.lastLat, this.lastLng, event.latLng.lat(), event.latLng.lng());
+
+    this.lastLat = event.latLng.lat();
+    this.lastLng = event.latLng.lng();
+  }
+
+  markRoute(sourceLat, sourceLng, destinationLat, destinationLng) {
+    const directions = new google.maps.DirectionsService();
+    directions.route({
+      origin: new google.maps.LatLng(sourceLat,
+                             sourceLng),
+      destination: new google.maps.LatLng(destinationLat,
+                             destinationLng),
+      travelMode: 'WALKING',
+    }, (response, status) => {
+      if (status === 'OK') {
+        const steps = response.routes[0].legs[0].steps;
+        const returnSteps = [];
+        for (let i = 0; i < steps.length; i += 1) {
+          // const start = steps[i].start_point;
+          const end = steps[i].end_point;
+          this.addMarker(end.lat(), end.lng(), 'green');
+          returnSteps.push({ lat: end.lat(), lng: end.lng() });
+        }
+        this.getBridgePath(returnSteps);
+      } else {
+        window.alert(`Directions request failed due to ${status}`);
+      }
+    });
+  }
+
+  // Consumes a list of lat, lng pairs and produces a list of bridges
+  // near the given path
+  getBridgePath(path) {
+    const first = path[0];
+    const second = path[1];
+    const pointsOnPath = this.getPointsOnPath(first, second);
+    pointsOnPath.forEach((point) => {
+      this.addMarker(point.lat, point.lng, 'red');
     });
   }
 
   // start and end are objects with .lat() and .lng() functions
-  getDataPointsWithinParallel(start, end) {
+  getPointsOnPath(start, end) {
     // Find the slope between the points
-    const slope = (end.lat() - start.lat()) / (end.lng() - start.lng());
+    const slope = (end.lat - start.lat) / (end.lng - start.lng);
+  }
+
+  // Removes all markers from the map of the given color
+  clearMarkers(color) {
+    for (let i = 0; i < this.locations.length; i += 1) {
+      const marker = this.locations[i].marker;
+      if (marker.icon.fillColor === color) {
+        marker.setMap(null);
+      }
+    }
   }
 
   addMarker(lat, lng, color) {
@@ -106,7 +146,7 @@ class Isochrone extends Visual {
     }
   }
 
-  clearMarkers() {
+  clearAllMarkers() {
     this.locations.forEach((marker) => {
       marker.setMap(null);
     });
