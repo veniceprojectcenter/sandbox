@@ -25,22 +25,32 @@ class Visual {
       this.data = JSON.parse(sessionStorage[this.dataSet]);
       this.onLoadData();
     } else {
-      const db = firebase.firestore();
       const data = [];
-      await db.collection(`datasets/${this.dataSet}/entries`).get().then((querySnapshot) => {
-        querySnapshot.forEach((doc) => {
-          const entry = doc.data();
-          entry.id = doc.id;
-          data.push(entry);
-        });
-        this.data = data;
-        sessionStorage[this.dataSet] = JSON.stringify(this.data);
-        this.onLoadData();
+      const db = firebase.database();
+      let dataIDs = [];
+
+      await db.ref(`/groups/${this.dataSet.replace(/-/g, ' ')}`).once('value').then((results) => {
+        const group = results.val();
+        dataIDs = group.member_list.split(',');
       })
       .catch((error) => {
         Materialize.toast('Error Fetching Data', 3000);
         console.error(error);
       });
+
+      const promises = [];
+      for (let i = 0; i < dataIDs.length; i += 1) {
+        promises.push(db.ref(`/data/${dataIDs[i]}`).once('value').then((result) => {
+          const entry = result.val().data;
+          entry.id = result.key;
+          data.push(entry);
+        }));
+      }
+
+      await Promise.all(promises);
+      this.data = data;
+      sessionStorage[this.dataSet] = JSON.stringify(this.data);
+      this.onLoadData();
     }
   }
 
@@ -196,8 +206,8 @@ class Visual {
       attributes: this.attributes,
     };
 
-    const db = firebase.firestore();
-    await db.collection('configs').add({
+    const db = firebase.database();
+    await db.ref('/viz').push({
       type: config.type,
       dataSet: config.dataSet,
       attributes: JSON.stringify(config.attributes),
@@ -367,6 +377,9 @@ class Visual {
   filterCategorical(filters, data = this.data) {
     const categoricalData = JSON.parse(JSON.stringify(data));
     for (let i = 0; i < filters.length; i += 1) {
+      if (filters[i].categories.length === 0) {
+        continue;
+      }
       for (let j = 0; j < categoricalData.length; j += 1) {
         const filterColumn = filters[i].column;
         if (categoricalData[j] !== null && !filters[i].categories.includes(data[j][filterColumn])) {
@@ -385,9 +398,12 @@ class Visual {
     const numericalData = JSON.parse(JSON.stringify(data));
 
     for (let i = 0; i < filters.length; i += 1) {
-      for (let j = 0; j < this.data.length; j += 1) {
+      for (let j = 0; j < data.length; j += 1) {
         const filterColumn = filters[i].column;
-        const x = this.data[j][filterColumn];
+        if (data[j] == null) {
+          continue;
+        }
+        const x = data[j][filterColumn];
         switch (true) {
           case (filters[i].operation === '='):
             if (numericalData[j] !== null && x !== filters[i].value) {
