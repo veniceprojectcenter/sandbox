@@ -162,7 +162,7 @@ class Visual {
     const saveSVGButton = document.createElement('button');
     saveSVGButton.className = 'btn waves-effect';
     saveSVGButton.innerText = 'Export for Illustrator';
-    saveSVGButton.addEventListener('click', (e) => {
+    saveSVGButton.addEventListener('click', () => {
       const svg = $(`#${this.renderID} svg`);
       if (svg.length === 1) {
         svg.attr('version', '1.1')
@@ -377,13 +377,13 @@ class Visual {
   filterCategorical(filters, data = this.data) {
     const categoricalData = JSON.parse(JSON.stringify(data));
     for (let i = 0; i < filters.length; i += 1) {
-      if (filters[i].categories.length === 0) {
-        continue;
-      }
-      for (let j = 0; j < categoricalData.length; j += 1) {
-        const filterColumn = filters[i].column;
-        if (categoricalData[j] !== null && !filters[i].categories.includes(data[j][filterColumn])) {
-          delete categoricalData[j];
+      if (filters[i].categories.length !== 0) {
+        for (let j = 0; j < categoricalData.length; j += 1) {
+          const filterColumn = filters[i].column;
+          if (categoricalData[j] !== null &&
+            !filters[i].categories.includes(data[j][filterColumn])) {
+            delete categoricalData[j];
+          }
         }
       }
     }
@@ -400,43 +400,42 @@ class Visual {
     for (let i = 0; i < filters.length; i += 1) {
       for (let j = 0; j < data.length; j += 1) {
         const filterColumn = filters[i].column;
-        if (data[j] == null) {
-          continue;
-        }
-        const x = data[j][filterColumn];
-        switch (true) {
-          case (filters[i].operation === '='):
-            if (numericalData[j] !== null && x !== filters[i].value) {
-              delete numericalData[j];
-            }
-            break;
-          case (filters[i].operation === '!='):
-            if (numericalData[j] !== null && x === filters[i].value) {
-              delete numericalData[j];
-            }
-            break;
-          case (filters[i].operation === '<'):
-            if (numericalData[j] !== null && x >= filters[i].value) {
-              delete numericalData[j];
-            }
-            break;
-          case (filters[i].operation === '<='):
-            if (numericalData[j] !== null && x > filters[i].value) {
-              delete numericalData[j];
-            }
-            break;
-          case (filters[i].operation === '>'):
-            if (numericalData[j] !== null && x <= filters[i].value) {
-              delete numericalData[j];
-            }
-            break;
-          case (filters[i].operation === '>='):
-            if (numericalData[j] !== null && x < filters[i].value) {
-              delete numericalData[j];
-            }
-            break;
-          default:
-            break;
+        if (data[j] !== null) {
+          const x = data[j][filterColumn];
+          switch (true) {
+            case (filters[i].operation === '='):
+              if (numericalData[j] !== null && x !== filters[i].value) {
+                delete numericalData[j];
+              }
+              break;
+            case (filters[i].operation === '!='):
+              if (numericalData[j] !== null && x === filters[i].value) {
+                delete numericalData[j];
+              }
+              break;
+            case (filters[i].operation === '<'):
+              if (numericalData[j] !== null && x >= filters[i].value) {
+                delete numericalData[j];
+              }
+              break;
+            case (filters[i].operation === '<='):
+              if (numericalData[j] !== null && x > filters[i].value) {
+                delete numericalData[j];
+              }
+              break;
+            case (filters[i].operation === '>'):
+              if (numericalData[j] !== null && x <= filters[i].value) {
+                delete numericalData[j];
+              }
+              break;
+            case (filters[i].operation === '>='):
+              if (numericalData[j] !== null && x < filters[i].value) {
+                delete numericalData[j];
+              }
+              break;
+            default:
+              break;
+          }
         }
       }
     }
@@ -503,7 +502,8 @@ class Visual {
     return Visual.groupByMultipleHelper(selections, groups);
   }
 
-  static groupByMultipleHelper(selections, groups) {
+  static groupByMultipleHelper(selections, groupsCollection) {
+    const groups = groupsCollection;
     const selection = selections.shift();
     const groupNames = Object.keys(groups);
     for (let i = 0; i < groupNames.length; i += 1) {
