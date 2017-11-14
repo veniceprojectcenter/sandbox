@@ -11,7 +11,7 @@ class Isochrone extends Visual {
     this.locations = [];
     this.openInfoWindow = null;
 
-    this.DISTANCE_THRESHOLD = 0.0005;
+    this.DISTANCE_THRESHOLD_PATH = 0.0005;
   }
 
   onLoadData() {
@@ -55,6 +55,7 @@ class Isochrone extends Visual {
       if (this.numTimesClicked % 2 === 1) { // If numTimesClicked is odd
         this.clearMarkers('green');
         this.clearMarkers('black');
+        this.clearMarkers('red');
         this.lastLat = event.latLng.lat();
         this.lastLng = event.latLng.lng();
         this.addMarker(event.latLng.lat(), event.latLng.lng(), 'black');
@@ -104,7 +105,6 @@ class Isochrone extends Visual {
       pointsOnPath.forEach((point) => {
         this.addMarker(point.lat, point.lng, 'red');
       });
-      break;
     }
   }
 
@@ -112,14 +112,27 @@ class Isochrone extends Visual {
   getPointsOnPath(start, end) {
     // Find the slope between the points
     const slope = (end.lat - start.lat) / (end.lng - start.lng);
-    const x = start.lng;
-    const y = start.lat;
+    const x1 = start.lng;
+    const y1 = start.lat;
+
+    const x2 = end.lng;
+    const y2 = end.lat;
+
+    const midX = (x2 + x1) / 2;
+    const midY = (y2 + y1) / 2;
+    const bisectorSlope = -1 / slope;
 
     const pointsOnPath = [];
     for (let i = 0; i < this.data.length; i += 1) {
       const pointX = this.data[i].lng;
       const pointY = this.data[i].lat;
-      if (Isochrone.distanceToLine(pointX, pointY, x, y, slope) < this.DISTANCE_THRESHOLD) {
+
+      const pathLineDistance = Isochrone.distanceToLine(pointX, pointY, x1, y1, slope);
+      const bisectorDistance = Isochrone.distanceToLine(pointX, pointY, midX, midY, bisectorSlope);
+      const bisectorThreshold = Isochrone.getDistanceBetweenPoints(x1, y1, x2, y2) / 2;
+
+      if (pathLineDistance < this.DISTANCE_THRESHOLD_PATH &&
+          bisectorDistance < bisectorThreshold) {
         pointsOnPath.push(this.data[i]);
       }
     }
@@ -137,6 +150,11 @@ class Isochrone extends Visual {
     const result = numerator / denominator;
     console.log(result);
     return result;
+  }
+
+  static getDistanceBetweenPoints(x1, y1, x2, y2) {
+    return Math.sqrt(((x2 - x1) * (x2 - x1)) +
+                    ((y2 - y1) * (y2 - y1)));
   }
 
   // Removes all markers from the map of the given color
