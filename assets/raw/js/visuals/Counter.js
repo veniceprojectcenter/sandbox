@@ -23,14 +23,25 @@ class Counter extends Visual {
   *
   */
   renderControls() {
+    this.attributes.dataFilters = [];
+    this.attributes.numericFilters = [];
     this.renderData = JSON.parse(JSON.stringify(this.data));
     this.attributes.columnOptions = Object.keys(this.data[0]);
     this.renderControlsDiv = document.getElementById(this.renderControlsID);
-    let cats = [];
-    let rawCats = Object.keys(this.getCategoricalData()[0]);
-    rawCats = rawCats.concat(Object.keys(this.getNumericData()[0]));
-    for (let i = 0; i < rawCats.length; i += 1) {
-      cats.push({ value: rawCats[i], text: rawCats[i] });
+    const ccats = [];
+    const ncats = [];
+    const cats = [];
+    // let rawCats = Object.keys(this.getCategoricalData()[0]);
+    // rawCats = rawCats.concat(Object.keys(this.getNumericData()[0]));
+    const catData = Object.keys(this.getCategoricalData()[0]);
+    const numData = Object.keys(this.getNumericData()[0]);
+    for (let i = 0; i < catData.length; i += 1) {
+      ccats.push({ value: catData[i], text: catData[i] });
+      cats.push({ value: catData[i], text: catData[i] });
+    }
+    for (let i = 0; i < numData.length; i += 1) {
+      ncats.push({ value: numData[i], text: numData[i] });
+      cats.push({ value: numData[i], text: numData[i] });
     }
     this.binDiv = document.createElement('div');
     const editor = new EditorGenerator(this.renderControlsDiv);
@@ -39,33 +50,35 @@ class Counter extends Visual {
       this.attributes.displayColumns = $(e.currentTarget).val();
     });
     editor.createDataFilter('Filter', cats, cats, (e) => {
-      this.attributes.columnOptions = $(e.currentTarget).val();
-    /**  this.binDiv.innerHTML = '';
-      for (let i = 0; i < this.attributes.columnOptions.length; i += 1) {
-        if (this.isNumeric(this.attributes.columnOptions[i])) {
-          const tempDiv = document.createElement('div');
-          this.binDiv.appendChild(tempDiv);
-          tempDiv.innerHTML = this.attributes.columnOptions[i];
-          const binEditor = new EditorGenerator(tempDiv);
-          binEditor.createTextField(`${i}start`, 'Enter Start of First Bin }', null);
-          binEditor.createTextField(`${i}size`, 'Enter Size of Bins }', null);
-        }
+      const column = $(e.currentTarget).val();
+      const categories = this.getGroupedList(column);
+      const catSelect = e.currentTarget.parentNode.parentNode.nextSibling.nextSibling
+      .nextSibling.nextSibling.children[0].children[3];
+      $(catSelect).empty().html(' ');
+      for (let i = 0; i < categories.length; i += 1) {
+        const value = categories[i].key;
+        $(catSelect).append(
+  $('<option></option>')
+    .attr('value', value)
+    .text(value),
+);
       }
-      */
-      this.render();
+      $(catSelect).material_select();
     });
-    editor.createNumericFilter('NumFilter', cats, cats, () => {
+    editor.createNumericFilter('NumFilter', ncats, ncats, () => {
       this.render();
     });
     this.renderControlsDiv.appendChild(this.binDiv);
-    cats = [];
+    const filterCats = [];
     for (let i = 0; i < this.attributes.columnOptions.length; i += 1) {
-      cats.push({ value: this.attributes.columnOptions[i],
+      filterCats.push({ value: this.attributes.columnOptions[i],
         text: this.attributes.columnOptions[i] });
     }
 
     editor.createButton('submit', 'Generate Table', () => {
-      // Call Jessie functions
+      this.attributes.dataFilters = [];
+      this.attributes.numericFilters = [];
+
       this.render();
     });
   }
