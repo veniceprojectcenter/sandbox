@@ -355,33 +355,33 @@ class Visual {
         const filterColumn = filters[i].column;
         const x = this.data[j][filterColumn];
         switch (true) {
-          case (filters[i].num.operation === '='):
-            if (x !== filters[i].num.value) {
+          case (filters[i].operation === '='):
+            if (numericalData[j] !== null && x !== filters[i].value) {
               delete numericalData[j];
             }
             break;
-          case (filters[i].num.operation === '!='):
-            if (x === filters[i].num.value) {
+          case (filters[i].operation === '!='):
+            if (numericalData[j] !== null && x === filters[i].value) {
               delete numericalData[j];
             }
             break;
-          case (filters[i].num.operation === '<'):
-            if (x >= filters[i].num.value) {
+          case (filters[i].operation === '<'):
+            if (numericalData[j] !== null && x >= filters[i].value) {
               delete numericalData[j];
             }
             break;
-          case (filters[i].num.operation === '<='):
-            if (x > filters[i].num.value) {
+          case (filters[i].operation === '<='):
+            if (numericalData[j] !== null && x > filters[i].value) {
               delete numericalData[j];
             }
             break;
-          case (filters[i].num.operation === '>'):
-            if (x <= filters[i].num.value) {
+          case (filters[i].operation === '>'):
+            if (numericalData[j] !== null && x <= filters[i].value) {
               delete numericalData[j];
             }
             break;
-          case (filters[i].num.operation === '>='):
-            if (x < filters[i].num.value) {
+          case (filters[i].operation === '>='):
+            if (numericalData[j] !== null && x < filters[i].value) {
               delete numericalData[j];
             }
             break;
