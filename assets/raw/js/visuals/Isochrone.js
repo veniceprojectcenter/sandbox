@@ -88,7 +88,7 @@ class Isochrone extends Visual {
         for (let i = 0; i < steps.length; i += 1) {
           // const start = steps[i].start_point;
           const end = steps[i].end_point;
-          this.addMarker(end.lat(), end.lng(), 'green');
+          // this.addMarker(end.lat(), end.lng(), 'green');
           returnSteps.push({ lat: end.lat(), lng: end.lng() });
         }
         this.getBridgePath(returnSteps);
@@ -103,6 +103,7 @@ class Isochrone extends Visual {
   getBridgePath(path) {
     path.push({ lat: this.lastLat, lng: this.lastLng });
     path.unshift(this.startPoint);
+    this.addPolyline(path, 'green', 4);
     for (let i = 0; i < path.length - 1; i += 1) {
       const first = path[i];
       const second = path[i + 1];
@@ -143,7 +144,7 @@ class Isochrone extends Visual {
 
       const a = this.DISTANCE_THRESHOLD_PATH;
       const b = bisectorThreshold;
-      // this.drawRectangle(a, b, slope, midX, midY);
+      this.drawRectangle(a, b, slope, midX, midY);
     }
     return pointsOnPath;
   }
@@ -191,7 +192,7 @@ class Isochrone extends Visual {
       { lat: py + (h * Math.sin(theta)), lng: px + (h * Math.cos(theta)) },
     ];
 
-    this.addPolyline(points);
+    // this.addPolyline(points, 'red', 2);
   }
 
   clearRectangles() {
@@ -228,13 +229,13 @@ class Isochrone extends Visual {
     }
   }
 
-  addPolyline(points) {
+  addPolyline(points, color, weight) {
     const polyline = new google.maps.Polyline({
       path: points,
       geodesic: true,
-      strokeColor: '#FF0000',
+      strokeColor: color,
       strokeOpacity: 1.0,
-      strokeWeight: 2,
+      strokeWeight: weight,
     });
 
     polyline.setMap(this.map);
