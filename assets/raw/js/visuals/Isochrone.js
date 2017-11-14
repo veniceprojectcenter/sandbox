@@ -10,6 +10,8 @@ class Isochrone extends Visual {
     this.map = null;
     this.locations = [];
     this.openInfoWindow = null;
+
+    this.DISTANCE_THRESHOLD = 0.01;
   }
 
   onLoadData() {
@@ -95,18 +97,37 @@ class Isochrone extends Visual {
   // Consumes a list of lat, lng pairs and produces a list of bridges
   // near the given path
   getBridgePath(path) {
-    const first = path[0];
-    const second = path[1];
-    const pointsOnPath = this.getPointsOnPath(first, second);
-    pointsOnPath.forEach((point) => {
-      this.addMarker(point.lat, point.lng, 'red');
-    });
+    for (let i = 0; i < path.length - 1; i += 2) {
+      const first = path[i];
+      const second = path[i + 1];
+      const pointsOnPath = this.getPointsOnPath(first, second);
+      pointsOnPath.forEach((point) => {
+        this.addMarker(point.lat, point.lng, 'red');
+      });
+      break;
+    }
   }
 
   // start and end are objects with .lat() and .lng() functions
   getPointsOnPath(start, end) {
     // Find the slope between the points
     const slope = (end.lat - start.lat) / (end.lng - start.lng);
+    const x = start.lng;
+    const y = start.lat;
+
+    const pointsOnPath = [];
+    for (let i = 0; i < this.data.length; i += 1) {
+      const pointX = this.data[i].lng;
+      const pointY = this.data[i].lat;
+      if (Isochrone.distanceToLine(pointX, pointY, x, y, slope) < this.DISTANCE_THRESHOLD) {
+        pointsOnPath.push(this.data[i]);
+      }
+    }
+    return pointsOnPath;
+  }
+
+  static distanceToLine(pointX, pointY, x, y, slope) {
+    return 0;
   }
 
   // Removes all markers from the map of the given color
