@@ -121,7 +121,7 @@ class Donut extends Visual {
 
     editor.createNumberSlider('donut-color-end',
         'Color range end',
-         this.attributes.color.range[0],
+         this.attributes.color.range[1],
           1, 359,
         (e) => {
           const value = $(e.currentTarget).val();
