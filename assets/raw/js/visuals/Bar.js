@@ -181,10 +181,7 @@ class Bar extends Visual {
     }
 
     const svg = d3.select(`#${this.renderID}`).append('svg')
-      .attr('width', width)
-      .attr('height', height)
-      .attr('class', 'bar')
-      .attr('viewBox', `0 0 ${this.attributes.width} ${this.attributes.height}`);
+      .attr('class', 'bar');
 
     const g = svg.append('g')
       .attr('transform', `translate(${margin.left},${margin.top})`);
@@ -226,7 +223,7 @@ class Bar extends Visual {
         .attr('height', d => y(d[0]) - y(d[1]))
         .attr('width', x.bandwidth());
     if (this.attributes.group_by_stack !== 'No Column') {
-      const legend = svg.append('g')
+      const legend = g.append('g')
         .attr('font-family', 'sans-serif')
         .attr('font-size', 10)
         .attr('text-anchor', 'end')
@@ -248,6 +245,10 @@ class Bar extends Visual {
         .attr('dy', '0.32em')
         .text(d => (d === '' ? 'NULL' : d));
     }
+
+    const box = g.node().getBBox();
+    svg.attr('width', box.width + box.x + 10)
+    .attr('height', box.height + box.y + 10);
   }
 }
 
