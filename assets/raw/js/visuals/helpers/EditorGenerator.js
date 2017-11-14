@@ -24,7 +24,21 @@ class EditorGenerator {
     $(`#${id}-select`).change(onOptionChanged);
     console.log(`Using ${current}`);
   }
-
+  createDataFilter(id, column, category, onChange) {
+    const context = { id, column, category };
+    this.handlebarsWithContext('data-filter', context);
+    $(`#${id}-columnSelect`).val(0).material_select();
+    $(`#${id}-operations`).val(1).material_select();
+    $(`#${id}-categories`).val(2).material_select();
+    $(`#${id}`).on('change', onChange);
+  }
+  createNumericFilter(id, column, onChange) {
+    const context = { id, column };
+    this.handlebarsWithContext('numeric-filter', context);
+    $(`#${id}-columnSelect`).val(0).material_select();
+    $(`#${id}-operations`).val(1).material_select();
+    $(`#${id}`).on('change', onChange);
+  }
   createCheckBox(id, title, onOptionChanged) {
     const context = { id, title };
     this.handlebarsWithContext('check-entry', context);
