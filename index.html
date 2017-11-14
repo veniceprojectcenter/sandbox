@@ -44,6 +44,60 @@
   </div>
 </script>
 
+<script id="data-filter" type="text/x-handlebars-template">
+<div class= 'row dataFilter'>
+  <div class="input-field col-md-4" id="{{id}}-1">
+    <select id="{{id}}-columnSelect">
+      <option value="" disabled>Choose your option</option>
+      {{#each column}}
+      <option value="{{value}}">{{text}}</option>
+      {{/each}}
+    </select>
+    </div>
+    <div class="input-field col-md-2" id="{{id}}-2">
+  <select id="{{id}}-operations">
+    <option value="in">is one of</option>
+    <option value="not">is not one of</option>
+  </select>
+</div>
+<div class="input-field col-md-6" id="{{id}}-3">
+<select multiple id="{{id}}-categories">
+  <option value="" disabled>Choose your option</option>
+  {{#each category}}
+  <option value="{{value}}">{{text}}</option>
+  {{/each}}
+</select>
+  </div>
+</div>
+</script>
+
+<script id="numeric-filter" type="text/x-handlebars-template">
+<div class= 'row numFilter'>
+  <div class="input-field col-md-4" id="{{id}}-1">
+    <select id="{{id}}-columnSelect">
+      <option value="" disabled>Choose your option</option>
+      {{#each column}}
+      <option value="{{value}}">{{text}}</option>
+      {{/each}}
+    </select>
+    </div>
+    <div class="input-field col-md-2" id="{{id}}-2">
+  <select id="{{id}}-operations">
+    <option value="=">=</option>
+    <option value=">">&gt;</option>
+    <option value="<">&lt;</option>
+    <option value="≥">≥</option>
+    <option value="≤">≤</option>
+    <option value="≠">≠</option>
+  </select>
+</div>
+<div class="input-field col-md-6" id="{{id}}-3">
+    <input type="number" id="{{id}}-field">
+    <label for="{{id}}-number"></label>
+  </div>
+</div>
+</script>
+
 <script id="select-multiple-entry" type="text/x-handlebars-template">
   <div class="input-field" id="{{id}}">
     <select multiple id="{{id}}-select">
@@ -89,8 +143,11 @@
 </script>
 
 <script id="button" type="text/x-handlebars-template">
-  <input id="{{id}}" type="button" text="{{text}}" />
+  <a id="{{id}}" class="waves-effect waves-light btn">{{text}}</a>
 </script>
+
+
+
 
 <script id="moveable" type="text/x-handlebars-template">
   <div class = 'mv' id="{{id}}-div">
