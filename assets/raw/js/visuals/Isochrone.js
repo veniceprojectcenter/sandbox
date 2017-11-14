@@ -42,8 +42,8 @@ class Isochrone extends Visual {
     });
   }
 
-  clickAction(event) {
-    console.log(`Lat: ${event.latLng.lat()}| Lng: ${event.latLng.lng()}`);
+  async clickAction(event) {
+    // console.log(`Lat: ${event.latLng.lat()}| Lng: ${event.latLng.lng()}`);
 
     if (this.numTimesClicked == null) {
       this.addCircle({ lat: event.latLng.lat(), lng: event.latLng.lng() }, 'green', 1);
@@ -67,6 +67,7 @@ class Isochrone extends Visual {
 
     this.markRoute(this.lastLat, this.lastLng, event.latLng.lat(), event.latLng.lng());
 
+
     this.startPoint = { lat: this.lastLat, lng: this.lastLng };
     this.lastLat = event.latLng.lat();
     this.lastLng = event.latLng.lng();
@@ -74,6 +75,7 @@ class Isochrone extends Visual {
 
   markRoute(sourceLat, sourceLng, destinationLat, destinationLng) {
     const directions = new google.maps.DirectionsService();
+
     directions.route({
       origin: new google.maps.LatLng(sourceLat,
                              sourceLng),
@@ -171,7 +173,6 @@ class Isochrone extends Visual {
   clearMarkers(color) {
     for (let i = 0; i < this.locations.length; i += 1) {
       const marker = this.locations[i];
-      console.log(marker);
       if (marker.fillColor === color) {
         marker.setMap(null);
       }
