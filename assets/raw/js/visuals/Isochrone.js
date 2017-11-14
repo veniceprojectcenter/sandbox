@@ -82,6 +82,7 @@ class Isochrone extends Visual {
       destination: new google.maps.LatLng(destinationLat,
                              destinationLng),
       travelMode: 'WALKING',
+      avoidFerries: true,
     }, (response, status) => {
       if (status === 'OK') {
         const steps = response.routes[0].legs[0].steps;
