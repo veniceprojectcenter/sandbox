@@ -132,11 +132,11 @@ class Visual {
     const publishButton = document.createElement('button');
     publishButton.className = 'btn waves-effectr';
     publishButton.innerText = 'Publish Visual';
+    publishButton.id = 'publish-button';
     publishButton.addEventListener('click', () => {
       firebase.auth().onAuthStateChanged((user) => {
         if (user) {
           this.publishConfig();
-          $('#login-modal').modal('close');
           console.log('Already logged in');
         } else {
           $('#login-modal').modal('open');
@@ -188,6 +188,8 @@ class Visual {
   }
 
   async publishConfig() {
+    const publishButton = document.getElementById('publish-button');
+    publishButton.classList.add('disabled');
     const config = {
       type: this.type,
       dataSet: this.dataSet,
@@ -201,9 +203,11 @@ class Visual {
       attributes: JSON.stringify(config.attributes),
     }).then(() => {
       Materialize.toast('Visual Published', 3000);
+      publishButton.classList.remove('disabled');
     })
     .catch((error) => {
       Materialize.toast('Error Publishing Visual', 3000);
+      publishButton.classList.remove('disabled');
       console.error(error);
     });
   }
@@ -385,33 +389,33 @@ class Visual {
         const filterColumn = filters[i].column;
         const x = this.data[j][filterColumn];
         switch (true) {
-          case (filters[i].num.operation === '='):
-            if (x !== filters[i].num.value) {
+          case (filters[i].operation === '='):
+            if (numericalData[j] !== null && x !== filters[i].value) {
               delete numericalData[j];
             }
             break;
-          case (filters[i].num.operation === '!='):
-            if (x === filters[i].num.value) {
+          case (filters[i].operation === '!='):
+            if (numericalData[j] !== null && x === filters[i].value) {
               delete numericalData[j];
             }
             break;
-          case (filters[i].num.operation === '<'):
-            if (x >= filters[i].num.value) {
+          case (filters[i].operation === '<'):
+            if (numericalData[j] !== null && x >= filters[i].value) {
               delete numericalData[j];
             }
             break;
-          case (filters[i].num.operation === '<='):
-            if (x > filters[i].num.value) {
+          case (filters[i].operation === '<='):
+            if (numericalData[j] !== null && x > filters[i].value) {
               delete numericalData[j];
             }
             break;
-          case (filters[i].num.operation === '>'):
-            if (x <= filters[i].num.value) {
+          case (filters[i].operation === '>'):
+            if (numericalData[j] !== null && x <= filters[i].value) {
               delete numericalData[j];
             }
             break;
-          case (filters[i].num.operation === '>='):
-            if (x < filters[i].num.value) {
+          case (filters[i].operation === '>='):
+            if (numericalData[j] !== null && x < filters[i].value) {
               delete numericalData[j];
             }
             break;
@@ -484,9 +488,6 @@ class Visual {
   }
 
   static groupByMultipleHelper(selections, groups) {
-    if (selections.length === 0) {
-      return groups;
-    }
     const selection = selections.shift();
     const groupNames = Object.keys(groups);
     for (let i = 0; i < groupNames.length; i += 1) {
