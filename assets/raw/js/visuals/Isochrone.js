@@ -2,7 +2,6 @@ import Visual from './helpers/Visual';
 import DivOverlay from './helpers/DivOverlay';
 import DefaultMapStyle from './helpers/DefaultMapStyle';
 import EditorGenerator from './helpers/EditorGenerator';
-import Donut from './Donut';
 
 class Isochrone extends Visual {
   constructor(config) {
@@ -26,56 +25,58 @@ class Isochrone extends Visual {
       styles: DefaultMapStyle,
     });
 
-    const colors = ['red', 'green', 'blue', 'orange', 'yellow', 'black', 'lime', 'purple', 'fuschia', 'magenta', 'light blue'];
-    let j = 0;
     for (let i = 0; i < this.data.length; i += 1) {
-      const currentBridge = this.data[i];
-      const currentSteps = currentBridge['Total Number of Steps'];
-      if (currentSteps === '0' || currentSteps === undefined || currentSteps === '') {
-        const color = colors[j];
-        j += 1;
-        this.addMarker(currentBridge.lat, currentBridge.lng, color);
-        console.log(`Lat: ${currentBridge.lat}, lng: ${currentBridge.lng}, bridge name: ${currentBridge['Bridge Name']}, color: ${color}`);
-      }
+      const point = this.data[i];
+      this.addMarker(parseFloat(point.lat), parseFloat(point.lng), 'blue');
     }
 
-    // this.registerDefaultClickAction();
+    this.registerDefaultClickAction();
   }
 
   registerDefaultClickAction() {
     google.maps.event.addListener(this.map, 'click', (event) => {
       console.log(`Lat: ${event.latLng.lat()}| Lng: ${event.latLng.lng()}`);
-      this.addMarker(event.latLng.lat(), event.latLng.lng());
-      this.addMarker(event.latLng.lat(), event.latLng.lng());
+      this.addMarker(event.latLng.lat(), event.latLng.lng(), 'black');
 
-      const bounds = new google.maps.LatLngBounds(
-       new google.maps.LatLng(event.latLng.lat(),
-                              event.latLng.lng()),
-       new google.maps.LatLng(event.latLng.lat() + 0.01,
-                              event.latLng.lng() + 0.01),
-      );
-
-      const renderfunction = (id) => {
-        const config = {
-          dataSet: this.dataSet,
-          type: 'donut',
-          attributes: {},
-        };
-
-        const donutVisual = new Donut(config);
-        donutVisual.loadStaticData(this.data);
-        donutVisual.renderID = id;
-        donutVisual.render();
-      };
-
-      if (this.currentId == null) {
-        this.currentId = 1;
-      } else {
-        this.currentId += 1;
+      if (this.numTimesClicked == null) {
+        this.lastLat = event.latLng.lat();
+        this.lastLng = event.latLng.lng();
+        this.numTimesClicked = 1;
+        return;
       }
 
-      new DivOverlay(bounds, `overlay${this.currentId}`, this.map, renderfunction);
+      const directions = new google.maps.DirectionsService();
+
+      directions.route({
+        origin: new google.maps.LatLng(this.lastLat,
+                               this.lastLng),
+        destination: new google.maps.LatLng(event.latLng.lat(),
+                               event.latLng.lng()),
+        travelMode: 'WALKING',
+      }, (response, status) => {
+        if (status === 'OK') {
+          const steps = response.routes[0].legs[0].steps;
+          console.log(steps);
+          for (let i = 0; i < steps.length; i += 1) {
+            const start = steps[i].start_point;
+            const end = steps[i].end_point;
+            this.addMarker(end.lat(), end.lng(), 'green');
+            const points = this.getDataPointsWithinParallel(start, end);
+          }
+        } else {
+          window.alert(`Directions request failed due to ${status}`);
+        }
+      });
+
+      this.lastLat = event.latLng.lat();
+      this.lastLng = event.latLng.lng();
     });
+  }
+
+  // start and end are objects with .lat() and .lng() functions
+  getDataPointsWithinParallel(start, end) {
+    // Find the slope between the points
+    const slope = (end.lat() - start.lat()) / (end.lng() - start.lng());
   }
 
   addMarker(lat, lng, color) {

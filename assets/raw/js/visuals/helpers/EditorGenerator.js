@@ -24,6 +24,7 @@ class EditorGenerator {
     $(`#${id}-select`).change(onOptionChanged);
     console.log(`Using ${current}`);
   }
+
   createDataFilter(id, column, category, onChange) {
     const context = { id, column, category };
     this.handlebarsWithContext('data-filter', context);
@@ -39,10 +40,16 @@ class EditorGenerator {
     $(`#${id}-operations`).val(1).material_select();
     $(`#${id}`).on('change', onChange);
   }
-  createCheckBox(id, title, onOptionChanged) {
-    const context = { id, title };
+
+  createCheckBox(id, title, current, onOptionChanged) {
+    let checked = '';
+    if (current === true) {
+      checked = 'checked';
+    }
+    const context = { id, title, checked };
+
     this.handlebarsWithContext('check-entry', context);
-    $(`#${id}-check`).change(onOptionChanged);
+    $(`#${id}-checkbox`).change(onOptionChanged);
   }
 
   createNumberSlider(id, title, current, min, max, onValueChanged) {
