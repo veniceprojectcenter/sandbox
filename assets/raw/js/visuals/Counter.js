@@ -35,13 +35,15 @@ class Counter extends Visual {
     // rawCats = rawCats.concat(Object.keys(this.getNumericData()[0]));
     const catData = Object.keys(this.getCategoricalData()[0]);
     const numData = Object.keys(this.getNumericData(2)[0]);
+    const allDataCols = Object.keys(this.data[0]);
+    for (let i = 0; i < allDataCols.length; i += 1) {
+      cats.push({ value: allDataCols[i], text: allDataCols[i] });
+    }
     for (let i = 0; i < catData.length; i += 1) {
       ccats.push({ value: catData[i], text: catData[i] });
-      cats.push({ value: catData[i], text: catData[i] });
     }
     for (let i = 0; i < numData.length; i += 1) {
       ncats.push({ value: numData[i], text: numData[i] });
-      cats.push({ value: numData[i], text: numData[i] });
     }
     this.binDiv = document.createElement('div');
     const editor = new EditorGenerator(this.renderControlsDiv);
@@ -49,7 +51,7 @@ class Counter extends Visual {
     editor.createMultipleSelectBox('check2', 'Show Data', cats, 'durg', (e) => {
       this.attributes.displayColumns = $(e.currentTarget).val();
     });
-    editor.createDataFilter('Filter', cats, (e) => {
+    editor.createDataFilter('Filter', ccats, (e) => {
       const column = $(e.currentTarget).val();
       const categories = this.getGroupedList(column);
       const catSelect = e.currentTarget.parentNode.parentNode.nextSibling.nextSibling
@@ -85,6 +87,13 @@ class Counter extends Visual {
         const columnVal = $(filter.children[0].children[0].children[3]).val();
         const catVal = $(filter.children[2].children[0].children[3]).val();
         this.attributes.dataFilters.push({ column: columnVal, categories: catVal });
+      }
+      for (let i = 0; i < numFilters.length; i += 1) {
+        const filter = numFilters[i];
+        const columnVal = $(filter.children[0].children[0].children[3]).val();
+        const opVal = $(filter.children[1].children[0].children[3]).val();
+        const val = $(filter.children[2].children[0].children[3]).val();
+        this.attributes.numericFilters.push({ column: columnVal, operation: opVal, value: val });
       }
       this.renderData = this.data;
       this.renderData = this.filterCategorical(this.attributes.dataFilters, this.renderData);
