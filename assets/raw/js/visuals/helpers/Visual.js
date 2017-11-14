@@ -176,8 +176,8 @@ class Visual {
       attributes: this.attributes,
     };
 
-    const db = firebase.firestore();
-    await db.collection('configs').add({
+    const db = firebase.database();
+    await db.ref('/viz').push({
       type: config.type,
       dataSet: config.dataSet,
       attributes: JSON.stringify(config.attributes),
