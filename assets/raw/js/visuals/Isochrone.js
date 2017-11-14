@@ -11,7 +11,8 @@ class Isochrone extends Visual {
     this.locations = [];
     this.openInfoWindow = null;
 
-    this.DISTANCE_THRESHOLD_PATH = 0.0005;
+    this.DISTANCE_THRESHOLD_PATH = 0.0003;
+    this.rectangles = [];
   }
 
   onLoadData() {
@@ -56,6 +57,7 @@ class Isochrone extends Visual {
         this.clearMarkers('green');
         this.clearMarkers('black');
         this.clearMarkers('red');
+        this.clearRectangles();
         this.lastLat = event.latLng.lat();
         this.lastLng = event.latLng.lng();
         this.addMarker(event.latLng.lat(), event.latLng.lng(), 'black');
@@ -98,7 +100,7 @@ class Isochrone extends Visual {
   // Consumes a list of lat, lng pairs and produces a list of bridges
   // near the given path
   getBridgePath(path) {
-    for (let i = 0; i < path.length - 1; i += 2) {
+    for (let i = 0; i < path.length - 1; i += 1) {
       const first = path[i];
       const second = path[i + 1];
       const pointsOnPath = this.getPointsOnPath(first, second);
@@ -135,6 +137,16 @@ class Isochrone extends Visual {
           bisectorDistance < bisectorThreshold) {
         pointsOnPath.push(this.data[i]);
       }
+
+      const points = [
+        { lat: midY + this.DISTANCE_THRESHOLD_PATH, lng: midX - bisectorThreshold },
+        { lat: midY + this.DISTANCE_THRESHOLD_PATH, lng: midX + bisectorThreshold },
+        { lat: midY - this.DISTANCE_THRESHOLD_PATH, lng: midX + bisectorThreshold },
+        { lat: midY - this.DISTANCE_THRESHOLD_PATH, lng: midX - bisectorThreshold },
+        { lat: midY + this.DISTANCE_THRESHOLD_PATH, lng: midX - bisectorThreshold },
+      ];
+
+      this.addPolyline(points);
     }
     return pointsOnPath;
   }
@@ -167,6 +179,13 @@ class Isochrone extends Visual {
     }
   }
 
+  clearRectangles() {
+    this.rectangles.forEach((rectangle) => {
+      rectangle.setMap(null);
+    });
+    this.rectangles = [];
+  }
+
   addMarker(lat, lng, color) {
     if (lat && lng) {
       const icon = {
@@ -192,6 +211,19 @@ class Isochrone extends Visual {
         marker,
       });
     }
+  }
+
+  addPolyline(points) {
+    const polyline = new google.maps.Polyline({
+      path: points,
+      geodesic: true,
+      strokeColor: '#FF0000',
+      strokeOpacity: 1.0,
+      strokeWeight: 2,
+    });
+
+    polyline.setMap(this.map);
+    this.rectangles.push(polyline);
   }
 
   clearAllMarkers() {
