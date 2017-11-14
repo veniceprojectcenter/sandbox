@@ -219,7 +219,7 @@ class Visual {
     for (let i = 0; i < filters.length; i += 1) {
       for (let j = 0; j < categoricalData.length; j += 1) {
         const filterColumn = filters[i].column;
-        if (!filters[i].categories.includes(data[j][filterColumn])) {
+        if (categoricalData[j] !== null && !filters[i].categories.includes(data[j][filterColumn])) {
           delete categoricalData[j];
         }
       }
@@ -231,8 +231,8 @@ class Visual {
   *Filters numerical data with the criteria given and returns only data columns which
   *match the given criteria
   */
-  filterNumerical(filters) {
-    const numericalData = JSON.parse(JSON.stringify(this.data));
+  filterNumerical(filters, data = this.data) {
+    const numericalData = JSON.parse(JSON.stringify(data));
 
     for (let i = 0; i < filters.length; i += 1) {
       for (let j = 0; j < this.data.length; j += 1) {
