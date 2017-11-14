@@ -11,7 +11,7 @@ class Isochrone extends Visual {
     this.locations = [];
     this.openInfoWindow = null;
 
-    this.DISTANCE_THRESHOLD = 0.01;
+    this.DISTANCE_THRESHOLD = 0.0005;
   }
 
   onLoadData() {
@@ -127,7 +127,16 @@ class Isochrone extends Visual {
   }
 
   static distanceToLine(pointX, pointY, x, y, slope) {
-    return 0;
+    const a = -1 * slope;
+    const b = 1;
+    const c = (-y + (slope * x));
+
+    const numerator = Math.abs((a * pointX) + (b * pointY) + c);
+    const denominator = Math.sqrt((a * a) + (b * b));
+
+    const result = numerator / denominator;
+    console.log(result);
+    return result;
   }
 
   // Removes all markers from the map of the given color
