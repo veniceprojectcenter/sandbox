@@ -169,8 +169,9 @@ class Isochrone extends Visual {
   // Removes all markers from the map of the given color
   clearMarkers(color) {
     for (let i = 0; i < this.locations.length; i += 1) {
-      const marker = this.locations[i].marker;
-      if (marker.icon.fillColor === color) {
+      const marker = this.locations[i];
+      console.log(marker);
+      if (marker.fillColor === color) {
         marker.setMap(null);
       }
     }
@@ -202,7 +203,7 @@ class Isochrone extends Visual {
     this.rectangles = [];
   }
 
-  addCircle(point, color, r = 5) {
+  addCircle(point, color, r = 10) {
     const circle = new google.maps.Circle({
       strokeColor: color,
       strokeOpacity: 0.75,
