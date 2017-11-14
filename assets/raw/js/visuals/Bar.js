@@ -228,7 +228,7 @@ class Bar extends Visual {
       .attr('x', width - 24)
       .attr('y', 9.5)
       .attr('dy', '0.32em')
-      .text(d => d);
+      .text(d => (d === '' ? 'NULL' : d));
   }
 }
 
