@@ -30,7 +30,7 @@ class Isochrone extends Visual {
 
     for (let i = 0; i < this.data.length; i += 1) {
       const point = this.data[i];
-      this.addCircle({ lat: parseFloat(point.lat), lng: parseFloat(point.lng) }, 'blue');
+      // this.addCircle({ lat: parseFloat(point.lat), lng: parseFloat(point.lng) }, 'blue', 0.5);
     }
 
     this.registerDefaultClickAction();
@@ -46,7 +46,7 @@ class Isochrone extends Visual {
     console.log(`Lat: ${event.latLng.lat()}| Lng: ${event.latLng.lng()}`);
 
     if (this.numTimesClicked == null) {
-      this.addCircle({ lat: event.latLng.lat(), lng: event.latLng.lng() }, 'black');
+      this.addCircle({ lat: event.latLng.lat(), lng: event.latLng.lng() }, 'green', 1);
       this.lastLat = event.latLng.lat();
       this.lastLng = event.latLng.lng();
       this.numTimesClicked = 1;
@@ -55,15 +55,14 @@ class Isochrone extends Visual {
       this.numTimesClicked += 1;
       if (this.numTimesClicked % 2 === 1) { // If numTimesClicked is odd
         this.clearMarkers('green');
-        this.clearMarkers('black');
         this.clearMarkers('red');
         this.clearRectangles();
         this.lastLat = event.latLng.lat();
         this.lastLng = event.latLng.lng();
-        this.addCircle({ lat: event.latLng.lat(), lng: event.latLng.lng() }, 'black');
+        this.addCircle({ lat: event.latLng.lat(), lng: event.latLng.lng() }, 'green', 1);
         return;
       }
-      this.addCircle({ lat: event.latLng.lat(), lng: event.latLng.lng() }, 'black');
+      this.addCircle({ lat: event.latLng.lat(), lng: event.latLng.lng() }, 'green', 1);
     }
 
     this.markRoute(this.lastLat, this.lastLng, event.latLng.lat(), event.latLng.lng());
@@ -88,7 +87,7 @@ class Isochrone extends Visual {
         for (let i = 0; i < steps.length; i += 1) {
           // const start = steps[i].start_point;
           const end = steps[i].end_point;
-          // this.addCircle({ lat: end.lat(), lng: end.lng() }, 'green');
+          // this.addCircle({ lat: end.lat(), lng: end.lng() }, 'green', 0.5);
           returnSteps.push({ lat: end.lat(), lng: end.lng() });
         }
         this.getBridgePath(returnSteps);
@@ -111,7 +110,7 @@ class Isochrone extends Visual {
       pointsOnPath.forEach((point) => {
         const center = { lat: parseFloat(point.lat), lng: parseFloat(point.lng) };
         this.removeCircle(center);
-        this.addCircle(center, 'red');
+        this.addCircle(center, 'red', 1);
       });
     }
   }
@@ -215,8 +214,7 @@ class Isochrone extends Visual {
     this.rectangles = [];
   }
 
-  addCircle(point, color, r = 15) {
-    const opacity = color === 'red' ? 1 : 0.5;
+  addCircle(point, color, opacity, r = 15) {
     const circle = new google.maps.Circle({
       strokeColor: color,
       strokeOpacity: opacity,
