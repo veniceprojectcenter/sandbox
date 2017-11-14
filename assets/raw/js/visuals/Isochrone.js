@@ -138,15 +138,9 @@ class Isochrone extends Visual {
         pointsOnPath.push(this.data[i]);
       }
 
-      const points = [
-        { lat: midY + this.DISTANCE_THRESHOLD_PATH, lng: midX - bisectorThreshold },
-        { lat: midY + this.DISTANCE_THRESHOLD_PATH, lng: midX + bisectorThreshold },
-        { lat: midY - this.DISTANCE_THRESHOLD_PATH, lng: midX + bisectorThreshold },
-        { lat: midY - this.DISTANCE_THRESHOLD_PATH, lng: midX - bisectorThreshold },
-        { lat: midY + this.DISTANCE_THRESHOLD_PATH, lng: midX - bisectorThreshold },
-      ];
-
-      this.addPolyline(points);
+      const a = this.DISTANCE_THRESHOLD_PATH;
+      const b = bisectorThreshold;
+      this.drawRectangle(a, b, slope, midX, midY);
     }
     return pointsOnPath;
   }
@@ -177,6 +171,23 @@ class Isochrone extends Visual {
         marker.setMap(null);
       }
     }
+  }
+
+  drawRectangle(a, b, slope, px, py) {
+    const h = Math.sqrt((b ** 2) + (a ** 2));
+    const theta1 = Math.atan(a / b);
+    const theta2 = Math.atan(slope);
+    const theta = theta1 + theta2;
+
+    const points = [
+      { lat: py + (h * Math.sin(theta)), lng: px + (h * Math.cos(theta)) },
+      { lat: midY + y, lng: midX + x },
+      { lat: midY - y, lng: midX + x },
+      { lat: midY - y, lng: midX - x },
+      { lat: midY + y, lng: midX - x },
+    ];
+
+    this.addPolyline(points);
   }
 
   clearRectangles() {
