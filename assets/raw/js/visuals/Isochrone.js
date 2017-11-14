@@ -109,7 +109,9 @@ class Isochrone extends Visual {
       const second = path[i + 1];
       const pointsOnPath = this.getPointsOnPath(first, second);
       pointsOnPath.forEach((point) => {
-        this.addCircle({ lat: point.lat, lng: point.lng }, 'red');
+        const center = { lat: parseFloat(point.lat), lng: parseFloat(point.lng) };
+        this.removeCircle(center);
+        this.addCircle(center, 'red');
       });
     }
   }
@@ -177,6 +179,16 @@ class Isochrone extends Visual {
     }
   }
 
+  removeCircle(center) {
+    for (let i = 0; i < this.locations.length; i += 1) {
+      const circle = this.locations[i];
+      if (circle.center.lat() === center.lat &&
+      circle.center.lng() === center.lng) {
+        circle.setMap(null);
+      }
+    }
+  }
+
   drawRectangle(a, b, slope, px, py) {
     const h = Math.sqrt((b ** 2) + (a ** 2));
     const smallTheta = Math.atan(a / b);
@@ -203,13 +215,14 @@ class Isochrone extends Visual {
     this.rectangles = [];
   }
 
-  addCircle(point, color, r = 10) {
+  addCircle(point, color, r = 15) {
+    const opacity = color === 'red' ? 1 : 0.5;
     const circle = new google.maps.Circle({
       strokeColor: color,
-      strokeOpacity: 0.75,
+      strokeOpacity: opacity,
       strokeWeight: 2,
       fillColor: color,
-      fillOpacity: 0.75,
+      fillOpacity: opacity,
       map: this.map,
       center: point,
       radius: r,
