@@ -211,6 +211,74 @@ class Visual {
   }
 
   /**
+  *Filters categorical data with the criteria given and returns only data columns which
+  *match the given criteria
+  */
+  filterCategorical(filters) {
+    const categoricalData = JSON.parse(JSON.stringify(this.data));
+
+    for (let i = 0; i < filters.length; i += 1) {
+      for (let j = 0; j < this.data.length; j += 1) {
+        const filterColumn = filters[i].column;
+        if (!filters[i].categories.contains(this.data[j][filterColumn])) {
+          delete categoricalData[j][filterColumn];
+        }
+      }
+    }
+    return categoricalData;
+  }
+
+  /**
+  *Filters numerical data with the criteria given and returns only data columns which
+  *match the given criteria
+  */
+  filterNumerical(filters) {
+    const numericalData = JSON.parse(JSON.stringify(this.data));
+
+    for (let i = 0; i < filters.length; i += 1) {
+      for (let j = 0; j < this.data.length; j += 1) {
+        const filterColumn = filters[i].column;
+        const x = this.data[j][filterColumn];
+        switch (true) {
+          case (filters[i].num.operation === '='):
+            if (x !== filters[i].num.value) {
+              delete numericalData[j][filterColumn];
+            }
+            break;
+          case (filters[i].num.operation === '!='):
+            if (x === filters[i].num.value) {
+              delete numericalData[j][filterColumn];
+            }
+            break;
+          case (filters[i].num.operation === '<'):
+            if (x >= filters[i].num.value) {
+              delete numericalData[j][filterColumn];
+            }
+            break;
+          case (filters[i].num.operation === '<='):
+            if (x > filters[i].num.value) {
+              delete numericalData[j][filterColumn];
+            }
+            break;
+          case (filters[i].num.operation === '>'):
+            if (x <= filters[i].num.value) {
+              delete numericalData[j][filterColumn];
+            }
+            break;
+          case (filters[i].num.operation === '>='):
+            if (x < filters[i].num.value) {
+              delete numericalData[j][filterColumn];
+            }
+            break;
+          default:
+            break;
+        }
+      }
+    }
+    return numericalData;
+  }
+
+  /**
   *Filters This.data and returns only identifying data columns
   *Any data with more than maxCategories categories and is not numeric are displayed
   *Data returned is in same format as this.data
