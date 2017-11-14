@@ -25,13 +25,13 @@ class EditorGenerator {
     console.log(`Using ${current}`);
   }
 
-  createDataFilter(id, column, category, onChange) {
+  createDataFilter(id, column, category, onColumn) {
     const context = { id, column, category };
     this.handlebarsWithContext('data-filter', context);
     $(`#${id}-columnSelect`).val(0).material_select();
     $(`#${id}-operations`).val(1).material_select();
     $(`#${id}-categories`).val(2).material_select();
-    $(`#${id}`).on('change', onChange);
+    $(`#${id}-columnSelect`).on('change', onColumn);
   }
   createNumericFilter(id, column, onChange) {
     const context = { id, column };

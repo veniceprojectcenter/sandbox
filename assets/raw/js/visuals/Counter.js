@@ -23,6 +23,8 @@ class Counter extends Visual {
   *
   */
   renderControls() {
+    this.attributes.dataFilters = [];
+    this.attributes.numericFilters = [];
     this.renderData = JSON.parse(JSON.stringify(this.data));
     this.attributes.columnOptions = Object.keys(this.data[0]);
     this.renderControlsDiv = document.getElementById(this.renderControlsID);
@@ -39,23 +41,23 @@ class Counter extends Visual {
       this.attributes.displayColumns = $(e.currentTarget).val();
     });
     editor.createDataFilter('Filter', cats, cats, (e) => {
-      this.attributes.columnOptions = $(e.currentTarget).val();
-    /**  this.binDiv.innerHTML = '';
-      for (let i = 0; i < this.attributes.columnOptions.length; i += 1) {
-        if (this.isNumeric(this.attributes.columnOptions[i])) {
-          const tempDiv = document.createElement('div');
-          this.binDiv.appendChild(tempDiv);
-          tempDiv.innerHTML = this.attributes.columnOptions[i];
-          const binEditor = new EditorGenerator(tempDiv);
-          binEditor.createTextField(`${i}start`, 'Enter Start of First Bin }', null);
-          binEditor.createTextField(`${i}size`, 'Enter Size of Bins }', null);
-        }
+      const column = $(e.currentTarget).val();
+      const categories = this.getGroupedList(column);
+      const catSelect = e.currentTarget.parentNode.parentNode.nextSibling.nextSibling
+      .nextSibling.nextSibling.children[0].children[3];
+      $(catSelect).empty().html(' ');
+      for (let i = 0; i < categories.length; i += 1) {
+        const value = categories[i].key;
+        $(catSelect).append(
+  $('<option></option>')
+    .attr('value', value)
+    .text(value),
+);
       }
-      */
-      this.render();
+      $(catSelect).material_select();
     });
-    editor.createNumericFilter('NumFilter', cats, cats, () => {
-      this.render();
+    editor.createNumericFilter('NumFilter', cats, () => {
+
     });
     this.renderControlsDiv.appendChild(this.binDiv);
     cats = [];
@@ -65,7 +67,9 @@ class Counter extends Visual {
     }
 
     editor.createButton('submit', 'Generate Table', () => {
-      // Call Jessie functions
+      this.attributes.dataFilters = [];
+      this.attributes.numericFilters = [];
+
       this.render();
     });
   }
