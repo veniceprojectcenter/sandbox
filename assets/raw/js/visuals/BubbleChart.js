@@ -194,7 +194,10 @@ class BubbleChart extends Visual {
 
 
     node.append('title')
-      .text(d => `${d.data.key}: ${d.value}`);
+      .text((d) => {
+        const percent = ((d.data.value / d.parent.value) * 100).toFixed(1);
+        console.log(d); return `${d.data.key}: ${percent}%`;
+      });
 
     const circles = node.append('circle')
       .attr('r', d => d.r)
@@ -247,7 +250,7 @@ class BubbleChart extends Visual {
 
     if (this.attributes.label_mode === 'hover') {
       text.style('display', 'none');
-      const handleMouseOver = function (d, i) {
+      const handleMouseOver = (d) => {
         d3.select(this)
             .attr('fill-opacity', 0.5);
 
@@ -256,7 +259,7 @@ class BubbleChart extends Visual {
           .style('display', 'initial');
       };
 
-      const handleMouseOut = function (d, i) {
+      const handleMouseOut = (d) => {
         d3.select(this)
             .attr('fill-opacity', 1);
         d3.select(this.parentNode.parentNode)

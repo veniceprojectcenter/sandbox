@@ -152,7 +152,7 @@ class Visual {
     const saveSVGButton = document.createElement('button');
     saveSVGButton.className = 'btn waves-effect';
     saveSVGButton.innerText = 'Export for Illustrator';
-    saveSVGButton.addEventListener('click', (e) => {
+    saveSVGButton.addEventListener('click', () => {
       const svg = $(`#${this.renderID} svg`);
       if (svg.length === 1) {
         svg.attr('version', '1.1')
