@@ -23,7 +23,7 @@ class DefaultMap extends Visual {
     });
 
     const columnNames = Object.keys(this.data[0]);
-    const selections = [columnNames[52], columnNames[76], columnNames[3]];
+    const selections = [columnNames[52]];
     const groups = Visual.groupByMultiple(selections, this.data);
 
     console.log(groups);
