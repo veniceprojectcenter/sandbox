@@ -68,6 +68,7 @@ class Isochrone extends Visual {
 
     this.markRoute(this.lastLat, this.lastLng, event.latLng.lat(), event.latLng.lng());
 
+    this.startPoint = { lat: this.lastLat, lng: this.lastLng };
     this.lastLat = event.latLng.lat();
     this.lastLng = event.latLng.lng();
   }
@@ -100,6 +101,8 @@ class Isochrone extends Visual {
   // Consumes a list of lat, lng pairs and produces a list of bridges
   // near the given path
   getBridgePath(path) {
+    path.push({ lat: this.lastLat, lng: this.lastLng });
+    path.unshift(this.startPoint);
     for (let i = 0; i < path.length - 1; i += 1) {
       const first = path[i];
       const second = path[i + 1];
