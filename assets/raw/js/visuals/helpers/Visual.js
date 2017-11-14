@@ -1,4 +1,6 @@
 /* eslint class-methods-use-this: ["error", { "exceptMethods": ["render", "renderControls"] }] */
+import Firebase from '../../Firebase';
+
 
 class Visual {
   constructor(config, renderID = Visual.DEFAULT_RENDER_ID,
@@ -36,33 +38,131 @@ class Visual {
         this.onLoadData();
       })
       .catch((error) => {
+        Materialize.toast('Error Fetching Data', 3000);
         console.error(error);
       });
     }
   }
 
   generateConfigButton(id = 'download') {
-    const generateButton = document.createElement('button');
-    generateButton.className = 'button';
-    generateButton.innerText = 'Publish Visual';
-    generateButton.addEventListener('click', () => this.generateConfig());
+    const modal = document.createElement('div');
+    modal.className = 'modal modal-fixed-footer';
+    modal.id = 'login-modal';
+
+    const modalContent = document.createElement('div');
+    modalContent.className = 'modal-content';
+
+    const headerRow = document.createElement('div');
+    headerRow.className = 'row';
+    const headerContainer = document.createElement('div');
+    headerContainer.className = 'col';
+    const modalHeader = document.createElement('h4');
+    modalHeader.innerText = 'Log In';
+
+    const emailRow = document.createElement('div');
+    emailRow.className = 'row';
+    const emailContainer = document.createElement('div');
+    emailContainer.className = 'input-field col';
+    const emailInput = document.createElement('input');
+    emailInput.type = 'email';
+    emailInput.className = 'validate';
+    emailInput.id = 'email';
+    const emailLabel = document.createElement('label');
+    emailLabel.setAttribute('for', 'email');
+    emailLabel.innerText = 'Email';
+
+    const passwordRow = document.createElement('div');
+    passwordRow.className = 'row';
+    const passwordContainer = document.createElement('div');
+    passwordContainer.className = 'input-field col';
+    const passwordInput = document.createElement('input');
+    passwordInput.type = 'password';
+    passwordInput.className = 'validate';
+    passwordInput.id = 'password';
+    const passwordLabel = document.createElement('label');
+    passwordLabel.setAttribute('for', 'password');
+    passwordLabel.innerText = 'Password';
+
+    const modalFooter = document.createElement('div');
+    modalFooter.className = 'modal-footer';
+
+    const loginButton = document.createElement('button');
+    loginButton.className = 'waves-effect btn-flat';
+    loginButton.innerText = 'Login And Publish';
+    loginButton.addEventListener('click', () => {
+      loginButton.classList.add('disabled');
+      const email = emailInput.value;
+      const password = passwordInput.value;
+      Firebase.login(email, password, () => {
+        this.publishConfig();
+        $('#login-modal').modal('close');
+        console.log('Successful login');
+      }, () => {
+        loginButton.classList.remove('disabled');
+        console.log('Unable to login');
+      });
+    });
+
+    const cancelButton = document.createElement('button');
+    cancelButton.className = 'modal-action modal-close waves-effect btn-flat';
+    cancelButton.innerText = 'Cancel';
+
+
+    headerRow.appendChild(headerContainer);
+    headerContainer.appendChild(modalHeader);
+
+    emailContainer.appendChild(emailInput);
+    emailContainer.appendChild(emailLabel);
+    emailRow.appendChild(emailContainer);
+
+    passwordContainer.appendChild(passwordInput);
+    passwordContainer.appendChild(passwordLabel);
+    passwordRow.appendChild(passwordContainer);
+
+    modalContent.appendChild(headerRow);
+    modalContent.appendChild(emailRow);
+    modalContent.appendChild(passwordRow);
+    modal.appendChild(modalContent);
+
+    modalFooter.appendChild(cancelButton);
+    modalFooter.appendChild(loginButton);
+    modal.appendChild(modalFooter);
+
+
+    const publishButton = document.createElement('button');
+    publishButton.className = 'btn waves-effectr';
+    publishButton.innerText = 'Publish Visual';
+    publishButton.addEventListener('click', () => {
+      firebase.auth().onAuthStateChanged((user) => {
+        if (user) {
+          this.publishConfig();
+          $('#login-modal').modal('close');
+          console.log('Already logged in');
+        } else {
+          $('#login-modal').modal('open');
+        }
+      });
+    });
+
+    const downloadButton = document.createElement('button');
+    downloadButton.className = 'btn waves-effect';
+    downloadButton.innerText = 'Download Config';
+    downloadButton.addEventListener('click', () => this.downloadConfig());
 
     const downloadContainer = document.getElementById(id);
-    downloadContainer.appendChild(generateButton);
+    downloadContainer.appendChild(publishButton);
+    downloadContainer.appendChild(downloadButton);
+    downloadContainer.appendChild(modal);
+
+    $('.modal').modal();
   }
 
-  async generateConfig() {
+  async publishConfig() {
     const config = {
       type: this.type,
       dataSet: this.dataSet,
       attributes: this.attributes,
     };
-    // const downloadButton = document.createElement('a');
-    // downloadButton.className = 'button';
-    // downloadButton.innerText = 'Download Config';
-    // downloadButton.href = `data:text/json;charset=utf-8,${JSON.stringify(config)}`;
-    // downloadButton.download = 'config.json';
-    // downloadButton.click();
 
     const db = firebase.firestore();
     await db.collection('configs').add({
@@ -70,11 +170,27 @@ class Visual {
       dataSet: config.dataSet,
       attributes: JSON.stringify(config.attributes),
     }).then(() => {
-      console.log('Config saved');
+      Materialize.toast('Visual Published', 3000);
     })
     .catch((error) => {
+      Materialize.toast('Error Publishing Visual', 3000);
       console.error(error);
     });
+  }
+
+  downloadConfig() {
+    const config = {
+      type: this.type,
+      dataSet: this.dataSet,
+      attributes: this.attributes,
+    };
+
+    const downloadButton = document.createElement('a');
+    downloadButton.className = 'button';
+    downloadButton.innerText = 'Download Config';
+    downloadButton.href = `data:text/json;charset=utf-8,${JSON.stringify(config)}`;
+    downloadButton.download = `${this.dataSet}-${this.type}-config.json`;
+    downloadButton.click();
   }
 
   disableTransitions() {
