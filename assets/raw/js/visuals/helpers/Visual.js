@@ -214,14 +214,13 @@ class Visual {
   *Filters categorical data with the criteria given and returns only data columns which
   *match the given criteria
   */
-  filterCategorical(filters) {
-    const categoricalData = JSON.parse(JSON.stringify(this.data));
-
+  filterCategorical(filters, data = this.data) {
+    const categoricalData = JSON.parse(JSON.stringify(data));
     for (let i = 0; i < filters.length; i += 1) {
-      for (let j = 0; j < this.data.length; j += 1) {
+      for (let j = 0; j < categoricalData.length; j += 1) {
         const filterColumn = filters[i].column;
-        if (!filters[i].categories.contains(this.data[j][filterColumn])) {
-          delete categoricalData[j][filterColumn];
+        if (!filters[i].categories.includes(data[j][filterColumn])) {
+          delete categoricalData[j];
         }
       }
     }
@@ -242,32 +241,32 @@ class Visual {
         switch (true) {
           case (filters[i].num.operation === '='):
             if (x !== filters[i].num.value) {
-              delete numericalData[j][filterColumn];
+              delete numericalData[j];
             }
             break;
           case (filters[i].num.operation === '!='):
             if (x === filters[i].num.value) {
-              delete numericalData[j][filterColumn];
+              delete numericalData[j];
             }
             break;
           case (filters[i].num.operation === '<'):
             if (x >= filters[i].num.value) {
-              delete numericalData[j][filterColumn];
+              delete numericalData[j];
             }
             break;
           case (filters[i].num.operation === '<='):
             if (x > filters[i].num.value) {
-              delete numericalData[j][filterColumn];
+              delete numericalData[j];
             }
             break;
           case (filters[i].num.operation === '>'):
             if (x <= filters[i].num.value) {
-              delete numericalData[j][filterColumn];
+              delete numericalData[j];
             }
             break;
           case (filters[i].num.operation === '>='):
             if (x < filters[i].num.value) {
-              delete numericalData[j][filterColumn];
+              delete numericalData[j];
             }
             break;
           default:

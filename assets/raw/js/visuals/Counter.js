@@ -34,7 +34,7 @@ class Counter extends Visual {
     // let rawCats = Object.keys(this.getCategoricalData()[0]);
     // rawCats = rawCats.concat(Object.keys(this.getNumericData()[0]));
     const catData = Object.keys(this.getCategoricalData()[0]);
-    const numData = Object.keys(this.getNumericData()[0]);
+    const numData = Object.keys(this.getNumericData(2)[0]);
     for (let i = 0; i < catData.length; i += 1) {
       ccats.push({ value: catData[i], text: catData[i] });
       cats.push({ value: catData[i], text: catData[i] });
@@ -49,7 +49,7 @@ class Counter extends Visual {
     editor.createMultipleSelectBox('check2', 'Show Data', cats, 'durg', (e) => {
       this.attributes.displayColumns = $(e.currentTarget).val();
     });
-    editor.createDataFilter('Filter', cats, cats, (e) => {
+    editor.createDataFilter('Filter', cats, (e) => {
       const column = $(e.currentTarget).val();
       const categories = this.getGroupedList(column);
       const catSelect = e.currentTarget.parentNode.parentNode.nextSibling.nextSibling
@@ -65,7 +65,7 @@ class Counter extends Visual {
       }
       $(catSelect).material_select();
     });
-    editor.createNumericFilter('NumFilter', ncats, ncats, () => {
+    editor.createNumericFilter('NumFilter', ncats, () => {
       this.render();
     });
     this.renderControlsDiv.appendChild(this.binDiv);
@@ -78,7 +78,16 @@ class Counter extends Visual {
     editor.createButton('submit', 'Generate Table', () => {
       this.attributes.dataFilters = [];
       this.attributes.numericFilters = [];
-
+      const catFilters = document.getElementsByClassName('dataFilter');
+      const numFilters = document.getElementsByClassName('numFilter');
+      for (let i = 0; i < catFilters.length; i += 1) {
+        const filter = catFilters[i];
+        const columnVal = $(filter.children[0].children[0].children[3]).val();
+        const catVal = $(filter.children[2].children[0].children[3]).val();
+        this.attributes.dataFilters.push({ column: columnVal, categories: catVal });
+      }
+      this.renderData = this.filterCategorical(this.attributes.dataFilters, this.renderData);
+      this.renderData = this.filterNumerical(this.attributes.numericFilters, this.renderData);
       this.render();
     });
   }

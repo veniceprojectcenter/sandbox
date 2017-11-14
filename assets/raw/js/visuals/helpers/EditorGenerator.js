@@ -25,8 +25,8 @@ class EditorGenerator {
     console.log(`Using ${current}`);
   }
 
-  createDataFilter(id, column, category, onColumn) {
-    const context = { id, column, category };
+  createDataFilter(id, column, onColumn) {
+    const context = { id, column };
     this.handlebarsWithContext('data-filter', context);
     $(`#${id}-columnSelect`).val(0).material_select();
     $(`#${id}-operations`).val(1).material_select();
