@@ -128,19 +128,20 @@ class Bar extends Visual {
     const y = d3.scaleLinear().rangeRound([height, 0]);
 
     let keys = [];
-    let stackData = [];
+    const stackData = [];
     if (this.attributes.group_by_stack !== 'No Column') {
       const cats = [this.attributes.group_by_main, this.attributes.group_by_stack];
       const multiLevelData = Visual.groupByMultiple(cats, renderData);
       const innerLevelData = Object.values(multiLevelData);
-      const dataSizes = innerLevelData.map(d => Object.values(d).reduce((a, b) => a.concat(b)).length);
+      const dataMapFunction = d => Object.values(d).reduce((a, b) => a.concat(b)).length;
+      const dataSizes = innerLevelData.map(dataMapFunction);
 
       Object.keys(multiLevelData).forEach((k) => {
         keys = keys.concat(Object.keys(multiLevelData[k]));
       });
       keys = keys.filter((e, i) => keys.indexOf(e) === i).sort();
       Object.keys(multiLevelData).forEach((k) => {
-        let tempObj = {};
+        const tempObj = {};
         keys.forEach((key) => {
           if (typeof multiLevelData[k][key] !== 'undefined') {
             tempObj[key] = multiLevelData[k][key].length;
@@ -224,7 +225,7 @@ class Bar extends Visual {
         .attr('height', d => y(d[0]) - y(d[1]))
         .attr('width', x.bandwidth());
     if (this.attributes.group_by_stack !== 'No Column') {
-      let legend = svg.append('g')
+      const legend = svg.append('g')
         .attr('font-family', 'sans-serif')
         .attr('font-size', 10)
         .attr('text-anchor', 'end')
