@@ -28,10 +28,10 @@ class Isochrone extends Visual {
       styles: DefaultMapStyle,
     });
 
-    for (let i = 0; i < this.data.length; i += 1) {
+    /* for (let i = 0; i < this.data.length; i += 1) {
       const point = this.data[i];
-      // this.addCircle({ lat: parseFloat(point.lat), lng: parseFloat(point.lng) }, 'blue', 0.5);
-    }
+      this.addCircle({ lat: parseFloat(point.Latitude), lng: parseFloat(point.Longitude) }, 'blue', 0.5);
+    } */
 
     this.registerDefaultClickAction();
   }
@@ -110,7 +110,7 @@ class Isochrone extends Visual {
       const second = path[i + 1];
       const pointsOnPath = this.getPointsOnPath(first, second);
       pointsOnPath.forEach((point) => {
-        const center = { lat: parseFloat(point.lat), lng: parseFloat(point.lng) };
+        const center = { lat: parseFloat(point.Latitude), lng: parseFloat(point.Longitude) };
         this.removeCircle(center);
         this.addCircle(center, 'red', 1);
       });
@@ -133,8 +133,8 @@ class Isochrone extends Visual {
 
     const pointsOnPath = [];
     for (let i = 0; i < this.data.length; i += 1) {
-      const pointX = this.data[i].lng;
-      const pointY = this.data[i].lat;
+      const pointX = this.data[i].Longitude;
+      const pointY = this.data[i].Latitude;
 
       const pathLineDistance = Isochrone.distanceToLine(pointX, pointY, x1, y1, slope);
       const bisectorDistance = Isochrone.distanceToLine(pointX, pointY, midX, midY, bisectorSlope);
