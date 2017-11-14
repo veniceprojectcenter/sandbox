@@ -333,6 +333,9 @@ class Visual {
   filterCategorical(filters, data = this.data) {
     const categoricalData = JSON.parse(JSON.stringify(data));
     for (let i = 0; i < filters.length; i += 1) {
+      if (filters[i].categories.length === 0) {
+        continue;
+      }
       for (let j = 0; j < categoricalData.length; j += 1) {
         const filterColumn = filters[i].column;
         if (categoricalData[j] !== null && !filters[i].categories.includes(data[j][filterColumn])) {
@@ -351,9 +354,12 @@ class Visual {
     const numericalData = JSON.parse(JSON.stringify(data));
 
     for (let i = 0; i < filters.length; i += 1) {
-      for (let j = 0; j < this.data.length; j += 1) {
+      for (let j = 0; j < data.length; j += 1) {
         const filterColumn = filters[i].column;
-        const x = this.data[j][filterColumn];
+        if (data[j] == null) {
+          continue;
+        }
+        const x = data[j][filterColumn];
         switch (true) {
           case (filters[i].operation === '='):
             if (numericalData[j] !== null && x !== filters[i].value) {
