@@ -57,6 +57,7 @@ class Isochrone extends Visual {
         this.clearMarkers('green');
         this.clearMarkers('black');
         this.clearMarkers('red');
+        this.clearRectangles();
         this.lastLat = event.latLng.lat();
         this.lastLng = event.latLng.lng();
         this.addMarker(event.latLng.lat(), event.latLng.lng(), 'black');
@@ -176,6 +177,13 @@ class Isochrone extends Visual {
         marker.setMap(null);
       }
     }
+  }
+
+  clearRectangles() {
+    this.rectangles.forEach((rectangle) => {
+      rectangle.setMap(null);
+    });
+    this.rectangles = [];
   }
 
   addMarker(lat, lng, color) {
