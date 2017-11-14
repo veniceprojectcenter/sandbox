@@ -140,7 +140,7 @@ class Isochrone extends Visual {
 
       const a = this.DISTANCE_THRESHOLD_PATH;
       const b = bisectorThreshold;
-      this.drawRectangle(a, b, slope, midX, midY);
+      // this.drawRectangle(a, b, slope, midX, midY);
     }
     return pointsOnPath;
   }
@@ -154,7 +154,6 @@ class Isochrone extends Visual {
     const denominator = Math.sqrt((a * a) + (b * b));
 
     const result = numerator / denominator;
-    console.log(result);
     return result;
   }
 
@@ -175,16 +174,18 @@ class Isochrone extends Visual {
 
   drawRectangle(a, b, slope, px, py) {
     const h = Math.sqrt((b ** 2) + (a ** 2));
-    const theta1 = Math.atan(a / b);
-    const theta2 = Math.atan(slope);
-    const theta = theta1 + theta2;
+    const smallTheta = Math.atan(a / b);
+    const lineTheta = Math.atan(slope);
+    const theta = smallTheta + lineTheta;
+
+    const thetaB = lineTheta - smallTheta;
 
     const points = [
       { lat: py + (h * Math.sin(theta)), lng: px + (h * Math.cos(theta)) },
-      { lat: midY + y, lng: midX + x },
-      { lat: midY - y, lng: midX + x },
-      { lat: midY - y, lng: midX - x },
-      { lat: midY + y, lng: midX - x },
+      { lat: py + (h * Math.sin(thetaB)), lng: px + (h * Math.cos(thetaB)) },
+      { lat: py - (h * Math.sin(theta)), lng: px - (h * Math.cos(theta)) },
+      { lat: py - (h * Math.sin(thetaB)), lng: px - (h * Math.cos(thetaB)) },
+      { lat: py + (h * Math.sin(theta)), lng: px + (h * Math.cos(theta)) },
     ];
 
     this.addPolyline(points);
