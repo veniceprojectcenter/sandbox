@@ -26,11 +26,20 @@ class Counter extends Visual {
     this.renderData = JSON.parse(JSON.stringify(this.data));
     this.attributes.columnOptions = Object.keys(this.data[0]);
     this.renderControlsDiv = document.getElementById(this.renderControlsID);
-    let cats = [];
-    let rawCats = Object.keys(this.getCategoricalData()[0]);
-    rawCats = rawCats.concat(Object.keys(this.getNumericData()[0]));
-    for (let i = 0; i < rawCats.length; i += 1) {
-      cats.push({ value: rawCats[i], text: rawCats[i] });
+    const ccats = [];
+    const ncats = [];
+    const cats = [];
+    // let rawCats = Object.keys(this.getCategoricalData()[0]);
+    // rawCats = rawCats.concat(Object.keys(this.getNumericData()[0]));
+    const catData = Object.keys(this.getCategoricalData()[0]);
+    const numData = Object.keys(this.getNumericData()[0]);
+    for (let i = 0; i < catData.length; i += 1) {
+      ccats.push({ value: catData[i], text: catData[i] });
+      cats.push({ value: catData[i], text: catData[i] });
+    }
+    for (let i = 0; i < numData.length; i += 1) {
+      ncats.push({ value: numData[i], text: numData[i] });
+      cats.push({ value: numData[i], text: numData[i] });
     }
     this.binDiv = document.createElement('div');
     const editor = new EditorGenerator(this.renderControlsDiv);
@@ -38,7 +47,7 @@ class Counter extends Visual {
     editor.createMultipleSelectBox('check2', 'Show Data', cats, 'durg', (e) => {
       this.attributes.displayColumns = $(e.currentTarget).val();
     });
-    editor.createDataFilter('Filter', cats, cats, (e) => {
+    editor.createDataFilter('Filter', ccats, ncats, (e) => {
       this.attributes.columnOptions = $(e.currentTarget).val();
     /**  this.binDiv.innerHTML = '';
       for (let i = 0; i < this.attributes.columnOptions.length; i += 1) {
@@ -54,13 +63,13 @@ class Counter extends Visual {
       */
       this.render();
     });
-    editor.createNumericFilter('NumFilter', cats, cats, () => {
+    editor.createNumericFilter('NumFilter', ncats, ncats, () => {
       this.render();
     });
     this.renderControlsDiv.appendChild(this.binDiv);
-    cats = [];
+    const filterCats = [];
     for (let i = 0; i < this.attributes.columnOptions.length; i += 1) {
-      cats.push({ value: this.attributes.columnOptions[i],
+      filterCats.push({ value: this.attributes.columnOptions[i],
         text: this.attributes.columnOptions[i] });
     }
 
