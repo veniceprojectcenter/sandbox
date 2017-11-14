@@ -11,7 +11,8 @@ class Isochrone extends Visual {
     this.locations = [];
     this.openInfoWindow = null;
 
-    this.DISTANCE_THRESHOLD_PATH = 0.0005;
+    this.DISTANCE_THRESHOLD_PATH = 0.0003;
+    this.rectangles = [];
   }
 
   onLoadData() {
@@ -135,6 +136,16 @@ class Isochrone extends Visual {
           bisectorDistance < bisectorThreshold) {
         pointsOnPath.push(this.data[i]);
       }
+
+      const points = [
+        { lat: midY + this.DISTANCE_THRESHOLD_PATH, lng: midX - bisectorThreshold },
+        { lat: midY + this.DISTANCE_THRESHOLD_PATH, lng: midX + bisectorThreshold },
+        { lat: midY - this.DISTANCE_THRESHOLD_PATH, lng: midX + bisectorThreshold },
+        { lat: midY - this.DISTANCE_THRESHOLD_PATH, lng: midX - bisectorThreshold },
+        { lat: midY + this.DISTANCE_THRESHOLD_PATH, lng: midX - bisectorThreshold },
+      ];
+
+      this.addPolyline(points);
     }
     return pointsOnPath;
   }
@@ -192,6 +203,19 @@ class Isochrone extends Visual {
         marker,
       });
     }
+  }
+
+  addPolyline(points) {
+    const polyline = new google.maps.Polyline({
+      path: points,
+      geodesic: true,
+      strokeColor: '#FF0000',
+      strokeOpacity: 1.0,
+      strokeWeight: 2,
+    });
+
+    polyline.setMap(this.map);
+    this.rectangles.push(polyline);
   }
 
   clearAllMarkers() {
