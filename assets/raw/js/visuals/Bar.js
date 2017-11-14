@@ -15,15 +15,16 @@ class Bar extends Visual {
     }
     this.applyDefaultAttributes({
       width: 600,
-      height: 400,
+      height: 450,
       font_size: '8',
       x_font_rotation: 45,
       x_font_x_offset: 0,
       x_font_y_offset: 0,
-      colors: {
+      color: {
         mode: 'list',
         colorspace: 'hcl',
-        list: [0],
+        list: ['210', '240', '270', '300', '330', '30', '60', '90', '120', '150', '180'],
+        range: [0, 359],
       },
       hide_empty: '',
       category_order: '',
@@ -62,6 +63,13 @@ class Bar extends Visual {
        this.render();
      });
 
+    editor.createSelectBox('bar-column-stack', 'Select stack column to display', cats, this.attributes.group_by_stack,
+     (e) => {
+       const value = $(e.currentTarget).val();
+       this.attributes.group_by_stack = value;
+       this.render();
+     });
+
     editor.createNumberSlider('bar-font-size',
       'Label Font Size', this.attributes.font_size, 1, 60,
       (e) => {
@@ -91,32 +99,19 @@ class Bar extends Visual {
         this.attributes.x_font_y_offset = `${value}`;
         this.render();
       });
+
     editor.createNumberSlider('bar-color',
-      'Bar Color', this.attributes.colors.list[0], 0, 359,
+      'Bar color', this.attributes.color.list[0], 0, 359,
       (e) => {
         const value = $(e.currentTarget).val();
-        this.attributes.colors.list[0] = `${value}`;
+        this.attributes.color.list[0] = `${value}`;
         this.render();
       });
-    // editor.createCheckBox('bar-hide-empty', 'Hide empty column?',
-    //   (e) => {
-    //     const value = $(e.currentTarget).val();
-    //     // console.log(value);
-    //
-    //     this.attributes.hide_empty = value;
-    //     this.render();
-    //   });
   }
 
   render() {
     // Empty the container, then place the SVG in there
     Visual.empty(this.renderID);
-
-    const margin = { top: 10, right: 10, bottom: 20, left: 20 };
-    const width = this.attributes.width - margin.left - margin.right;
-    const height = this.attributes.height - margin.top - margin.bottom;
-    const x = d3.scaleBand().rangeRound([0, width]).padding(0.1);
-    const y = d3.scaleLinear().rangeRound([height, 0]);
 
     let renderData = JSON.parse(JSON.stringify(this.data));
 
@@ -125,7 +120,41 @@ class Bar extends Visual {
       Number(this.attributes.binStart));
     }
 
-    const data = this.getGroupedListCounts(this.attributes.group_by_main, renderData);
+    const cats = [this.attributes.group_by_main, this.attributes.group_by_stack];
+    const multiLevelData = Visual.groupByMultiple(cats, renderData);
+    const innerLevelData = Object.values(multiLevelData);
+    const dataSizes = innerLevelData.map(d => Object.values(d).reduce((a, b) => a.concat(b)).length);
+
+    let keys = [];
+    Object.keys(multiLevelData).forEach((k) => {
+      keys = keys.concat(Object.keys(multiLevelData[k]));
+    });
+    keys = keys.filter((e, i) => keys.indexOf(e) === i).sort();
+    let stackData = [];
+    Object.keys(multiLevelData).forEach((k) => {
+      let tempObj = {};
+      keys.forEach((key) => {
+        if (typeof multiLevelData[k][key] !== 'undefined') {
+          tempObj[key] = multiLevelData[k][key].length;
+        } else {
+          tempObj[key] = 0;
+        }
+      });
+      tempObj.key = k;
+      stackData.push(tempObj);
+    });
+
+    const margin = { top: 10, right: 10, bottom: 35, left: 25 };
+    const width = this.attributes.width - margin.left - margin.right;
+    const height = this.attributes.height - margin.top - margin.bottom;
+    const x = d3.scaleBand().rangeRound([0, width]).padding(0.1);
+    const y = d3.scaleLinear().rangeRound([height, 0]);
+
+    x.domain(Object.keys(multiLevelData));
+    y.domain([0, d3.max(dataSizes)]);
+
+    const colorspace = d3.scaleOrdinal().domain(keys).range(this.attributes.color.list);
+    const z = i => d3.hcl(colorspace(keys[i]), 100, 50).rgb();
 
     if (this.attributes.title !== '') {
       const title = d3.select(`#${this.renderID}`).append('h3')
@@ -137,14 +166,10 @@ class Bar extends Visual {
       .attr('width', width)
       .attr('height', height)
       .attr('class', 'bar')
-      .attr('viewBox', '0 0 600 400')
-      .append('g');
+      .attr('viewBox', `0 0 ${this.attributes.width} ${this.attributes.height}`);
 
     const g = svg.append('g')
       .attr('transform', `translate(${margin.left},${margin.top})`);
-
-    x.domain(data.map(d => d.key));
-    y.domain([0, d3.max(data, d => d.value)]);
 
     g.append('g')
         .attr('class', 'axis axis--x')
@@ -168,15 +193,20 @@ class Bar extends Visual {
         .text('height')
         .style('font-size', `${this.attributes.font_size}pt`);
 
-    g.selectAll('.bar')
-        .data(data)
-        .enter().append('rect')
-          .attr('class', 'bar')
-          .attr('x', d => x(d.key))
-          .attr('y', d => y(d.value))
-          .attr('width', x.bandwidth())
-          .attr('height', d => height - y(d.value))
-          .attr('fill', d3.hcl(this.attributes.colors.list[0], 100, 75).rgb());
+    g.append('g')
+      .selectAll('g')
+      .data(d3.stack().keys(keys)(stackData))
+      .enter()
+      .append('g')
+        .attr('fill', (d, e) => z(e))
+      .selectAll('rect')
+      .data(d => d)
+      .enter()
+      .append('rect')
+        .attr('x', d => x(d.data.key))
+        .attr('y', d => y(d[1]))
+        .attr('height', d => y(d[0]) - y(d[1]))
+        .attr('width', x.bandwidth());
   }
 }
 
