@@ -6,6 +6,7 @@ const visuals = [
   { name: 'Bubble Chart', image: 'http://datavizproject.com/wp-content/uploads/2016/06/DVP_1_100-67.png', link: 'bubble-chart' },
   { name: 'Map', image: 'http://datavizproject.com/wp-content/uploads/2017/08/DVP_101_200-56-300x300.png', link: 'map' },
   { name: 'Counter', image: 'http://datavizproject.com/wp-content/uploads/2016/01/DVP_101_200-17-300x300.png', link: 'counter' },
+  { name: 'Path', image: 'http://datavizproject.com/wp-content/uploads/2016/06/DVP_1_100-78-300x300.png', link: 'path' },
   { name: 'Isochrone Map', image: 'http://datavizproject.com/wp-content/uploads/2015/10/DVP-88-300x300.png', link: 'isochrone' },
   { name: 'Pie Chart Map', image: 'http://datavizproject.com/wp-content/uploads/2016/06/DVP_101_200-43-300x300.png', link: 'piechartmap' },
   { name: 'Bubble Timeline', image: 'http://datavizproject.com/wp-content/uploads/2017/09/DVP_101_200-36.png', link: 'bubble-timeline' },

@@ -92,7 +92,7 @@ class Counter extends Visual {
         const filter = numFilters[i];
         const columnVal = $(filter.children[0].children[0].children[3]).val();
         const opVal = $(filter.children[1].children[0].children[3]).val();
-        const val = $(filter.children[2].children[0].children[3]).val();
+        const val = $(filter.children[2].children[0]).val();
         this.attributes.numericFilters.push({ column: columnVal, operation: opVal, value: val });
       }
       this.renderData = this.data;
@@ -178,7 +178,7 @@ class Counter extends Visual {
     let count = 0;
     for (let i = 0; i < renderData.length; i += 1) {
       txt += '<tr>';
-      if (renderData[i] !== null) {
+      if (renderData[i] != null) {
         for (let j = 0; j < this.attributes.displayColumns.length; j += 1) {
           txt += `<td>${renderData[i][this.attributes.displayColumns[j]]}</td>`;
         }
