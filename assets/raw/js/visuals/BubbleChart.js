@@ -1,7 +1,15 @@
 import Visual from './helpers/Visual';
 import EditorGenerator from './helpers/EditorGenerator';
+import ColorHelper from './helpers/ColorHelper';
 
 class BubbleChart extends Visual {
+
+  constructor(config, renderID, renderControlsID) {
+    super(config, renderID, renderControlsID);
+    this.editmode = false;
+    this.currentEditKey = null;
+  }
+
   onLoadData() {
     let defaultCat;
     // Try to set a default selected column
@@ -21,7 +29,13 @@ class BubbleChart extends Visual {
       hide_empty: true,
       category_order: '',
       group_by: defaultCat,
+      font_color: '#000000',
       title: '',
+      color: {
+        mode: 'single',
+        colors: [],
+        single_color: '#808080',
+      },
     });
   }
 
@@ -30,12 +44,25 @@ class BubbleChart extends Visual {
       alert('Dataset is empty!');
       return;
     }
+    if (this.editmode === false) {
+      this.editmode = true;
+      this.render();
+    }
+
+    this.disableTransitions();
+
     Visual.empty(this.renderControlsID);
     const controlsContainer = document.getElementById(this.renderControlsID);
 
     const editor = new EditorGenerator(controlsContainer);
 
     editor.createHeader('Configure Bubble Chart');
+
+    editor.createTextField('bubble-title', 'Chart Title', (e) => {
+      this.attributes.title = $(e.currentTarget).val();
+      this.render();
+    });
+
     const cats = [];
     const catsRaw = Object.keys(this.getCategoricalData()[0]);
     for (let i = 0; i < catsRaw.length; i += 1) {
@@ -68,6 +95,64 @@ class BubbleChart extends Visual {
       this.attributes.hide_empty = e.currentTarget.checked;
       this.render();
     });
+
+    editor.createColorField('bubble-fontcolor', 'Font Color', this.attributes.font_color,
+      (e) => {
+        this.attributes.font_color = $(e.currentTarget).val();
+        this.render();
+      });
+
+    const colorModes = [
+      { value: 'single', text: 'Single Color' },
+      { value: 'manual', text: 'Manual Assignment (Click bubble to assign)' },
+      { value: 'palette', text: 'Single Color (with light variance)' },
+    ];
+    editor.createSelectBox('bubble-colormode', 'Bubble Color Mode', colorModes, this.attributes.color.mode,
+      (e) => {
+        const value = $(e.currentTarget).val();
+        this.attributes.color.mode = value;
+        this.renderControls();
+        this.render();
+      });
+
+
+    if (this.attributes.color.mode === 'manual') {
+      if (this.currentEditKey != null) {
+        editor.createSubHeader(`Edit Color for: ${this.currentEditKey}`);
+        let currentColor = '#808080';
+        const temp = this.attributes.color.colors.filter(c => c.key === this.currentEditKey);
+        if (temp.length === 1) {
+          currentColor = temp[0].value;
+        }
+        editor.createColorField('bubble-colorpicker', 'Bubble Color', currentColor,
+        (e) => {
+          this.attributes.color.mode = 'manual';
+          this.attributes.color.colors[this.currentEditKey] = {
+            key: this.currentEditKey,
+            value: $(e.currentTarget).val(),
+          };
+          this.render();
+        });
+      }
+    } else {
+      let colorSelectHandle = null;
+      if (this.attributes.color.mode === 'palette') {
+        colorSelectHandle = (e) => {
+          this.attributes.color.single_color = $(e.currentTarget).val();
+          this.render();
+        };
+      } else if (this.attributes.color.mode === 'single') {
+        colorSelectHandle = (e) => {
+          this.attributes.color.single_color = $(e.currentTarget).val();
+          this.render();
+        };
+      }
+
+      editor.createColorField('bubble-staticcolorpicker',
+       'Bubble Color',
+        this.attributes.color.single_color,
+        colorSelectHandle);
+    }
   }
 
   render() {
@@ -80,6 +165,12 @@ class BubbleChart extends Visual {
     const bubble = d3.pack()
         .size([diameter, diameter])
         .padding(1.5);
+
+    if (this.attributes.title !== '') {
+      const title = d3.select(`#${this.renderID}`).append('h3')
+            .attr('class', 'visual-title');
+      title.html(this.attributes.title);
+    }
 
     const svg = d3.select(`#${this.renderID}`).append('svg')
         .attr('class', 'bubble-chart')
@@ -105,9 +196,32 @@ class BubbleChart extends Visual {
     node.append('title')
       .text(d => `${d.data.key}: ${d.value}`);
 
-    node.append('circle')
+    const circles = node.append('circle')
       .attr('r', d => d.r)
-      .style('fill', 'gray');
+      .style('fill', (d, i) => {
+        if (this.attributes.color.mode === 'manual') {
+          const temp = this.attributes.color.colors.filter(c => c.key === d.data.key);
+          if (temp.length === 1) {
+            return temp[0].value;
+          }
+        } else if (this.attributes.color.mode === 'single') {
+          return this.attributes.color.single_color;
+        } else if (this.attributes.color.mode === 'palette') {
+          const lightVals = [0, 0.15, 0.3];
+          const index = (i % 3);
+          return ColorHelper.shadeBlendConvert(lightVals[index],
+             this.attributes.color.single_color);
+        }
+        return 'gray';
+      });
+
+    if (this.useTransitions) {
+      circles.attr('transform', 'scale(0)')
+        .transition()
+        .delay((d, i) => 500 + (i * 10))
+        .duration(500)
+        .attr('transform', 'scale(1)');
+    }
 
     const text = svg.selectAll('.nodetext')
       .data(root.children)
@@ -119,12 +233,18 @@ class BubbleChart extends Visual {
       .style('text-anchor', 'middle')
       .style('pointer-events', 'none')
       .style('font-size', `${this.attributes.font_size}pt`)
+      .attr('fill', this.attributes.font_color)
       .text(d => d.data.key);
-    // let text = node.append('text')
-    //   .attr('dy', '.3em')
-    //   .style('text-anchor', 'middle')
-    //   .style('pointer-events', 'none')
-    //   .text(d => d.data.key);
+
+    if (this.useTransitions) {
+      text.attr('transform', d => `translate(${d.x},${d.y})scale(0)`)
+      .transition()
+      .delay((d, i) => 500 + (i * 10))
+      .duration(500)
+      .attr('transform', d => `translate(${d.x},${d.y})scale(1)`);
+    }
+
+
     if (this.attributes.label_mode === 'hover') {
       text.style('display', 'none');
       const handleMouseOver = function (d, i) {
@@ -146,8 +266,15 @@ class BubbleChart extends Visual {
 
       node.select('circle').on('mouseover', handleMouseOver)
             .on('mouseout', handleMouseOut);
-    } else if (this.attributes.label_mode == 'always') {
+    } else if (this.attributes.label_mode === 'hidden') {
+      text.style('display', 'none');
+    }
 
+    if (this.editmode && this.attributes.color.mode === 'manual') {
+      node.select('circle').on('click', (d) => {
+        this.currentEditKey = d.data.key;
+        this.renderControls();
+      });
     }
   }
 }

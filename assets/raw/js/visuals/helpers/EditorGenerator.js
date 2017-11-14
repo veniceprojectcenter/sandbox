@@ -10,6 +10,19 @@ class EditorGenerator {
     $(`#${id} > input`).on('input', onTextChanged);
   }
 
+  createColorField(id, title, color, onColorChanged) {
+    const context = { id, title, color };
+    this.handlebarsWithContext('colorpicker', context);
+    $(`#${id}-field`).on('change', (e) => {
+      $(e.currentTarget).siblings('input[type="text"]').val($(e.currentTarget).val());
+      onColorChanged(e);
+    });
+    $(`#${id}-mirror`).on('change', (e) => {
+      $(e.currentTarget).siblings('input[type="color"]').val($(e.currentTarget).val());
+      onColorChanged(e);
+    });
+  }
+
   createSelectBox(id, title, options, current, onOptionChanged) {
     const context = { id, title, options };
     this.handlebarsWithContext('select-entry', context);
@@ -65,6 +78,11 @@ class EditorGenerator {
   createHeader(text) {
     const context = { text };
     this.handlebarsWithContext('header-one', context);
+  }
+
+  createSubHeader(text) {
+    const context = { text };
+    this.handlebarsWithContext('header-two', context);
   }
 
   createCategoryEditor() {

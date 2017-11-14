@@ -40,16 +40,16 @@ async function renderDatasetList() {
     render(dataSets);
   } else {
     const dataSets = [];
-    const db = firebase.firestore();
-    await db.collection('datasets').get().then((querySnapshot) => {
+    const db = firebase.database();
+    await db.ref('groups').once('value').then((querySnapshot) => {
       querySnapshot.forEach((doc) => {
         const entry = doc.data();
-        entry.id = doc.id;
-        dataSets.push(entry);
+        // entry.id = doc.id;
+        // dataSets.push(entry);
       });
 
-      sessionStorage.dataSets = JSON.stringify(dataSets);
-      render(dataSets);
+      // sessionStorage.dataSets = JSON.stringify(dataSets);
+      // render(dataSets);
     })
     .catch((error) => {
       console.error(error);

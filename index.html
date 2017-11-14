@@ -121,6 +121,10 @@
   <h4 class="form-header">{{text}}</h4>
 </script>
 
+<script id="header-two" type="text/x-handlebars-template">
+  <h6 class="form-header-2">{{text}}</h6>
+</script>
+
 <script id="range-entry" type="text/x-handlebars-template">
   <label for="{{id}}-field">{{title}}</label>
   <form action="#" id="{{id}}">
@@ -128,6 +132,14 @@
       <input type="range" id="{{id}}-field" min="{{min}}" max="{{max}}" value="{{current}}"/>
     </p>
   </form>
+</script>
+
+<script id="colorpicker" type="text/x-handlebars-template">
+  <div class="color-wrapper">
+    <label class="color-label">{{title}}</label>
+    <input type="color" class="colorpicker-color" id="{{id}}-field" value="{{color}}" />
+    <input type="text" class="colorpicker-input" id="{{id}}-mirror" value="{{color}}" />
+  </div>
 </script>
 
 <script id="button" type="text/x-handlebars-template">
@@ -156,4 +168,4 @@
 <script src="https://d3js.org/d3.v4.min.js"></script>
 <script src="https://d3js.org/d3-selection-multi.v1.min.js"></script>
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDIWqV-QwqZnTNmvw7v89usuReSZOMzoKo"></script>
-<script src="assets/prod/js/app.bundle.js"></script>
+<script src="/assets/prod/js/app.bundle.js"></script>
