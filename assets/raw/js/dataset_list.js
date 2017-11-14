@@ -1,3 +1,7 @@
+function generateID(name) {
+  return name.replace(/[ ]/g, '-');
+}
+
 function render(dataSets) {
   const page = document.getElementById('page');
   page.classList.remove('container-fluid');
@@ -41,15 +45,18 @@ async function renderDatasetList() {
   } else {
     const dataSets = [];
     const db = firebase.database();
-    await db.ref('groups').once('value').then((querySnapshot) => {
+    await db.ref('/groups').once('value').then((querySnapshot) => {
       querySnapshot.forEach((doc) => {
-        const entry = doc.data();
-        // entry.id = doc.id;
-        // dataSets.push(entry);
+        // const data = doc.val();
+        const entry = {};
+        entry.id = generateID(doc.key);
+        entry.name = doc.key;
+        entry.description = 'A data set';
+        dataSets.push(entry);
       });
 
-      // sessionStorage.dataSets = JSON.stringify(dataSets);
-      // render(dataSets);
+      sessionStorage.dataSets = JSON.stringify(dataSets);
+      render(dataSets);
     })
     .catch((error) => {
       console.error(error);
