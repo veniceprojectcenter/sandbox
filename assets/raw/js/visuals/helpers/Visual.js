@@ -25,22 +25,32 @@ class Visual {
       this.data = JSON.parse(sessionStorage[this.dataSet]);
       this.onLoadData();
     } else {
-      const db = firebase.firestore();
       const data = [];
-      await db.collection(`datasets/${this.dataSet}/entries`).get().then((querySnapshot) => {
-        querySnapshot.forEach((doc) => {
-          const entry = doc.data();
-          entry.id = doc.id;
-          data.push(entry);
-        });
-        this.data = data;
-        sessionStorage[this.dataSet] = JSON.stringify(this.data);
-        this.onLoadData();
+      const db = firebase.database();
+      let dataIDs = [];
+
+      await db.ref(`/groups/${this.dataSet.replace(/-/g, ' ')}`).once('value').then((results) => {
+        const group = results.val();
+        dataIDs = group.member_list.split(',');
       })
       .catch((error) => {
         Materialize.toast('Error Fetching Data', 3000);
         console.error(error);
       });
+
+      const promises = [];
+      for (let i = 0; i < dataIDs.length; i += 1) {
+        promises.push(db.ref(`/data/${dataIDs[i]}`).once('value').then((result) => {
+          const entry = result.val().data;
+          entry.id = result.key;
+          data.push(entry);
+        }));
+      }
+
+      await Promise.all(promises);
+      this.data = data;
+      sessionStorage[this.dataSet] = JSON.stringify(this.data);
+      this.onLoadData();
     }
   }
 
@@ -196,8 +206,8 @@ class Visual {
       attributes: this.attributes,
     };
 
-    const db = firebase.firestore();
-    await db.collection('configs').add({
+    const db = firebase.database();
+    await db.ref('/viz').push({
       type: config.type,
       dataSet: config.dataSet,
       attributes: JSON.stringify(config.attributes),
