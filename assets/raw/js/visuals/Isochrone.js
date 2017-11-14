@@ -88,7 +88,7 @@ class Isochrone extends Visual {
         for (let i = 0; i < steps.length; i += 1) {
           // const start = steps[i].start_point;
           const end = steps[i].end_point;
-          this.addCircle({ lat: end.lat(), lng: end.lng() }, 'green');
+          // this.addCircle({ lat: end.lat(), lng: end.lng() }, 'green');
           returnSteps.push({ lat: end.lat(), lng: end.lng() });
         }
         this.getBridgePath(returnSteps);
@@ -103,7 +103,7 @@ class Isochrone extends Visual {
   getBridgePath(path) {
     path.push({ lat: this.lastLat, lng: this.lastLng });
     path.unshift(this.startPoint);
-    this.addPolyline(path, 'green', 4);
+    this.addPolyline(path, 'green', 6);
     for (let i = 0; i < path.length - 1; i += 1) {
       const first = path[i];
       const second = path[i + 1];
