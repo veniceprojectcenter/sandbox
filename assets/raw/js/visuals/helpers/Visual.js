@@ -168,7 +168,7 @@ class Visual {
         if (this.attributes.title !== '') {
           downloadLink.download = `${this.attributes.title}.svg`;
         } else {
-          downloadLink.download = 'export.svg';
+          downloadLink.download = `${this.dataSet}-${this.type}.svg`;
         }
         document.body.appendChild(downloadLink);
         downloadLink.click();

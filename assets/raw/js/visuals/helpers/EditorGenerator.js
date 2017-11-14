@@ -23,19 +23,24 @@ class EditorGenerator {
     });
   }
 
+  createLeftRightButtons(id, title, onLeftClicked, onRightClicked) {
+    const context = { id, title };
+    this.handlebarsWithContext('leftrightbuttons', context);
+    $(`#${id}-left`).click(onLeftClicked);
+    $(`#${id}-right`).click(onRightClicked);
+  }
+
   createSelectBox(id, title, options, current, onOptionChanged) {
     const context = { id, title, options };
     this.handlebarsWithContext('select-entry', context);
     $(`#${id}-select`).val(current).material_select();
     $(`#${id}-select`).change(onOptionChanged);
-    console.log(`Using ${current}`);
   }
   createMultipleSelectBox(id, title, options, current, onOptionChanged) {
     const context = { id, title, options };
     this.handlebarsWithContext('select-multiple-entry', context);
     $(`#${id}-select`).val(current).material_select();
     $(`#${id}-select`).change(onOptionChanged);
-    console.log(`Using ${current}`);
   }
 
   createDataFilter(id, column, onColumn) {

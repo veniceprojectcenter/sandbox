@@ -196,7 +196,7 @@ class BubbleChart extends Visual {
     node.append('title')
       .text((d) => {
         const percent = ((d.data.value / d.parent.value) * 100).toFixed(1);
-        console.log(d); return `${d.data.key}: ${percent}%`;
+        return `${d.data.key}: ${percent}%`;
       });
 
     const circles = node.append('circle')

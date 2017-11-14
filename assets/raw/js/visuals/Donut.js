@@ -1,7 +1,14 @@
 import Visual from './helpers/Visual';
 import EditorGenerator from './helpers/EditorGenerator';
+import ColorHelper from './helpers/ColorHelper';
 
 class Donut extends Visual {
+  constructor(config, renderID, renderControlsID) {
+    super(config, renderID, renderControlsID);
+    this.editmode = false;
+    this.currentEditKey = null;
+  }
+
   onLoadData() {
     let defaultCat = '';
     if (this.data.length > 0) {
@@ -12,21 +19,18 @@ class Donut extends Visual {
     }
     this.orderedGroups = null;
     this.changedBins = false;
-    this.colors = ['#ffffff', '#000000', '#ff0000', '#00ff00', '#0000ff', '#ffff00', '#ff00ff', '#00ffff',
-      '#ffffff', '#000000', '#ff0000', '#00ff00', '#0000ff', '#ffff00', '#ff00ff', '#00ffff',
-      '#ffffff', '#000000', '#ff0000', '#00ff00', '#0000ff', '#ffff00', '#ff00ff', '#00ffff'];
     this.applyDefaultAttributes({
       width: 500,
       height: 500,
       dontDefineDimensions: false,
       font_size: 30,
+      hide_empty: true,
       color: {
-        mode: 'interpolate',
-        colorspace: 'hcl',
-        range: [0, 359],
+        mode: 'manual',
       },
+      items: {}, // Contains objects that specify: key: {weight, color} where
+                 // a weight of 0 means first on the donut chart
       label_mode: 'hover',
-      category_order: '',
       group_by: defaultCat,
       title: '',
     });
@@ -36,6 +40,11 @@ class Donut extends Visual {
     if (this.data.length === 0) {
       alert('Dataset is empty!');
       return;
+    }
+
+    if (this.editmode === false) {
+      this.editmode = true;
+      this.render();
     }
 
     this.disableTransitions();
@@ -61,6 +70,7 @@ class Donut extends Visual {
      (e) => {
        const value = $(e.currentTarget).val();
        this.attributes.group_by = value;
+       this.attributes.items = {};
        this.changedBins = true;
        if (this.isNumeric(this.attributes.group_by)) {
          document.getElementById('bin-start').style.display = 'inherit';
@@ -76,28 +86,71 @@ class Donut extends Visual {
          document.getElementById('bin-start').style.display = 'none';
          document.getElementById('bin-size').style.display = 'none';
        }
+       this.attributes.order = [];
        this.render();
-       this.renderColorOrder(editor, true);
        this.changedBins = false;
      });
     editor.createTextField('bin-start', 'Start Value of first Group', (e) => {
       this.attributes.binStart = $(e.currentTarget).val();
       this.changedBins = true;
       this.render();
-      this.renderColorOrder(editor, true);
       this.changedBins = false;
     });
     editor.createTextField('bin-size', 'Group Size', (e) => {
       this.attributes.binSize = $(e.currentTarget).val();
       this.changedBins = true;
       this.render();
-      this.renderColorOrder(editor, true);
       this.changedBins = false;
     });
     const start = document.getElementById('bin-start');
     const size = document.getElementById('bin-size');
     start.style.display = 'none';
     size.style.display = 'none';
+
+    if (this.currentEditKey != null) {
+      editor.createColorField('donut-piececolor',
+       `${this.currentEditKey} Color`,
+       this.attributes.items[this.currentEditKey].color, (e) => {
+         const value = $(e.currentTarget).val();
+         this.attributes.items[this.currentEditKey].color = value;
+         this.render();
+       },
+      );
+      editor.createLeftRightButtons('donut-order', 'Change Piece Position',
+        (e) => {
+          const currentWeight = this.attributes.items[this.currentEditKey].weight;
+          const keys = Object.keys(this.attributes.items);
+          for (let i = 0; i < keys.length; i += 1) {
+            if (this.attributes.items.hasOwnProperty(keys[i])) {
+              if (this.attributes.items[keys[i]].weight === currentWeight - 1) {
+                this.attributes.items[keys[i]].weight += 1;
+                this.attributes.items[this.currentEditKey].weight -= 1;
+                this.render();
+                break;
+              }
+            }
+          }
+        },
+        (e) => {
+          const currentWeight = this.attributes.items[this.currentEditKey].weight;
+          const keys = Object.keys(this.attributes.items);
+          for (let i = 0; i < keys.length; i += 1) {
+            if (this.attributes.items.hasOwnProperty(keys[i])) {
+              if (this.attributes.items[keys[i]].weight === currentWeight + 1) {
+                this.attributes.items[keys[i]].weight -= 1;
+                this.attributes.items[this.currentEditKey].weight += 1;
+                this.render();
+                break;
+              }
+            }
+          }
+        });
+    }
+
+    editor.createCheckBox('bubble-hideempty', 'Hide Empty Category', this.attributes.hide_empty, (e) => {
+      this.attributes.hide_empty = e.currentTarget.checked;
+      this.render();
+    });
 
     editor.createNumberSlider('donut-font-size',
      'Label Font Size',
@@ -109,26 +162,6 @@ class Donut extends Visual {
        this.render();
      });
 
-    editor.createNumberSlider('donut-color-start',
-      'Color range start',
-       this.attributes.color.range[0],
-        1, 359,
-      (e) => {
-        const value = $(e.currentTarget).val();
-        this.attributes.color.range[0] = `${value}`;
-        this.render();
-      });
-
-    editor.createNumberSlider('donut-color-end',
-        'Color range end',
-         this.attributes.color.range[1],
-          1, 359,
-        (e) => {
-          const value = $(e.currentTarget).val();
-          this.attributes.color.range[1] = `${value}`;
-          this.render();
-        });
-
     const displayModes = [
       { value: 'hover', text: 'On Hover' },
       { value: 'always', text: 'Always Visible' },
@@ -139,7 +172,6 @@ class Donut extends Visual {
         this.attributes.label_mode = value;
         this.render();
       });
-    this.renderColorOrder(editor, true);
   }
 
   render() {
@@ -162,17 +194,6 @@ class Donut extends Visual {
       for (let i = 0; i < this.orderedGroups.length; i += 1) {
         data.push({ key: this.orderedGroups[i].key, value: this.orderedGroups[i].value.length });
       }
-    }
-
-    let colorspace = null;
-    if (this.attributes.color.mode === 'interpolate') {
-      // const crange = this.attributes.color.range;
-      // const color = d3.scaleLinear().domain([0, data.length]).range([crange[0], crange[1]]);
-      colorspace = function (n, colors) {
-        return d3.rgb(colors[n]);
-      };
-    } else {
-      console.log('Error no color mode found');
     }
 
     const arc = d3.arc()
@@ -201,6 +222,19 @@ class Donut extends Visual {
         .style('height', this.attributes.height);
     }
 
+    if (this.attributes.hide_empty) {
+      data = data.filter(d => d.key !== '');
+    }
+
+    data = data.sort((a, b) => {
+      if (this.attributes.items[b.key] !== undefined &&
+      this.attributes.items[a.key] !== undefined) {
+        return this.attributes.items[b.key].weight - this.attributes.items[a.key].weight;
+      }
+      return 0;
+    });
+    console.log(data);
+
     const g = svg.selectAll('.arc')
       .data(pie(data))
       .enter().append('g')
@@ -211,7 +245,17 @@ class Donut extends Visual {
       return function (t) { return arc(i(t)); };
     };
     const path = g.append('path')
-      .style('fill', d => colorspace(d.index, this.colors));
+      .style('fill', (d, i) => {
+        if (this.attributes.items[d.data.key] === undefined) {
+          const hue = d.index / data.length;
+          const color = d3.hsl(hue * 360.0, 1, 0.6);
+          this.attributes.items[d.data.key] = {
+            weight: i,
+            color: ColorHelper.rgbToHex(color.toString()),
+          };
+        }
+        return this.attributes.items[d.data.key].color;
+      });
 
     if (this.useTransitions) {
       path.transition()
@@ -263,47 +307,11 @@ class Donut extends Visual {
         .attr('id', d => `label-${d.data.key}`)
         .text(d => d.data.key);
     }
-  }
-  renderColorOrder(editor, isNewColumn) {
-    const mvs = document.getElementsByClassName('mv');
-    while (mvs.length > 0) {
-      $(mvs[0]).remove();
-    }
-    if (isNewColumn) {
-      this.orderedGroups = this.getGroupedList(this.attributes.group_by, this.renderData);
-    }
-    for (let i = 0; i < this.orderedGroups.length; i += 1) {
-      editor.createMoveableList(`Moveable${i}`, this.orderedGroups[i].key, this.colors[i], (e) => {
-        const direction = $(e.currentTarget).val();
-        for (let j = 0; j < this.orderedGroups.length; j += 1) {
-          if (this.orderedGroups[j].key ===
-             e.currentTarget.attributes[1].nodeValue) {
-            if (direction === '↑') {
-              if (j === 0) {
-                break;
-              }
-              const temp = this.orderedGroups[j];
-              this.orderedGroups[j] = this.orderedGroups[j - 1];
-              this.orderedGroups[j - 1] = temp;
-              break;
-            } else {
-              if (j === this.orderedGroups.length - 1) {
-                break;
-              }
-              const temp = this.orderedGroups[j];
-              this.orderedGroups[j] = this.orderedGroups[j + 1];
-              this.orderedGroups[j + 1] = temp;
-              break;
-            }
-          }
-        }
-        this.renderColorOrder(editor, false);
-        this.render();
-      }, (e) => {
-        const color = $(e.currentTarget).val();
-        const id = e.currentTarget.id.substring(8);
-        this.colors[parseInt(id)] = color;
-        this.render();
+    if (this.editmode) {
+      path.on('click', (d) => {
+        this.currentEditKey = d.data.key;
+        this.renderControls();
+        console.log(d);
       });
     }
   }
