@@ -36,13 +36,25 @@ class Isochrone extends Visual {
   registerDefaultClickAction() {
     google.maps.event.addListener(this.map, 'click', (event) => {
       console.log(`Lat: ${event.latLng.lat()}| Lng: ${event.latLng.lng()}`);
-      this.addMarker(event.latLng.lat(), event.latLng.lng(), 'black');
 
+      console.log(this.numTimesClicked);
       if (this.numTimesClicked == null) {
+        this.addMarker(event.latLng.lat(), event.latLng.lng(), 'black');
         this.lastLat = event.latLng.lat();
         this.lastLng = event.latLng.lng();
         this.numTimesClicked = 1;
         return;
+      } else if (this.numTimesClicked !== null) {
+        this.numTimesClicked += 1;
+        if (this.numTimesClicked % 2 === 1) { // If numTimesClicked is odd
+          this.clearMarkers('green');
+          this.clearMarkers('black');
+          this.lastLat = event.latLng.lat();
+          this.lastLng = event.latLng.lng();
+          this.addMarker(event.latLng.lat(), event.latLng.lng(), 'black');
+          return;
+        }
+        this.addMarker(event.latLng.lat(), event.latLng.lng(), 'black');
       }
 
       const directions = new google.maps.DirectionsService();
@@ -71,6 +83,16 @@ class Isochrone extends Visual {
       this.lastLat = event.latLng.lat();
       this.lastLng = event.latLng.lng();
     });
+  }
+
+  // Removes all markers from the map of the given color
+  clearMarkers(color) {
+    for (let i = 0; i < this.locations.length; i += 1) {
+      const marker = this.locations[i].marker;
+      if (marker.icon.fillColor === color) {
+        marker.setMap(null);
+      }
+    }
   }
 
   // start and end are objects with .lat() and .lng() functions
@@ -106,7 +128,7 @@ class Isochrone extends Visual {
     }
   }
 
-  clearMarkers() {
+  clearAllMarkers() {
     this.locations.forEach((marker) => {
       marker.setMap(null);
     });
