@@ -86,6 +86,7 @@ class Counter extends Visual {
         const catVal = $(filter.children[2].children[0].children[3]).val();
         this.attributes.dataFilters.push({ column: columnVal, categories: catVal });
       }
+      this.renderData = this.data;
       this.renderData = this.filterCategorical(this.attributes.dataFilters, this.renderData);
       this.renderData = this.filterNumerical(this.attributes.numericFilters, this.renderData);
       this.render();
@@ -168,11 +169,13 @@ class Counter extends Visual {
     let count = 0;
     for (let i = 0; i < renderData.length; i += 1) {
       txt += '<tr>';
-      for (let j = 0; j < this.attributes.displayColumns.length; j += 1) {
-        txt += `<td>${renderData[i][this.attributes.displayColumns[j]]}</td>`;
+      if (renderData[i] !== null) {
+        for (let j = 0; j < this.attributes.displayColumns.length; j += 1) {
+          txt += `<td>${renderData[i][this.attributes.displayColumns[j]]}</td>`;
+        }
+        count += 1;
+        txt += '</tr>';
       }
-      count += 1;
-      txt += '</tr>';
     }
     txt += '</table>';
     document.getElementById('tableDiv').innerHTML = `${txt}Count: ${count}`;
