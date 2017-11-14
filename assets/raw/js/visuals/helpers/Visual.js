@@ -159,9 +159,39 @@ class Visual {
     downloadButton.innerText = 'Download Config';
     downloadButton.addEventListener('click', () => this.downloadConfig());
 
+    const saveSVGButton = document.createElement('button');
+    saveSVGButton.className = 'btn waves-effect';
+    saveSVGButton.innerText = 'Export for Illustrator';
+    saveSVGButton.addEventListener('click', (e) => {
+      const svg = $(`#${this.renderID} svg`);
+      if (svg.length === 1) {
+        svg.attr('version', '1.1')
+           .attr('xmlns:xlink', 'http://www.w3.org/1999/xlink')
+           .attr('xmlns', 'http://www.w3.org/2000/svg')
+           .attr('xml:space', 'preserve');
+
+        const svgData = svg[0].outerHTML;
+        const svgBlob = new Blob([svgData], { type: 'image/svg+xml;charset=utf-8' });
+        const svgUrl = URL.createObjectURL(svgBlob);
+        const downloadLink = document.createElement('a');
+        downloadLink.href = svgUrl;
+        if (this.attributes.title !== '') {
+          downloadLink.download = `${this.attributes.title}.svg`;
+        } else {
+          downloadLink.download = 'export.svg';
+        }
+        document.body.appendChild(downloadLink);
+        downloadLink.click();
+        document.body.removeChild(downloadLink);
+      } else {
+        alert('This chart type is not supported for Illustrator!');
+      }
+    });
+
     const downloadContainer = document.getElementById(id);
     downloadContainer.appendChild(publishButton);
     downloadContainer.appendChild(downloadButton);
+    downloadContainer.appendChild(saveSVGButton);
     downloadContainer.appendChild(modal);
 
     $('.modal').modal();
@@ -347,6 +377,9 @@ class Visual {
   filterCategorical(filters, data = this.data) {
     const categoricalData = JSON.parse(JSON.stringify(data));
     for (let i = 0; i < filters.length; i += 1) {
+      if (filters[i].categories.length === 0) {
+        continue;
+      }
       for (let j = 0; j < categoricalData.length; j += 1) {
         const filterColumn = filters[i].column;
         if (categoricalData[j] !== null && !filters[i].categories.includes(data[j][filterColumn])) {
@@ -365,9 +398,12 @@ class Visual {
     const numericalData = JSON.parse(JSON.stringify(data));
 
     for (let i = 0; i < filters.length; i += 1) {
-      for (let j = 0; j < this.data.length; j += 1) {
+      for (let j = 0; j < data.length; j += 1) {
         const filterColumn = filters[i].column;
-        const x = this.data[j][filterColumn];
+        if (data[j] == null) {
+          continue;
+        }
+        const x = data[j][filterColumn];
         switch (true) {
           case (filters[i].operation === '='):
             if (numericalData[j] !== null && x !== filters[i].value) {

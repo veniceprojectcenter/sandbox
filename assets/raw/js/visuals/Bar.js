@@ -30,6 +30,7 @@ class Bar extends Visual {
       category_order: '',
       group_by_main: defaultCat1,
       group_by_stack: defaultCat2,
+      title: '',
     });
   }
 
