@@ -338,6 +338,9 @@ class Visual {
   }
 
   static groupByMultipleHelper(selections, groups) {
+    if (selections.length === 0) {
+      return groups;
+    }
     const selection = selections.shift();
     const groupNames = Object.keys(groups);
     for (let i = 0; i < groupNames.length; i += 1) {
