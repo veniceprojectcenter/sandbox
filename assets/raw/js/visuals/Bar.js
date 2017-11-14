@@ -62,8 +62,9 @@ class Bar extends Visual {
        this.attributes.group_by_main = value;
        this.render();
      });
-
-    editor.createSelectBox('bar-column-stack', 'Select stack column to display', cats, this.attributes.group_by_stack,
+    const stackCats = cats;
+    stackCats.unshift({ value: 'No Column', text: 'No Column' });
+    editor.createSelectBox('bar-column-stack', 'Select stack column to display', stackCats, this.attributes.group_by_stack,
      (e) => {
        const value = $(e.currentTarget).val();
        this.attributes.group_by_stack = value;
@@ -120,38 +121,53 @@ class Bar extends Visual {
       Number(this.attributes.binStart));
     }
 
-    const cats = [this.attributes.group_by_main, this.attributes.group_by_stack];
-    const multiLevelData = Visual.groupByMultiple(cats, renderData);
-    const innerLevelData = Object.values(multiLevelData);
-    const dataSizes = innerLevelData.map(d => Object.values(d).reduce((a, b) => a.concat(b)).length);
-
-    let keys = [];
-    Object.keys(multiLevelData).forEach((k) => {
-      keys = keys.concat(Object.keys(multiLevelData[k]));
-    });
-    keys = keys.filter((e, i) => keys.indexOf(e) === i).sort();
-    let stackData = [];
-    Object.keys(multiLevelData).forEach((k) => {
-      let tempObj = {};
-      keys.forEach((key) => {
-        if (typeof multiLevelData[k][key] !== 'undefined') {
-          tempObj[key] = multiLevelData[k][key].length;
-        } else {
-          tempObj[key] = 0;
-        }
-      });
-      tempObj.key = k;
-      stackData.push(tempObj);
-    });
-
     const margin = { top: 10, right: 10, bottom: 35, left: 25 };
     const width = this.attributes.width - margin.left - margin.right;
     const height = this.attributes.height - margin.top - margin.bottom;
     const x = d3.scaleBand().rangeRound([0, width]).padding(0.1);
     const y = d3.scaleLinear().rangeRound([height, 0]);
 
-    x.domain(Object.keys(multiLevelData));
-    y.domain([0, d3.max(dataSizes)]);
+    let keys = [];
+    let stackData = [];
+    if (this.attributes.group_by_stack !== 'No Column') {
+      const cats = [this.attributes.group_by_main, this.attributes.group_by_stack];
+      const multiLevelData = Visual.groupByMultiple(cats, renderData);
+      const innerLevelData = Object.values(multiLevelData);
+      const dataSizes = innerLevelData.map(d => Object.values(d).reduce((a, b) => a.concat(b)).length);
+
+      Object.keys(multiLevelData).forEach((k) => {
+        keys = keys.concat(Object.keys(multiLevelData[k]));
+      });
+      keys = keys.filter((e, i) => keys.indexOf(e) === i).sort();
+      Object.keys(multiLevelData).forEach((k) => {
+        let tempObj = {};
+        keys.forEach((key) => {
+          if (typeof multiLevelData[k][key] !== 'undefined') {
+            tempObj[key] = multiLevelData[k][key].length;
+          } else {
+            tempObj[key] = 0;
+          }
+        });
+        tempObj.key = k;
+        stackData.push(tempObj);
+      });
+
+      x.domain(Object.keys(multiLevelData));
+      y.domain([0, d3.max(dataSizes)]);
+    } else {
+      const cats = this.attributes.group_by_main;
+      const data = Visual.groupBy(cats, renderData);
+      const innerData = Object.values(data);
+      const dataSizes = innerData.map(d => d.length);
+
+      keys = ['value'];
+      Object.keys(data).forEach((k) => {
+        stackData.push({ key: k, value: data[k].length });
+      });
+
+      x.domain(Object.keys(data));
+      y.domain([0, d3.max(dataSizes)]);
+    }
 
     const colorspace = d3.scaleOrdinal().domain(keys).range(this.attributes.color.list);
     const z = i => d3.hcl(colorspace(keys[i]), 100, 50).rgb();
@@ -207,28 +223,29 @@ class Bar extends Visual {
         .attr('y', d => y(d[1]))
         .attr('height', d => y(d[0]) - y(d[1]))
         .attr('width', x.bandwidth());
+    if (this.attributes.group_by_stack !== 'No Column') {
+      let legend = svg.append('g')
+        .attr('font-family', 'sans-serif')
+        .attr('font-size', 10)
+        .attr('text-anchor', 'end')
+        .selectAll('g')
+        .data(keys.slice())
+        .enter()
+        .append('g')
+          .attr('transform', (d, i) => `translate(0,${(keys.length - i) * 20})`);
 
-    let legend = svg.append('g')
-      .attr('font-family', 'sans-serif')
-      .attr('font-size', 10)
-      .attr('text-anchor', 'end')
-      .selectAll('g')
-      .data(keys.slice())
-      .enter()
-      .append('g')
-        .attr('transform', (d, i) => `translate(0,${(keys.length - i) * 20})`);
+      legend.append('rect')
+        .attr('x', width - 19)
+        .attr('width', 19)
+        .attr('height', 19)
+        .attr('fill', (d, e) => z(e));
 
-    legend.append('rect')
-      .attr('x', width - 19)
-      .attr('width', 19)
-      .attr('height', 19)
-      .attr('fill', (d, e) => z(e));
-
-    legend.append('text')
-      .attr('x', width - 24)
-      .attr('y', 9.5)
-      .attr('dy', '0.32em')
-      .text(d => (d === '' ? 'NULL' : d));
+      legend.append('text')
+        .attr('x', width - 24)
+        .attr('y', 9.5)
+        .attr('dy', '0.32em')
+        .text(d => (d === '' ? 'NULL' : d));
+    }
   }
 }
 
