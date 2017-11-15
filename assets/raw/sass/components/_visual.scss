@@ -5,5 +5,15 @@
 }
 
 .leftrightwrapper {
-  margin: 10px 0px;
+  margin: 0px 0px 15px 0px;
+  >label {
+    display: block;
+  }
+}
+
+.color-wrapper {
+  margin-bottom: 10px;
+  >input[type="text"] {
+    margin-bottom: 0px;
+  }
 }

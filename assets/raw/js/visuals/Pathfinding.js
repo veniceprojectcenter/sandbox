@@ -1,9 +1,8 @@
 import Visual from './helpers/Visual';
-import DivOverlay from './helpers/DivOverlay';
 import DefaultMapStyle from './helpers/DefaultMapStyle';
 import EditorGenerator from './helpers/EditorGenerator';
 
-class Isochrone extends Visual {
+class Pathfinding extends Visual {
   constructor(config) {
     super(config);
 
@@ -12,6 +11,7 @@ class Isochrone extends Visual {
     this.openInfoWindow = null;
 
     this.DISTANCE_THRESHOLD_PATH = 0.0001;
+    this.DEBUG = false;
     this.rectangles = [];
   }
 
@@ -28,7 +28,7 @@ class Isochrone extends Visual {
       styles: DefaultMapStyle,
     });
 
-    // this.addDataMarkers();
+    if (this.DEBUG) this.addDataMarkers();
     // this.addZoomListener();
 
     this.registerDefaultClickAction();
@@ -42,7 +42,6 @@ class Isochrone extends Visual {
         this.resizeCircles(35);
         return;
       }
-      console.log(zoomLevel);
       switch (zoomLevel) {
         case 16:
           r = 20;
@@ -124,7 +123,6 @@ class Isochrone extends Visual {
       avoidFerries: true,
     }, (response, status) => {
       if (status === 'OK') {
-        console.log(response);
         const steps = response.routes[0].overview_path;
         const returnSteps = [];
         for (let i = 0; i < steps.length; i += 1) {
@@ -175,9 +173,10 @@ class Isochrone extends Visual {
       const pointX = this.data[i].Longitude;
       const pointY = this.data[i].Latitude;
 
-      const pathLineDistance = Isochrone.distanceToLine(pointX, pointY, x1, y1, slope);
-      const bisectorDistance = Isochrone.distanceToLine(pointX, pointY, midX, midY, bisectorSlope);
-      const bisectorThreshold = Isochrone.getDistanceBetweenPoints(x1, y1, x2, y2) / 2;
+      const pathLineDistance = Pathfinding.distanceToLine(pointX, pointY, x1, y1, slope);
+      const bisectorDistance =
+        Pathfinding.distanceToLine(pointX, pointY, midX, midY, bisectorSlope);
+      const bisectorThreshold = Pathfinding.getDistanceBetweenPoints(x1, y1, x2, y2) / 2;
 
       if (pathLineDistance < this.DISTANCE_THRESHOLD_PATH &&
           bisectorDistance < bisectorThreshold) {
@@ -244,7 +243,7 @@ class Isochrone extends Visual {
       { lat: py + (h * Math.sin(theta)), lng: px + (h * Math.cos(theta)) },
     ];
 
-    // this.addPolyline(points, 'red', 2);
+    if (this.DEBUG) this.addPolyline(points, 'red', 2);
   }
 
   clearRectangles() {
@@ -304,4 +303,4 @@ class Isochrone extends Visual {
   }
 }
 
-export default Isochrone;
+export default Pathfinding;
