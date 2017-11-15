@@ -45,7 +45,7 @@ class Visual {
         dataIDs = group.member_list.split(',');
       })
       .catch((error) => {
-        Materialize.toast('Error Fetching Data', 3000);
+        // Materialize.toast('Error Fetching Data', 3000);
         console.error(error);
       });
 
@@ -231,11 +231,11 @@ class Visual {
       dataSet: config.dataSet,
       attributes: JSON.stringify(config.attributes),
     }).then(() => {
-      Materialize.toast('Visual Published', 3000);
+      console.error('Visual Published');
       publishButton.classList.remove('disabled');
     })
     .catch((error) => {
-      Materialize.toast('Error Publishing Visual', 3000);
+      console.error('Error Publishing Visual');
       publishButton.classList.remove('disabled');
       console.error(error);
     });
