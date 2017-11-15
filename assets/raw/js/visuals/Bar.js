@@ -244,6 +244,12 @@ class Bar extends Visual {
         .attr('y', 9.5)
         .attr('dy', '0.32em')
         .text(d => (d === '' ? 'NULL' : d));
+
+      const lbox = legend.node().getBBox();
+      legend.selectAll('rect')
+        .attr('x', (width + lbox.width) - 14);
+      legend.selectAll('text')
+        .attr('x', (width + lbox.width) - 19);
     }
 
     const box = g.node().getBBox();
