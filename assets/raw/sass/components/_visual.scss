@@ -1,9 +1,10 @@
 .visual {
   min-height: calc(100vh - 150px);
   overflow: hidden;
+  position: relative;
   width: 100%;
 }
 
 .leftrightwrapper {
-  margin: 10px 0px;
+  margin: 10px 0;
 }
