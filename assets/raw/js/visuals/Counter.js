@@ -32,8 +32,8 @@ class Counter extends Visual {
     const numFilterDiv = document.createElement('div');
     catFilterDiv.id = 'catFilterDiv';
     numFilterDiv.id = 'numFilterDiv';
-    this.renderControlsDiv.appendChild(catFilterDiv);
-    this.renderControlsDiv.appendChild(numFilterDiv);
+    this.renderControlsDiv.innerHTML = '<h4 style = "text-align: center">Controls</h4> <br>';
+
     const catEditor = new EditorGenerator(catFilterDiv);
     const numEditor = new EditorGenerator(numFilterDiv);
 
@@ -45,6 +45,7 @@ class Counter extends Visual {
     const catData = Object.keys(this.getCategoricalData()[0]);
     const numData = Object.keys(this.getNumericData(2)[0]);
     const allDataCols = Object.keys(this.data[0]);
+    let num = 0;
     for (let i = 0; i < allDataCols.length; i += 1) {
       cats.push({ value: allDataCols[i], text: allDataCols[i] });
     }
@@ -56,15 +57,21 @@ class Counter extends Visual {
     }
     this.binDiv = document.createElement('div');
     const editor = new EditorGenerator(this.renderControlsDiv);
-    this.renderControlsDiv.innerHTML = '<h4 style = "text-align: center">Controls</h4> <br>';
+
     editor.createMultipleSelectBox('check2', 'Show Data', cats, 'durg', (e) => {
       this.attributes.displayColumns = $(e.currentTarget).val();
     });
     this.renderControlsDiv.append(document.createElement('br'));
     const filterLabel = document.createElement('h5');
-    filterLabel.innerHTML = 'Filters';
+    filterLabel.innerHTML = 'Categorical Filters';
     filterLabel.style.textAlign = 'center';
     this.renderControlsDiv.appendChild(filterLabel);
+    this.renderControlsDiv.appendChild(catFilterDiv);
+    const filterLabel2 = document.createElement('h5');
+    filterLabel2.innerHTML = 'Numeric Filters';
+    filterLabel2.style.textAlign = 'center';
+    this.renderControlsDiv.appendChild(filterLabel2);
+    this.renderControlsDiv.appendChild(numFilterDiv);
     this.renderControlsDiv.append(document.createElement('br'));
     catEditor.createDataFilter('Filter', ccats, (e) => {
       const column = $(e.currentTarget).val();
@@ -86,6 +93,7 @@ $('<option disabled=true></option>')
       }
       $(catSelect).material_select();
     });
+
     numEditor.createNumericFilter('NumFilter', ncats, () => {
     });
     this.renderControlsDiv.appendChild(this.binDiv);
@@ -95,7 +103,8 @@ $('<option disabled=true></option>')
         text: this.attributes.columnOptions[i] });
     }
     editor.createButton('addCat', 'Add Categorical Filter', () => {
-      editor.createDataFilter('Filter', ccats, (e) => {
+      num += 1;
+      catEditor.createDataFilter(`Filter${num}`, ccats, (e) => {
         const column = $(e.currentTarget).val();
         const categories = this.getGroupedList(column);
         const catSelect = e.currentTarget.parentNode.parentNode.nextSibling.nextSibling
@@ -117,7 +126,8 @@ $('<option disabled=true></option>')
       });
     });
     editor.createButton('addNum', 'Add Numeric Filter', () => {
-      numEditor.createNumericFilter('NumFilter', ncats, () => {
+      num += 1;
+      numEditor.createNumericFilter(`NumFilter${num}`, ncats, () => {
       });
     });
     editor.createButton('submit', 'Generate Table', () => {
