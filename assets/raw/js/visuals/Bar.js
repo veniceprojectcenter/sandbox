@@ -231,18 +231,18 @@ class Bar extends Visual {
         .data(keys.slice())
         .enter()
         .append('g')
-          .attr('transform', (d, i) => `translate(0,${(keys.length - i) * 2 * this.attributes.font_size})`);
+          .attr('transform', (d, i) => `translate(30,${(keys.length - i) * 1.25 * this.attributes.font_size})`);
 
       legend.append('rect')
         .attr('x', width - 19)
-        .attr('width', 19)
-        .attr('height', 19)
+        .attr('width', `${this.attributes.font_size}`)
+        .attr('height', `${this.attributes.font_size}`)
         .attr('fill', (d, e) => z(e));
 
       legend.append('text')
         .attr('x', width - 24)
-        .attr('y', 9.5)
-        .attr('dy', '0.32em')
+        .attr('y', '0.5em')
+        .attr('dy', '0.25em')
         .text(d => (d === '' ? 'NULL' : d));
 
       const lbox = legend.node().getBBox();
