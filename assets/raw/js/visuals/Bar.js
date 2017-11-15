@@ -204,12 +204,8 @@ class Bar extends Visual {
     g.append('g')
         .attr('class', 'axis axis--y')
         .call(d3.axisLeft(y).ticks(10))
-      .append('text')
-        .attr('transform', 'rotate(-90)')
-        .attr('y', 6)
-        .attr('dy', '0.71em')
+      .selectAll('text')
         .attr('text-anchor', 'end')
-        .text('height')
         .style('font-size', `${this.attributes.font_size}pt`);
 
     g.append('g')
