@@ -1,5 +1,6 @@
 /* eslint class-methods-use-this: ["error", { "exceptMethods": ["render", "renderControls"] }] */
 import Firebase from '../../Firebase';
+import Loader from './Loader';
 
 
 class Visual {
@@ -22,8 +23,17 @@ class Visual {
   }
 
   async fetchData() {
-    if (sessionStorage[this.dataSet]) {
-      this.data = JSON.parse(sessionStorage[this.dataSet]);
+    const loader = new Loader(this.renderID);
+    const container = document.getElementById(this.renderID);
+    if (container) {
+      loader.render();
+    }
+    if (localStorage[this.dataSet] && localStorage[`${this.dataSet}-date`] &&
+      Math.floor(new Date() - Date.parse(localStorage[`${this.dataSet}-date`])) < (1000 * 60 * 60 * 24)) {
+      this.data = JSON.parse(localStorage[this.dataSet]);
+      if (container) {
+        loader.remove();
+      }
       this.onLoadData();
     } else {
       const data = [];
@@ -50,7 +60,11 @@ class Visual {
 
       await Promise.all(promises);
       this.data = data;
-      sessionStorage[this.dataSet] = JSON.stringify(this.data);
+      localStorage[`${this.dataSet}-date`] = new Date().toString();
+      localStorage[this.dataSet] = JSON.stringify(this.data);
+      if (container) {
+        loader.remove();
+      }
       this.onLoadData();
     }
   }
@@ -405,7 +419,8 @@ class Visual {
     for (let i = 0; i < filters.length; i += 1) {
       for (let j = 0; j < data.length; j += 1) {
         const filterColumn = filters[i].column;
-        if (data[j] !== null && filterColumn !== null) {
+        if (data[j] !== null && data[j] !== undefined
+          && filterColumn !== null && filterColumn !== undefined) {
           const x = data[j][filterColumn];
           switch (true) {
             case (filters[i].operation === '='):
