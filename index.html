@@ -48,25 +48,28 @@
 <div class= 'row dataFilter'>
   <div class="input-field col-md-4" id="{{id}}-1">
     <select id="{{id}}-columnSelect">
-      <option value="" disabled>Choose your option</option>
+      <option value="" disabled>Select a Property</option>
       {{#each column}}
       <option value="{{value}}">{{text}}</option>
       {{/each}}
     </select>
+    <label>Property to Filter by</label>
     </div>
     <div class="input-field col-md-2" id="{{id}}-2">
   <select id="{{id}}-operations">
-    <option value="in">is one of</option>
-    <option value="not">is not one of</option>
+    <option value=1>is one of</option>
+    <option value=0>is not one of</option>
   </select>
+  <label>Operation</label>
 </div>
 <div class="input-field col-md-6" id="{{id}}-3">
 <select multiple id="{{id}}-categories">
-  <option value="" disabled>Choose your option</option>
+  <option value="" disabled>NA</option>
   {{#each category}}
   <option value="{{value}}">{{text}}</option>
   {{/each}}
 </select>
+<label>Acceptible Values</label>
   </div>
 </div>
 </script>
@@ -75,14 +78,16 @@
 <div class= 'row numFilter'>
   <div class="input-field col-md-4" id="{{id}}-1">
     <select id="{{id}}-columnSelect">
-      <option value="" disabled>Choose your option</option>
+      <option value="" disabled>Select a Property</option>
       {{#each column}}
       <option value="{{value}}">{{text}}</option>
       {{/each}}
     </select>
+    <label>Select Numeric Property to Filter by</label>
     </div>
     <div class="input-field col-md-2" id="{{id}}-2">
   <select id="{{id}}-operations">
+    <option value="" disabled>-Select-</option>
     <option value="=">=</option>
     <option value=">">&gt;</option>
     <option value="<">&lt;</option>
@@ -90,10 +95,11 @@
     <option value="<=">≤</option>
     <option value="!=">≠</option>
   </select>
+  <label>Operation</label>
 </div>
 <div class="input-field col-md-6" id="{{id}}-3">
     <input type="number" id="{{id}}-field">
-    <label for="{{id}}-number"></label>
+    <label for="{{id}}-number">Value</label>
   </div>
 </div>
 </script>
