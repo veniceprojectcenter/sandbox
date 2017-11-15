@@ -252,9 +252,10 @@ class Bar extends Visual {
         .attr('x', (width + lbox.width) - 19);
     }
 
-    const box = g.node().getBBox();
-    svg.attr('width', box.width + box.x + 10)
-    .attr('height', box.height + box.y + 10);
+    const gbox = g.node().getBBox();
+    g.attr('transform', `translate(${-gbox.x},${margin.top})`);
+    svg.attr('width', gbox.width + gbox.x + 10)
+    .attr('height', gbox.height + gbox.y + 10);
   }
 }
 
