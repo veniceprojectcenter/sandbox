@@ -225,13 +225,13 @@ class Bar extends Visual {
     if (this.attributes.group_by_stack !== 'No Column') {
       const legend = g.append('g')
         .attr('font-family', 'sans-serif')
-        .attr('font-size', 10)
+        .attr('font-size', `${this.attributes.font_size}pt`)
         .attr('text-anchor', 'end')
         .selectAll('g')
         .data(keys.slice())
         .enter()
         .append('g')
-          .attr('transform', (d, i) => `translate(0,${(keys.length - i) * 20})`);
+          .attr('transform', (d, i) => `translate(0,${(keys.length - i) * 2 * this.attributes.font_size})`);
 
       legend.append('rect')
         .attr('x', width - 19)
