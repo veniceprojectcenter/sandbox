@@ -216,7 +216,7 @@ class Pathfinding extends Visual {
 
   displayPointAggregation(points) {
     const number = points.length;
-    console.log(`On this path, you will go over ${number} bridges.`);
+    console.log(`On this path, you will encounter ${number} artifacts.`);
     const fieldToAggregate = this.attributes.aggregationColumn;
 
     let sum = 0;
