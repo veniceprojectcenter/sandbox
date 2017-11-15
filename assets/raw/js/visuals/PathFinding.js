@@ -223,13 +223,14 @@ class PathFinding extends Visual {
     let count = 0;
     for (let i = 0; i < number; i += 1) {
       const point = points[i];
-      if (point[fieldToAggregate] == undefined ||
-        point[fieldToAggregate] == null ||
-        point[fieldToAggregate] == '') {
-        continue;
+      if (point[fieldToAggregate] !== undefined ||
+        point[fieldToAggregate] !== null ||
+        point[fieldToAggregate] !== '' ||
+        point[fieldToAggregate] !== '0' ||
+        point[fieldToAggregate] !== 0) {
+        sum += parseFloat(point[fieldToAggregate]);
+        count += 1;
       }
-      sum += parseFloat(point[fieldToAggregate]);
-      count += 1;
     }
     let average = null;
     if (count > 0) {

@@ -66,6 +66,7 @@ class FilterMap extends Visual {
       alert('Dataset is empty!');
       return;
     }
+
     Visual.empty(this.renderControlsID);
 
     this.attributes.dataFilters = [];
@@ -90,9 +91,11 @@ class FilterMap extends Visual {
     for (let i = 0; i < catData.length; i += 1) {
       ccats.push({ value: catData[i], text: catData[i] });
     }
+
     for (let i = 0; i < numData.length; i += 1) {
       ncats.push({ value: numData[i], text: numData[i] });
     }
+
     this.binDiv = document.createElement('div');
     const editor = new EditorGenerator(this.renderControlsDiv);
 
@@ -115,16 +118,12 @@ class FilterMap extends Visual {
       .nextSibling.nextSibling.children[0].children[3];
       $(catSelect).empty().html(' ');
       $(catSelect).append(
-$('<option disabled=true></option>')
-  .attr('Select', '-Select-')
-  .text('-Select-'));
+      $('<option disabled=true></option>').attr('Select', '-Select-').text('-Select-'));
       for (let i = 0; i < categories.length; i += 1) {
         const value = categories[i].key;
         $(catSelect).append(
-  $('<option></option>')
-    .attr('value', value)
-    .text(value),
-);
+          $('<option></option>').attr('value', value).text(value),
+        );
       }
       $(catSelect).material_select();
     }, (e) => { this.removeFilter(e.currentTarget); });
@@ -160,6 +159,7 @@ $('<option disabled=true></option>')
         }
         this.attributes.dataFilters.push({ column: columnVal, categories: catVal });
       }
+
       for (let i = 0; i < numFilters.length; i += 1) {
         const filter = numFilters[i];
         const columnVal = $(filter.children[0].children[0].children[3]).val();
@@ -172,6 +172,7 @@ $('<option disabled=true></option>')
       this.renderData = this.filterNumerical(this.attributes.numericFilters, this.renderData);
       this.render();
     });
+
     editor.createButton('addCat', 'Add Categorical Filter', () => {
       num += 1;
       catEditor.createDataFilter(`Filter${num}`, ccats, (e) => {
@@ -181,16 +182,13 @@ $('<option disabled=true></option>')
         .nextSibling.nextSibling.children[0].children[3];
         $(catSelect).empty().html(' ');
         $(catSelect).append(
-  $('<option disabled=true></option>')
-    .attr('Select', '-Select-')
-    .text('-Select-'));
+          $('<option disabled=true></option>').attr('Select', '-Select-').text('-Select-'),
+        );
         for (let i = 0; i < categories.length; i += 1) {
           const value = categories[i].key;
           $(catSelect).append(
-    $('<option></option>')
-      .attr('value', value)
-      .text(value),
-  );
+            $('<option></option>').attr('value', value).text(value),
+          );
         }
         $(catSelect).material_select();
       }, (e) => { this.removeFilter(e.currentTarget); });
@@ -202,6 +200,7 @@ $('<option disabled=true></option>')
       });
     });
   }
+
   removeFilter(buttonID) {
     buttonID.parentNode.parentNode.remove();
   }
