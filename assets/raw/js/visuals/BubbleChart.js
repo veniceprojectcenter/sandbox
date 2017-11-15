@@ -179,7 +179,9 @@ class BubbleChart extends Visual {
 
     let counts = this.getGroupedListCounts(this.attributes.group_by);
     if (this.attributes.hide_empty) {
-      counts = counts.filter(cat => cat.key !== '');
+      counts = counts.filter(d => d.key !== '' &&
+       d.key.toLowerCase() !== 'null' &&
+        d.key.toLowerCase() !== 'undefined');
     }
     const root = d3.hierarchy({ children: counts })
           .sum(d => d.value)

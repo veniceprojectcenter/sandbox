@@ -12,6 +12,7 @@ class Visual {
     this.data = [];
     this.attributes = config.attributes;
     this.type = config.type;
+    this.editmode = false;
 
     this.useTransitions = true;
   }
@@ -177,6 +178,8 @@ class Visual {
     saveSVGButton.className = 'btn waves-effect';
     saveSVGButton.innerText = 'Export for Illustrator';
     saveSVGButton.addEventListener('click', () => {
+      this.editmode = false;
+      this.render();
       const svg = $(`#${this.renderID} svg`);
       if (svg.length === 1) {
         svg.attr('version', '1.1')
@@ -200,6 +203,8 @@ class Visual {
       } else {
         alert('This chart type is not supported for Illustrator!');
       }
+      this.editmode = true;
+      this.render();
     });
 
     const downloadContainer = document.getElementById(id);
@@ -414,7 +419,8 @@ class Visual {
     for (let i = 0; i < filters.length; i += 1) {
       for (let j = 0; j < data.length; j += 1) {
         const filterColumn = filters[i].column;
-        if (data[j] !== null) {
+        if (data[j] !== null && data[j] !== undefined
+          && filterColumn !== null && filterColumn !== undefined) {
           const x = data[j][filterColumn];
           switch (true) {
             case (filters[i].operation === '='):

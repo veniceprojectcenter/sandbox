@@ -5,7 +5,6 @@ import ColorHelper from './helpers/ColorHelper';
 class Donut extends Visual {
   constructor(config, renderID, renderControlsID) {
     super(config, renderID, renderControlsID);
-    this.editmode = false;
     this.currentEditKey = null;
   }
 
@@ -23,8 +22,9 @@ class Donut extends Visual {
       width: 500,
       height: 500,
       dontDefineDimensions: false,
-      font_size: 30,
+      font_size: 20,
       hide_empty: true,
+      show_legend: true,
       color: {
         mode: 'manual',
       },
@@ -152,6 +152,11 @@ class Donut extends Visual {
       this.render();
     });
 
+    editor.createCheckBox('bubble-showlegend', 'Show Legend', this.attributes.show_legend, (e) => {
+      this.attributes.show_legend = e.currentTarget.checked;
+      this.render();
+    });
+
     editor.createNumberSlider('donut-font-size',
      'Label Font Size',
       this.attributes.font_size,
@@ -210,9 +215,12 @@ class Donut extends Visual {
       title.html(this.attributes.title);
     }
 
+    let extraHeight = (data.length * 22) + 10;
+    if (this.attributes.show_legend === false) { extraHeight = 0; }
+
     const svg = d3.select(`#${this.renderID}`).append('svg')
       .attr('class', 'donut')
-      .attr('viewBox', `0 0 ${width} ${height}`)
+      .attr('viewBox', `0 0 ${width} ${height + extraHeight}`)
       .append('g')
       .attr('transform', `translate(${width / 2},${height / 2})`);
 
@@ -223,17 +231,19 @@ class Donut extends Visual {
     }
 
     if (this.attributes.hide_empty) {
-      data = data.filter(d => d.key !== '');
+      data = data.filter(d => d.key !== undefined &&
+        d.key !== '' &&
+        d.key.toLowerCase() !== 'null' &&
+        d.key.toLowerCase() !== 'undefined');
     }
 
     data = data.sort((a, b) => {
       if (this.attributes.items[b.key] !== undefined &&
       this.attributes.items[a.key] !== undefined) {
-        return this.attributes.items[b.key].weight - this.attributes.items[a.key].weight;
+        return this.attributes.items[a.key].weight - this.attributes.items[b.key].weight;
       }
       return 0;
     });
-    console.log(data);
 
     const g = svg.selectAll('.arc')
       .data(pie(data))
@@ -307,12 +317,46 @@ class Donut extends Visual {
         .attr('id', d => `label-${d.data.key}`)
         .text(d => d.data.key);
     }
+
+    if (this.attributes.show_legend) {
+      const legend = d3.select(`#${this.renderID} > svg`).append('g')
+        .attr('font-family', 'sans-serif')
+        .attr('font-size', 10)
+        .attr('text-anchor', 'end')
+        .selectAll('g')
+        .data(pie(data))
+        .enter()
+        .append('g')
+          .attr('transform', (d, i) => `translate(0,${(i * 22) + 500})`);
+
+      legend.append('rect')
+        .attr('x', width - 19)
+        .attr('width', 19)
+        .attr('height', 19)
+        .attr('fill', d => this.attributes.items[d.data.key].color);
+
+      legend.append('text')
+        .attr('x', width - 24)
+        .attr('y', 9.5)
+        .attr('dy', '0.32em')
+        .style('font-size', '18px')
+        .text(d => (d === '' ? 'NULL' : d.data.key));
+    }
+
     if (this.editmode) {
       path.on('click', (d) => {
         this.currentEditKey = d.data.key;
         this.renderControls();
-        console.log(d);
+        this.render();
       });
+      const editKey = this.currentEditKey;
+      if (editKey !== null) {
+        path.attr('stroke-width', (d) => {
+          if (d.data.key === editKey) { return '1px'; }
+          return '0';
+        })
+        .attr('stroke', 'black');
+      }
     }
   }
 }

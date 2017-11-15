@@ -48,26 +48,32 @@
 <div class= 'row dataFilter'>
   <div class="input-field col-md-4" id="{{id}}-1">
     <select id="{{id}}-columnSelect">
-      <option value="" disabled>Choose your option</option>
+      <option value="" disabled>Select a Property</option>
       {{#each column}}
       <option value="{{value}}">{{text}}</option>
       {{/each}}
     </select>
+    <label>Property to Filter by</label>
     </div>
     <div class="input-field col-md-2" id="{{id}}-2">
   <select id="{{id}}-operations">
-    <option value="in">is one of</option>
-    <option value="not">is not one of</option>
+    <option value=1>is one of</option>
+    <option value=0>is not one of</option>
   </select>
+  <label>Operation</label>
 </div>
-<div class="input-field col-md-6" id="{{id}}-3">
+<div class="input-field col-md-5" id="{{id}}-3">
 <select multiple id="{{id}}-categories">
-  <option value="" disabled>Choose your option</option>
+  <option value="" disabled>NA</option>
   {{#each category}}
   <option value="{{value}}">{{text}}</option>
   {{/each}}
 </select>
+<label>Acceptible Values</label>
   </div>
+  <div class="col-md-1" id="{{id}}-4">
+  <a id="{{id}}-remove" style="height:22px;width:22px;line-height:25px;margin-top:25px" class="btn-floating btn-large waves-effect waves-light"><font color="white">x</font></a>
+</div>
 </div>
 </script>
 
@@ -75,14 +81,16 @@
 <div class= 'row numFilter'>
   <div class="input-field col-md-4" id="{{id}}-1">
     <select id="{{id}}-columnSelect">
-      <option value="" disabled>Choose your option</option>
+      <option value="" disabled>Select a Property</option>
       {{#each column}}
       <option value="{{value}}">{{text}}</option>
       {{/each}}
     </select>
+    <label>Select Numeric Property to Filter by</label>
     </div>
     <div class="input-field col-md-2" id="{{id}}-2">
   <select id="{{id}}-operations">
+    <option value="" disabled>-Select-</option>
     <option value="=">=</option>
     <option value=">">&gt;</option>
     <option value="<">&lt;</option>
@@ -90,11 +98,15 @@
     <option value="<=">≤</option>
     <option value="!=">≠</option>
   </select>
+  <label>Operation</label>
 </div>
-<div class="input-field col-md-6" id="{{id}}-3">
+<div class="input-field col-md-5" id="{{id}}-3">
     <input type="number" id="{{id}}-field">
-    <label for="{{id}}-number"></label>
+    <label for="{{id}}-number">Value</label>
   </div>
+  <div class="col-md-1" id="{{id}}-4">
+  <a id="{{id}}-remove"style="height:22px;width:22px;line-height:25px;margin-top:25px" class="btn-floating btn-large waves-effect waves-light"><font color="white">x</font></a>
+</div>
 </div>
 </script>
 
@@ -143,14 +155,14 @@
 </script>
 
 <script id="button" type="text/x-handlebars-template">
-  <a id="{{id}}" class="waves-effect waves-light btn">{{text}}</a>
+  <a id="{{id}}" class="waves-effect waves-light btn"><font color='white'>{{text}}</font></a>
 </script>
 
 <script id="leftrightbuttons" type="text/x-handlebars-template">
   <div id="{{id}}" class="leftrightwrapper">
     <label>{{title}}</label>
-    <a id="{{id}}-left" class="waves-effect waves-light btn">Clockwise</a>
-    <a id="{{id}}-right" class="waves-effect waves-light btn">Counter-Clockwise</a>
+    <a id="{{id}}-left" class="waves-effect waves-light btn">Counter-Clockwise</a>
+    <a id="{{id}}-right" class="waves-effect waves-light btn">Clockwise</a>
   </div>
 </script>
 

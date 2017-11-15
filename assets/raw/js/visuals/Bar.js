@@ -23,7 +23,11 @@ class Bar extends Visual {
       color: {
         mode: 'list',
         colorspace: 'hcl',
-        list: ['210', '240', '270', '300', '330', '30', '60', '90', '120', '150', '180'],
+        list: [
+          0, 45, 90, 135, 180, 225, 270, 315,
+          120, 165, 210, 255, 300, 345, 30, 75,
+          240, 285, 330, 15, 60, 105, 150, 195,
+        ],
         range: [0, 359],
       },
       hide_empty: '',
@@ -200,12 +204,8 @@ class Bar extends Visual {
     g.append('g')
         .attr('class', 'axis axis--y')
         .call(d3.axisLeft(y).ticks(10))
-      .append('text')
-        .attr('transform', 'rotate(-90)')
-        .attr('y', 6)
-        .attr('dy', '0.71em')
+      .selectAll('text')
         .attr('text-anchor', 'end')
-        .text('height')
         .style('font-size', `${this.attributes.font_size}pt`);
 
     g.append('g')
@@ -225,30 +225,37 @@ class Bar extends Visual {
     if (this.attributes.group_by_stack !== 'No Column') {
       const legend = g.append('g')
         .attr('font-family', 'sans-serif')
-        .attr('font-size', 10)
+        .attr('font-size', `${this.attributes.font_size}pt`)
         .attr('text-anchor', 'end')
         .selectAll('g')
         .data(keys.slice())
         .enter()
         .append('g')
-          .attr('transform', (d, i) => `translate(0,${(keys.length - i) * 20})`);
+          .attr('transform', (d, i) => `translate(30,${(keys.length - i) * 1.25 * this.attributes.font_size})`);
 
       legend.append('rect')
         .attr('x', width - 19)
-        .attr('width', 19)
-        .attr('height', 19)
+        .attr('width', `${this.attributes.font_size}`)
+        .attr('height', `${this.attributes.font_size}`)
         .attr('fill', (d, e) => z(e));
 
       legend.append('text')
         .attr('x', width - 24)
-        .attr('y', 9.5)
-        .attr('dy', '0.32em')
+        .attr('y', '0.5em')
+        .attr('dy', '0.25em')
         .text(d => (d === '' ? 'NULL' : d));
+
+      const lbox = legend.node().getBBox();
+      legend.selectAll('rect')
+        .attr('x', (width + lbox.width) - 14);
+      legend.selectAll('text')
+        .attr('x', (width + lbox.width) - 19);
     }
 
-    const box = g.node().getBBox();
-    svg.attr('width', box.width + box.x + 10)
-    .attr('height', box.height + box.y + 10);
+    const gbox = g.node().getBBox();
+    g.attr('transform', `translate(${-gbox.x},${margin.top})`);
+    svg.attr('width', gbox.width + gbox.x + 10)
+    .attr('height', gbox.height + gbox.y + 10);
   }
 }
 
