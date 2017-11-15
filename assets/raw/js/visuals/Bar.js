@@ -56,7 +56,7 @@ class Bar extends Visual {
     });
 
     const cats = [];
-    const catsRaw = Object.keys(this.data[0]);
+    const catsRaw = Object.keys(this.getCategoricalData()[0]);
     for (let i = 0; i < catsRaw.length; i += 1) {
       cats.push({ value: catsRaw[i], text: catsRaw[i] });
     }
@@ -119,7 +119,7 @@ class Bar extends Visual {
     // Empty the container, then place the SVG in there
     Visual.empty(this.renderID);
 
-    let renderData = JSON.parse(JSON.stringify(this.data));
+    let renderData = JSON.parse(JSON.stringify(this.getCategoricalData()));
 
     if (this.isNumeric(this.attributes.group_by_main)) {
       renderData = this.makeBin(this.attributes.group_by_main, Number(this.attributes.binSize),
@@ -255,7 +255,7 @@ class Bar extends Visual {
     const gbox = g.node().getBBox();
     g.attr('transform', `translate(${-gbox.x},${margin.top})`);
     svg.attr('width', gbox.width + gbox.x + 10)
-    .attr('height', gbox.height + gbox.y + 10);
+      .attr('height', gbox.height + gbox.y + 10);
   }
 }
 
