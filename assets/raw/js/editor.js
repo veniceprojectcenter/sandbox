@@ -7,7 +7,7 @@ import Counter from './visuals/Counter';
 import DefaultMap from './visuals/helpers/DefaultMap';
 import PieChartMap from './visuals/PieChartMap';
 import BubbleTimeline from './visuals/BubbleTimeline';
-import Pathfinding from './visuals/Pathfinding';
+import PathFinding from './visuals/PathFinding';
 import Bridgesnodata from './visuals/Bridgesnodata';
 import BubbleChart from './visuals/BubbleChart';
 import FilterMap from './visuals/FilterMap';
@@ -70,7 +70,7 @@ function renderEditor(route) {
         visual = new DefaultMap(config);
         break;
       case 'Path-Finding':
-        visual = new Pathfinding(config);
+        visual = new PathFinding(config);
         break;
       case 'Bridges-Without-Data':
         visual = new Bridgesnodata(config);

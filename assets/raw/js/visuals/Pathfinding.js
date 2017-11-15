@@ -2,7 +2,7 @@ import Visual from './helpers/Visual';
 import DefaultMapStyle from './helpers/DefaultMapStyle';
 import EditorGenerator from './helpers/EditorGenerator';
 
-class Pathfinding extends Visual {
+class PathFinding extends Visual {
   constructor(config) {
     super(config);
 
@@ -158,7 +158,7 @@ class Pathfinding extends Visual {
         this.addCircle(center, 'red', 1, 7);
       });
     }
-    Pathfinding.displayPointAggregation(pointsOnWholePath);
+    PathFinding.displayPointAggregation(pointsOnWholePath);
   }
 
   // start and end are objects with .lat() and .lng() functions
@@ -180,10 +180,10 @@ class Pathfinding extends Visual {
       const pointX = this.data[i].Longitude;
       const pointY = this.data[i].Latitude;
 
-      const pathLineDistance = Pathfinding.distanceToLine(pointX, pointY, x1, y1, slope);
+      const pathLineDistance = PathFinding.distanceToLine(pointX, pointY, x1, y1, slope);
       const bisectorDistance =
-        Pathfinding.distanceToLine(pointX, pointY, midX, midY, bisectorSlope);
-      const bisectorThreshold = Pathfinding.getDistanceBetweenPoints(x1, y1, x2, y2) / 2;
+        PathFinding.distanceToLine(pointX, pointY, midX, midY, bisectorSlope);
+      const bisectorThreshold = PathFinding.getDistanceBetweenPoints(x1, y1, x2, y2) / 2;
 
       if (pathLineDistance < this.DISTANCE_THRESHOLD_PATH &&
           bisectorDistance < bisectorThreshold) {
@@ -340,4 +340,4 @@ class Pathfinding extends Visual {
   }
 }
 
-export default Pathfinding;
+export default PathFinding;
