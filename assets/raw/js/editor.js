@@ -10,6 +10,7 @@ import BubbleTimeline from './visuals/BubbleTimeline';
 import Isochrone from './visuals/Isochrone';
 import Bridgesnodata from './visuals/Bridgesnodata';
 import BubbleChart from './visuals/BubbleChart';
+import FilterMap from './visuals/FilterMap';
 
 function renderEditor(route) {
   updateBreadcrumbs(route);
@@ -76,6 +77,9 @@ function renderEditor(route) {
         break;
       case 'bubble-chart':
         visual = new BubbleChart(config);
+        break;
+      case 'filtermap':
+        visual = new FilterMap(config);
         break;
       default:
         visualContainer.innerHTML = `<p>Error: could not find visualization: ${route[1]}.`;
