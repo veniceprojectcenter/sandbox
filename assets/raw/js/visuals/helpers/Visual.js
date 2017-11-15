@@ -201,7 +201,7 @@ class Visual {
         downloadLink.click();
         document.body.removeChild(downloadLink);
       } else {
-        alert('This chart type is not supported for Illustrator!');
+        Materialize.toast('This chart type is not supported for Illustrator!', 3000);
       }
       this.editmode = true;
       this.render();
@@ -231,11 +231,11 @@ class Visual {
       dataSet: config.dataSet,
       attributes: JSON.stringify(config.attributes),
     }).then(() => {
-      console.error('Visual Published');
+      Materialize.toast('Visual Published', 3000);
       publishButton.classList.remove('disabled');
     })
     .catch((error) => {
-      console.error('Error Publishing Visual');
+      Materialize.toast('Error Publishing Visual', 3000);
       publishButton.classList.remove('disabled');
       console.error(error);
     });
