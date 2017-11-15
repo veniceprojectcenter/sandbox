@@ -92,45 +92,17 @@ $('<option disabled=true></option>')
 );
       }
       $(catSelect).material_select();
-    });
+    }, (e) => { this.removeFilter(e.currentTarget); });
 
-    numEditor.createNumericFilter('NumFilter', ncats, () => {
+    numEditor.createNumericFilter('NumFilter', ncats, (e) => {
+      this.removeFilter(e.currentTarget);
     });
     this.renderControlsDiv.appendChild(this.binDiv);
     const filterCats = [];
     for (let i = 0; i < this.attributes.columnOptions.length; i += 1) {
       filterCats.push({ value: this.attributes.columnOptions[i],
         text: this.attributes.columnOptions[i] });
-    }
-    editor.createButton('addCat', 'Add Categorical Filter', () => {
-      num += 1;
-      catEditor.createDataFilter(`Filter${num}`, ccats, (e) => {
-        const column = $(e.currentTarget).val();
-        const categories = this.getGroupedList(column);
-        const catSelect = e.currentTarget.parentNode.parentNode.nextSibling.nextSibling
-        .nextSibling.nextSibling.children[0].children[3];
-        $(catSelect).empty().html(' ');
-        $(catSelect).append(
-  $('<option disabled=true></option>')
-    .attr('Select', '-Select-')
-    .text('-Select-'));
-        for (let i = 0; i < categories.length; i += 1) {
-          const value = categories[i].key;
-          $(catSelect).append(
-    $('<option></option>')
-      .attr('value', value)
-      .text(value),
-  );
-        }
-        $(catSelect).material_select();
-      });
-    });
-    editor.createButton('addNum', 'Add Numeric Filter', () => {
-      num += 1;
-      numEditor.createNumericFilter(`NumFilter${num}`, ncats, () => {
-      });
-    });
-    editor.createButton('submit', 'Generate Table', () => {
+    } editor.createButton('submit', 'Generate Table', () => {
       this.attributes.dataFilters = [];
       this.attributes.numericFilters = [];
       const catFilters = document.getElementsByClassName('dataFilter');
@@ -140,7 +112,7 @@ $('<option disabled=true></option>')
         const columnVal = $(filter.children[0].children[0].children[3]).val();
         let catVal = $(filter.children[2].children[0].children[3]).val();
         const b = $(filter.children[1].children[0].children[3]).val();
-        if (b == '0') {
+        if (b === '0') {
           const categories = this.getGroupedList(columnVal);
           for (let j = 0; j < categories.length; j += 1) {
             categories[j] = categories[j].key;
@@ -163,6 +135,33 @@ $('<option disabled=true></option>')
       this.renderData = this.filterCategorical(this.attributes.dataFilters, this.renderData);
       this.renderData = this.filterNumerical(this.attributes.numericFilters, this.renderData);
       this.render();
+    });
+    editor.createButton('addCat', 'Add Categorical Filter', () => {
+      num += 1;
+      catEditor.createDataFilter(`Filter${num}`, ccats, (e) => {
+        const column = $(e.currentTarget).val();
+        const categories = this.getGroupedList(column);
+        const catSelect = e.currentTarget.parentNode.parentNode.nextSibling.nextSibling
+        .nextSibling.nextSibling.children[0].children[3];
+        $(catSelect).empty().html(' ');
+        $(catSelect).append(
+  $('<option disabled=true></option>')
+    .attr('Select', '-Select-')
+    .text('-Select-'));
+        for (let i = 0; i < categories.length; i += 1) {
+          const value = categories[i].key;
+          $(catSelect).append(
+    $('<option></option>')
+      .attr('value', value)
+      .text(value),
+  );
+        }
+        $(catSelect).material_select();
+      }, (e) => { this.removeFilter(e.currentTarget); });
+    });
+    editor.createButton('addNum', 'Add Numeric Filter', () => {
+      num += 1;
+      numEditor.createNumericFilter(`NumFilter${num}`, ncats, (e) => { this.removeFilter(e.currentTarget); });
     });
   }
   /** Renders the App section
@@ -260,6 +259,9 @@ $('<option disabled=true></option>')
         checkDiv.append(document.createElement('br'));
       }
     }
+  }
+  removeFilter(buttonID) {
+    buttonID.parentNode.parentNode.remove();
   }
 }
 

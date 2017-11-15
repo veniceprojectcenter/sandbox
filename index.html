@@ -62,7 +62,7 @@
   </select>
   <label>Operation</label>
 </div>
-<div class="input-field col-md-6" id="{{id}}-3">
+<div class="input-field col-md-5" id="{{id}}-3">
 <select multiple id="{{id}}-categories">
   <option value="" disabled>NA</option>
   {{#each category}}
@@ -71,6 +71,9 @@
 </select>
 <label>Acceptible Values</label>
   </div>
+  <div class="col-md-1" id="{{id}}-4">
+  <a id="{{id}}-remove" style="height:22px;width:22px;line-height:25px;margin-top:25px" class="btn-floating btn-large waves-effect waves-light"><font color="white">x</font></a>
+</div>
 </div>
 </script>
 
@@ -97,10 +100,13 @@
   </select>
   <label>Operation</label>
 </div>
-<div class="input-field col-md-6" id="{{id}}-3">
+<div class="input-field col-md-5" id="{{id}}-3">
     <input type="number" id="{{id}}-field">
     <label for="{{id}}-number">Value</label>
   </div>
+  <div class="col-md-1" id="{{id}}-4">
+  <a id="{{id}}-remove"style="height:22px;width:22px;line-height:25px;margin-top:25px" class="btn-floating btn-large waves-effect waves-light"><font color="white">x</font></a>
+</div>
 </div>
 </script>
 
@@ -149,7 +155,7 @@
 </script>
 
 <script id="button" type="text/x-handlebars-template">
-  <a id="{{id}}" class="waves-effect waves-light btn">{{text}}</a>
+  <a id="{{id}}" class="waves-effect waves-light btn"><font color='white'>{{text}}</font></a>
 </script>
 
 <script id="leftrightbuttons" type="text/x-handlebars-template">
