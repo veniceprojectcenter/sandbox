@@ -17,6 +17,7 @@ class Pathfinding extends Visual {
 
   onLoadData() {
     this.applyDefaultAttributes({
+      aggregationColumn: Object.keys(this.data[0])[111],
       title: '',
     });
   }
@@ -323,6 +324,19 @@ class Pathfinding extends Visual {
     const editor = new EditorGenerator(controlsContainer);
 
     editor.createHeader('Editor');
+
+    const columnSelectionID = 'columnSelection';
+    const columns = Object.keys(this.data[0]);
+    const options = [];
+    columns.forEach((column) => {
+      options.push({ value: column, text: column });
+    });
+
+    editor.createSelectBox(columnSelectionID, 'Select a column',
+      options, this.attributes.aggregationColumn, (e) => {
+        const value = $(e.currentTarget).val();
+        console.log(value);
+      });
   }
 }
 
