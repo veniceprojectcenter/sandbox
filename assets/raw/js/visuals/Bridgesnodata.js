@@ -2,7 +2,6 @@ import Visual from './helpers/Visual';
 import DivOverlay from './helpers/DivOverlay';
 import DefaultMapStyle from './helpers/DefaultMapStyle';
 import EditorGenerator from './helpers/EditorGenerator';
-import Donut from './Donut';
 
 class Bridgesnodata extends Visual {
   constructor(config) {
@@ -34,48 +33,10 @@ class Bridgesnodata extends Visual {
       if (currentSteps === '0' || currentSteps === undefined || currentSteps === '') {
         const color = colors[j];
         j += 1;
-        this.addMarker(currentBridge.lat, currentBridge.lng, color);
-        console.log(`Lat: ${currentBridge.lat}, lng: ${currentBridge.lng}, bridge name: ${currentBridge['Bridge Name']}, color: ${color}`);
+        this.addMarker(currentBridge.Latitude, currentBridge.Longitude, color);
+        console.log(`Lat: ${currentBridge.Latitude}, lng: ${currentBridge.Longitude}, bridge name: ${currentBridge['Bridge Name']}, color: ${color}`);
       }
     }
-
-    // this.registerDefaultClickAction();
-  }
-
-  registerDefaultClickAction() {
-    google.maps.event.addListener(this.map, 'click', (event) => {
-      console.log(`Lat: ${event.latLng.lat()}| Lng: ${event.latLng.lng()}`);
-      this.addMarker(event.latLng.lat(), event.latLng.lng());
-      this.addMarker(event.latLng.lat(), event.latLng.lng());
-
-      const bounds = new google.maps.LatLngBounds(
-       new google.maps.LatLng(event.latLng.lat(),
-                              event.latLng.lng()),
-       new google.maps.LatLng(event.latLng.lat() + 0.01,
-                              event.latLng.lng() + 0.01),
-      );
-
-      const renderfunction = (id) => {
-        const config = {
-          dataSet: this.dataSet,
-          type: 'donut',
-          attributes: {},
-        };
-
-        const donutVisual = new Donut(config);
-        donutVisual.loadStaticData(this.data);
-        donutVisual.renderID = id;
-        donutVisual.render();
-      };
-
-      if (this.currentId == null) {
-        this.currentId = 1;
-      } else {
-        this.currentId += 1;
-      }
-
-      new DivOverlay(bounds, `overlay${this.currentId}`, this.map, renderfunction);
-    });
   }
 
   addMarker(lat, lng, color) {
