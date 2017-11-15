@@ -28,12 +28,24 @@ class Isochrone extends Visual {
       styles: DefaultMapStyle,
     });
 
-    /* for (let i = 0; i < this.data.length; i += 1) {
-      const point = this.data[i];
-      this.addCircle({ lat: parseFloat(point.Latitude), lng: parseFloat(point.Longitude) }, 'blue', 0.5);
-    } */
+    this.addDataMarkers();
+    this.addZoomListener();
 
     this.registerDefaultClickAction();
+  }
+
+  addZoomListener() {
+    google.maps.event.addListener(this.map, 'zoom_changed', () => {
+      const zoomLevel = this.map.getZoom();
+      console.log(zoomLevel);
+    });
+  }
+
+  addDataMarkers() {
+    for (let i = 0; i < this.data.length; i += 1) {
+      const point = this.data[i];
+      this.addCircle({ lat: parseFloat(point.Latitude), lng: parseFloat(point.Longitude) }, 'blue', 0.5);
+    }
   }
 
   registerDefaultClickAction() {
@@ -229,33 +241,6 @@ class Isochrone extends Visual {
     });
 
     this.locations.push(circle);
-  }
-
-  addMarker(lat, lng, color) {
-    if (lat && lng) {
-      const icon = {
-        path: 'M-20,0a5,5 0 1,0 10,0a5,5 0 1,0 -10,0',
-        fillColor: color,
-        fillOpacity: 0.6,
-        anchor: new google.maps.Point(0, 0),
-        strokeWeight: 0,
-        scale: 1,
-      };
-      const marker = new google.maps.Marker({
-        position: {
-          lat: parseFloat(lat),
-          lng: parseFloat(lng),
-        },
-        map: this.map,
-        title: '',
-        animation: google.maps.Animation.DROP,
-        icon,
-      });
-
-      this.locations.push({
-        marker,
-      });
-    }
   }
 
   addPolyline(points, color, weight) {
