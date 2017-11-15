@@ -23,19 +23,24 @@ class EditorGenerator {
     });
   }
 
+  createLeftRightButtons(id, title, onLeftClicked, onRightClicked) {
+    const context = { id, title };
+    this.handlebarsWithContext('leftrightbuttons', context);
+    $(`#${id}-left`).click(onLeftClicked);
+    $(`#${id}-right`).click(onRightClicked);
+  }
+
   createSelectBox(id, title, options, current, onOptionChanged) {
     const context = { id, title, options };
     this.handlebarsWithContext('select-entry', context);
     $(`#${id}-select`).val(current).material_select();
     $(`#${id}-select`).change(onOptionChanged);
-    console.log(`Using ${current}`);
   }
   createMultipleSelectBox(id, title, options, current, onOptionChanged) {
     const context = { id, title, options };
     this.handlebarsWithContext('select-multiple-entry', context);
     $(`#${id}-select`).val(current).material_select();
     $(`#${id}-select`).change(onOptionChanged);
-    console.log(`Using ${current}`);
   }
 
   createDataFilter(id, column, onColumn) {
@@ -46,12 +51,11 @@ class EditorGenerator {
     $(`#${id}-categories`).val(2).material_select();
     $(`#${id}-columnSelect`).on('change', onColumn);
   }
-  createNumericFilter(id, column, onChange) {
+  createNumericFilter(id, column) {
     const context = { id, column };
     this.handlebarsWithContext('numeric-filter', context);
     $(`#${id}-columnSelect`).val(0).material_select();
     $(`#${id}-operations`).val(1).material_select();
-    $(`#${id}`).on('change', onChange);
   }
 
   createCheckBox(id, title, current, onOptionChanged) {

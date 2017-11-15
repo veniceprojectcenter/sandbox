@@ -28,10 +28,10 @@ class Isochrone extends Visual {
       styles: DefaultMapStyle,
     });
 
-    for (let i = 0; i < this.data.length; i += 1) {
+    /* for (let i = 0; i < this.data.length; i += 1) {
       const point = this.data[i];
-      this.addCircle({ lat: parseFloat(point.lat), lng: parseFloat(point.lng) }, 'blue');
-    }
+      this.addCircle({ lat: parseFloat(point.Latitude), lng: parseFloat(point.Longitude) }, 'blue', 0.5);
+    } */
 
     this.registerDefaultClickAction();
   }
@@ -42,11 +42,11 @@ class Isochrone extends Visual {
     });
   }
 
-  clickAction(event) {
-    console.log(`Lat: ${event.latLng.lat()}| Lng: ${event.latLng.lng()}`);
+  async clickAction(event) {
+    // console.log(`Lat: ${event.latLng.lat()}| Lng: ${event.latLng.lng()}`);
 
     if (this.numTimesClicked == null) {
-      this.addCircle({ lat: event.latLng.lat(), lng: event.latLng.lng() }, 'black');
+      this.addCircle({ lat: event.latLng.lat(), lng: event.latLng.lng() }, 'green', 1);
       this.lastLat = event.latLng.lat();
       this.lastLng = event.latLng.lng();
       this.numTimesClicked = 1;
@@ -55,18 +55,18 @@ class Isochrone extends Visual {
       this.numTimesClicked += 1;
       if (this.numTimesClicked % 2 === 1) { // If numTimesClicked is odd
         this.clearMarkers('green');
-        this.clearMarkers('black');
         this.clearMarkers('red');
         this.clearRectangles();
         this.lastLat = event.latLng.lat();
         this.lastLng = event.latLng.lng();
-        this.addCircle({ lat: event.latLng.lat(), lng: event.latLng.lng() }, 'black');
+        this.addCircle({ lat: event.latLng.lat(), lng: event.latLng.lng() }, 'green', 1);
         return;
       }
-      this.addCircle({ lat: event.latLng.lat(), lng: event.latLng.lng() }, 'black');
+      this.addCircle({ lat: event.latLng.lat(), lng: event.latLng.lng() }, 'green', 1);
     }
 
     this.markRoute(this.lastLat, this.lastLng, event.latLng.lat(), event.latLng.lng());
+
 
     this.startPoint = { lat: this.lastLat, lng: this.lastLng };
     this.lastLat = event.latLng.lat();
@@ -75,12 +75,14 @@ class Isochrone extends Visual {
 
   markRoute(sourceLat, sourceLng, destinationLat, destinationLng) {
     const directions = new google.maps.DirectionsService();
+
     directions.route({
       origin: new google.maps.LatLng(sourceLat,
                              sourceLng),
       destination: new google.maps.LatLng(destinationLat,
                              destinationLng),
       travelMode: 'WALKING',
+      avoidFerries: true,
     }, (response, status) => {
       if (status === 'OK') {
         const steps = response.routes[0].legs[0].steps;
@@ -88,7 +90,7 @@ class Isochrone extends Visual {
         for (let i = 0; i < steps.length; i += 1) {
           // const start = steps[i].start_point;
           const end = steps[i].end_point;
-          this.addCircle({ lat: end.lat(), lng: end.lng() }, 'green');
+          // this.addCircle({ lat: end.lat(), lng: end.lng() }, 'green', 0.5);
           returnSteps.push({ lat: end.lat(), lng: end.lng() });
         }
         this.getBridgePath(returnSteps);
@@ -103,13 +105,15 @@ class Isochrone extends Visual {
   getBridgePath(path) {
     path.push({ lat: this.lastLat, lng: this.lastLng });
     path.unshift(this.startPoint);
-    this.addPolyline(path, 'green', 4);
+    this.addPolyline(path, 'green', 6);
     for (let i = 0; i < path.length - 1; i += 1) {
       const first = path[i];
       const second = path[i + 1];
       const pointsOnPath = this.getPointsOnPath(first, second);
       pointsOnPath.forEach((point) => {
-        this.addCircle({ lat: point.lat, lng: point.lng }, 'red');
+        const center = { lat: parseFloat(point.Latitude), lng: parseFloat(point.Longitude) };
+        this.removeCircle(center);
+        this.addCircle(center, 'red', 1);
       });
     }
   }
@@ -130,8 +134,8 @@ class Isochrone extends Visual {
 
     const pointsOnPath = [];
     for (let i = 0; i < this.data.length; i += 1) {
-      const pointX = this.data[i].lng;
-      const pointY = this.data[i].lat;
+      const pointX = this.data[i].Longitude;
+      const pointY = this.data[i].Latitude;
 
       const pathLineDistance = Isochrone.distanceToLine(pointX, pointY, x1, y1, slope);
       const bisectorDistance = Isochrone.distanceToLine(pointX, pointY, midX, midY, bisectorSlope);
@@ -170,9 +174,18 @@ class Isochrone extends Visual {
   clearMarkers(color) {
     for (let i = 0; i < this.locations.length; i += 1) {
       const marker = this.locations[i];
-      console.log(marker);
       if (marker.fillColor === color) {
         marker.setMap(null);
+      }
+    }
+  }
+
+  removeCircle(center) {
+    for (let i = 0; i < this.locations.length; i += 1) {
+      const circle = this.locations[i];
+      if (circle.center.lat() === center.lat &&
+      circle.center.lng() === center.lng) {
+        circle.setMap(null);
       }
     }
   }
@@ -203,13 +216,13 @@ class Isochrone extends Visual {
     this.rectangles = [];
   }
 
-  addCircle(point, color, r = 10) {
+  addCircle(point, color, opacity, r = 15) {
     const circle = new google.maps.Circle({
       strokeColor: color,
-      strokeOpacity: 0.75,
+      strokeOpacity: opacity,
       strokeWeight: 2,
       fillColor: color,
-      fillOpacity: 0.75,
+      fillOpacity: opacity,
       map: this.map,
       center: point,
       radius: r,
