@@ -158,7 +158,7 @@ class PathFinding extends Visual {
         this.addCircle(center, 'red', 1, 7);
       });
     }
-    PathFinding.displayPointAggregation(pointsOnWholePath);
+    this.displayPointAggregation(pointsOnWholePath);
   }
 
   // start and end are objects with .lat() and .lng() functions
@@ -214,11 +214,13 @@ class PathFinding extends Visual {
                     ((y2 - y1) * (y2 - y1)));
   }
 
-  static displayPointAggregation(points) {
+  displayPointAggregation(points) {
     const number = points.length;
-    console.log(`On this path, you will go over ${number} bridges.`);
-    const fieldToAggregate = 'Total Number of Steps';
+    console.log(`On this path, you will encounter ${number} artifacts.`);
+    const fieldToAggregate = this.attributes.aggregationColumn;
+
     let sum = 0;
+    let count = 0;
     for (let i = 0; i < number; i += 1) {
       const point = points[i];
       if (point[fieldToAggregate] == undefined ||
@@ -227,8 +229,14 @@ class PathFinding extends Visual {
         continue;
       }
       sum += parseFloat(point[fieldToAggregate]);
+      count += 1;
     }
-    console.log(`On this path, you will climb ${sum} steps.`);
+    let average = null;
+    if (count > 0) {
+      average = sum / count;
+    }
+    console.log(`Total ${fieldToAggregate}: ${sum}.`);
+    console.log(`Average: ${average} per artifact.`);
   }
 
   // Removes all markers from the map of the given color
@@ -335,7 +343,7 @@ class PathFinding extends Visual {
     editor.createSelectBox(columnSelectionID, 'Select a column',
       options, this.attributes.aggregationColumn, (e) => {
         const value = $(e.currentTarget).val();
-        console.log(value);
+        this.attributes.aggregationColumn = value;
       });
   }
 }
