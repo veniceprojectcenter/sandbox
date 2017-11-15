@@ -10,7 +10,7 @@ class Pathfinding extends Visual {
     this.locations = [];
     this.openInfoWindow = null;
 
-    this.DISTANCE_THRESHOLD_PATH = 0.0001;
+    this.DISTANCE_THRESHOLD_PATH = 0.00007;
     this.DEBUG = false;
     this.rectangles = [];
   }
@@ -142,16 +142,22 @@ class Pathfinding extends Visual {
     path.push({ lat: this.lastLat, lng: this.lastLng });
     path.unshift(this.startPoint);
     this.addPolyline(path, 'green', 6);
+
+    let pointsOnWholePath = [];
     for (let i = 0; i < path.length - 1; i += 1) {
       const first = path[i];
       const second = path[i + 1];
       const pointsOnPath = this.getPointsOnPath(first, second);
+
+      pointsOnWholePath = pointsOnWholePath.concat(pointsOnPath);
+
       pointsOnPath.forEach((point) => {
         const center = { lat: parseFloat(point.Latitude), lng: parseFloat(point.Longitude) };
         this.removeCircle(center);
         this.addCircle(center, 'red', 1, 7);
       });
     }
+    Pathfinding.displayPointAggregation(pointsOnWholePath);
   }
 
   // start and end are objects with .lat() and .lng() functions
@@ -205,6 +211,23 @@ class Pathfinding extends Visual {
   static getDistanceBetweenPoints(x1, y1, x2, y2) {
     return Math.sqrt(((x2 - x1) * (x2 - x1)) +
                     ((y2 - y1) * (y2 - y1)));
+  }
+
+  static displayPointAggregation(points) {
+    const number = points.length;
+    console.log(`On this path, you will go over ${number} bridges.`);
+    const fieldToAggregate = 'Total Number of Steps';
+    let sum = 0;
+    for (let i = 0; i < number; i += 1) {
+      const point = points[i];
+      if (point[fieldToAggregate] == undefined ||
+        point[fieldToAggregate] == null ||
+        point[fieldToAggregate] == '') {
+        continue;
+      }
+      sum += parseFloat(point[fieldToAggregate]);
+    }
+    console.log(`On this path, you will climb ${sum} steps.`);
   }
 
   // Removes all markers from the map of the given color
