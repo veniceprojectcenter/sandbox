@@ -58,6 +58,7 @@ class FilterMap extends Visual {
       zoom: 14,
       styles: DefaultMapStyle,
     });
+    this.renderPoints();
   }
 
   renderControls() {
@@ -126,9 +127,10 @@ $('<option disabled=true></option>')
 );
       }
       $(catSelect).material_select();
-    });
+    }, (e) => { this.removeFilter(e.currentTarget); });
 
-    numEditor.createNumericFilter('NumFilter', ncats, () => {
+    numEditor.createNumericFilter('NumFilter', ncats, (e) => {
+      this.removeFilter(e.currentTarget);
     });
     this.renderControlsDiv.appendChild(this.binDiv);
     const filterCats = [];
@@ -136,34 +138,6 @@ $('<option disabled=true></option>')
       filterCats.push({ value: this.attributes.columnOptions[i],
         text: this.attributes.columnOptions[i] });
     }
-    editor.createButton('addCat', 'Add Categorical Filter', () => {
-      num += 1;
-      catEditor.createDataFilter(`Filter${num}`, ccats, (e) => {
-        const column = $(e.currentTarget).val();
-        const categories = this.getGroupedList(column);
-        const catSelect = e.currentTarget.parentNode.parentNode.nextSibling.nextSibling
-        .nextSibling.nextSibling.children[0].children[3];
-        $(catSelect).empty().html(' ');
-        $(catSelect).append(
-  $('<option disabled=true></option>')
-    .attr('Select', '-Select-')
-    .text('-Select-'));
-        for (let i = 0; i < categories.length; i += 1) {
-          const value = categories[i].key;
-          $(catSelect).append(
-    $('<option></option>')
-      .attr('value', value)
-      .text(value),
-  );
-        }
-        $(catSelect).material_select();
-      });
-    });
-    editor.createButton('addNum', 'Add Numeric Filter', () => {
-      num += 1;
-      numEditor.createNumericFilter(`NumFilter${num}`, ncats, () => {
-      });
-    });
     editor.createButton('submit', 'Generate Map', () => {
       this.attributes.dataFilters = [];
       this.attributes.numericFilters = [];
@@ -197,8 +171,39 @@ $('<option disabled=true></option>')
       this.renderData = this.filterCategorical(this.attributes.dataFilters, this.renderData);
       this.renderData = this.filterNumerical(this.attributes.numericFilters, this.renderData);
       this.render();
-      this.renderPoints();
     });
+    editor.createButton('addCat', 'Add Categorical Filter', () => {
+      num += 1;
+      catEditor.createDataFilter(`Filter${num}`, ccats, (e) => {
+        const column = $(e.currentTarget).val();
+        const categories = this.getGroupedList(column);
+        const catSelect = e.currentTarget.parentNode.parentNode.nextSibling.nextSibling
+        .nextSibling.nextSibling.children[0].children[3];
+        $(catSelect).empty().html(' ');
+        $(catSelect).append(
+  $('<option disabled=true></option>')
+    .attr('Select', '-Select-')
+    .text('-Select-'));
+        for (let i = 0; i < categories.length; i += 1) {
+          const value = categories[i].key;
+          $(catSelect).append(
+    $('<option></option>')
+      .attr('value', value)
+      .text(value),
+  );
+        }
+        $(catSelect).material_select();
+      }, (e) => { this.removeFilter(e.currentTarget); });
+    });
+    editor.createButton('addNum', 'Add Numeric Filter', () => {
+      num += 1;
+      numEditor.createNumericFilter(`NumFilter${num}`, ncats, (e) => {
+        this.removeFilter(e.currentTarget);
+      });
+    });
+  }
+  removeFilter(buttonID) {
+    buttonID.parentNode.parentNode.remove();
   }
 }
 export default FilterMap;
