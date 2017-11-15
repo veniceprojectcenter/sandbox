@@ -11,7 +11,7 @@ class Isochrone extends Visual {
     this.locations = [];
     this.openInfoWindow = null;
 
-    this.DISTANCE_THRESHOLD_PATH = 0.0003;
+    this.DISTANCE_THRESHOLD_PATH = 0.0001;
     this.rectangles = [];
   }
 
@@ -28,8 +28,8 @@ class Isochrone extends Visual {
       styles: DefaultMapStyle,
     });
 
-    this.addDataMarkers();
-    this.addZoomListener();
+    // this.addDataMarkers();
+    // this.addZoomListener();
 
     this.registerDefaultClickAction();
   }
@@ -37,7 +37,34 @@ class Isochrone extends Visual {
   addZoomListener() {
     google.maps.event.addListener(this.map, 'zoom_changed', () => {
       const zoomLevel = this.map.getZoom();
+      let r = 15;
+      if (zoomLevel < 14) {
+        this.resizeCircles(35);
+        return;
+      }
       console.log(zoomLevel);
+      switch (zoomLevel) {
+        case 16:
+          r = 20;
+          this.resizeCircles(r);
+          break;
+        case 15:
+          r = 25;
+          this.resizeCircles(r);
+          break;
+        case 14:
+          r = 30;
+          this.resizeCircles(r);
+          break;
+        default:
+          this.resizeCircles(r);
+      }
+    });
+  }
+
+  resizeCircles(r) {
+    this.locations.forEach((marker) => {
+      marker.setRadius(r);
     });
   }
 
@@ -97,13 +124,12 @@ class Isochrone extends Visual {
       avoidFerries: true,
     }, (response, status) => {
       if (status === 'OK') {
-        const steps = response.routes[0].legs[0].steps;
+        console.log(response);
+        const steps = response.routes[0].overview_path;
         const returnSteps = [];
         for (let i = 0; i < steps.length; i += 1) {
-          // const start = steps[i].start_point;
-          const end = steps[i].end_point;
-          // this.addCircle({ lat: end.lat(), lng: end.lng() }, 'green', 0.5);
-          returnSteps.push({ lat: end.lat(), lng: end.lng() });
+          const step = steps[i];
+          returnSteps.push({ lat: step.lat(), lng: step.lng() });
         }
         this.getBridgePath(returnSteps);
       } else {
@@ -125,7 +151,7 @@ class Isochrone extends Visual {
       pointsOnPath.forEach((point) => {
         const center = { lat: parseFloat(point.Latitude), lng: parseFloat(point.Longitude) };
         this.removeCircle(center);
-        this.addCircle(center, 'red', 1);
+        this.addCircle(center, 'red', 1, 7);
       });
     }
   }
