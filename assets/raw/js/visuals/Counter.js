@@ -28,6 +28,15 @@ class Counter extends Visual {
     this.renderData = JSON.parse(JSON.stringify(this.data));
     this.attributes.columnOptions = Object.keys(this.data[0]);
     this.renderControlsDiv = document.getElementById(this.renderControlsID);
+    const catFilterDiv = document.createElement('div');
+    const numFilterDiv = document.createElement('div');
+    catFilterDiv.id = 'catFilterDiv';
+    numFilterDiv.id = 'numFilterDiv';
+    this.renderControlsDiv.innerHTML = '<h4 style = "text-align: center">Controls</h4> <br>';
+
+    const catEditor = new EditorGenerator(catFilterDiv);
+    const numEditor = new EditorGenerator(numFilterDiv);
+
     const ccats = [];
     const ncats = [];
     const cats = [];
@@ -36,6 +45,7 @@ class Counter extends Visual {
     const catData = Object.keys(this.getCategoricalData()[0]);
     const numData = Object.keys(this.getNumericData(2)[0]);
     const allDataCols = Object.keys(this.data[0]);
+    let num = 0;
     for (let i = 0; i < allDataCols.length; i += 1) {
       cats.push({ value: allDataCols[i], text: allDataCols[i] });
     }
@@ -47,16 +57,32 @@ class Counter extends Visual {
     }
     this.binDiv = document.createElement('div');
     const editor = new EditorGenerator(this.renderControlsDiv);
-    this.renderControlsDiv.innerHTML = '<h4 style = "text-align: center">Controls</h4> <br>';
+
     editor.createMultipleSelectBox('check2', 'Show Data', cats, 'durg', (e) => {
       this.attributes.displayColumns = $(e.currentTarget).val();
     });
-    editor.createDataFilter('Filter', ccats, (e) => {
+    this.renderControlsDiv.append(document.createElement('br'));
+    const filterLabel = document.createElement('h5');
+    filterLabel.innerHTML = 'Categorical Filters';
+    filterLabel.style.textAlign = 'center';
+    this.renderControlsDiv.appendChild(filterLabel);
+    this.renderControlsDiv.appendChild(catFilterDiv);
+    const filterLabel2 = document.createElement('h5');
+    filterLabel2.innerHTML = 'Numeric Filters';
+    filterLabel2.style.textAlign = 'center';
+    this.renderControlsDiv.appendChild(filterLabel2);
+    this.renderControlsDiv.appendChild(numFilterDiv);
+    this.renderControlsDiv.append(document.createElement('br'));
+    catEditor.createDataFilter('Filter', ccats, (e) => {
       const column = $(e.currentTarget).val();
       const categories = this.getGroupedList(column);
       const catSelect = e.currentTarget.parentNode.parentNode.nextSibling.nextSibling
       .nextSibling.nextSibling.children[0].children[3];
       $(catSelect).empty().html(' ');
+      $(catSelect).append(
+$('<option disabled=true></option>')
+  .attr('Select', '-Select-')
+  .text('-Select-'));
       for (let i = 0; i < categories.length; i += 1) {
         const value = categories[i].key;
         $(catSelect).append(
@@ -67,8 +93,8 @@ class Counter extends Visual {
       }
       $(catSelect).material_select();
     });
-    editor.createNumericFilter('NumFilter', ncats, () => {
-      this.render();
+
+    numEditor.createNumericFilter('NumFilter', ncats, () => {
     });
     this.renderControlsDiv.appendChild(this.binDiv);
     const filterCats = [];
@@ -76,7 +102,34 @@ class Counter extends Visual {
       filterCats.push({ value: this.attributes.columnOptions[i],
         text: this.attributes.columnOptions[i] });
     }
-
+    editor.createButton('addCat', 'Add Categorical Filter', () => {
+      num += 1;
+      catEditor.createDataFilter(`Filter${num}`, ccats, (e) => {
+        const column = $(e.currentTarget).val();
+        const categories = this.getGroupedList(column);
+        const catSelect = e.currentTarget.parentNode.parentNode.nextSibling.nextSibling
+        .nextSibling.nextSibling.children[0].children[3];
+        $(catSelect).empty().html(' ');
+        $(catSelect).append(
+  $('<option disabled=true></option>')
+    .attr('Select', '-Select-')
+    .text('-Select-'));
+        for (let i = 0; i < categories.length; i += 1) {
+          const value = categories[i].key;
+          $(catSelect).append(
+    $('<option></option>')
+      .attr('value', value)
+      .text(value),
+  );
+        }
+        $(catSelect).material_select();
+      });
+    });
+    editor.createButton('addNum', 'Add Numeric Filter', () => {
+      num += 1;
+      numEditor.createNumericFilter(`NumFilter${num}`, ncats, () => {
+      });
+    });
     editor.createButton('submit', 'Generate Table', () => {
       this.attributes.dataFilters = [];
       this.attributes.numericFilters = [];
@@ -85,7 +138,18 @@ class Counter extends Visual {
       for (let i = 0; i < catFilters.length; i += 1) {
         const filter = catFilters[i];
         const columnVal = $(filter.children[0].children[0].children[3]).val();
-        const catVal = $(filter.children[2].children[0].children[3]).val();
+        let catVal = $(filter.children[2].children[0].children[3]).val();
+        const b = $(filter.children[1].children[0].children[3]).val();
+        if (b == '0') {
+          const categories = this.getGroupedList(columnVal);
+          for (let j = 0; j < categories.length; j += 1) {
+            categories[j] = categories[j].key;
+            if (catVal.includes(categories[j])) {
+              categories.splice(j, 1);
+            }
+          }
+          catVal = categories;
+        }
         this.attributes.dataFilters.push({ column: columnVal, categories: catVal });
       }
       for (let i = 0; i < numFilters.length; i += 1) {
@@ -114,53 +178,9 @@ class Counter extends Visual {
       this.attributes.columnOptions = [];
     }
     this.displayTable();
-        /**
-    for (let i = 0; i < columnOptions.length; i += 1) {
-      if (this.isNumeric(columnOptions[i])) {
-        renderData = this.makeBin(columnOptions[i], this.attributes.binSizes[columnOptions[i]],
-        this.attributes.binStarts[columnOptions[i]]);
-      }
-    }
-
-    const defaultOption = document.createElement('option');
-    defaultOption.innerHTML = '--Select--';
-    this.aSelect.appendChild(defaultOption);
-    for (let i = 0; i < this.attributes.columnOptions.length; i += 1) {
-      const op = document.createElement('option');
-      op.value = this.attributes.columnOptions[i];
-      op.text = this.attributes.columnOptions[i];
-      this.aSelect.appendChild(op);
-    }
-    */
   }
-  /** Displays the checkboxes for sorting
 
-  displayAttributes(renderData) {
-    this.checkboxDiv.innerHTML = '';
-    if (this.aSelect.selectedIndex < 1) {
-      return;
-    }
-    const selectedAttribute = this.aSelect.options[this.aSelect.selectedIndex].text;
-    const checkboxes = [];
-    for (let i = 0; i < renderData.length; i += 1) {
-      if (renderData[i][selectedAttribute] !== '' && !(checkboxes.includes(renderData[i][selectedAttribute]))) {
-        const tempInput = document.createElement('input');
-        tempInput.value = renderData[i][selectedAttribute];
-        tempInput.type = 'checkbox';
-        tempInput.id = `check${i}`;
-        tempInput.classList.add('CheckChoice');
-        tempInput.addEventListener('change', () => { this.displayTable(renderData); });
-        const newlabel = document.createElement('Label');
-        newlabel.setAttribute('for', tempInput.id);
-        newlabel.innerHTML = renderData[i][selectedAttribute];
-        this.checkboxDiv.append(tempInput);
-        this.checkboxDiv.append(newlabel);
-        this.checkboxDiv.append(document.createElement('br'));
-        checkboxes[checkboxes.length] = renderData[i][selectedAttribute];
-      }
-    }
-  }
-  */
+
   /** Updates app display when actions are taken in controls
   *
   */
@@ -190,38 +210,6 @@ class Counter extends Visual {
     document.getElementById('tableDiv').innerHTML = `${txt}Count: ${count}`;
   }
 
-  /** ************************************************************************
-    CheckBox Helper Methods
-  *************************************************************************** */
-  /** Function for creating a list of checkboxes for attributes
-  *
-  */
-  createCheckBoxList(checkDiv, theData, checkClass) {
-    const keys = Object.keys(theData[0]);
-    const select = document.createElement('select');
-    // select.attributes.push('multiple');
-    checkDiv.appendChild(select);
-    for (let i = 0; i < keys.length; i += 1) {
-      if (keys[i] !== '') {
-        const tempInput = document.createElement('option');
-        tempInput.value = keys[i];
-        tempInput.innerHTML = keys[i];
-    /**    tempInput.id = `${checkClass}${i}`;
-        tempInput.classList.add(checkClass);
-
-        tempInput.addEventListener('change', () => { this.updateRender(); });
-        const newlabel = document.createElement('Label');
-        newlabel.setAttribute('for', tempInput.id);
-        newlabel.innerHTML = keys[i];
-        newlabel.style.marginBottom = '20px';
-
-        checkDiv.append(newlabel);
-        checkDiv.append(document.createElement('br'));
-        */
-        select.appendChild(tempInput);
-      }
-    }
-  }
   /** Function for creating a list of checkboxes for bin attributes
   *
   */
