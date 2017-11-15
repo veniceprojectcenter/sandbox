@@ -400,7 +400,8 @@ class Visual {
     for (let i = 0; i < filters.length; i += 1) {
       for (let j = 0; j < data.length; j += 1) {
         const filterColumn = filters[i].column;
-        if (data[j] !== null && filterColumn !== null) {
+        if (data[j] !== null && data[j] !== undefined
+          && filterColumn !== null && filterColumn !== undefined) {
           const x = data[j][filterColumn];
           switch (true) {
             case (filters[i].operation === '='):
