@@ -33,37 +33,26 @@ class Bridgesnodata extends Visual {
       if (currentSteps === '0' || currentSteps === undefined || currentSteps === '') {
         const color = colors[j];
         j += 1;
-        this.addMarker(currentBridge.Latitude, currentBridge.Longitude, color);
+        this.addCircle({ lat: parseFloat(currentBridge.Latitude),
+          lng: parseFloat(currentBridge.Longitude) }, color);
         console.log(`Lat: ${currentBridge.Latitude}, lng: ${currentBridge.Longitude}, bridge name: ${currentBridge['Bridge Name']}, color: ${color}`);
       }
     }
   }
 
-  addMarker(lat, lng, color) {
-    if (lat && lng) {
-      const icon = {
-        path: 'M-20,0a5,5 0 1,0 10,0a5,5 0 1,0 -10,0',
-        fillColor: color,
-        fillOpacity: 0.6,
-        anchor: new google.maps.Point(0, 0),
-        strokeWeight: 0,
-        scale: 1,
-      };
-      const marker = new google.maps.Marker({
-        position: {
-          lat: parseFloat(lat),
-          lng: parseFloat(lng),
-        },
-        map: this.map,
-        title: '',
-        animation: google.maps.Animation.DROP,
-        icon,
-      });
+  addCircle(point, color, opacity, r = 15) {
+    const circle = new google.maps.Circle({
+      strokeColor: color,
+      strokeOpacity: opacity,
+      strokeWeight: 2,
+      fillColor: color,
+      fillOpacity: opacity,
+      map: this.map,
+      center: point,
+      radius: r,
+    });
 
-      this.locations.push({
-        marker,
-      });
-    }
+    this.locations.push(circle);
   }
 
   clearMarkers() {
