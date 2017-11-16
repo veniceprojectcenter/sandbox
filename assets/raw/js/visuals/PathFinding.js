@@ -26,11 +26,21 @@ class PathFinding extends Visual {
 
   render() {
     const renderDiv = document.getElementById(this.renderID);
-    this.map = new google.maps.Map(renderDiv, {
+    const mapDiv = document.createElement('div');
+    mapDiv.className = 'map-container';
+    renderDiv.appendChild(mapDiv);
+
+    this.map = new google.maps.Map(mapDiv, {
       center: { lat: 45.435, lng: 12.335 },
       zoom: 14,
       styles: DefaultMapStyle,
     });
+
+    const text = document.createElement('p');
+    text.id = 'infoText';
+    text.innerText = 'Test text';
+    renderDiv.appendChild(text);
+
 
     if (this.showData) this.addDataMarkers();
     // this.addZoomListener();
@@ -379,11 +389,6 @@ class PathFinding extends Visual {
         this.clearMarkers('blue');
       }
     });
-
-    const infoText = document.createElement('h4');
-    infoText.id = 'infoText';
-    infoText.innerHTML = '';
-    controlsContainer.appendChild(infoText);
   }
 }
 
