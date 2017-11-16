@@ -357,6 +357,11 @@ class PathFinding extends Visual {
       const value = e.currentTarget.checked;
       this.showPath = value;
     });
+
+    editor.createCheckBox('showData', 'Show data on map', false, (e) => {
+      const value = e.currentTarget.checked;
+      this.showData = value;
+    });
   }
 }
 
