@@ -243,6 +243,8 @@ class PathFinding extends Visual {
     if (count > 0) {
       average = sum / count;
     }
+    average = parseFloat(Math.round(average * 100) / 100).toFixed(2);
+
     infoText += `<br/> Sum of ${fieldToAggregate}: ${sum}.`;
     infoText += `<br/> Average: ${average} per artifact.`;
     document.getElementById('infoText').innerHTML = infoText;
