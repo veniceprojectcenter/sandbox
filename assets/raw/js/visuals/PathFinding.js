@@ -2,7 +2,7 @@ import Visual from './helpers/Visual';
 import DefaultMapStyle from './helpers/DefaultMapStyle';
 import EditorGenerator from './helpers/EditorGenerator';
 
-class Pathfinding extends Visual {
+class PathFinding extends Visual {
   constructor(config) {
     super(config);
 
@@ -10,13 +10,14 @@ class Pathfinding extends Visual {
     this.locations = [];
     this.openInfoWindow = null;
 
-    this.DISTANCE_THRESHOLD_PATH = 0.0001;
+    this.DISTANCE_THRESHOLD_PATH = 0.00007;
     this.DEBUG = false;
     this.rectangles = [];
   }
 
   onLoadData() {
     this.applyDefaultAttributes({
+      aggregationColumn: Object.keys(this.data[0])[111],
       title: '',
     });
   }
@@ -142,16 +143,22 @@ class Pathfinding extends Visual {
     path.push({ lat: this.lastLat, lng: this.lastLng });
     path.unshift(this.startPoint);
     this.addPolyline(path, 'green', 6);
+
+    let pointsOnWholePath = [];
     for (let i = 0; i < path.length - 1; i += 1) {
       const first = path[i];
       const second = path[i + 1];
       const pointsOnPath = this.getPointsOnPath(first, second);
+
+      pointsOnWholePath = pointsOnWholePath.concat(pointsOnPath);
+
       pointsOnPath.forEach((point) => {
         const center = { lat: parseFloat(point.Latitude), lng: parseFloat(point.Longitude) };
         this.removeCircle(center);
         this.addCircle(center, 'red', 1, 7);
       });
     }
+    this.displayPointAggregation(pointsOnWholePath);
   }
 
   // start and end are objects with .lat() and .lng() functions
@@ -173,10 +180,10 @@ class Pathfinding extends Visual {
       const pointX = this.data[i].Longitude;
       const pointY = this.data[i].Latitude;
 
-      const pathLineDistance = Pathfinding.distanceToLine(pointX, pointY, x1, y1, slope);
+      const pathLineDistance = PathFinding.distanceToLine(pointX, pointY, x1, y1, slope);
       const bisectorDistance =
-        Pathfinding.distanceToLine(pointX, pointY, midX, midY, bisectorSlope);
-      const bisectorThreshold = Pathfinding.getDistanceBetweenPoints(x1, y1, x2, y2) / 2;
+        PathFinding.distanceToLine(pointX, pointY, midX, midY, bisectorSlope);
+      const bisectorThreshold = PathFinding.getDistanceBetweenPoints(x1, y1, x2, y2) / 2;
 
       if (pathLineDistance < this.DISTANCE_THRESHOLD_PATH &&
           bisectorDistance < bisectorThreshold) {
@@ -205,6 +212,32 @@ class Pathfinding extends Visual {
   static getDistanceBetweenPoints(x1, y1, x2, y2) {
     return Math.sqrt(((x2 - x1) * (x2 - x1)) +
                     ((y2 - y1) * (y2 - y1)));
+  }
+
+  displayPointAggregation(points) {
+    const number = points.length;
+    console.log(`On this path, you will encounter ${number} artifacts.`);
+    const fieldToAggregate = this.attributes.aggregationColumn;
+
+    let sum = 0;
+    let count = 0;
+    for (let i = 0; i < number; i += 1) {
+      const point = points[i];
+      if (point[fieldToAggregate] !== undefined ||
+        point[fieldToAggregate] !== null ||
+        point[fieldToAggregate] !== '' ||
+        point[fieldToAggregate] !== '0' ||
+        point[fieldToAggregate] !== 0) {
+        sum += parseFloat(point[fieldToAggregate]);
+        count += 1;
+      }
+    }
+    let average = null;
+    if (count > 0) {
+      average = sum / count;
+    }
+    console.log(`Total ${fieldToAggregate}: ${sum}.`);
+    console.log(`Average: ${average} per artifact.`);
   }
 
   // Removes all markers from the map of the given color
@@ -300,7 +333,20 @@ class Pathfinding extends Visual {
     const editor = new EditorGenerator(controlsContainer);
 
     editor.createHeader('Editor');
+
+    const columnSelectionID = 'columnSelection';
+    const columns = Object.keys(this.data[0]);
+    const options = [];
+    columns.forEach((column) => {
+      options.push({ value: column, text: column });
+    });
+
+    editor.createSelectBox(columnSelectionID, 'Select a column',
+      options, this.attributes.aggregationColumn, (e) => {
+        const value = $(e.currentTarget).val();
+        this.attributes.aggregationColumn = value;
+      });
   }
 }
 
-export default Pathfinding;
+export default PathFinding;

@@ -1,5 +1,7 @@
+import Loader from './visuals/helpers/Loader';
+
 function generateID(name) {
-  return name.replace(/[ ]/g, '-');
+  return name.replace(/[ ]+/g, '-');
 }
 
 function render(dataSets) {
@@ -39,8 +41,12 @@ function render(dataSets) {
 }
 
 async function renderDatasetList() {
-  if (sessionStorage.dataSets) {
-    const dataSets = JSON.parse(sessionStorage.dataSets);
+  const loader = new Loader('page');
+  loader.render();
+  if (localStorage.dataSets && localStorage.dataSetsDate &&
+    Math.floor(new Date() - Date.parse(localStorage.dataSetsDate)) < (1000 * 60 * 60 * 24)) {
+    const dataSets = JSON.parse(localStorage.dataSets);
+    loader.remove();
     render(dataSets);
   } else {
     const dataSets = [];
@@ -55,7 +61,9 @@ async function renderDatasetList() {
         dataSets.push(entry);
       });
 
-      sessionStorage.dataSets = JSON.stringify(dataSets);
+      localStorage.dataSetsDate = new Date().toString();
+      localStorage.dataSets = JSON.stringify(dataSets);
+      loader.remove();
       render(dataSets);
     })
     .catch((error) => {
