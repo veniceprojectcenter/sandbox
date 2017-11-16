@@ -38,7 +38,7 @@ class PathFinding extends Visual {
 
     const text = document.createElement('p');
     text.id = 'infoText';
-    text.innerText = 'Test text';
+    text.innerText = '';
     renderDiv.appendChild(text);
 
 
