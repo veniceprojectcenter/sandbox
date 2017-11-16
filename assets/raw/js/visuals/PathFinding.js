@@ -280,7 +280,7 @@ class PathFinding extends Visual {
       { lat: py + (h * Math.sin(thetaB)), lng: px + (h * Math.cos(thetaB)) },
       { lat: py - (h * Math.sin(theta)), lng: px - (h * Math.cos(theta)) },
       { lat: py - (h * Math.sin(thetaB)), lng: px - (h * Math.cos(thetaB)) },
-      { lat: py + (h * Math.sin(theta)), lng: px + (h * Math.cos(theta)) },
+      //{ lat: py + (h * Math.sin(theta)), lng: px + (h * Math.cos(theta)) },
     ];
 
     if (this.showPath) this.addPolyline(points, 'red', 2);
@@ -357,7 +357,7 @@ class PathFinding extends Visual {
         }
       });
 
-    editor.createCheckBox('showPath', 'Show path bounds', false, (e) => {
+    /* editor.createCheckBox('showPath', 'Show path bounds', false, (e) => {
       const value = e.currentTarget.checked;
       this.showPath = value;
       this.clearMarkers('green');
@@ -365,7 +365,7 @@ class PathFinding extends Visual {
       this.clearRectangles();
       this.markRoute(this.savedPoints.lat1, this.savedPoints.lng1,
         this.savedPoints.lat2, this.savedPoints.lng2);
-    });
+    }); */
 
     editor.createCheckBox('showData', 'Show data on map', false, (e) => {
       const value = e.currentTarget.checked;
