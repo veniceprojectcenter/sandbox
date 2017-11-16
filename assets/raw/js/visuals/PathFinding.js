@@ -13,6 +13,7 @@ class PathFinding extends Visual {
     this.DISTANCE_THRESHOLD_PATH = 0.00007;
     this.DEBUG = false;
     this.rectangles = [];
+    this.points = [];
   }
 
   onLoadData() {
@@ -158,7 +159,9 @@ class PathFinding extends Visual {
         this.addCircle(center, 'red', 1, 7);
       });
     }
-    this.displayPointAggregation(pointsOnWholePath);
+
+    this.points = pointsOnWholePath;
+    this.displayPointAggregation();
   }
 
   // start and end are objects with .lat() and .lng() functions
@@ -214,7 +217,8 @@ class PathFinding extends Visual {
                     ((y2 - y1) * (y2 - y1)));
   }
 
-  displayPointAggregation(points) {
+  displayPointAggregation() {
+    const points = this.points;
     const number = points.length;
     console.log(`On this path, you will encounter ${number} artifacts.`);
     const fieldToAggregate = this.attributes.aggregationColumn;
@@ -223,13 +227,12 @@ class PathFinding extends Visual {
     let count = 0;
     for (let i = 0; i < number; i += 1) {
       const point = points[i];
-      if (point[fieldToAggregate] !== undefined ||
-        point[fieldToAggregate] !== null ||
-        point[fieldToAggregate] !== '' ||
-        point[fieldToAggregate] !== '0' ||
-        point[fieldToAggregate] !== 0) {
+      const value = point[fieldToAggregate];
+      if (value !== undefined && value !== null &&
+        value !== '' && value !== '0' && value !== 0) {
         sum += parseFloat(point[fieldToAggregate]);
         count += 1;
+        console.log(point[fieldToAggregate]);
       }
     }
     let average = null;
@@ -341,10 +344,13 @@ class PathFinding extends Visual {
       options.push({ value: column, text: column });
     });
 
-    editor.createSelectBox(columnSelectionID, 'Select a column',
+    editor.createSelectBox(columnSelectionID, 'Select a column to display statistics on:',
       options, this.attributes.aggregationColumn, (e) => {
         const value = $(e.currentTarget).val();
         this.attributes.aggregationColumn = value;
+        if (this.numTimesClicked > 0 && this.numTimesClicked % 2 === 0) {
+          this.displayPointAggregation();
+        }
       });
   }
 }
