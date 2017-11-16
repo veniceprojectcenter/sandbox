@@ -17,7 +17,7 @@ const visuals = [
 
 async function prefetchData(route) {
   await Data.fetchData(route[0], () => {
-    console.log('The data was prefetched!');
+    console.log(`The ${route[0]} data set was prefetched!`);
   });
 }
 
