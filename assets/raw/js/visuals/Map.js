@@ -38,7 +38,7 @@ class Map extends Visual {
   }
 
   addMarker(data) {
-    if (data.lat && data.lng) {
+    if (data.Latitude && data.Longitude) {
       const icon = {
         path: 'M-20,0a5,5 0 1,0 10,0a5,5 0 1,0 -10,0',
         fillColor: this.determineColor(data[this.attributes.color.by]),
@@ -49,8 +49,8 @@ class Map extends Visual {
       };
       const marker = new google.maps.Marker({
         position: {
-          lat: parseFloat(data.lat),
-          lng: parseFloat(data.lng),
+          lat: parseFloat(data.Latitude),
+          lng: parseFloat(data.Longitude),
         },
         map: this.map,
         title: data.wiki_friendly_title,

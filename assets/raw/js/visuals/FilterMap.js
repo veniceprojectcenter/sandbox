@@ -3,43 +3,28 @@ import DefaultMapStyle from './helpers/DefaultMapStyle';
 import EditorGenerator from './helpers/EditorGenerator';
 
 class FilterMap extends Visual {
-  constructor(config) {
-    super(config);
-
-    this.attributes.columnOptions = null;
-    this.attributes.displayColumns = [];
+  constructor(config, renderID, renderControlsID) {
+    super(config, renderID, renderControlsID);
+    this.columnOptions = null;
     this.renderData = [];
-
     this.map = null;
     this.locations = [];
     this.openInfoWindow = null;
   }
 
-  addMarker(lat, lng) {
-    if (lat && lng) {
-      const icon = {
-        path: 'M-20,0a5,5 0 1,0 10,0a5,5 0 1,0 -10,0',
-        fillColor: 'blue',
-        fillOpacity: 0.6,
-        anchor: new google.maps.Point(0, 0),
-        strokeWeight: 0,
-        scale: 1,
-      };
-      const marker = new google.maps.Marker({
-        position: {
-          lat: parseFloat(lat),
-          lng: parseFloat(lng),
-        },
-        map: this.map,
-        title: '',
-        animation: google.maps.Animation.DROP,
-        icon,
-      });
+  addMarker(lat, lng, color = 'blue', opacity = 0.5, r = 15) {
+    const circle = new google.maps.Circle({
+      strokeColor: color,
+      strokeOpacity: opacity,
+      strokeWeight: 2,
+      fillColor: color,
+      fillOpacity: opacity,
+      map: this.map,
+      center: { lat: parseFloat(lat), lng: parseFloat(lng) },
+      radius: r,
+    });
 
-      this.locations.push({
-        marker,
-      });
-    }
+    this.locations.push(circle);
   }
 
   // render the data points on the map
@@ -53,8 +38,14 @@ class FilterMap extends Visual {
 
   // render the map
   render() {
+    if (this.attributes.dataFilters !== undefined && this.attributes.numericFilters !== undefined) {
+      this.renderData = this.filterCategorical(this.attributes.dataFilters, this.data);
+      this.renderData = this.filterNumerical(this.attributes.numericFilters, this.renderData);
+    } else {
+      this.renderData = this.data;
+    }
     this.map = new google.maps.Map(document.getElementById(this.renderID), {
-      center: { lat: 45.435, lng: 12.335 },
+      center: new google.maps.LatLng(45.435, 12.335),
       zoom: 14,
       styles: DefaultMapStyle,
     });
@@ -62,55 +53,70 @@ class FilterMap extends Visual {
   }
 
   renderControls() {
-    if (this.data.length === 0) {
-      alert('Dataset is empty!');
-      return;
-    }
-
-    Visual.empty(this.renderControlsID);
-
     this.attributes.dataFilters = [];
     this.attributes.numericFilters = [];
     this.renderData = JSON.parse(JSON.stringify(this.data));
-    this.attributes.columnOptions = Object.keys(this.data[0]);
+    this.columnOptions = Object.keys(this.data[0]);
     this.renderControlsDiv = document.getElementById(this.renderControlsID);
-
     const catFilterDiv = document.createElement('div');
     const numFilterDiv = document.createElement('div');
     catFilterDiv.id = 'catFilterDiv';
     numFilterDiv.id = 'numFilterDiv';
-    this.renderControlsDiv.innerHTML = '<h4 style = "text-align: center">Filter Map by</h4> <br>';
+    this.renderControlsDiv.innerHTML = '<h4 style = "text-align: center">Controls</h4> <br>';
+
     const catEditor = new EditorGenerator(catFilterDiv);
     const numEditor = new EditorGenerator(numFilterDiv);
 
     const ccats = [];
     const ncats = [];
+    // let rawCats = Object.keys(this.getCategoricalData()[0]);
+    // rawCats = rawCats.concat(Object.keys(this.getNumericData()[0]));
     const catData = Object.keys(this.getCategoricalData()[0]);
     const numData = Object.keys(this.getNumericData(2)[0]);
     let num = 0;
     for (let i = 0; i < catData.length; i += 1) {
       ccats.push({ value: catData[i], text: catData[i] });
     }
-
     for (let i = 0; i < numData.length; i += 1) {
       ncats.push({ value: numData[i], text: numData[i] });
     }
-
-    this.binDiv = document.createElement('div');
     const editor = new EditorGenerator(this.renderControlsDiv);
-
-    this.renderControlsDiv.append(document.createElement('br'));
+    // this.renderControlsDiv.append(document.createElement('br'));
     const filterLabel = document.createElement('h5');
     filterLabel.innerHTML = 'Categorical Filters';
     filterLabel.style.textAlign = 'center';
     this.renderControlsDiv.appendChild(filterLabel);
     this.renderControlsDiv.appendChild(catFilterDiv);
+    editor.createButton('addCat', 'Add Categorical Filter', () => {
+      num += 1;
+      catEditor.createDataFilter(`Filter${num}`, ccats, (e) => {
+        const column = $(e.currentTarget).val();
+        const categories = this.getGroupedList(column);
+        const catSelect = e.currentTarget.parentNode.parentNode.nextSibling.nextSibling
+        .nextSibling.nextSibling.children[0].children[3];
+        $(catSelect).empty().html(' ');
+        $(catSelect).append(
+        $('<option disabled=true></option>')
+          .attr('Select', '-Select-')
+          .text('-Select-'));
+        for (let i = 0; i < categories.length; i += 1) {
+          const value = categories[i].key;
+          $(catSelect).append(
+            $('<option></option>')
+            .attr('value', value)
+            .text(value),
+          );
+        }
+        $(catSelect).material_select();
+      }, (e) => { this.removeFilter(e.currentTarget); });
+    });
+    this.renderControlsDiv.appendChild(document.createElement('br'));
+    this.renderControlsDiv.appendChild(document.createElement('br'));
     const filterLabel2 = document.createElement('h5');
     filterLabel2.innerHTML = 'Numeric Filters';
     filterLabel2.style.textAlign = 'center';
     this.renderControlsDiv.appendChild(filterLabel2);
     this.renderControlsDiv.appendChild(numFilterDiv);
-    this.renderControlsDiv.append(document.createElement('br'));
     catEditor.createDataFilter('Filter', ccats, (e) => {
       const column = $(e.currentTarget).val();
       const categories = this.getGroupedList(column);
@@ -118,11 +124,15 @@ class FilterMap extends Visual {
       .nextSibling.nextSibling.children[0].children[3];
       $(catSelect).empty().html(' ');
       $(catSelect).append(
-      $('<option disabled=true></option>').attr('Select', '-Select-').text('-Select-'));
+        $('<option disabled=true></option>')
+        .attr('Select', '-Select-')
+        .text('-Select-'));
       for (let i = 0; i < categories.length; i += 1) {
         const value = categories[i].key;
         $(catSelect).append(
-          $('<option></option>').attr('value', value).text(value),
+          $('<option></option>')
+          .attr('value', value)
+          .text(value),
         );
       }
       $(catSelect).material_select();
@@ -131,12 +141,15 @@ class FilterMap extends Visual {
     numEditor.createNumericFilter('NumFilter', ncats, (e) => {
       this.removeFilter(e.currentTarget);
     });
-    this.renderControlsDiv.appendChild(this.binDiv);
-    const filterCats = [];
-    for (let i = 0; i < this.attributes.columnOptions.length; i += 1) {
-      filterCats.push({ value: this.attributes.columnOptions[i],
-        text: this.attributes.columnOptions[i] });
-    }
+
+
+    editor.createButton('addNum', 'Add Numeric Filter', () => {
+      num += 1;
+      numEditor.createNumericFilter(`NumFilter${num}`, ncats, (e) => { this.removeFilter(e.currentTarget); });
+    });
+
+    this.renderControlsDiv.appendChild(document.createElement('br'));
+    this.renderControlsDiv.appendChild(document.createElement('br'));
     editor.createButton('submit', 'Generate Map', () => {
       this.attributes.dataFilters = [];
       this.attributes.numericFilters = [];
@@ -147,7 +160,7 @@ class FilterMap extends Visual {
         const columnVal = $(filter.children[0].children[0].children[3]).val();
         let catVal = $(filter.children[2].children[0].children[3]).val();
         const b = $(filter.children[1].children[0].children[3]).val();
-        if (b == '0') {
+        if (b === '0') {
           const categories = this.getGroupedList(columnVal);
           for (let j = 0; j < categories.length; j += 1) {
             categories[j] = categories[j].key;
@@ -159,7 +172,6 @@ class FilterMap extends Visual {
         }
         this.attributes.dataFilters.push({ column: columnVal, categories: catVal });
       }
-
       for (let i = 0; i < numFilters.length; i += 1) {
         const filter = numFilters[i];
         const columnVal = $(filter.children[0].children[0].children[3]).val();
@@ -172,37 +184,12 @@ class FilterMap extends Visual {
       this.renderData = this.filterNumerical(this.attributes.numericFilters, this.renderData);
       this.render();
     });
-
-    editor.createButton('addCat', 'Add Categorical Filter', () => {
-      num += 1;
-      catEditor.createDataFilter(`Filter${num}`, ccats, (e) => {
-        const column = $(e.currentTarget).val();
-        const categories = this.getGroupedList(column);
-        const catSelect = e.currentTarget.parentNode.parentNode.nextSibling.nextSibling
-        .nextSibling.nextSibling.children[0].children[3];
-        $(catSelect).empty().html(' ');
-        $(catSelect).append(
-          $('<option disabled=true></option>').attr('Select', '-Select-').text('-Select-'),
-        );
-        for (let i = 0; i < categories.length; i += 1) {
-          const value = categories[i].key;
-          $(catSelect).append(
-            $('<option></option>').attr('value', value).text(value),
-          );
-        }
-        $(catSelect).material_select();
-      }, (e) => { this.removeFilter(e.currentTarget); });
-    });
-    editor.createButton('addNum', 'Add Numeric Filter', () => {
-      num += 1;
-      numEditor.createNumericFilter(`NumFilter${num}`, ncats, (e) => {
-        this.removeFilter(e.currentTarget);
-      });
-    });
   }
 
   removeFilter(buttonID) {
     buttonID.parentNode.parentNode.remove();
   }
+
+
 }
 export default FilterMap;

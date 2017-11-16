@@ -26,7 +26,7 @@ class Counter extends Visual {
     this.attributes.dataFilters = [];
     this.attributes.numericFilters = [];
     this.renderData = JSON.parse(JSON.stringify(this.data));
-    this.attributes.columnOptions = Object.keys(this.data[0]);
+    this.columnOptions = Object.keys(this.data[0]);
     this.renderControlsDiv = document.getElementById(this.renderControlsID);
     const catFilterDiv = document.createElement('div');
     const numFilterDiv = document.createElement('div');
@@ -55,24 +55,47 @@ class Counter extends Visual {
     for (let i = 0; i < numData.length; i += 1) {
       ncats.push({ value: numData[i], text: numData[i] });
     }
-    this.binDiv = document.createElement('div');
     const editor = new EditorGenerator(this.renderControlsDiv);
 
     editor.createMultipleSelectBox('check2', 'Show Data', cats, 'durg', (e) => {
       this.attributes.displayColumns = $(e.currentTarget).val();
     });
-    this.renderControlsDiv.append(document.createElement('br'));
+    // this.renderControlsDiv.append(document.createElement('br'));
     const filterLabel = document.createElement('h5');
     filterLabel.innerHTML = 'Categorical Filters';
     filterLabel.style.textAlign = 'center';
     this.renderControlsDiv.appendChild(filterLabel);
     this.renderControlsDiv.appendChild(catFilterDiv);
+    editor.createButton('addCat', 'Add Categorical Filter', () => {
+      num += 1;
+      catEditor.createDataFilter(`Filter${num}`, ccats, (e) => {
+        const column = $(e.currentTarget).val();
+        const categories = this.getGroupedList(column);
+        const catSelect = e.currentTarget.parentNode.parentNode.nextSibling.nextSibling
+        .nextSibling.nextSibling.children[0].children[3];
+        $(catSelect).empty().html(' ');
+        $(catSelect).append(
+        $('<option disabled=true></option>')
+          .attr('Select', '-Select-')
+          .text('-Select-'));
+        for (let i = 0; i < categories.length; i += 1) {
+          const value = categories[i].key;
+          $(catSelect).append(
+            $('<option></option>')
+            .attr('value', value)
+            .text(value),
+          );
+        }
+        $(catSelect).material_select();
+      }, (e) => { this.removeFilter(e.currentTarget); });
+    });
+    this.renderControlsDiv.appendChild(document.createElement('br'));
+    this.renderControlsDiv.appendChild(document.createElement('br'));
     const filterLabel2 = document.createElement('h5');
     filterLabel2.innerHTML = 'Numeric Filters';
     filterLabel2.style.textAlign = 'center';
     this.renderControlsDiv.appendChild(filterLabel2);
     this.renderControlsDiv.appendChild(numFilterDiv);
-    this.renderControlsDiv.append(document.createElement('br'));
     catEditor.createDataFilter('Filter', ccats, (e) => {
       const column = $(e.currentTarget).val();
       const categories = this.getGroupedList(column);
@@ -80,16 +103,16 @@ class Counter extends Visual {
       .nextSibling.nextSibling.children[0].children[3];
       $(catSelect).empty().html(' ');
       $(catSelect).append(
-$('<option disabled=true></option>')
-  .attr('Select', '-Select-')
-  .text('-Select-'));
+        $('<option disabled=true></option>')
+        .attr('Select', '-Select-')
+        .text('-Select-'));
       for (let i = 0; i < categories.length; i += 1) {
         const value = categories[i].key;
         $(catSelect).append(
-  $('<option></option>')
-    .attr('value', value)
-    .text(value),
-);
+          $('<option></option>')
+          .attr('value', value)
+          .text(value),
+        );
       }
       $(catSelect).material_select();
     }, (e) => { this.removeFilter(e.currentTarget); });
@@ -97,12 +120,16 @@ $('<option disabled=true></option>')
     numEditor.createNumericFilter('NumFilter', ncats, (e) => {
       this.removeFilter(e.currentTarget);
     });
-    this.renderControlsDiv.appendChild(this.binDiv);
-    const filterCats = [];
-    for (let i = 0; i < this.attributes.columnOptions.length; i += 1) {
-      filterCats.push({ value: this.attributes.columnOptions[i],
-        text: this.attributes.columnOptions[i] });
-    } editor.createButton('submit', 'Generate Table', () => {
+
+
+    editor.createButton('addNum', 'Add Numeric Filter', () => {
+      num += 1;
+      numEditor.createNumericFilter(`NumFilter${num}`, ncats, (e) => { this.removeFilter(e.currentTarget); });
+    });
+
+    this.renderControlsDiv.appendChild(document.createElement('br'));
+    this.renderControlsDiv.appendChild(document.createElement('br'));
+    editor.createButton('submit', 'Generate Table', () => {
       this.attributes.dataFilters = [];
       this.attributes.numericFilters = [];
       const catFilters = document.getElementsByClassName('dataFilter');
@@ -132,49 +159,26 @@ $('<option disabled=true></option>')
         this.attributes.numericFilters.push({ column: columnVal, operation: opVal, value: val });
       }
       this.renderData = this.data;
-      this.renderData = this.filterCategorical(this.attributes.dataFilters, this.renderData);
-      this.renderData = this.filterNumerical(this.attributes.numericFilters, this.renderData);
       this.render();
-    });
-    editor.createButton('addCat', 'Add Categorical Filter', () => {
-      num += 1;
-      catEditor.createDataFilter(`Filter${num}`, ccats, (e) => {
-        const column = $(e.currentTarget).val();
-        const categories = this.getGroupedList(column);
-        const catSelect = e.currentTarget.parentNode.parentNode.nextSibling.nextSibling
-        .nextSibling.nextSibling.children[0].children[3];
-        $(catSelect).empty().html(' ');
-        $(catSelect).append(
-  $('<option disabled=true></option>')
-    .attr('Select', '-Select-')
-    .text('-Select-'));
-        for (let i = 0; i < categories.length; i += 1) {
-          const value = categories[i].key;
-          $(catSelect).append(
-    $('<option></option>')
-      .attr('value', value)
-      .text(value),
-  );
-        }
-        $(catSelect).material_select();
-      }, (e) => { this.removeFilter(e.currentTarget); });
-    });
-    editor.createButton('addNum', 'Add Numeric Filter', () => {
-      num += 1;
-      numEditor.createNumericFilter(`NumFilter${num}`, ncats, (e) => { this.removeFilter(e.currentTarget); });
     });
   }
   /** Renders the App section
   *
   */
   render() {
+    if (this.attributes.dataFilters !== undefined && this.attributes.numericFilters !== undefined) {
+      this.renderData = this.filterCategorical(this.attributes.dataFilters, this.data);
+      this.renderData = this.filterNumerical(this.attributes.numericFilters, this.renderData);
+    } else {
+      this.renderData = this.data;
+    }
     this.renderDiv = document.getElementById(this.renderID);
     this.renderDiv.innerHTML = 'Data Table:';
     this.tableDiv = document.createElement('div');
     this.renderDiv.appendChild(this.tableDiv);
     this.tableDiv.id = 'tableDiv';
-    if (this.attributes.columnOptions === null) {
-      this.attributes.columnOptions = [];
+    if (this.columnOptions === null) {
+      this.columnOptions = [];
     }
     this.displayTable();
   }
@@ -209,57 +213,7 @@ $('<option disabled=true></option>')
     document.getElementById('tableDiv').innerHTML = `${txt}Count: ${count}`;
   }
 
-  /** Function for creating a list of checkboxes for bin attributes
-  *
-  */
-  createBinCheckBoxList(checkDiv, theData, checkClass) {
-    const keys = Object.keys(theData[0]);
-    for (let i = 0; i < keys.length; i += 1) {
-      if (keys[i] !== '') {
-        const tempInput = document.createElement('input');
-        tempInput.value = keys[i];
-        tempInput.type = 'checkbox';
-        tempInput.id = `${checkClass}bin${i}`;
-        tempInput.classList.add(checkClass);
-        tempInput.addEventListener('change', () => { this.updateRender(); });
-        const newlabel = document.createElement('Label');
-        newlabel.setAttribute('for', tempInput.id);
-        newlabel.innerHTML = keys[i];
-        const binStart = document.createElement('input');
-        binStart.classList.add('binStart');
-        binStart.type = 'number';
-        binStart.style.margin = '0';
-        binStart.style.width = '50';
-        binStart.style.height = '18';
-        binStart.id = `${checkClass}binStart${i}`;
-        binStart.addEventListener('change', () => { this.updateRender(); });
-        const binStartLabel = document.createElement('Label');
-        binStartLabel.setAttribute('for', binStart.id);
-        binStartLabel.innerHTML = 'Bin Start:';
-        binStartLabel.style.padding = '10px';
 
-        const binSize = document.createElement('input');
-        binSize.classList.add('binSize');
-        binSize.type = 'number';
-        binSize.style.width = '50';
-        binSize.id = `${checkClass}binSize${i}`;
-        binSize.style.height = '18';
-        binSize.style.margin = '0';
-        binSize.addEventListener('change', () => { this.updateRender(); });
-        const binSizeLabel = document.createElement('Label');
-        binSizeLabel.setAttribute('for', binSize.id);
-        binSizeLabel.innerHTML = 'Bin Size:';
-        binSizeLabel.style.padding = '10px';
-        checkDiv.append(tempInput);
-        checkDiv.append(newlabel);
-        checkDiv.append(binStartLabel);
-        checkDiv.append(binStart);
-        checkDiv.append(binSizeLabel);
-        checkDiv.append(binSize);
-        checkDiv.append(document.createElement('br'));
-      }
-    }
-  }
   removeFilter(buttonID) {
     buttonID.parentNode.parentNode.remove();
   }

@@ -13,53 +13,38 @@ class PathFinding extends Visual {
     this.DISTANCE_THRESHOLD_PATH = 0.00007;
     this.DEBUG = false;
     this.rectangles = [];
+    this.points = [];
+    this.savedPoints = { lat1: 0, lng1: 0, lat2: 0, lng2: 0 };
   }
 
   onLoadData() {
     this.applyDefaultAttributes({
-      aggregationColumn: Object.keys(this.data[0])[111],
+      aggregationColumn: Object.keys(this.data[0])[107],
       title: '',
     });
   }
 
   render() {
-    this.map = new google.maps.Map(document.getElementById(this.renderID), {
+    const renderDiv = document.getElementById(this.renderID);
+    const mapDiv = document.createElement('div');
+    mapDiv.className = 'map-container';
+    renderDiv.appendChild(mapDiv);
+
+    this.map = new google.maps.Map(mapDiv, {
       center: { lat: 45.435, lng: 12.335 },
       zoom: 14,
       styles: DefaultMapStyle,
     });
 
-    if (this.DEBUG) this.addDataMarkers();
-    // this.addZoomListener();
+    const text = document.createElement('p');
+    text.id = 'infoText';
+    text.innerText = '';
+    renderDiv.appendChild(text);
+
+
+    if (this.showData) this.addDataMarkers();
 
     this.registerDefaultClickAction();
-  }
-
-  addZoomListener() {
-    google.maps.event.addListener(this.map, 'zoom_changed', () => {
-      const zoomLevel = this.map.getZoom();
-      let r = 15;
-      if (zoomLevel < 14) {
-        this.resizeCircles(35);
-        return;
-      }
-      switch (zoomLevel) {
-        case 16:
-          r = 20;
-          this.resizeCircles(r);
-          break;
-        case 15:
-          r = 25;
-          this.resizeCircles(r);
-          break;
-        case 14:
-          r = 30;
-          this.resizeCircles(r);
-          break;
-        default:
-          this.resizeCircles(r);
-      }
-    });
   }
 
   resizeCircles(r) {
@@ -105,7 +90,10 @@ class PathFinding extends Visual {
     }
 
     this.markRoute(this.lastLat, this.lastLng, event.latLng.lat(), event.latLng.lng());
-
+    this.savedPoints = { lat1: this.lastLat,
+      lng1: this.lastLng,
+      lat2: event.latLng.lat(),
+      lng2: event.latLng.lng() };
 
     this.startPoint = { lat: this.lastLat, lng: this.lastLng };
     this.lastLat = event.latLng.lat();
@@ -158,12 +146,13 @@ class PathFinding extends Visual {
         this.addCircle(center, 'red', 1, 7);
       });
     }
-    this.displayPointAggregation(pointsOnWholePath);
+
+    this.points = pointsOnWholePath;
+    this.displayPointAggregation();
   }
 
   // start and end are objects with .lat() and .lng() functions
   getPointsOnPath(start, end) {
-    // Find the slope between the points
     const slope = (end.lat - start.lat) / (end.lng - start.lng);
     const x1 = start.lng;
     const y1 = start.lat;
@@ -214,20 +203,19 @@ class PathFinding extends Visual {
                     ((y2 - y1) * (y2 - y1)));
   }
 
-  displayPointAggregation(points) {
+  displayPointAggregation() {
+    const points = this.points;
     const number = points.length;
-    console.log(`On this path, you will encounter ${number} artifacts.`);
+    let infoText = `On this path, you will encounter ${number} artifacts.`;
     const fieldToAggregate = this.attributes.aggregationColumn;
 
     let sum = 0;
     let count = 0;
     for (let i = 0; i < number; i += 1) {
       const point = points[i];
-      if (point[fieldToAggregate] !== undefined ||
-        point[fieldToAggregate] !== null ||
-        point[fieldToAggregate] !== '' ||
-        point[fieldToAggregate] !== '0' ||
-        point[fieldToAggregate] !== 0) {
+      const value = point[fieldToAggregate];
+      if (value !== undefined && value !== null &&
+        value !== '' && value !== '0' && value !== 0) {
         sum += parseFloat(point[fieldToAggregate]);
         count += 1;
       }
@@ -236,8 +224,11 @@ class PathFinding extends Visual {
     if (count > 0) {
       average = sum / count;
     }
-    console.log(`Total ${fieldToAggregate}: ${sum}.`);
-    console.log(`Average: ${average} per artifact.`);
+    average = parseFloat(Math.round(average * 100) / 100).toFixed(2);
+
+    infoText += `<br/> Sum of ${fieldToAggregate}: ${sum}.`;
+    infoText += `<br/> Average: ${average} per artifact.`;
+    document.getElementById('infoText').innerHTML = infoText;
   }
 
   // Removes all markers from the map of the given color
@@ -273,10 +264,10 @@ class PathFinding extends Visual {
       { lat: py + (h * Math.sin(thetaB)), lng: px + (h * Math.cos(thetaB)) },
       { lat: py - (h * Math.sin(theta)), lng: px - (h * Math.cos(theta)) },
       { lat: py - (h * Math.sin(thetaB)), lng: px - (h * Math.cos(thetaB)) },
-      { lat: py + (h * Math.sin(theta)), lng: px + (h * Math.cos(theta)) },
+      //{ lat: py + (h * Math.sin(theta)), lng: px + (h * Math.cos(theta)) },
     ];
 
-    if (this.DEBUG) this.addPolyline(points, 'red', 2);
+    if (this.showPath) this.addPolyline(points, 'red', 2);
   }
 
   clearRectangles() {
@@ -332,7 +323,7 @@ class PathFinding extends Visual {
 
     const editor = new EditorGenerator(controlsContainer);
 
-    editor.createHeader('Editor');
+    editor.createHeader('Controls');
 
     const columnSelectionID = 'columnSelection';
     const columns = Object.keys(this.data[0]);
@@ -341,11 +332,34 @@ class PathFinding extends Visual {
       options.push({ value: column, text: column });
     });
 
-    editor.createSelectBox(columnSelectionID, 'Select a column',
+    editor.createSelectBox(columnSelectionID, 'Select a column to display statistics on:',
       options, this.attributes.aggregationColumn, (e) => {
         const value = $(e.currentTarget).val();
         this.attributes.aggregationColumn = value;
+        if (this.numTimesClicked > 0 && this.numTimesClicked % 2 === 0) {
+          this.displayPointAggregation();
+        }
       });
+
+    /* editor.createCheckBox('showPath', 'Show path bounds', false, (e) => {
+      const value = e.currentTarget.checked;
+      this.showPath = value;
+      this.clearMarkers('green');
+      this.clearMarkers('red');
+      this.clearRectangles();
+      this.markRoute(this.savedPoints.lat1, this.savedPoints.lng1,
+        this.savedPoints.lat2, this.savedPoints.lng2);
+    }); */
+
+    editor.createCheckBox('showData', 'Show data on map', false, (e) => {
+      const value = e.currentTarget.checked;
+      this.showData = value;
+      if (value) {
+        this.addDataMarkers();
+      } else {
+        this.clearMarkers('blue');
+      }
+    });
   }
 }
 

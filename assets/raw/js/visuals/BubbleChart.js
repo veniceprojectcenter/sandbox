@@ -8,13 +8,14 @@ class BubbleChart extends Visual {
     super(config, renderID, renderControlsID);
     this.editmode = false;
     this.currentEditKey = null;
+    this.useTransitions = false;
   }
 
   onLoadData() {
     let defaultCat;
     // Try to set a default selected column
     if (this.data.length > 0) {
-      const cats = Object.keys(this.data[0]);
+      const cats = Object.keys(this.getCategoricalData()[0]);
       if (cats.length > 1) {
         defaultCat = cats[1];
       }
@@ -179,7 +180,9 @@ class BubbleChart extends Visual {
 
     let counts = this.getGroupedListCounts(this.attributes.group_by);
     if (this.attributes.hide_empty) {
-      counts = counts.filter(d => d.key !== '' &&
+      counts = counts.filter(d =>
+      d.key !== undefined &&
+      d.key !== '' &&
        d.key.toLowerCase() !== 'null' &&
         d.key.toLowerCase() !== 'undefined');
     }
@@ -238,6 +241,7 @@ class BubbleChart extends Visual {
       .style('text-anchor', 'middle')
       .style('pointer-events', 'none')
       .style('font-size', `${this.attributes.font_size}pt`)
+      .style('text-shadow', '0px 0px 5px white')
       .attr('fill', this.attributes.font_color)
       .text(d => d.data.key);
 
