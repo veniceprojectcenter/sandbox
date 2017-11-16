@@ -30,7 +30,6 @@ class PathFinding extends Visual {
       styles: DefaultMapStyle,
     });
 
-    if (this.DEBUG) this.addDataMarkers();
     // this.addZoomListener();
 
     this.registerDefaultClickAction();
@@ -279,7 +278,7 @@ class PathFinding extends Visual {
       { lat: py + (h * Math.sin(theta)), lng: px + (h * Math.cos(theta)) },
     ];
 
-    if (this.DEBUG) this.addPolyline(points, 'red', 2);
+    if (this.showPath) this.addPolyline(points, 'red', 2);
   }
 
   clearRectangles() {
@@ -361,6 +360,11 @@ class PathFinding extends Visual {
     editor.createCheckBox('showData', 'Show data on map', false, (e) => {
       const value = e.currentTarget.checked;
       this.showData = value;
+      if (this.showData) {
+        this.addDataMarkers();
+      } else {
+        this.clearMarkers('blue');
+      }
     });
   }
 }
