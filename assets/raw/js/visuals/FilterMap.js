@@ -39,7 +39,7 @@ class FilterMap extends Visual {
   // render the map
   render() {
     if (this.attributes.dataFilters !== undefined && this.attributes.numericFilters !== undefined) {
-      this.renderData = this.filterCategorical(this.attributes.dataFilters, this.renderData);
+      this.renderData = this.filterCategorical(this.attributes.dataFilters, this.data);
       this.renderData = this.filterNumerical(this.attributes.numericFilters, this.renderData);
     } else {
       this.renderData = this.data;
