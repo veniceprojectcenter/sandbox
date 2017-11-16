@@ -14,6 +14,7 @@ class PathFinding extends Visual {
     this.DEBUG = false;
     this.rectangles = [];
     this.points = [];
+    this.savedPoints = { lat1: 0, lng1: 0, lat2: 0, lng2: 0 };
   }
 
   onLoadData() {
@@ -106,7 +107,10 @@ class PathFinding extends Visual {
     }
 
     this.markRoute(this.lastLat, this.lastLng, event.latLng.lat(), event.latLng.lng());
-
+    this.savedPoints = { lat1: this.lastLat,
+      lng1: this.lastLng,
+      lat2: event.latLng.lat(),
+      lng2: event.latLng.lng() };
 
     this.startPoint = { lat: this.lastLat, lng: this.lastLng };
     this.lastLat = event.latLng.lat();
@@ -356,6 +360,11 @@ class PathFinding extends Visual {
     editor.createCheckBox('showPath', 'Show path bounds', false, (e) => {
       const value = e.currentTarget.checked;
       this.showPath = value;
+      this.clearMarkers('green');
+      this.clearMarkers('red');
+      this.clearRectangles();
+      this.markRoute(this.savedPoints.lat1, this.savedPoints.lng1,
+        this.savedPoints.lat2, this.savedPoints.lng2);
     });
 
     editor.createCheckBox('showData', 'Show data on map', false, (e) => {
