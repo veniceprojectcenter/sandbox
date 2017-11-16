@@ -15,31 +15,19 @@ class FilterMap extends Visual {
     this.openInfoWindow = null;
   }
 
-  addMarker(lat, lng) {
-    if (lat && lng) {
-      const icon = {
-        path: 'M-20,0a5,5 0 1,0 10,0a5,5 0 1,0 -10,0',
-        fillColor: 'blue',
-        fillOpacity: 0.6,
-        anchor: new google.maps.Point(0, 0),
-        strokeWeight: 0,
-        scale: 1,
-      };
-      const marker = new google.maps.Marker({
-        position: {
-          lat: parseFloat(lat),
-          lng: parseFloat(lng),
-        },
-        map: this.map,
-        title: '',
-        animation: google.maps.Animation.DROP,
-        icon,
-      });
+  addMarker(lat, lng, color = 'blue', opacity = 0.5, r = 15) {
+    const circle = new google.maps.Circle({
+      strokeColor: color,
+      strokeOpacity: opacity,
+      strokeWeight: 2,
+      fillColor: color,
+      fillOpacity: opacity,
+      map: this.map,
+      center: { lat: parseFloat(lat), lng: parseFloat(lng) },
+      radius: r,
+    });
 
-      this.locations.push({
-        marker,
-      });
-    }
+    this.locations.push(circle);
   }
 
   // render the data points on the map

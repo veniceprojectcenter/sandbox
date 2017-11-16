@@ -24,7 +24,8 @@ class PieChartMap extends Visual {
   }
 
   render() {
-    this.map = new google.maps.Map(document.getElementById(this.renderID), {
+    const renderDiv = document.getElementById(this.renderID);
+    this.map = new google.maps.Map(renderDiv, {
       center: { lat: 45.435, lng: 12.335 },
       zoom: 14,
       styles: DefaultMapStyle,
