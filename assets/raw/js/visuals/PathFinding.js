@@ -19,7 +19,7 @@ class PathFinding extends Visual {
 
   onLoadData() {
     this.applyDefaultAttributes({
-      aggregationColumn: Object.keys(this.data[0])[111],
+      aggregationColumn: Object.keys(this.data[0])[107],
       title: '',
     });
   }
@@ -225,7 +225,7 @@ class PathFinding extends Visual {
   displayPointAggregation() {
     const points = this.points;
     const number = points.length;
-    console.log(`On this path, you will encounter ${number} artifacts.`);
+    let infoText = `On this path, you will encounter ${number} artifacts.`;
     const fieldToAggregate = this.attributes.aggregationColumn;
 
     let sum = 0;
@@ -237,15 +237,17 @@ class PathFinding extends Visual {
         value !== '' && value !== '0' && value !== 0) {
         sum += parseFloat(point[fieldToAggregate]);
         count += 1;
-        // console.log(point[fieldToAggregate]);
       }
     }
     let average = null;
     if (count > 0) {
       average = sum / count;
     }
-    console.log(`Total ${fieldToAggregate}: ${sum}.`);
-    console.log(`Average: ${average} per artifact.`);
+    average = parseFloat(Math.round(average * 100) / 100).toFixed(2);
+
+    infoText += `<br/> Sum of ${fieldToAggregate}: ${sum}.`;
+    infoText += `<br/> Average: ${average} per artifact.`;
+    document.getElementById('infoText').innerHTML = infoText;
   }
 
   // Removes all markers from the map of the given color
@@ -377,6 +379,11 @@ class PathFinding extends Visual {
         this.clearMarkers('blue');
       }
     });
+
+    const infoText = document.createElement('h4');
+    infoText.id = 'infoText';
+    infoText.innerHTML = '';
+    controlsContainer.appendChild(infoText);
   }
 }
 
