@@ -14,6 +14,7 @@ class PathFinding extends Visual {
     this.DEBUG = false;
     this.rectangles = [];
     this.points = [];
+    this.savedPoints = { lat1: 0, lng1: 0, lat2: 0, lng2: 0 };
   }
 
   onLoadData() {
@@ -30,7 +31,7 @@ class PathFinding extends Visual {
       styles: DefaultMapStyle,
     });
 
-    if (this.DEBUG) this.addDataMarkers();
+    if (this.showData) this.addDataMarkers();
     // this.addZoomListener();
 
     this.registerDefaultClickAction();
@@ -106,7 +107,10 @@ class PathFinding extends Visual {
     }
 
     this.markRoute(this.lastLat, this.lastLng, event.latLng.lat(), event.latLng.lng());
-
+    this.savedPoints = { lat1: this.lastLat,
+      lng1: this.lastLng,
+      lat2: event.latLng.lat(),
+      lng2: event.latLng.lng() };
 
     this.startPoint = { lat: this.lastLat, lng: this.lastLng };
     this.lastLat = event.latLng.lat();
@@ -232,7 +236,7 @@ class PathFinding extends Visual {
         value !== '' && value !== '0' && value !== 0) {
         sum += parseFloat(point[fieldToAggregate]);
         count += 1;
-        console.log(point[fieldToAggregate]);
+        // console.log(point[fieldToAggregate]);
       }
     }
     let average = null;
@@ -279,7 +283,7 @@ class PathFinding extends Visual {
       { lat: py + (h * Math.sin(theta)), lng: px + (h * Math.cos(theta)) },
     ];
 
-    if (this.DEBUG) this.addPolyline(points, 'red', 2);
+    if (this.showPath) this.addPolyline(points, 'red', 2);
   }
 
   clearRectangles() {
@@ -352,6 +356,26 @@ class PathFinding extends Visual {
           this.displayPointAggregation();
         }
       });
+
+    editor.createCheckBox('showPath', 'Show path bounds', false, (e) => {
+      const value = e.currentTarget.checked;
+      this.showPath = value;
+      this.clearMarkers('green');
+      this.clearMarkers('red');
+      this.clearRectangles();
+      this.markRoute(this.savedPoints.lat1, this.savedPoints.lng1,
+        this.savedPoints.lat2, this.savedPoints.lng2);
+    });
+
+    editor.createCheckBox('showData', 'Show data on map', false, (e) => {
+      const value = e.currentTarget.checked;
+      this.showData = value;
+      if (value) {
+        this.addDataMarkers();
+      } else {
+        this.clearMarkers('blue');
+      }
+    });
   }
 }
 
