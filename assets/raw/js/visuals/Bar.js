@@ -14,8 +14,7 @@ class Bar extends Visual {
       }
     }
     this.applyDefaultAttributes({
-      width: 600,
-      height: 450,
+      aspect_ratio: 1.5,
       font_size: '8',
       x_font_rotation: 45,
       x_font_x_offset: 0,
@@ -56,7 +55,7 @@ class Bar extends Visual {
     });
 
     const cats = [];
-    const catsRaw = Object.keys(this.data[0]);
+    const catsRaw = Object.keys(this.getCategoricalData()[0]);
     for (let i = 0; i < catsRaw.length; i += 1) {
       cats.push({ value: catsRaw[i], text: catsRaw[i] });
     }
@@ -119,18 +118,32 @@ class Bar extends Visual {
     // Empty the container, then place the SVG in there
     Visual.empty(this.renderID);
 
-    let renderData = JSON.parse(JSON.stringify(this.data));
+    let renderData = JSON.parse(JSON.stringify(this.getCategoricalData()));
 
     if (this.isNumeric(this.attributes.group_by_main)) {
       renderData = this.makeBin(this.attributes.group_by_main, Number(this.attributes.binSize),
       Number(this.attributes.binStart));
     }
 
+    if (this.attributes.title !== '') {
+      const title = d3.select(`#${this.renderID}`).append('h3')
+        .attr('class', 'visual-title');
+      title.html(this.attributes.title);
+    }
+
+    const svg = d3.select(`#${this.renderID}`).append('svg')
+      .attr('class', 'bar');
+
     const margin = { top: 10, right: 10, bottom: 35, left: 25 };
-    const width = this.attributes.width - margin.left - margin.right;
-    const height = this.attributes.height - margin.top - margin.bottom;
-    const x = d3.scaleBand().rangeRound([0, width]).padding(0.1);
-    const y = d3.scaleLinear().rangeRound([height, 0]);
+    const dt = document.getElementById(`${this.renderID}`);
+    const width = dt.scrollWidth - (margin.left + margin.right);
+    const height = width * (1.0 / this.attributes.aspect_ratio);
+
+    const g = svg.append('g')
+      .attr('transform', `translate(${margin.left},${margin.top})`);
+
+    const x = d3.scaleBand();
+    const y = d3.scaleLinear();
 
     let keys = [];
     const stackData = [];
@@ -178,17 +191,53 @@ class Bar extends Visual {
     const colorspace = d3.scaleOrdinal().domain(keys).range(this.attributes.color.list);
     const z = i => d3.hcl(colorspace(keys[i]), 100, 50).rgb();
 
-    if (this.attributes.title !== '') {
-      const title = d3.select(`#${this.renderID}`).append('h3')
-        .attr('class', 'visual-title');
-      title.html(this.attributes.title);
+    let lbox = {};
+    if (this.attributes.group_by_stack !== 'No Column') {
+      const legend = g.append('g')
+        .attr('font-family', 'sans-serif')
+        .attr('font-size', `${this.attributes.font_size}pt`)
+        .attr('text-anchor', 'end')
+        .selectAll('g')
+        .data(keys.slice())
+        .enter()
+        .append('g')
+          .attr('transform', (d, i) => `translate(10,${(keys.length - i) * 1.25 * this.attributes.font_size})`);
+
+      legend.append('rect')
+        .attr('width', `${this.attributes.font_size}`)
+        .attr('height', `${this.attributes.font_size}`)
+        .attr('fill', (d, e) => z(e));
+
+      legend.append('text')
+        .attr('y', '0.5em')
+        .attr('dy', '0.25em')
+        .text(d => (d === '' ? 'NULL' : d));
+
+      lbox = legend.node().getBBox();
+      console.log(width - lbox.width);
+      legend.selectAll('rect')
+        .attr('x', (width - lbox.width) - 14);
+      legend.selectAll('text')
+        .attr('x', (width - lbox.width) - 19);
+    } else {
+      lbox = {
+        x: 0, y: 0, width: 0, height: 0,
+      };
     }
 
-    const svg = d3.select(`#${this.renderID}`).append('svg')
-      .attr('class', 'bar');
+    y.rangeRound([height, 0]);
 
-    const g = svg.append('g')
-      .attr('transform', `translate(${margin.left},${margin.top})`);
+    g.append('g')
+        .attr('class', 'axis axis--y')
+        .call(d3.axisLeft(y).ticks(10))
+      .selectAll('text')
+        .attr('text-anchor', 'end')
+        .style('font-size', `${this.attributes.font_size}pt`);
+
+    const ybox = svg.select('.axis--y').node().getBBox();
+
+    const adjWidth = width - (ybox.width + lbox.width) - 25;
+    x.rangeRound([0, adjWidth]).padding(0.1);
 
     g.append('g')
         .attr('class', 'axis axis--x')
@@ -200,13 +249,6 @@ class Bar extends Visual {
           'font-size': `${this.attributes.font_size}pt`,
           transform: `rotate(-${this.attributes.x_font_rotation}deg) translate(${this.attributes.x_font_x_offset}px,${this.attributes.x_font_y_offset}px)`,
         });
-
-    g.append('g')
-        .attr('class', 'axis axis--y')
-        .call(d3.axisLeft(y).ticks(10))
-      .selectAll('text')
-        .attr('text-anchor', 'end')
-        .style('font-size', `${this.attributes.font_size}pt`);
 
     g.append('g')
       .selectAll('g')
@@ -222,40 +264,11 @@ class Bar extends Visual {
         .attr('y', d => y(d[1]))
         .attr('height', d => y(d[0]) - y(d[1]))
         .attr('width', x.bandwidth());
-    if (this.attributes.group_by_stack !== 'No Column') {
-      const legend = g.append('g')
-        .attr('font-family', 'sans-serif')
-        .attr('font-size', `${this.attributes.font_size}pt`)
-        .attr('text-anchor', 'end')
-        .selectAll('g')
-        .data(keys.slice())
-        .enter()
-        .append('g')
-          .attr('transform', (d, i) => `translate(30,${(keys.length - i) * 1.25 * this.attributes.font_size})`);
-
-      legend.append('rect')
-        .attr('x', width - 19)
-        .attr('width', `${this.attributes.font_size}`)
-        .attr('height', `${this.attributes.font_size}`)
-        .attr('fill', (d, e) => z(e));
-
-      legend.append('text')
-        .attr('x', width - 24)
-        .attr('y', '0.5em')
-        .attr('dy', '0.25em')
-        .text(d => (d === '' ? 'NULL' : d));
-
-      const lbox = legend.node().getBBox();
-      legend.selectAll('rect')
-        .attr('x', (width + lbox.width) - 14);
-      legend.selectAll('text')
-        .attr('x', (width + lbox.width) - 19);
-    }
 
     const gbox = g.node().getBBox();
     g.attr('transform', `translate(${-gbox.x},${margin.top})`);
     svg.attr('width', gbox.width + gbox.x + 10)
-    .attr('height', gbox.height + gbox.y + 10);
+      .attr('height', gbox.height + gbox.y + 10);
   }
 }
 
