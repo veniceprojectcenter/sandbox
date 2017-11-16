@@ -3,8 +3,8 @@ import DefaultMapStyle from './helpers/DefaultMapStyle';
 import EditorGenerator from './helpers/EditorGenerator';
 
 class FilterMap extends Visual {
-  constructor(config) {
-    super(config);
+  constructor(config, renderID, renderControlsID) {
+    super(config, renderID, renderControlsID);
     this.columnOptions = null;
     this.renderData = [];
     this.map = null;
@@ -39,13 +39,13 @@ class FilterMap extends Visual {
   // render the map
   render() {
     if (this.attributes.dataFilters !== undefined && this.attributes.numericFilters !== undefined) {
-      this.renderData = this.filterCategorical(this.attributes.dataFilters, this.renderData);
+      this.renderData = this.filterCategorical(this.attributes.dataFilters, this.data);
       this.renderData = this.filterNumerical(this.attributes.numericFilters, this.renderData);
     } else {
       this.renderData = this.data;
     }
     this.map = new google.maps.Map(document.getElementById(this.renderID), {
-      center: { lat: 45.435, lng: 12.335 },
+      center: new google.maps.LatLng(45.435, 12.335),
       zoom: 14,
       styles: DefaultMapStyle,
     });

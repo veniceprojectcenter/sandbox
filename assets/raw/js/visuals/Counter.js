@@ -26,7 +26,7 @@ class Counter extends Visual {
     this.attributes.dataFilters = [];
     this.attributes.numericFilters = [];
     this.renderData = JSON.parse(JSON.stringify(this.data));
-    this.attributes.columnOptions = Object.keys(this.data[0]);
+    this.columnOptions = Object.keys(this.data[0]);
     this.renderControlsDiv = document.getElementById(this.renderControlsID);
     const catFilterDiv = document.createElement('div');
     const numFilterDiv = document.createElement('div');
@@ -159,8 +159,6 @@ class Counter extends Visual {
         this.attributes.numericFilters.push({ column: columnVal, operation: opVal, value: val });
       }
       this.renderData = this.data;
-      this.renderData = this.filterCategorical(this.attributes.dataFilters, this.renderData);
-      this.renderData = this.filterNumerical(this.attributes.numericFilters, this.renderData);
       this.render();
     });
   }
@@ -168,13 +166,19 @@ class Counter extends Visual {
   *
   */
   render() {
+    if (this.attributes.dataFilters !== undefined && this.attributes.numericFilters !== undefined) {
+      this.renderData = this.filterCategorical(this.attributes.dataFilters, this.data);
+      this.renderData = this.filterNumerical(this.attributes.numericFilters, this.renderData);
+    } else {
+      this.renderData = this.data;
+    }
     this.renderDiv = document.getElementById(this.renderID);
     this.renderDiv.innerHTML = 'Data Table:';
     this.tableDiv = document.createElement('div');
     this.renderDiv.appendChild(this.tableDiv);
     this.tableDiv.id = 'tableDiv';
-    if (this.attributes.columnOptions === null) {
-      this.attributes.columnOptions = [];
+    if (this.columnOptions === null) {
+      this.columnOptions = [];
     }
     this.displayTable();
   }

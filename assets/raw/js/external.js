@@ -8,6 +8,7 @@ import PieChartMap from './visuals/PieChartMap';
 import BubbleChart from './visuals/BubbleChart';
 import BubbleTimeline from './visuals/BubbleTimeline';
 import PathFinding from './visuals/PathFinding';
+import FilterMap from './visuals/FilterMap';
 
 function renderVisualFromConfig(defaultConfig, containerID) {
   let config = defaultConfig;
@@ -36,6 +37,9 @@ function renderVisualFromConfig(defaultConfig, containerID) {
       break;
     case 'Bubble-Chart':
       visual = new BubbleChart(config, containerID);
+      break;
+    case 'Filter-Map':
+      visual = new FilterMap(config, containerID);
       break;
     case 'Path-Finding':
       visual = new PathFinding(config, containerID);
