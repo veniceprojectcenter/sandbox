@@ -44,7 +44,7 @@ class PieChartMap extends Visual {
       this.renderChart(groupName, group, chartColumn);
     }
 
-    this.putBarChart();
+    // this.putBarChart();
   }
 
   putBarChart() {
@@ -88,18 +88,18 @@ class PieChartMap extends Visual {
 
   renderChart(groupName, group, chartColumn) {
     const chartSize = this.attributes.chart_size;
-    if (group.lat === undefined) {
+    if (group.Latitude === undefined) {
       return;
     }
 
-    group.lat -= 0.0032; // These values are used to center the chart divs
-    group.lng -= 0.0037; // to where they look like they should actually be.
+    group.Latitude -= 0.0032; // These values are used to center the chart divs
+    group.Longitude -= 0.0037; // to where they look like they should actually be.
 
     const bounds = new google.maps.LatLngBounds(
-       new google.maps.LatLng(group.lat,
-                              group.lng),
-       new google.maps.LatLng(group.lat + chartSize,
-                              group.lng + chartSize),
+       new google.maps.LatLng(group.Latitude,
+                              group.Longitude),
+       new google.maps.LatLng(group.Latitude + chartSize,
+                              group.Longitude + chartSize),
       );
 
     const renderfunction = (id) => {
@@ -138,12 +138,12 @@ class PieChartMap extends Visual {
       const group = groups[groupName];
 
       for (let j = 0; j < group.data.length; j += 1) {
-        const currLat = parseFloat(group.data[j].lat);
-        const currLng = parseFloat(group.data[j].lng);
+        const currLat = parseFloat(group.data[j].Latitude);
+        const currLng = parseFloat(group.data[j].Longitude);
         if (currLat !== 0 && currLng !== 0 &&
             currLat !== undefined && currLng !== undefined) {
-          group.lat = currLat;
-          group.lng = currLng;
+          group.Latitude = currLat;
+          group.Longitude = currLng;
           break;
         }
       }
@@ -162,8 +162,8 @@ class PieChartMap extends Visual {
       let lng = 0;
       let count = 0;
       for (let j = 0; j < group.data.length; j += 1) {
-        const currLat = parseFloat(group.data[j].lat);
-        const currLng = parseFloat(group.data[j].lng);
+        const currLat = parseFloat(group.data[j].Latitude);
+        const currLng = parseFloat(group.data[j].Longitude);
         if (currLat !== 0 && currLng !== 0) {
           lat += currLat;
           lng += currLng;
@@ -174,8 +174,8 @@ class PieChartMap extends Visual {
         lat /= count;
         lng /= count;
       }
-      group.lat = lat;
-      group.lng = lng;
+      group.Latitude = lat;
+      group.Longitude = lng;
     }
 
     return groups;
