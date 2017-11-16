@@ -1,4 +1,5 @@
 import updateBreadcrumbs from './utils';
+import Data from './visuals/helpers/Data';
 
 const visuals = [
   { name: 'Bar Chart', image: 'http://datavizproject.com/wp-content/uploads/2015/10/4-Bar-Chart-300x300.png', link: 'Bar-Chart' },
@@ -14,8 +15,15 @@ const visuals = [
   { name: 'Filter Map', image: 'http://datavizproject.com/wp-content/uploads/2017/08/DVP_101_200-56-300x300.png', link: 'Filter-Map' },
 ];
 
+async function prefetchData(route) {
+  await Data.fetchData(route[0], () => {
+    console.log('The data was prefetched!');
+  });
+}
+
 
 function renderVisualsList(route) {
+  prefetchData(route);
   updateBreadcrumbs(route);
 
   const page = document.getElementById('page');
