@@ -215,11 +215,10 @@ class Bar extends Visual {
         .text(d => (d === '' ? 'NULL' : d));
 
       lbox = legend.node().getBBox();
-      console.log(width - lbox.width);
       legend.selectAll('rect')
-        .attr('x', (width - lbox.width) - 14);
+        .attr('x', width - (0.25 * lbox.width) - this.attributes.font_size - 15);
       legend.selectAll('text')
-        .attr('x', (width - lbox.width) - 19);
+        .attr('x', width - (0.25 * lbox.width) - this.attributes.font_size - 20);
     } else {
       lbox = {
         x: 0, y: 0, width: 0, height: 0,
@@ -268,8 +267,10 @@ class Bar extends Visual {
 
     const gbox = g.node().getBBox();
     g.attr('transform', `translate(${-gbox.x},${margin.top})`);
-    svg.attr('width', gbox.width + gbox.x + 10)
-      .attr('height', gbox.height + gbox.y + 10);
+    const fontOffset = 2 * (this.attributes.font_size - 10);
+    const viewBoxWidth = gbox.width + fontOffset + gbox.x + margin.left + margin.right;
+    const viewBoxHeight = gbox.height + gbox.y + margin.top + margin.bottom;
+    svg.attr('viewBox', `0 0 ${viewBoxWidth} ${viewBoxHeight}`);
   }
 }
 
