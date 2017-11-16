@@ -179,7 +179,9 @@ class BubbleChart extends Visual {
 
     let counts = this.getGroupedListCounts(this.attributes.group_by);
     if (this.attributes.hide_empty) {
-      counts = counts.filter(d => d.key !== '' &&
+      counts = counts.filter(d =>
+      d.key !== undefined &&
+      d.key !== '' &&
        d.key.toLowerCase() !== 'null' &&
         d.key.toLowerCase() !== 'undefined');
     }

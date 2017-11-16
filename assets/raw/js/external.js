@@ -49,6 +49,7 @@ function renderVisualFromConfig(defaultConfig, containerID) {
   }
 }
 
+window.visualize = {};
 window.visualize.renderVisualFromConfig = renderVisualFromConfig;
 window.visualize.Visual = Visual;
 window.visualize.Firebase = Firebase;
