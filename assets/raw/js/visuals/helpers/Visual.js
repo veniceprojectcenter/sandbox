@@ -54,6 +54,12 @@ class Visual {
         promises.push(db.ref(`/data/${dataIDs[i]}`).once('value').then((result) => {
           const entry = result.val().data;
           entry.id = result.key;
+          const keys = Object.keys(entry);
+          for (let j = 0; j < keys.length; j += 1) {
+            if (keys[j].toLowerCase().includes('photo')) {
+              delete entry[keys[j]];
+            }
+          }
           data.push(entry);
         }));
       }
