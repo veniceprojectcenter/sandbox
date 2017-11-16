@@ -1,6 +1,7 @@
 /* eslint class-methods-use-this: ["error", { "exceptMethods": ["render", "renderControls"] }] */
 import Firebase from '../../Firebase';
 import Loader from './Loader';
+import Data from './Data';
 
 
 class Visual {
@@ -23,50 +24,22 @@ class Visual {
   }
 
   async fetchData() {
-    const loader = new Loader(this.renderID);
-    const container = document.getElementById(this.renderID);
-    if (container) {
-      loader.render();
-    }
-    if (localStorage[this.dataSet] && localStorage[`${this.dataSet}-date`] &&
-      Math.floor(new Date() - Date.parse(localStorage[`${this.dataSet}-date`])) < (1000 * 60 * 60 * 24)) {
-      this.data = JSON.parse(localStorage[this.dataSet]);
+    let loader = null;
+    let container = null;
+    if (this.renderID) {
+      loader = new Loader(this.renderID);
+      container = document.getElementById(this.renderID);
       if (container) {
-        loader.remove();
+        loader.render();
       }
-      this.onLoadData();
-    } else {
-      const data = [];
-      const db = firebase.database();
-      let dataIDs = [];
-
-      await db.ref(`/groups/${this.dataSet.replace(/-/g, ' ')}`).once('value').then((results) => {
-        const group = results.val();
-        dataIDs = group.member_list.split(',');
-      })
-      .catch((error) => {
-        Materialize.toast('Error Fetching Data', 3000);
-        console.error(error);
-      });
-
-      const promises = [];
-      for (let i = 0; i < dataIDs.length; i += 1) {
-        promises.push(db.ref(`/data/${dataIDs[i]}`).once('value').then((result) => {
-          const entry = result.val().data;
-          entry.id = result.key;
-          data.push(entry);
-        }));
-      }
-
-      await Promise.all(promises);
+    }
+    await Data.fetchData(this.dataSet, (data) => {
       this.data = data;
-      localStorage[`${this.dataSet}-date`] = new Date().toString();
-      localStorage[this.dataSet] = JSON.stringify(this.data);
       if (container) {
         loader.remove();
       }
       this.onLoadData();
-    }
+    });
   }
 
   generateConfigButton(id = 'download') {
@@ -201,7 +174,7 @@ class Visual {
         downloadLink.click();
         document.body.removeChild(downloadLink);
       } else {
-        alert('This chart type is not supported for Illustrator!');
+        Materialize.toast('This chart type is not supported for Illustrator!', 3000);
       }
       this.editmode = true;
       this.render();

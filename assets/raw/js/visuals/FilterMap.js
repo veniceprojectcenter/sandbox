@@ -53,11 +53,18 @@ class FilterMap extends Visual {
 
   // render the map
   render() {
+    if (this.attributes.dataFilters !== undefined && this.attributes.numericFilters !== undefined) {
+      this.renderData = this.filterCategorical(this.attributes.dataFilters, this.renderData);
+      this.renderData = this.filterNumerical(this.attributes.numericFilters, this.renderData);
+    } else {
+      this.renderData = this.data;
+    }
     this.map = new google.maps.Map(document.getElementById(this.renderID), {
       center: { lat: 45.435, lng: 12.335 },
       zoom: 14,
       styles: DefaultMapStyle,
     });
+    this.renderPoints();
   }
 
   renderControls() {
@@ -89,7 +96,6 @@ class FilterMap extends Visual {
       ncats.push({ value: numData[i], text: numData[i] });
     }
     const editor = new EditorGenerator(this.renderControlsDiv);
-
     // this.renderControlsDiv.append(document.createElement('br'));
     const filterLabel = document.createElement('h5');
     filterLabel.innerHTML = 'Categorical Filters';
@@ -159,7 +165,7 @@ class FilterMap extends Visual {
 
     this.renderControlsDiv.appendChild(document.createElement('br'));
     this.renderControlsDiv.appendChild(document.createElement('br'));
-    editor.createButton('submit', 'Generate Table', () => {
+    editor.createButton('submit', 'Generate Map', () => {
       this.attributes.dataFilters = [];
       this.attributes.numericFilters = [];
       const catFilters = document.getElementsByClassName('dataFilter');
@@ -198,5 +204,7 @@ class FilterMap extends Visual {
   removeFilter(buttonID) {
     buttonID.parentNode.parentNode.remove();
   }
+
+
 }
 export default FilterMap;

@@ -22,7 +22,7 @@ class Firebase {
       } else {
         firebase.auth().signInWithEmailAndPassword(email, password).catch((e) => {
           console.error(e);
-          Materialize.toast('Unable to Log In', 3000);
+          // Materialize.toast('Unable to Log In', 3000);
           if (failure) {
             failure();
           }

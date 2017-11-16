@@ -1,7 +1,7 @@
 import Loader from './visuals/helpers/Loader';
 
 function generateID(name) {
-  return name.replace(/[ ]/g, '-');
+  return name.replace(/[ ]+/g, '-');
 }
 
 function render(dataSets) {

@@ -7,7 +7,7 @@ import Counter from './visuals/Counter';
 import DefaultMap from './visuals/helpers/DefaultMap';
 import PieChartMap from './visuals/PieChartMap';
 import BubbleTimeline from './visuals/BubbleTimeline';
-import Pathfinding from './visuals/Pathfinding';
+import PathFinding from './visuals/PathFinding';
 import Bridgesnodata from './visuals/Bridgesnodata';
 import BubbleChart from './visuals/BubbleChart';
 import FilterMap from './visuals/FilterMap';
@@ -48,37 +48,37 @@ function renderEditor(route) {
     };
 
     switch (route[1]) {
-      case 'map':
+      case 'Map':
         visual = new Map(config);
         break;
-      case 'donut':
+      case 'Donut-Chart':
         visual = new Donut(config);
         break;
-      case 'bar':
+      case 'Bar-Chart':
         visual = new Bar(config);
         break;
-      case 'counter':
+      case 'Counter':
         visual = new Counter(config);
         break;
-      case 'piechartmap':
+      case 'Pie-Chart-Map':
         visual = new PieChartMap(config);
         break;
-      case 'bubble-timeline':
+      case 'Bubble-Timeline':
         visual = new BubbleTimeline(config);
         break;
-      case 'defaultmap':
+      case 'Default-Map':
         visual = new DefaultMap(config);
         break;
-      case 'pathfinding':
-        visual = new Pathfinding(config);
+      case 'Path-Finding':
+        visual = new PathFinding(config);
         break;
-      case 'bridgesnodata':
+      case 'Bridges-Without-Data':
         visual = new Bridgesnodata(config);
         break;
-      case 'bubble-chart':
+      case 'Bubble-Chart':
         visual = new BubbleChart(config);
         break;
-      case 'filtermap':
+      case 'Filter-Map':
         visual = new FilterMap(config);
         break;
       default:
