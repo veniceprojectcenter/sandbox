@@ -30,6 +30,7 @@ class PathFinding extends Visual {
       styles: DefaultMapStyle,
     });
 
+    if (this.showData) this.addDataMarkers();
     // this.addZoomListener();
 
     this.registerDefaultClickAction();
@@ -360,7 +361,7 @@ class PathFinding extends Visual {
     editor.createCheckBox('showData', 'Show data on map', false, (e) => {
       const value = e.currentTarget.checked;
       this.showData = value;
-      if (this.showData) {
+      if (value) {
         this.addDataMarkers();
       } else {
         this.clearMarkers('blue');
