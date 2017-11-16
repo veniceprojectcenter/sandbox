@@ -5,11 +5,8 @@ import EditorGenerator from './helpers/EditorGenerator';
 class FilterMap extends Visual {
   constructor(config) {
     super(config);
-
-    this.attributes.columnOptions = null;
-    this.attributes.displayColumns = [];
+    this.columnOptions = null;
     this.renderData = [];
-
     this.map = null;
     this.locations = [];
     this.openInfoWindow = null;
@@ -59,7 +56,7 @@ class FilterMap extends Visual {
     this.attributes.dataFilters = [];
     this.attributes.numericFilters = [];
     this.renderData = JSON.parse(JSON.stringify(this.data));
-    this.attributes.columnOptions = Object.keys(this.data[0]);
+    this.columnOptions = Object.keys(this.data[0]);
     this.renderControlsDiv = document.getElementById(this.renderControlsID);
     const catFilterDiv = document.createElement('div');
     const numFilterDiv = document.createElement('div');
