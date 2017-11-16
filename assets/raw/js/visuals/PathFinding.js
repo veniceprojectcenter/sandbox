@@ -232,7 +232,7 @@ class PathFinding extends Visual {
         value !== '' && value !== '0' && value !== 0) {
         sum += parseFloat(point[fieldToAggregate]);
         count += 1;
-        console.log(point[fieldToAggregate]);
+        // console.log(point[fieldToAggregate]);
       }
     }
     let average = null;
@@ -352,6 +352,11 @@ class PathFinding extends Visual {
           this.displayPointAggregation();
         }
       });
+
+    editor.createCheckBox('showPath', 'Show path bounds', false, (e) => {
+      const value = e.currentTarget.checked;
+      this.showPath = value;
+    });
   }
 }
 
