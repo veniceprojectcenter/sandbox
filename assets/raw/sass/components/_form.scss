@@ -1,0 +1,10 @@
+input {
+  &[type='color'] {
+    background: none;
+    border: 0;
+    cursor: pointer;
+    height: 40px;
+    margin-right: 10px;
+    width: 40px;
+  }
+}
