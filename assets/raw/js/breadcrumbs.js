@@ -16,10 +16,10 @@ function updateBreadcrumbs(route) {
       const breadcrumbs = document.getElementById('breadcrumbs');
       let breadcrumbString = '';
       const name = getDataSetName(dataSets, route[0]);
-      breadcrumbString += `&nbsp>&nbsp<a href="/${route[0]}/">${name}</a>`;
+      breadcrumbString += `<span class="crumb"><a href="/${route[0]}/">${name}</a></span>`;
 
       if (route.length >= 2) {
-        breadcrumbString += `&nbsp>&nbsp${route[1].replace(/-/g, ' ')}`;
+        breadcrumbString += `<span class="crumbcaret">&gt;</span><span class="crumb">${route[1].replace(/-/g, ' ')}<span>`;
       }
 
       breadcrumbs.innerHTML = breadcrumbString;
