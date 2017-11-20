@@ -46,7 +46,7 @@ class PathFinding extends Visual {
   addDataMarkers() {
     for (let i = 0; i < this.data.length; i += 1) {
       const point = this.data[i];
-      this.map.addCircle({ lat: parseFloat(point.Latitude), lng: parseFloat(point.Longitude) }, 'blue', 0.5);
+      this.map.addCircle({ lat: parseFloat(point.lat), lng: parseFloat(point.lng) }, 'blue', 0.5);
     }
   }
 
@@ -125,7 +125,7 @@ class PathFinding extends Visual {
       pointsOnWholePath = pointsOnWholePath.concat(pointsOnPath);
 
       pointsOnPath.forEach((point) => {
-        const center = { lat: parseFloat(point.Latitude), lng: parseFloat(point.Longitude) };
+        const center = { lat: parseFloat(point.lat), lng: parseFloat(point.lng) };
         this.map.removeCircleAtPoint(center);
         this.map.addCircle(center, 'red', 1, 7);
       });
@@ -150,8 +150,8 @@ class PathFinding extends Visual {
 
     const pointsOnPath = [];
     for (let i = 0; i < this.data.length; i += 1) {
-      const pointX = this.data[i].Longitude;
-      const pointY = this.data[i].Latitude;
+      const pointX = this.data[i].lng;
+      const pointY = this.data[i].lat;
 
       const pathLineDistance = PathFinding.distanceToLine(pointX, pointY, x1, y1, slope);
       const bisectorDistance =
