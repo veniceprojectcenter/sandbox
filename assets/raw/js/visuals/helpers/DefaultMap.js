@@ -14,7 +14,7 @@ class DefaultMap extends Visual {
 
     this.map = null;
     this.locations = [];
-    this.openInfoWindow = null;
+    this.n = 0;
   }
 
   onLoadData() {
@@ -37,12 +37,12 @@ class DefaultMap extends Visual {
     });
 
     this.registerDefaultClickAction();
+    this.addZoomListener();
   }
 
   registerDefaultClickAction() {
     google.maps.event.addListener(this.map, 'click', (event) => {
       console.log(`Lat: ${event.latLng.lat()}| Lng: ${event.latLng.lng()}`);
-      this.addMarker(event.latLng.lat(), event.latLng.lng());
       this.addMarker(event.latLng.lat(), event.latLng.lng());
 
       const bounds = new google.maps.LatLngBounds(
@@ -71,20 +71,19 @@ class DefaultMap extends Visual {
         this.currentId += 1;
       }
 
-      new DivOverlay(bounds, `overlay${this.currentId}`, this.map, renderfunction);
+      // new DivOverlay(bounds, `overlay${this.currentId}`, this.map, renderfunction);
     });
   }
 
   addMarker(lat, lng) {
     if (lat && lng) {
       const icon = {
-        path: 'M-20,0a5,5 0 1,0 10,0a5,5 0 1,0 -10,0',
-        fillColor: 'blue',
-        fillOpacity: 0.6,
-        anchor: new google.maps.Point(0, 0),
-        strokeWeight: 0,
-        scale: 1,
+        url: 'https://cdn.shopify.com/s/files/1/1061/1924/files/Emoji_Icon_-_Happy.png?11214052019865124406',
+        scaledSize: new google.maps.Size(100, 100),
+        anchor: new google.maps.Point(50, 50),
+        zIndex: this.n,
       };
+      this.n += 1;
       const marker = new google.maps.Marker({
         position: {
           lat: parseFloat(lat),
@@ -92,14 +91,21 @@ class DefaultMap extends Visual {
         },
         map: this.map,
         title: '',
-        animation: google.maps.Animation.DROP,
         icon,
       });
 
-      this.locations.push({
-        marker,
-      });
+      this.locations.push(marker);
     }
+  }
+
+  addZoomListener() {
+    google.maps.event.addListener(this.map, 'zoom_changed', () => {
+      this.locations.forEach((marker) => {
+        marker.setMap(null);
+        marker.setIcon(marker.icon);
+        marker.setMap(this.map);
+      });
+    });
   }
 
   clearMarkers() {

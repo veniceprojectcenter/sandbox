@@ -53,7 +53,7 @@ class CategoryMap extends Visual {
       group.forEach((point) => {
         const lat = parseFloat(point.lat);
         const lng = parseFloat(point.lng);
-        this.map.addCircle({ lat, lng }, color, 0.5, 15);
+        this.map.addCircle({ lat, lng }, color, 0.5, 25);
       });
     }
   }
