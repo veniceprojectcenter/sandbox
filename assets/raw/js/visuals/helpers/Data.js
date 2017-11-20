@@ -21,15 +21,29 @@ class Data {
       const promises = [];
       for (let i = 0; i < dataIDs.length; i += 1) {
         promises.push(db.ref(`/data/${dataIDs[i]}`).once('value').then((result) => {
-          const entry = result.val().data;
-          entry.id = result.key;
-          const keys = Object.keys(entry);
-          for (let j = 0; j < keys.length; j += 1) {
-            if (keys[j].toLowerCase().includes('photo')) {
-              delete entry[keys[j]];
+          const entry = result.val();
+          const entryData = entry.data;
+          const birthID = entry.birth_certificate;
+          entryData.id = result.key;
+          if (entryData.id !== 'undefined') {
+            if (birthID.lat && !entryData.lat) {
+              entryData.lat = birthID.lat;
             }
+
+            if (birthID.lon && !entryData.lng) {
+              entryData.lng = birthID.lon;
+            }
+
+            const keys = Object.keys(entryData);
+            for (let j = 0; j < keys.length; j += 1) {
+              if (keys[j].toLowerCase().includes('photo')) {
+                delete entryData[keys[j]];
+              }
+            }
+
+            console.log(birthID);
+            data.push(entryData);
           }
-          data.push(entry);
         }));
       }
 
