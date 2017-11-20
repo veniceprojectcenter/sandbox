@@ -41,7 +41,6 @@ class Data {
               }
             }
 
-            console.log(birthID);
             data.push(entryData);
           }
         }));

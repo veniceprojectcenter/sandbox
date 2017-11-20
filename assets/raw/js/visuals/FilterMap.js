@@ -42,7 +42,7 @@ class FilterMap extends Visual {
   renderPoints(renderData, color, shape) {
     for (let i = 0; i < renderData.length; i += 1) {
       if (renderData[i] !== null && renderData[i] !== undefined) {
-        this.addMarker(renderData[i].Latitude, renderData[i].Longitude, color, shape);
+        this.addMarker(renderData[i].lat, renderData[i].lng, color, shape);
       }
     }
   }
