@@ -106,6 +106,7 @@ class CategoryMap extends Visual {
      (event) => {
        const value = $(event.currentTarget).val();
        this.attributes.color_by = value;
+       this.map.clearCircles();
        this.drawMarkers();
      });
   }
