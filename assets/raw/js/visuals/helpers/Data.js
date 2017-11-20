@@ -49,7 +49,41 @@ class Data {
       await Promise.all(promises);
       localStorage[`${dataSet}-date`] = new Date().toString();
       localStorage[dataSet] = JSON.stringify(data);
-      callback(data);
+      if (callback) {
+        callback(data);
+      }
+    }
+  }
+
+  static async fetchDataSets(callback) {
+    if (localStorage.dataSets && localStorage.dataSetsDate &&
+      Math.floor(new Date() - Date.parse(localStorage.dataSetsDate)) < (1000 * 60 * 60 * 24)) {
+      const dataSets = JSON.parse(localStorage.dataSets);
+      if (callback) {
+        callback(dataSets);
+      }
+    } else {
+      const dataSets = [];
+      const db = firebase.database();
+      await db.ref('/groups').once('value').then((querySnapshot) => {
+        querySnapshot.forEach((doc) => {
+          const entry = {};
+          const value = doc.val();
+          entry.id = doc.key.replace(/[ ]+/g, '-');
+          entry.name = value.name || doc.key;
+          entry.description = value.description || `A data set containing information on ${entry.name}`;
+          dataSets.push(entry);
+        });
+
+        localStorage.dataSetsDate = new Date().toString();
+        localStorage.dataSets = JSON.stringify(dataSets);
+        if (callback) {
+          callback(dataSets);
+        }
+      })
+      .catch((error) => {
+        console.error(error);
+      });
     }
   }
 }

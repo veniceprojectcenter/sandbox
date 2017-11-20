@@ -1,8 +1,5 @@
 import Loader from './visuals/helpers/Loader';
-
-function generateID(name) {
-  return name.replace(/[ ]+/g, '-');
-}
+import Data from './visuals/helpers/Data';
 
 function render(dataSets) {
   const page = document.getElementById('page');
@@ -43,33 +40,10 @@ function render(dataSets) {
 async function renderDatasetList() {
   const loader = new Loader('page');
   loader.render();
-  if (localStorage.dataSets && localStorage.dataSetsDate &&
-    Math.floor(new Date() - Date.parse(localStorage.dataSetsDate)) < (1000 * 60 * 60 * 24)) {
-    const dataSets = JSON.parse(localStorage.dataSets);
+  Data.fetchDataSets((dataSets) => {
     loader.remove();
     render(dataSets);
-  } else {
-    const dataSets = [];
-    const db = firebase.database();
-    await db.ref('/groups').once('value').then((querySnapshot) => {
-      querySnapshot.forEach((doc) => {
-        // const data = doc.val();
-        const entry = {};
-        entry.id = generateID(doc.key);
-        entry.name = doc.key;
-        entry.description = 'A data set';
-        dataSets.push(entry);
-      });
-
-      localStorage.dataSetsDate = new Date().toString();
-      localStorage.dataSets = JSON.stringify(dataSets);
-      loader.remove();
-      render(dataSets);
-    })
-    .catch((error) => {
-      console.error(error);
-    });
-  }
+  });
 }
 
 export default renderDatasetList;

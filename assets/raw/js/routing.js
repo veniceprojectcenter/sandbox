@@ -1,3 +1,4 @@
+import updateBreadcrumbs from './breadcrumbs';
 import renderDatasetList from './dataset_list';
 import renderVisualsList from './visuals_list';
 import renderEditor from './editor';
@@ -14,6 +15,8 @@ function routing() {
       route.push(split[i]);
     }
   }
+
+  updateBreadcrumbs(route);
 
   switch (route.length) {
     case 0:
