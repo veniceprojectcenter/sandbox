@@ -17,13 +17,27 @@ class CategoryMap extends Visual {
     });
   }
 
+  static getRandomColor() {
+    const letters = '0123456789ABCDEF';
+    let color = '#';
+    for (let i = 0; i < 6; i += 1) {
+      color += letters[Math.floor(Math.random() * 16)];
+    }
+    return color;
+  }
+
   getNextColor() {
     if (this.colorNumber === undefined) {
       this.colorNumber = 0;
     }
+    if (this.colors === undefined) {
+      this.colors = [];
+      for (let i = 0; i < 100; i += 1) {
+        this.colors.push(this.constructor.getRandomColor());
+      }
+    }
 
-    const colors = ['red', 'blue', 'yellow', 'orange'];
-    const returnColor = colors[this.colorNumber];
+    const returnColor = this.colors[this.colorNumber];
     this.colorNumber += 1;
 
     return returnColor;
