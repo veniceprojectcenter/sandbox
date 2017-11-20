@@ -1,6 +1,5 @@
-import updateBreadcrumbs from './utils';
 import Visual from './visuals/helpers/Visual';
-import Map from './visuals/Map';
+import CategoryMap from './visuals/CategoryMap';
 import Donut from './visuals/Donut';
 import Bar from './visuals/Bar';
 import Counter from './visuals/Counter';
@@ -12,8 +11,6 @@ import BubbleChart from './visuals/BubbleChart';
 import FilterMap from './visuals/FilterMap';
 
 function renderEditor(route) {
-  updateBreadcrumbs(route);
-
   const rowContainer = document.createElement('div');
   rowContainer.className = 'row';
 
@@ -47,8 +44,8 @@ function renderEditor(route) {
     };
 
     switch (route[1]) {
-      case 'Map':
-        visual = new Map(config);
+      case 'Category-Map':
+        visual = new CategoryMap(config);
         break;
       case 'Donut-Chart':
         visual = new Donut(config);

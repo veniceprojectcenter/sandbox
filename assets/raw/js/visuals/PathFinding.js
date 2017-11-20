@@ -1,18 +1,15 @@
 import Visual from './helpers/Visual';
-import DefaultMapStyle from './helpers/DefaultMapStyle';
+import Map from './helpers/Map';
 import EditorGenerator from './helpers/EditorGenerator';
 
 class PathFinding extends Visual {
   constructor(config) {
     super(config);
 
-    this.map = null;
-    this.locations = [];
-    this.openInfoWindow = null;
+    this.map = new Map();
 
     this.DISTANCE_THRESHOLD_PATH = 0.00007;
     this.DEBUG = false;
-    this.rectangles = [];
     this.points = [];
     this.savedPoints = { lat1: 0, lng1: 0, lat2: 0, lng2: 0 };
   }
@@ -27,14 +24,11 @@ class PathFinding extends Visual {
   render() {
     const renderDiv = document.getElementById(this.renderID);
     const mapDiv = document.createElement('div');
+    mapDiv.id = 'mapDiv';
     mapDiv.className = 'map-container';
     renderDiv.appendChild(mapDiv);
 
-    this.map = new google.maps.Map(mapDiv, {
-      center: { lat: 45.435, lng: 12.335 },
-      zoom: 14,
-      styles: DefaultMapStyle,
-    });
+    this.map.render(mapDiv.id);
 
     const text = document.createElement('p');
     text.id = 'infoText';
@@ -44,33 +38,23 @@ class PathFinding extends Visual {
 
     if (this.showData) this.addDataMarkers();
 
-    this.registerDefaultClickAction();
-  }
-
-  resizeCircles(r) {
-    this.locations.forEach((marker) => {
-      marker.setRadius(r);
+    this.map.registerClickAction((event) => {
+      this.clickAction(event);
     });
   }
 
   addDataMarkers() {
     for (let i = 0; i < this.data.length; i += 1) {
       const point = this.data[i];
-      this.addCircle({ lat: parseFloat(point.Latitude), lng: parseFloat(point.Longitude) }, 'blue', 0.5);
+      this.map.addCircle({ lat: parseFloat(point.lat), lng: parseFloat(point.lng) }, 'blue', 0.5);
     }
-  }
-
-  registerDefaultClickAction() {
-    google.maps.event.addListener(this.map, 'click', (event) => {
-      this.clickAction(event);
-    });
   }
 
   async clickAction(event) {
     // console.log(`Lat: ${event.latLng.lat()}| Lng: ${event.latLng.lng()}`);
 
     if (this.numTimesClicked == null) {
-      this.addCircle({ lat: event.latLng.lat(), lng: event.latLng.lng() }, 'green', 1);
+      this.map.addCircle({ lat: event.latLng.lat(), lng: event.latLng.lng() }, 'green', 1);
       this.lastLat = event.latLng.lat();
       this.lastLng = event.latLng.lng();
       this.numTimesClicked = 1;
@@ -78,15 +62,15 @@ class PathFinding extends Visual {
     } else if (this.numTimesClicked !== null) {
       this.numTimesClicked += 1;
       if (this.numTimesClicked % 2 === 1) { // If numTimesClicked is odd
-        this.clearMarkers('green');
-        this.clearMarkers('red');
-        this.clearRectangles();
+        this.map.clearCirclesOfColor('green');
+        this.map.clearCirclesOfColor('red');
+        this.map.clearPolylines();
         this.lastLat = event.latLng.lat();
         this.lastLng = event.latLng.lng();
-        this.addCircle({ lat: event.latLng.lat(), lng: event.latLng.lng() }, 'green', 1);
+        this.map.addCircle({ lat: event.latLng.lat(), lng: event.latLng.lng() }, 'green', 1);
         return;
       }
-      this.addCircle({ lat: event.latLng.lat(), lng: event.latLng.lng() }, 'green', 1);
+      this.map.addCircle({ lat: event.latLng.lat(), lng: event.latLng.lng() }, 'green', 1);
     }
 
     this.markRoute(this.lastLat, this.lastLng, event.latLng.lat(), event.latLng.lng());
@@ -130,7 +114,7 @@ class PathFinding extends Visual {
   getBridgePath(path) {
     path.push({ lat: this.lastLat, lng: this.lastLng });
     path.unshift(this.startPoint);
-    this.addPolyline(path, 'green', 6);
+    this.map.addPolyline(path, 'green', 6);
 
     let pointsOnWholePath = [];
     for (let i = 0; i < path.length - 1; i += 1) {
@@ -141,9 +125,9 @@ class PathFinding extends Visual {
       pointsOnWholePath = pointsOnWholePath.concat(pointsOnPath);
 
       pointsOnPath.forEach((point) => {
-        const center = { lat: parseFloat(point.Latitude), lng: parseFloat(point.Longitude) };
-        this.removeCircle(center);
-        this.addCircle(center, 'red', 1, 7);
+        const center = { lat: parseFloat(point.lat), lng: parseFloat(point.lng) };
+        this.map.removeCircleAtPoint(center);
+        this.map.addCircle(center, 'red', 1, 7);
       });
     }
 
@@ -166,8 +150,8 @@ class PathFinding extends Visual {
 
     const pointsOnPath = [];
     for (let i = 0; i < this.data.length; i += 1) {
-      const pointX = this.data[i].Longitude;
-      const pointY = this.data[i].Latitude;
+      const pointX = this.data[i].lng;
+      const pointY = this.data[i].lat;
 
       const pathLineDistance = PathFinding.distanceToLine(pointX, pointY, x1, y1, slope);
       const bisectorDistance =
@@ -231,26 +215,6 @@ class PathFinding extends Visual {
     document.getElementById('infoText').innerHTML = infoText;
   }
 
-  // Removes all markers from the map of the given color
-  clearMarkers(color) {
-    for (let i = 0; i < this.locations.length; i += 1) {
-      const marker = this.locations[i];
-      if (marker.fillColor === color) {
-        marker.setMap(null);
-      }
-    }
-  }
-
-  removeCircle(center) {
-    for (let i = 0; i < this.locations.length; i += 1) {
-      const circle = this.locations[i];
-      if (circle.center.lat() === center.lat &&
-      circle.center.lng() === center.lng) {
-        circle.setMap(null);
-      }
-    }
-  }
-
   drawRectangle(a, b, slope, px, py) {
     const h = Math.sqrt((b ** 2) + (a ** 2));
     const smallTheta = Math.atan(a / b);
@@ -267,49 +231,7 @@ class PathFinding extends Visual {
       //{ lat: py + (h * Math.sin(theta)), lng: px + (h * Math.cos(theta)) },
     ];
 
-    if (this.showPath) this.addPolyline(points, 'red', 2);
-  }
-
-  clearRectangles() {
-    this.rectangles.forEach((rectangle) => {
-      rectangle.setMap(null);
-    });
-    this.rectangles = [];
-  }
-
-  addCircle(point, color, opacity, r = 15) {
-    const circle = new google.maps.Circle({
-      strokeColor: color,
-      strokeOpacity: opacity,
-      strokeWeight: 2,
-      fillColor: color,
-      fillOpacity: opacity,
-      map: this.map,
-      center: point,
-      radius: r,
-    });
-
-    this.locations.push(circle);
-  }
-
-  addPolyline(points, color, weight) {
-    const polyline = new google.maps.Polyline({
-      path: points,
-      geodesic: true,
-      strokeColor: color,
-      strokeOpacity: 1.0,
-      strokeWeight: weight,
-    });
-
-    polyline.setMap(this.map);
-    this.rectangles.push(polyline);
-  }
-
-  clearAllMarkers() {
-    this.locations.forEach((marker) => {
-      marker.setMap(null);
-    });
-    this.locations = [];
+    if (this.showPath) this.map.addPolyline(points, 'red', 2);
   }
 
   renderControls() {
@@ -344,9 +266,9 @@ class PathFinding extends Visual {
     /* editor.createCheckBox('showPath', 'Show path bounds', false, (e) => {
       const value = e.currentTarget.checked;
       this.showPath = value;
-      this.clearMarkers('green');
-      this.clearMarkers('red');
-      this.clearRectangles();
+      this.map.clearCirclesOfColor('green');
+      this.map.clearCirclesOfColor('red');
+      this.map.clearPolylines();
       this.markRoute(this.savedPoints.lat1, this.savedPoints.lng1,
         this.savedPoints.lat2, this.savedPoints.lng2);
     }); */
@@ -357,7 +279,7 @@ class PathFinding extends Visual {
       if (value) {
         this.addDataMarkers();
       } else {
-        this.clearMarkers('blue');
+        this.map.clearCirclesOfColor('blue');
       }
     });
   }

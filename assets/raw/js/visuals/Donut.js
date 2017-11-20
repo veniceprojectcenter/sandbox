@@ -6,7 +6,7 @@ class Donut extends Visual {
   constructor(config, renderID, renderControlsID) {
     super(config, renderID, renderControlsID);
     this.currentEditKey = null;
-    this.useTransitions = false;
+    this.useTransitions = true;
   }
 
   onLoadData() {

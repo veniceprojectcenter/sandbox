@@ -43,8 +43,8 @@ class EditorGenerator {
     $(`#${id}-select`).change(onOptionChanged);
   }
 
-  createDataFilter(id, column, onColumn, remove) {
-    const context = { id, column };
+  createDataFilter(id, column, className, onColumn, remove) {
+    const context = { id, column, className };
     this.handlebarsWithContext('data-filter', context);
     $(`#${id}-columnSelect`).val(0).material_select();
     $(`#${id}-operations`).val(1).material_select();
@@ -52,8 +52,8 @@ class EditorGenerator {
     $(`#${id}-columnSelect`).on('change', onColumn);
     $(`#${id}-remove`).on('click', remove);
   }
-  createNumericFilter(id, column, remove) {
-    const context = { id, column };
+  createNumericFilter(id, column, className, remove) {
+    const context = { id, column, className };
     this.handlebarsWithContext('numeric-filter', context);
     $(`#${id}-columnSelect`).val(0).material_select();
     $(`#${id}-operations`).val(1).material_select();
@@ -79,6 +79,12 @@ class EditorGenerator {
 
   createRangeSlider() {
 
+  }
+
+  createFileUpload(id, title, onChange) {
+    const context = { id, title };
+    this.handlebarsWithContext('file-upload', context);
+    $(`#${id}-input`).on('change', onChange);
   }
 
   createHeader(text) {

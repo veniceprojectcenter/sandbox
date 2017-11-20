@@ -1,4 +1,32 @@
 footer {
   margin-bottom: 25px;
   text-align: center;
+
+  %button {
+    background: none;
+    border: 0;
+    display: inline-block;
+    margin: 0;
+    outline: none;
+    padding: 0;
+  }
+
+  button {
+    @extend %button;
+
+    color: $primary;
+
+    &:focus {
+      @extend %button;
+
+      color: $primary;
+    }
+
+    &:hover,
+    &:active {
+      @extend %button;
+
+      color: $secondary;
+    }
+  }
 }

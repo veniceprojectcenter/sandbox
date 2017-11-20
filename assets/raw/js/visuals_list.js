@@ -1,11 +1,10 @@
-import updateBreadcrumbs from './utils';
 import Data from './visuals/helpers/Data';
 
 const visuals = [
   { name: 'Bar Chart', image: 'http://datavizproject.com/wp-content/uploads/2015/10/4-Bar-Chart-300x300.png', link: 'Bar-Chart' },
   { name: 'Donut Chart', image: 'http://datavizproject.com/wp-content/uploads/2015/10/3-Donut-Chart-300x300.png', link: 'Donut-Chart' },
   { name: 'Bubble Chart', image: 'http://datavizproject.com/wp-content/uploads/2016/06/DVP_1_100-67.png', link: 'Bubble-Chart' },
-  { name: 'Map', image: 'http://datavizproject.com/wp-content/uploads/2017/08/DVP_101_200-56-300x300.png', link: 'Map' },
+  { name: 'Category Map', image: 'http://datavizproject.com/wp-content/uploads/2017/08/DVP_101_200-56-300x300.png', link: 'Category-Map' },
   { name: 'Counter', image: 'http://datavizproject.com/wp-content/uploads/2016/01/DVP_101_200-17-300x300.png', link: 'Counter' },
   { name: 'Artifact Pathfinding', image: 'http://datavizproject.com/wp-content/uploads/2016/06/DVP_1_100-78-300x300.png', link: 'Path-Finding' },
   // { name: 'Isochrone Map', image: 'http://datavizproject.com/wp-content/uploads/2015/10/DVP-88-300x300.png', link: 'Isochrone' },
@@ -23,7 +22,6 @@ async function prefetchData(route) {
 
 function renderVisualsList(route) {
   prefetchData(route);
-  updateBreadcrumbs(route);
 
   const page = document.getElementById('page');
   page.classList.remove('container-fluid');

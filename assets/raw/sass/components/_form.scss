@@ -1,0 +1,19 @@
+input {
+  &[type='color'] {
+    background: none;
+    border: 0;
+    cursor: pointer;
+    height: 40px;
+    margin-right: 10px;
+    padding: 0;
+    width: 40px;
+
+    &.colorpicker-color {
+      vertical-align: bottom;
+    }
+  }
+
+  &.colorpicker-input {
+    max-width: calc(100% - 54px);
+  }
+}

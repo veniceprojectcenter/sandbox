@@ -1,6 +1,7 @@
 import Visual from './visuals/helpers/Visual';
 import Firebase from './Firebase';
-import Map from './visuals/Map';
+import Data from './visuals/helpers/Data';
+import CategoryMap from './visuals/CategoryMap';
 import Donut from './visuals/Donut';
 import Bar from './visuals/Bar';
 import Counter from './visuals/Counter';
@@ -17,8 +18,8 @@ function renderVisualFromConfig(defaultConfig, containerID) {
   }
   let visual = null;
   switch (config.type) {
-    case 'Map':
-      visual = new Map(config, containerID);
+    case 'Category-Map':
+      visual = new CategoryMap(config, containerID);
       break;
     case 'Donut-Chart':
       visual = new Donut(config, containerID);
@@ -53,7 +54,17 @@ function renderVisualFromConfig(defaultConfig, containerID) {
   }
 }
 
+async function getDataSetList() {
+  let list = [];
+  await Data.fetchDataSets((dataSets) => {
+    list = dataSets;
+  });
+
+  return list;
+}
+
 window.visualize = {};
 window.visualize.renderVisualFromConfig = renderVisualFromConfig;
 window.visualize.Visual = Visual;
 window.visualize.Firebase = Firebase;
+window.visualize.getDataSetList = getDataSetList;
