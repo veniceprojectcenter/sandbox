@@ -28,10 +28,10 @@ class FilterMap extends Visual {
   }
 
   // render the data points on the map
-  renderPoints(renderData) {
+  renderPoints(renderData, color) {
     for (let i = 0; i < renderData.length; i += 1) {
       if (renderData[i] !== null && renderData[i] !== undefined) {
-        this.addMarker(renderData[i].Latitude, renderData[i].Longitude);
+        this.addMarker(renderData[i].Latitude, renderData[i].Longitude, color);
       }
     }
   }
@@ -51,7 +51,7 @@ class FilterMap extends Visual {
         && filters[i].numeric !== undefined) {
         renderData[i] = this.filterCategorical(filters[i].categorical, this.data);
         renderData[i] = this.filterNumerical(filters[i].numeric, renderData[i]);
-        this.renderPoints(renderData[i]);
+        this.renderPoints(renderData[i], filters[i].color);
       }
     }
   }
@@ -69,7 +69,10 @@ class FilterMap extends Visual {
     ul.appendChild(li);
     let filterHead = document.createElement('div');
     filterHead.classList.add('collapsible-header');
-    filterHead.innerHTML = 'Filter';
+    let headEditor = new EditorGenerator(filterHead);
+    headEditor.createColorField('color0', 'Series 1', '#ff0000', () => {
+
+    });
     li.appendChild(filterHead);
     let filterDiv = document.createElement('div');
     filterDiv.classList.add('collapsible-body');
@@ -81,12 +84,16 @@ class FilterMap extends Visual {
       ul.appendChild(li);
       filterHead = document.createElement('div');
       filterHead.classList.add('collapsible-header');
-      filterHead.innerHTML = 'Filter';
+      headEditor = new EditorGenerator(filterHead);
+      seriesNumber += 1;
+      headEditor.createColorField(`color${seriesNumber}`, `Series ${seriesNumber + 1}`, '#ff0000', () => {
+
+      });
       li.appendChild(filterHead);
       filterDiv = document.createElement('div');
       filterDiv.classList.add('collapsible-body');
       li.appendChild(filterDiv);
-      seriesNumber += 1;
+
       this.renderFilter(filterDiv, seriesNumber);
     });
     editor.createButton('submit', 'Generate Map', () => {
@@ -119,7 +126,11 @@ class FilterMap extends Visual {
           const val = $(filter.children[2].children[0]).val();
           numericFilters.push({ column: columnVal, operation: opVal, value: val });
         }
-        this.attributes.filters[k] = { numeric: numericFilters, categorical: dataFilters };
+
+        const theColor = $(document.getElementById(`color${k}-field`));
+        this.attributes.filters[k] = { color: theColor.val(),
+          numeric: numericFilters,
+          categorical: dataFilters };
       }
       this.render();
     });
