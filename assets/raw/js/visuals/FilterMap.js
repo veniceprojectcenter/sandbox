@@ -1,14 +1,12 @@
 import Visual from './helpers/Visual';
-import DefaultMapStyle from './helpers/DefaultMapStyle';
+import Map from './helpers/Map';
 import EditorGenerator from './helpers/EditorGenerator';
 
 class FilterMap extends Visual {
   constructor(config, renderID, renderControlsID) {
     super(config, renderID, renderControlsID);
     this.columnOptions = null;
-    this.map = null;
-    this.locations = [];
-    this.openInfoWindow = null;
+    this.map = new Map();
     this.attributes.filters = [];
     this.shapes = [{ value: 'circle', text: 'circle' }, { value: 'triangle', text: 'triangle' }];
   }
@@ -16,16 +14,7 @@ class FilterMap extends Visual {
   addMarker(lat, lng, color = 'blue', shapeType = 'triangle', opacity = 0.5, r = 15) {
     let shape = null;
     if (shapeType === 'circle') {
-      shape = new google.maps.Circle({
-        strokeColor: color,
-        strokeOpacity: opacity,
-        strokeWeight: 2,
-        fillColor: color,
-        fillOpacity: opacity,
-        map: this.map,
-        center: { lat: parseFloat(lat), lng: parseFloat(lng) },
-        radius: r,
-      });
+      this.map.addCircle({ lat: parseFloat(lat), lng: parseFloat(lng) }, color, opacity, r);
     }
     if (shapeType === 'triangle') {
       const myLat = parseFloat(lat);
@@ -43,10 +32,10 @@ class FilterMap extends Visual {
         strokeWeight: 2,
         fillColor: color,
         fillOpacity: opacity,
-        map: this.map,
+        map: this.map.map,
       });
+      this.map.polylines.push(shape);
     }
-    this.locations.push(shape);
   }
 
   // render the data points on the map
@@ -63,11 +52,8 @@ class FilterMap extends Visual {
     const filters = this.attributes.filters;
     const renderData = [];
 
-    this.map = new google.maps.Map(document.getElementById(this.renderID), {
-      center: new google.maps.LatLng(45.435, 12.335),
-      zoom: 14,
-      styles: DefaultMapStyle,
-    });
+    this.map.render(this.renderID);
+
     for (let i = 0; i < filters.length; i += 1) {
       if (filters[i] !== undefined && filters[i].categorical !== undefined
         && filters[i].numeric !== undefined) {

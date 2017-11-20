@@ -52,7 +52,7 @@ class Map {
       path: points,
       geodesic: true,
       strokeColor: color,
-      strokeOpacity: 1.0,
+      strokeOpacity: 1,
       strokeWeight: weight,
     });
 
