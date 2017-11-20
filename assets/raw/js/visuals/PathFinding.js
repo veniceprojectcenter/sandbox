@@ -266,9 +266,9 @@ class PathFinding extends Visual {
     /* editor.createCheckBox('showPath', 'Show path bounds', false, (e) => {
       const value = e.currentTarget.checked;
       this.showPath = value;
-      this.clearMarkers('green');
-      this.clearMarkers('red');
-      this.clearRectangles();
+      this.map.clearCirclesOfColor('green');
+      this.map.clearCirclesOfColor('red');
+      this.map.clearPolylines();
       this.markRoute(this.savedPoints.lat1, this.savedPoints.lng1,
         this.savedPoints.lat2, this.savedPoints.lng2);
     }); */
