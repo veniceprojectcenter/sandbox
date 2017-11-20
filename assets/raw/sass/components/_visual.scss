@@ -6,15 +6,17 @@
 }
 
 .leftrightwrapper {
-  margin: 0px 0px 15px 0px;
-  >label {
+  margin: 0 0 15px;
+
+  > label {
     display: block;
   }
 }
 
 .color-wrapper {
   margin-bottom: 10px;
-  >input[type="text"] {
-    margin-bottom: 0px;
+
+  > input[type='text'] {
+    margin-bottom: 0;
   }
 }
