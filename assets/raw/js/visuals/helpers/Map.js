@@ -1,123 +1,83 @@
-import Visual from './Visual';
 import DefaultMapStyle from './DefaultMapStyle';
 
 /* This file is to be used as a default starting point for new map visualizations
  * that feature adding divs
 */
 
-class Map extends Visual {
-  constructor(config) {
-    super(config);
-
+class Map {
+  constructor() {
     this.map = null;
-    this.locations = [];
-    this.openInfoWindow = null;
+    this.circles = [];
+    this.polylines = [];
   }
 
-  onLoadData() {
-    this.applyDefaultAttributes({
-      title: '',
-    });
-
-    const columnNames = Object.keys(this.data[0]);
-    const selections = [columnNames[52]];
-    const groups = Visual.groupByMultiple(selections, this.data);
-
-    console.log(groups);
-  }
-
-  render() {
-    this.map = new google.maps.Map(document.getElementById(this.renderID), {
+  render(containerID) {
+    this.map = new google.maps.Map(document.getElementById(containerID), {
       center: { lat: 45.435, lng: 12.335 },
       zoom: 14,
       styles: DefaultMapStyle,
     });
-
-    // this.registerDefaultClickAction();
   }
 
-  registerDefaultClickAction() {
-    google.maps.event.addListener(this.map, 'click', (event) => {
-      console.log(`Lat: ${event.latLng.lat()}| Lng: ${event.latLng.lng()}`);
-      this.addMarker(event.latLng.lat(), event.latLng.lng());
-      this.addMarker(event.latLng.lat(), event.latLng.lng());
+  registerClickAction(clickFunction) {
+    google.maps.event.addListener(this.map, 'click', clickFunction);
+  }
 
-      const bounds = new google.maps.LatLngBounds(
-       new google.maps.LatLng(event.latLng.lat(),
-                              event.latLng.lng()),
-       new google.maps.LatLng(event.latLng.lat() + 0.01,
-                              event.latLng.lng() + 0.01),
-      );
+  addCircle(point, color, opacity, r = 15) {
+    const circle = new google.maps.Circle({
+      strokeColor: color,
+      strokeOpacity: opacity,
+      strokeWeight: 2,
+      fillColor: color,
+      fillOpacity: opacity,
+      map: this.map,
+      center: point,
+      radius: r,
+    });
 
-      const renderfunction = (id) => {
-        const config = {
-          dataSet: this.dataSet,
-          type: 'donut',
-          attributes: {},
-        };
+    this.circles.push(circle);
+  }
 
-        const donutVisual = new Donut(config);
-        donutVisual.loadStaticData(this.data);
-        donutVisual.renderID = id;
-        donutVisual.render();
-      };
-
-      if (this.currentId == null) {
-        this.currentId = 1;
-      } else {
-        this.currentId += 1;
+  clearCirclesOfColor(color) {
+    for (let i = 0; i < this.circles.length; i += 1) {
+      const circle = this.circles[i];
+      if (circle.fillColor === color) {
+        circle.setMap(null);
       }
-
-      new DivOverlay(bounds, `overlay${this.currentId}`, this.map, renderfunction);
-    });
-  }
-
-  addMarker(lat, lng) {
-    if (lat && lng) {
-      const icon = {
-        path: 'M-20,0a5,5 0 1,0 10,0a5,5 0 1,0 -10,0',
-        fillColor: 'blue',
-        fillOpacity: 0.6,
-        anchor: new google.maps.Point(0, 0),
-        strokeWeight: 0,
-        scale: 1,
-      };
-      const marker = new google.maps.Marker({
-        position: {
-          lat: parseFloat(lat),
-          lng: parseFloat(lng),
-        },
-        map: this.map,
-        title: '',
-        animation: google.maps.Animation.DROP,
-        icon,
-      });
-
-      this.locations.push({
-        marker,
-      });
     }
   }
 
-  clearMarkers() {
-    this.locations.forEach((marker) => {
-      marker.setMap(null);
+  addPolyline(points, color, weight) {
+    const polyline = new google.maps.Polyline({
+      path: points,
+      geodesic: true,
+      strokeColor: color,
+      strokeOpacity: 1.0,
+      strokeWeight: weight,
     });
-    this.locations = [];
+
+    polyline.setMap(this.map);
+    this.polylines.push(polyline);
   }
 
-  renderControls() {
-    if (this.data.length === 0) {
-      alert('Dataset is empty!');
-      return;
-    }
+  clear() {
+    this.clearPolylines();
+    this.clearCircles();
+  }
 
-    Visual.empty(this.renderControlsID);
-    const controlsContainer = document.getElementById(this.renderControlsID);
+  clearCircles() {
+    Map.clear(this.circles);
+  }
 
-    const editor = new EditorGenerator(controlsContainer);
+  clearPolylines() {
+    Map.clear(this.polylines);
+  }
 
-    editor.createHeader('Editor');
+  static clear(items) {
+    items.forEach((item) => {
+      item.setMap(null);
+    });
+    items = [];
   }
 }
 
