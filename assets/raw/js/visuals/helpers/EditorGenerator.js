@@ -81,6 +81,12 @@ class EditorGenerator {
 
   }
 
+  createFileUpload(id, title, onChange) {
+    const context = { id, title };
+    this.handlebarsWithContext('file-upload', context);
+    $(`#${id}-input`).on('change', onChange);
+  }
+
   createHeader(text) {
     const context = { text };
     this.handlebarsWithContext('header-one', context);

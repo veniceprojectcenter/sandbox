@@ -42,7 +42,7 @@ class FilterMap extends Visual {
   renderPoints(renderData, color, shape) {
     for (let i = 0; i < renderData.length; i += 1) {
       if (renderData[i] !== null && renderData[i] !== undefined) {
-        this.addMarker(renderData[i].Latitude, renderData[i].Longitude, color, shape);
+        this.addMarker(renderData[i].lat, renderData[i].lng, color, shape);
       }
     }
   }
@@ -77,11 +77,20 @@ class FilterMap extends Visual {
     ul.appendChild(li);
     let filterHead = document.createElement('div');
     filterHead.classList.add('collapsible-header');
-    let headEditor = new EditorGenerator(filterHead);
+    const headEditor = new EditorGenerator(filterHead);
     li.appendChild(filterHead);
-    headEditor.createColorField('color0', 'Series 1', '#ff0000', () => {
+
+    headEditor.createSelectBox('shape0', 'Shape', this.shapes, 'na', (e) => {
+      if (e.currentTarget.parentNode.parentNode.parentNode.children[1]) {
+        e.currentTarget.parentNode.parentNode.parentNode.children[1].remove();
+      }
+      if ($(e.currentTarget).val() === 'custom') {
+        headEditor.createFileUpload('upload0', 'Upload', () => {});
+      } else {
+        headEditor.createColorField('color0', 'Series 1', '#ff0000', () => {});
+      }
     });
-    headEditor.createSelectBox('shape0', 'Shape', this.shapes, 'na', () => {});
+
 
     let filterDiv = document.createElement('div');
     filterDiv.classList.add('collapsible-body');
@@ -93,13 +102,21 @@ class FilterMap extends Visual {
       ul.appendChild(li);
       filterHead = document.createElement('div');
       filterHead.classList.add('collapsible-header');
-      headEditor = new EditorGenerator(filterHead);
+      const headEditor2 = new EditorGenerator(filterHead);
       seriesNumber += 1;
       li.appendChild(filterHead);
-      headEditor.createColorField(`color${seriesNumber}`, `Series ${seriesNumber + 1}`, '#ff0000', () => {
-
+      headEditor2.createSelectBox(`shape${seriesNumber}`, 'Shape', this.shapes, `na${seriesNumber}`, (e) => {
+        if (e.currentTarget.parentNode.parentNode.parentNode.children[1]) {
+          e.currentTarget.parentNode.parentNode.parentNode.children[1].remove();
+        }
+        if ($(e.currentTarget).val() === 'custom') {
+          headEditor2.createFileUpload(`upload${seriesNumber}`, 'Upload', () => {
+          });
+        } else {
+          headEditor2.createColorField(`color${seriesNumber}`, `Series ${seriesNumber + 1}`, '#ff0000', () => {
+          });
+        }
       });
-      headEditor.createSelectBox(`shape${seriesNumber}`, 'Shape', this.shapes, `na${seriesNumber}`, () => {});
 
       filterDiv = document.createElement('div');
       filterDiv.classList.add('collapsible-body');
@@ -237,7 +254,6 @@ class FilterMap extends Visual {
       this.removeFilter(e.currentTarget);
     });
 
-
     editor.createButton('addNum', 'Add Numeric Filter', () => {
       num += 1;
       numEditor.createNumericFilter(`NumFilter${num}-${seriesNumber}`, ncats, `numFilter${seriesNumber}`, (e) => { this.removeFilter(e.currentTarget); });
@@ -250,7 +266,6 @@ class FilterMap extends Visual {
   removeFilter(buttonID) {
     buttonID.parentNode.parentNode.remove();
   }
-
 
 }
 export default FilterMap;
