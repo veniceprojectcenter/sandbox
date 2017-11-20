@@ -26,43 +26,25 @@ class PathFinding extends Visual {
 
   render() {
     const renderDiv = document.getElementById(this.renderID);
-    this.map = new google.maps.Map(renderDiv, {
+    const mapDiv = document.createElement('div');
+    mapDiv.className = 'map-container';
+    renderDiv.appendChild(mapDiv);
+
+    this.map = new google.maps.Map(mapDiv, {
       center: { lat: 45.435, lng: 12.335 },
       zoom: 14,
       styles: DefaultMapStyle,
     });
 
+    const text = document.createElement('p');
+    text.id = 'infoText';
+    text.innerText = '';
+    renderDiv.appendChild(text);
+
+
     if (this.showData) this.addDataMarkers();
-    // this.addZoomListener();
 
     this.registerDefaultClickAction();
-  }
-
-  addZoomListener() {
-    google.maps.event.addListener(this.map, 'zoom_changed', () => {
-      const zoomLevel = this.map.getZoom();
-      let r = 15;
-      if (zoomLevel < 14) {
-        this.resizeCircles(35);
-        return;
-      }
-      switch (zoomLevel) {
-        case 16:
-          r = 20;
-          this.resizeCircles(r);
-          break;
-        case 15:
-          r = 25;
-          this.resizeCircles(r);
-          break;
-        case 14:
-          r = 30;
-          this.resizeCircles(r);
-          break;
-        default:
-          this.resizeCircles(r);
-      }
-    });
   }
 
   resizeCircles(r) {
@@ -171,7 +153,6 @@ class PathFinding extends Visual {
 
   // start and end are objects with .lat() and .lng() functions
   getPointsOnPath(start, end) {
-    // Find the slope between the points
     const slope = (end.lat - start.lat) / (end.lng - start.lng);
     const x1 = start.lng;
     const y1 = start.lat;
@@ -379,11 +360,6 @@ class PathFinding extends Visual {
         this.clearMarkers('blue');
       }
     });
-
-    const infoText = document.createElement('h4');
-    infoText.id = 'infoText';
-    infoText.innerHTML = '';
-    controlsContainer.appendChild(infoText);
   }
 }
 
