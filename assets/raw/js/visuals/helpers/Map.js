@@ -121,4 +121,4 @@ class Map extends Visual {
   }
 }
 
-export default DefaultMap;
+export default Map;

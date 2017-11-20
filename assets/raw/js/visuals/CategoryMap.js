@@ -2,7 +2,7 @@ import Visual from './helpers/Visual';
 import DefaultMapStyle from './helpers/DefaultMapStyle';
 import EditorGenerator from './helpers/EditorGenerator';
 
-class Map extends Visual {
+class CategoryMap extends Visual {
   constructor(config) {
     super(config);
 
@@ -155,4 +155,4 @@ class Map extends Visual {
   }
 }
 
-export default Map;
+export default CategoryMap;
