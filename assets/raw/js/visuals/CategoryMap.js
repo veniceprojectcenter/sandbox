@@ -1,29 +1,19 @@
 import Visual from './helpers/Visual';
 import DefaultMapStyle from './helpers/DefaultMapStyle';
 import EditorGenerator from './helpers/EditorGenerator';
+import Map from './helpers/Map';
 
 class CategoryMap extends Visual {
   constructor(config) {
     super(config);
 
-    this.map = null;
-    this.locations = [];
-    this.openInfoWindow = null;
-
-    this.addMarker = this.addMarker.bind(this);
+    this.map = new Map();
   }
 
   onLoadData() {
     this.applyDefaultAttributes({
       title: '',
-      center: { lat: 45.43, lng: 12.33 },
-      zoom: 13,
-      styles: DefaultMapStyle,
-      color: {
-        by: 'id',
-        range: [0, 359],
-        type: 'hue',
-      },
+      color_by: Object.keys(this.data[0])[0],
     });
   }
 
@@ -35,66 +25,6 @@ class CategoryMap extends Visual {
 
 
     return d3.hcl(color(value), 100, 75).toString();
-  }
-
-  addMarker(data) {
-    if (data.Latitude && data.Longitude) {
-      const icon = {
-        path: 'M-20,0a5,5 0 1,0 10,0a5,5 0 1,0 -10,0',
-        fillColor: this.determineColor(data[this.attributes.color.by]),
-        fillOpacity: 0.6,
-        anchor: new google.maps.Point(0, 0),
-        strokeWeight: 0,
-        scale: 1,
-      };
-      const marker = new google.maps.Marker({
-        position: {
-          lat: parseFloat(data.Latitude),
-          lng: parseFloat(data.Longitude),
-        },
-        map: this.map,
-        title: data.wiki_friendly_title,
-        animation: google.maps.Animation.DROP,
-        icon,
-      });
-
-      let contentString = `${'<div id="content">' +
-            '<div id="siteNotice">' +
-            '</div>' +
-            '<h1 id="firstHeading" class="firstHeading">'}${data.wiki_friendly_title}</h1>` +
-            '<div id="bodyContent">';
-
-      if (data.description_italian) {
-        contentString += `<p><b>Description: </b>${data.description_italian}</p>`;
-      }
-
-      if (data.approximate_year) {
-        contentString += `<p><b>Approximate Year: </b>${data.approximate_year}</p>`;
-      }
-
-      if (data.risk_factor_metal_description) {
-        contentString += `<p><b>Risk Factor: </b> ${data.risk_factor_metal_description}</p>`;
-      }
-
-      contentString += '</div></div>';
-
-      const infowindow = new google.maps.InfoWindow({
-        content: contentString,
-      });
-
-      marker.addListener('click', () => {
-        if (this.openInfoWindow) {
-          this.openInfoWindow.close();
-        }
-        infowindow.open(this.map, marker);
-        this.openInfoWindow = infowindow;
-      });
-
-      this.locations.push({
-        marker,
-        infowindow,
-      });
-    }
   }
 
   render() {
@@ -110,13 +40,7 @@ class CategoryMap extends Visual {
     visual.appendChild(title);
     visual.appendChild(mapContainer);
 
-    this.map = new google.maps.Map(mapContainer, {
-      center: this.attributes.center,
-      zoom: this.attributes.zoom,
-      styles: this.attributes.styles,
-    });
-
-    this.data.forEach(this.addMarker);
+    this.map.render(mapContainer.id);
   }
 
   renderControls() {
@@ -137,7 +61,7 @@ class CategoryMap extends Visual {
       document.getElementById('map-title').innerText = this.attributes.title;
     });
 
-    const columns = this.getColumns();
+    const columns = Object.keys(this.data[0]);
     const categories = [];
     for (let i = 0; i < columns.length; i += 1) {
       categories.push({
@@ -147,10 +71,9 @@ class CategoryMap extends Visual {
     }
 
     editor.createSelectBox('map-color-col', 'Select column to color by', categories, this.attributes.color_by,
-     (e) => {
-      //  const value = $(e.currentTarget).val();
-      //  this.attributes.group_by = value;
-      //  this.render();
+     (event) => {
+       const value = $(event.currentTarget).val();
+       this.attributes.color_by = value;
      });
   }
 }
