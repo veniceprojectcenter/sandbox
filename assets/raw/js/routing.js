@@ -1,3 +1,4 @@
+import base from './base';
 import updateBreadcrumbs from './breadcrumbs';
 import renderDatasetList from './dataset_list';
 import renderVisualsList from './visuals_list';
@@ -30,7 +31,6 @@ function routing() {
   }
 }
 
-
+base();
 Firebase.initFirebase();
-
 routing();
