@@ -10,28 +10,50 @@ class FilterMap extends Visual {
     this.locations = [];
     this.openInfoWindow = null;
     this.attributes.filters = [];
+    this.shapes = [{ value: 'circle', text: 'circle' }, { value: 'triangle', text: 'triangle' }];
   }
 
-  addMarker(lat, lng, color = 'blue', opacity = 0.5, r = 15) {
-    const circle = new google.maps.Circle({
-      strokeColor: color,
-      strokeOpacity: opacity,
-      strokeWeight: 2,
-      fillColor: color,
-      fillOpacity: opacity,
-      map: this.map,
-      center: { lat: parseFloat(lat), lng: parseFloat(lng) },
-      radius: r,
-    });
-
-    this.locations.push(circle);
+  addMarker(lat, lng, color = 'blue', shapeType = 'triangle', opacity = 0.5, r = 15) {
+    let shape = null;
+    if (shapeType === 'circle') {
+      shape = new google.maps.Circle({
+        strokeColor: color,
+        strokeOpacity: opacity,
+        strokeWeight: 2,
+        fillColor: color,
+        fillOpacity: opacity,
+        map: this.map,
+        center: { lat: parseFloat(lat), lng: parseFloat(lng) },
+        radius: r,
+      });
+    }
+    if (shapeType === 'triangle') {
+      const myLat = parseFloat(lat);
+      const myLng = parseFloat(lng);
+      const triangleCoords = [
+    { lat: myLat + 0.0002, lng: myLng },
+    { lat: myLat - 0.0001, lng: myLng + 0.0002 },
+    { lat: myLat - 0.0001, lng: myLng - 0.0002 },
+    { lat: myLat + 0.0002, lng: myLng },
+      ];
+      shape = new google.maps.Polygon({
+        paths: triangleCoords,
+        strokeColor: color,
+        strokeOpacity: opacity,
+        strokeWeight: 2,
+        fillColor: color,
+        fillOpacity: opacity,
+        map: this.map,
+      });
+    }
+    this.locations.push(shape);
   }
 
   // render the data points on the map
-  renderPoints(renderData, color) {
+  renderPoints(renderData, color, shape) {
     for (let i = 0; i < renderData.length; i += 1) {
       if (renderData[i] !== null && renderData[i] !== undefined) {
-        this.addMarker(renderData[i].Latitude, renderData[i].Longitude, color);
+        this.addMarker(renderData[i].Latitude, renderData[i].Longitude, color, shape);
       }
     }
   }
@@ -51,7 +73,7 @@ class FilterMap extends Visual {
         && filters[i].numeric !== undefined) {
         renderData[i] = this.filterCategorical(filters[i].categorical, this.data);
         renderData[i] = this.filterNumerical(filters[i].numeric, renderData[i]);
-        this.renderPoints(renderData[i], filters[i].color);
+        this.renderPoints(renderData[i], filters[i].color, filters[i].shape);
       }
     }
   }
@@ -70,10 +92,11 @@ class FilterMap extends Visual {
     let filterHead = document.createElement('div');
     filterHead.classList.add('collapsible-header');
     let headEditor = new EditorGenerator(filterHead);
-    headEditor.createColorField('color0', 'Series 1', '#ff0000', () => {
-
-    });
     li.appendChild(filterHead);
+    headEditor.createColorField('color0', 'Series 1', '#ff0000', () => {
+    });
+    headEditor.createSelectBox('shape0', 'Shape', this.shapes, 'na', () => {});
+
     let filterDiv = document.createElement('div');
     filterDiv.classList.add('collapsible-body');
     li.appendChild(filterDiv);
@@ -86,10 +109,12 @@ class FilterMap extends Visual {
       filterHead.classList.add('collapsible-header');
       headEditor = new EditorGenerator(filterHead);
       seriesNumber += 1;
+      li.appendChild(filterHead);
       headEditor.createColorField(`color${seriesNumber}`, `Series ${seriesNumber + 1}`, '#ff0000', () => {
 
       });
-      li.appendChild(filterHead);
+      headEditor.createSelectBox(`shape${seriesNumber}`, 'Shape', this.shapes, `na${seriesNumber}`, () => {});
+
       filterDiv = document.createElement('div');
       filterDiv.classList.add('collapsible-body');
       li.appendChild(filterDiv);
@@ -128,7 +153,10 @@ class FilterMap extends Visual {
         }
 
         const theColor = $(document.getElementById(`color${k}-field`));
-        this.attributes.filters[k] = { color: theColor.val(),
+        const theShape = $(document.getElementById(`shape${k}-select`));
+        this.attributes.filters[k] = {
+          color: theColor.val(),
+          shape: theShape.val(),
           numeric: numericFilters,
           categorical: dataFilters };
       }
