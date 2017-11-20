@@ -10,7 +10,7 @@ class FilterMap extends Visual {
     this.locations = [];
     this.openInfoWindow = null;
     this.attributes.filters = [];
-    this.shapes = [{ value: 'circle', text: 'circle' }, { value: 'triangle', text: 'triangle' }];
+    this.shapes = [{ value: 'circle', text: 'Circle' }, { value: 'triangle', text: 'Triangle' }, { value: 'custom', text: 'Custom Image' }];
   }
 
   addMarker(lat, lng, color = 'blue', shapeType = 'triangle', opacity = 0.5, r = 15) {
