@@ -1,4 +1,3 @@
-import updateBreadcrumbs from './utils';
 import Visual from './visuals/helpers/Visual';
 import CategoryMap from './visuals/CategoryMap';
 import Donut from './visuals/Donut';
@@ -12,8 +11,6 @@ import BubbleChart from './visuals/BubbleChart';
 import FilterMap from './visuals/FilterMap';
 
 function renderEditor(route) {
-  updateBreadcrumbs(route);
-
   const rowContainer = document.createElement('div');
   rowContainer.className = 'row';
 

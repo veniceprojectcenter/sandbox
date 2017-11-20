@@ -1,3 +1,5 @@
+import base from './base';
+import updateBreadcrumbs from './breadcrumbs';
 import renderDatasetList from './dataset_list';
 import renderVisualsList from './visuals_list';
 import renderEditor from './editor';
@@ -15,6 +17,8 @@ function routing() {
     }
   }
 
+  updateBreadcrumbs(route);
+
   switch (route.length) {
     case 0:
       renderDatasetList(route);
@@ -27,7 +31,6 @@ function routing() {
   }
 }
 
-
+base();
 Firebase.initFirebase();
-
 routing();

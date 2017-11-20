@@ -8,7 +8,7 @@ class BubbleChart extends Visual {
     super(config, renderID, renderControlsID);
     this.editmode = false;
     this.currentEditKey = null;
-    this.useTransitions = false;
+    this.useTransitions = true;
   }
 
   onLoadData() {
@@ -256,7 +256,7 @@ class BubbleChart extends Visual {
 
     if (this.attributes.label_mode === 'hover') {
       text.style('display', 'none');
-      const handleMouseOver = (d) => {
+      const handleMouseOver = function (d) {
         d3.select(this)
             .attr('fill-opacity', 0.5);
 
@@ -265,7 +265,7 @@ class BubbleChart extends Visual {
           .style('display', 'initial');
       };
 
-      const handleMouseOut = (d) => {
+      const handleMouseOut = function (d) {
         d3.select(this)
             .attr('fill-opacity', 1);
         d3.select(this.parentNode.parentNode)

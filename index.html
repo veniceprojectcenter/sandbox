@@ -21,7 +21,7 @@
 <div id="page" class="container body">
 </div>
 <footer>
-  Copyright © 2017 · Venice Project Center · All Rights Reserved
+  Copyright © 2017 · Venice Project Center · All Rights Reserved · <button id="clear-cache">Clear Cache</button>
 </footer>
 
 <!-- Templates -->
@@ -176,7 +176,17 @@
     <input  id="{{id}}-dn" category='{{title}}' type="button" value="↓" />
     <p>
 </script>
-
+<script id="file-upload" type="text/x-handlebars-template">
+  <div id='{{id}}' class="file-field input-field">
+      <div class="btn">
+        <span>{{title}}</span>
+        <input type="file">
+      </div>
+      <div class="file-path-wrapper">
+        <input id={{id}}-input class="file-path validate" type="text">
+      </div>
+    </div>
+</script>
 <!-- Scripts -->
 <!--Import jQuery before materialize.js-->
 <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>

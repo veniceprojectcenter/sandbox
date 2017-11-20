@@ -1,4 +1,3 @@
-import updateBreadcrumbs from './utils';
 import Data from './visuals/helpers/Data';
 
 const visuals = [
@@ -23,7 +22,6 @@ async function prefetchData(route) {
 
 function renderVisualsList(route) {
   prefetchData(route);
-  updateBreadcrumbs(route);
 
   const page = document.getElementById('page');
   page.classList.remove('container-fluid');
