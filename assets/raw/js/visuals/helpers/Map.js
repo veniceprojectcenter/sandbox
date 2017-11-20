@@ -47,6 +47,16 @@ class Map {
     }
   }
 
+  removeCircleAtPoint(center) {
+    for (let i = 0; i < this.circles.length; i += 1) {
+      const circle = this.circles[i];
+      if (circle.center.lat() === center.lat &&
+      circle.center.lng() === center.lng) {
+        circle.setMap(null);
+      }
+    }
+  }
+
   addPolyline(points, color, weight) {
     const polyline = new google.maps.Polyline({
       path: points,
