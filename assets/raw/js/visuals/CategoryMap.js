@@ -17,14 +17,31 @@ class CategoryMap extends Visual {
     });
   }
 
-  determineColor(value) {
-    const data = this.getGroupedListCounts(this.attributes.color.by);
-    console.log(data);
-    const crange = this.attributes.color.range;
-    const color = d3.scaleLinear().domain([0, data.length]).range([crange[0], crange[1]]);
+  getNextColor() {
+    if (this.colorNumber === undefined) {
+      this.colorNumber = 0;
+    }
 
+    const colors = ['red', 'blue', 'yellow', 'orange'];
+    const returnColor = colors[this.colorNumber];
+    this.colorNumber += 1;
 
-    return d3.hcl(color(value), 100, 75).toString();
+    return returnColor;
+  }
+
+  drawMarkers() {
+    const groups = Visual.groupBy(this.attributes.color_by, this.data);
+    const labels = Object.keys(groups);
+    for (let i = 0; i < labels.length; i += 1) {
+      const label = labels[i];
+      const group = groups[label];
+      const color = this.getNextColor();
+      group.forEach((point) => {
+        const lat = parseFloat(point.Latitude);
+        const lng = parseFloat(point.Longitude);
+        this.map.addCircle({ lat, lng }, color, 0.5, 15);
+      });
+    }
   }
 
   render() {
@@ -41,6 +58,7 @@ class CategoryMap extends Visual {
     visual.appendChild(mapContainer);
 
     this.map.render(mapContainer.id);
+    this.drawMarkers();
   }
 
   renderControls() {
@@ -74,6 +92,7 @@ class CategoryMap extends Visual {
      (event) => {
        const value = $(event.currentTarget).val();
        this.attributes.color_by = value;
+       this.drawMarkers();
      });
   }
 }
