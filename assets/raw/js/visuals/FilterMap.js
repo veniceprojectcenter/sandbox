@@ -12,22 +12,25 @@ class FilterMap extends Visual {
     this.filter = new Filter(this);
     this.attributes.colors = [];
     this.attributes.shapes = [];
+    this.attributes.images = [];
   }
 
 
-  addMarker(lat, lng, color = 'blue', shapeType = 'triangle', opacity = 0.5, r = 15) {
+  addMarker(lat, lng, color = 'blue', shapeType = 'triangle', image, opacity = 0.5, r = 15) {
     if (shapeType === 'circle') {
       this.map.addCircle({ lat: parseFloat(lat), lng: parseFloat(lng) }, color, opacity, r);
     } else if (shapeType === 'triangle') {
       this.map.addTriangle({ lat: parseFloat(lat), lng: parseFloat(lng) }, color, opacity, r);
+    } else if (shapeType === 'custom') {
+      this.map.addCustomMarker({ lat: parseFloat(lat), lng: parseFloat(lng) }, image, 20);
     }
   }
 
   // render the data points on the map
-  renderPoints(renderData, color, shape) {
+  renderPoints(renderData, color, shape, image) {
     for (let i = 0; i < renderData.length; i += 1) {
       if (renderData[i] !== null && renderData[i] !== undefined) {
-        this.addMarker(renderData[i].lat, renderData[i].lng, color, shape);
+        this.addMarker(renderData[i].lat, renderData[i].lng, color, shape, image);
       }
     }
   }
@@ -40,7 +43,8 @@ class FilterMap extends Visual {
     for (let i = 0; i < filters.length; i += 1) {
       if (filters[i] !== undefined && filters[i].categorical !== undefined
         && filters[i].numeric !== undefined) {
-        this.renderPoints(renderData[i], this.attributes.colors[i], this.attributes.shapes[i]);
+        this.renderPoints(renderData[i], this.attributes.colors[i], this.attributes.shapes[i],
+          this.attributes.images[i]);
       }
     }
   }
@@ -48,8 +52,10 @@ class FilterMap extends Visual {
   renderControls() {
     this.renderControlsDiv = document.getElementById(this.renderControlsID);
     this.renderControlsDiv.innerHTML = '<h4 style = "text-align: center">Controls</h4> <br>';
-    this.filter.makeFilterSeries(this.filterMapHeader,
-      (filters) => { this.getColorShape(filters); });
+    this.filter.makeFilterSeries(
+      (headEditor, index) => { this.filterMapHeader(headEditor, index); },
+      (filters) => { this.getColorShape(filters); },
+    );
 
     this.render();
   }
@@ -62,7 +68,8 @@ class FilterMap extends Visual {
         e.currentTarget.parentNode.parentNode.parentNode.children[1].remove();
       }
       if ($(e.currentTarget).val() === 'custom') {
-        headEditor.createFileUpload(`upload${index}`, 'Upload', () => {});
+        headEditor.createFileUpload(`upload${index}`, 'Upload', () => {
+        });
       } else {
         headEditor.createColorField(`color${index}`, `Series ${index}`, '#ff0000', () => {});
       }
@@ -80,7 +87,17 @@ class FilterMap extends Visual {
       const theShape = $(document.getElementById(`shape${i}-select`));
       this.attributes.colors[i] = theColor.val();
       this.attributes.shapes[i] = theShape.val();
+      if (theShape.val() === 'custom') {
+        const url = this.constructor.getSelectedURL(`upload${i}`);
+        this.attributes.images[i] = url;
+      }
     }
+  }
+
+  static getSelectedURL(id) {
+    const file = document.getElementById(id).childNodes[1].childNodes[3].files[0];
+    const url = window.URL.createObjectURL(file);
+    return url;
   }
 
 }
