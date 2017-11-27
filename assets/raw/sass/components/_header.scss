@@ -13,8 +13,21 @@ header {
   h1 {
     margin-left: 25px;
   }
+  
+  .crumb, .crumbcaret {
+    font-size: 20px;
+  }
 
-  h4 {
+  .crumb {
+    background: rgba(255,255,255,0.3);
+    padding: 10px;
+    margin: 0px 20px;
+    border-radius: 8px;
+      
+    &:first-child {
+      margin-left: 30px;
+    }
+    
     a {
       color: $text;
 
