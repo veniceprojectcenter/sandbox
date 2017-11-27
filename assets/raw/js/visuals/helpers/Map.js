@@ -57,6 +57,26 @@ class Map {
     });
   }
 
+  addTriangle(point, color, opacity, size) {
+    const triangleCoords = [
+      { lat: point.lat + 0.0002, lng: point.lng },
+      { lat: point.lat - 0.0001, lng: point.lng + 0.0002 },
+      { lat: point.lat - 0.0001, lng: point.lng - 0.0002 },
+      { lat: point.lat + 0.0002, lng: point.lng },
+    ];
+    const shape = new google.maps.Polygon({
+      paths: triangleCoords,
+      strokeColor: color,
+      strokeOpacity: opacity,
+      strokeWeight: 2,
+      fillColor: color,
+      fillOpacity: opacity,
+      map: this.map,
+    });
+
+    this.polylines.push(shape);
+  }
+
   addCircle(point, color, opacity, r = 15) {
     const circle = new google.maps.Circle({
       strokeColor: color,

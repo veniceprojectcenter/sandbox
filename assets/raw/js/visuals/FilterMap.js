@@ -12,29 +12,10 @@ class FilterMap extends Visual {
   }
 
   addMarker(lat, lng, color = 'blue', shapeType = 'triangle', opacity = 0.5, r = 15) {
-    let shape = null;
     if (shapeType === 'circle') {
       this.map.addCircle({ lat: parseFloat(lat), lng: parseFloat(lng) }, color, opacity, r);
-    }
-    if (shapeType === 'triangle') {
-      const myLat = parseFloat(lat);
-      const myLng = parseFloat(lng);
-      const triangleCoords = [
-    { lat: myLat + 0.0002, lng: myLng },
-    { lat: myLat - 0.0001, lng: myLng + 0.0002 },
-    { lat: myLat - 0.0001, lng: myLng - 0.0002 },
-    { lat: myLat + 0.0002, lng: myLng },
-      ];
-      shape = new google.maps.Polygon({
-        paths: triangleCoords,
-        strokeColor: color,
-        strokeOpacity: opacity,
-        strokeWeight: 2,
-        fillColor: color,
-        fillOpacity: opacity,
-        map: this.map.map,
-      });
-      this.map.polylines.push(shape);
+    } else if (shapeType === 'triangle') {
+      this.map.addTriangle({ lat: parseFloat(lat), lng: parseFloat(lng) }, color, opacity, r);
     }
   }
 
