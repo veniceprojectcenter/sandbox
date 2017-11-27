@@ -40,7 +40,8 @@ class CategoryMap extends Visual {
     const returnColor = this.colors[this.colorNumber];
     this.colorNumber += 1;
 
-    return returnColor;
+    return this.constructor.getRandomColor();
+    // return returnColor;
   }
 
   drawMarkers() {
