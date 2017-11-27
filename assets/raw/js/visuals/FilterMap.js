@@ -83,13 +83,15 @@ class FilterMap extends Visual {
   }
   getColorShape(filters) {
     for (let i = 0; i < filters.length; i += 1) {
-      const theColor = $(document.getElementById(`color${i}-field`));
-      const theShape = $(document.getElementById(`shape${i}-select`));
-      this.attributes.colors[i] = theColor.val();
-      this.attributes.shapes[i] = theShape.val();
-      if (theShape.val() === 'custom') {
-        const url = this.constructor.getSelectedURL(`upload${i}`);
-        this.attributes.images[i] = url;
+      if (filters[i] !== undefined) {
+        const theColor = $(document.getElementById(`color${i}-field`));
+        const theShape = $(document.getElementById(`shape${i}-select`));
+        this.attributes.colors[i] = theColor.val();
+        this.attributes.shapes[i] = theShape.val();
+        if (theShape.val() === 'custom') {
+          const url = this.constructor.getSelectedURL(`upload${i}`);
+          this.attributes.images[i] = url;
+        }
       }
     }
   }

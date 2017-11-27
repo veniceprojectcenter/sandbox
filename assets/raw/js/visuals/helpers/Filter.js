@@ -122,34 +122,38 @@ class Filter {
         const numericFilters = [];
         const catFilters = document.getElementsByClassName(`dataFilter${k}`);
         const numFilters = document.getElementsByClassName(`numFilter${k}`);
-        for (let i = 0; i < catFilters.length; i += 1) {
-          const filter = catFilters[i];
-          const columnval = $(filter.children[0].children[0].children[3]).val();
-          let catval = $(filter.children[2].children[0].children[3]).val();
-          const b = $(filter.children[1].children[0].children[3]).val();
-          if (b === '0') {
-            const categories = this.visual.getGroupedList(columnval);
-            for (let j = 0; j < categories.length; j += 1) {
-              categories[j] = categories[j].key;
-              if (catval.includes(categories[j])) {
-                categories.splice(j, 1);
+        if (catFilters.length === 0 && numFilters.length === 0) {
+          this.visual.attributes.filters[k] = undefined;
+        } else {
+          for (let i = 0; i < catFilters.length; i += 1) {
+            const filter = catFilters[i];
+            const columnval = $(filter.children[0].children[0].children[3]).val();
+            let catval = $(filter.children[2].children[0].children[3]).val();
+            const b = $(filter.children[1].children[0].children[3]).val();
+            if (b === '0') {
+              const categories = this.visual.getGroupedList(columnval);
+              for (let j = 0; j < categories.length; j += 1) {
+                categories[j] = categories[j].key;
+                if (catval.includes(categories[j])) {
+                  categories.splice(j, 1);
+                }
               }
+              catval = categories;
             }
-            catval = categories;
+            dataFilters.push({ column: columnval, categories: catval });
           }
-          dataFilters.push({ column: columnval, categories: catval });
-        }
-        for (let i = 0; i < numFilters.length; i += 1) {
-          const filter = numFilters[i];
-          const columnval = $(filter.children[0].children[0].children[3]).val();
-          const opval = $(filter.children[1].children[0].children[3]).val();
-          const val = $(filter.children[2].children[0]).val();
-          numericFilters.push({ column: columnval, operation: opval, value: val });
-        }
+          for (let i = 0; i < numFilters.length; i += 1) {
+            const filter = numFilters[i];
+            const columnval = $(filter.children[0].children[0].children[3]).val();
+            const opval = $(filter.children[1].children[0].children[3]).val();
+            const val = $(filter.children[2].children[0]).val();
+            numericFilters.push({ column: columnval, operation: opval, value: val });
+          }
 
-        this.visual.attributes.filters[k] = {
-          numeric: numericFilters,
-          categorical: dataFilters };
+          this.visual.attributes.filters[k] = {
+            numeric: numericFilters,
+            categorical: dataFilters };
+        }
       }
       onButton(this.visual.attributes.filters);
       this.visual.render();
