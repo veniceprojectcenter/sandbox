@@ -63,6 +63,7 @@ class FilterMap extends Visual {
       }
     }
   }
+
   renderControls() {
     this.renderControlsDiv = document.getElementById(this.renderControlsID);
     const editor = new EditorGenerator(this.renderControlsDiv);

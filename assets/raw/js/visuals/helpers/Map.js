@@ -9,6 +9,9 @@ class Map {
     this.map = null;
     this.circles = [];
     this.polylines = [];
+
+    this.customs = [];
+    this.n = 0; // Number of custom icons
   }
 
   render(containerID) {
@@ -21,6 +24,37 @@ class Map {
 
   registerClickAction(clickFunction) {
     google.maps.event.addListener(this.map, 'click', clickFunction);
+  }
+
+  addCustomMarker(point, url, size) {
+    const icon = {
+      url,
+      scaledSize: new google.maps.Size(size, size),
+      anchor: new google.maps.Point(size / 2, size / 2),
+      zIndex: this.n,
+    };
+    this.n += 1;
+    const marker = new google.maps.Marker({
+      position: {
+        lat: point.lat,
+        lng: point.lng,
+      },
+      map: this.map,
+      title: '',
+      icon,
+    });
+
+    this.customs.push(marker);
+  }
+
+  addCustomIconZoomListener() {
+    google.maps.event.addListener(this.map, 'zoom_changed', () => {
+      this.customs.forEach((marker) => {
+        marker.setMap(null);
+        marker.setIcon(marker.icon);
+        marker.setMap(this.map);
+      });
+    });
   }
 
   addCircle(point, color, opacity, r = 15) {
