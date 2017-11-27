@@ -150,9 +150,10 @@ class Visual {
     const saveSVGButton = document.createElement('button');
     saveSVGButton.className = 'btn waves-effect';
     saveSVGButton.innerText = 'Export for Illustrator';
-    saveSVGButton.addEventListener('click', () => {
+    saveSVGButton.addEventListener('click', async () => {
       this.editmode = false;
       this.render();
+      let svgData = '';
       const svg = $(`#${this.renderID} svg`);
       const map = document.querySelector(`#${this.renderID} .map`);
       if (svg.length === 1) {
@@ -161,7 +162,18 @@ class Visual {
            .attr('xmlns', 'http://www.w3.org/2000/svg')
            .attr('xml:space', 'preserve');
 
-        const svgData = svg[0].outerHTML;
+        svgData = svg[0].outerHTML;
+      } else if (map) {
+        if (this.map) {
+          svgData = await this.map.export();
+        } else {
+          Materialize.toast('Error exporting map', 3000);
+        }
+      } else {
+        Materialize.toast('This chart type is not supported for Illustrator!', 3000);
+      }
+
+      if (svgData) {
         const svgBlob = new Blob([svgData], { type: 'image/svg+xml;charset=utf-8' });
         const svgUrl = URL.createObjectURL(svgBlob);
         const downloadLink = document.createElement('a');
@@ -171,17 +183,7 @@ class Visual {
         } else {
           downloadLink.download = `${this.dataSet}-${this.type}.svg`;
         }
-        document.body.appendChild(downloadLink);
         downloadLink.click();
-        document.body.removeChild(downloadLink);
-      } else if (map) {
-        if (this.map) {
-          this.map.export();
-        } else {
-          Materialize.toast('Error exporting map', 3000);
-        }
-      } else {
-        Materialize.toast('This chart type is not supported for Illustrator!', 3000);
       }
       this.editmode = true;
       this.render();

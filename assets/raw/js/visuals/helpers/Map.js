@@ -192,7 +192,8 @@ class Map {
         <image width="${width}" height="${height}" xlink:href="${encodedURL}">
       </svg>
     `;
-    console.log(svg);
+
+    return svg;
   }
 }
 
