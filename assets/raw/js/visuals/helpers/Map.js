@@ -26,8 +26,8 @@ class Map {
   addCircle(point, color, opacity, r = 15) {
     const circle = new google.maps.Circle({
       strokeColor: color,
-      strokeOpacity: opacity,
-      strokeWeight: 2,
+      strokeOpacity: 0,
+      strokeWeight: 0,
       fillColor: color,
       fillOpacity: opacity,
       map: this.map,
