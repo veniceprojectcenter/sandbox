@@ -188,8 +188,8 @@ class Map {
     });
 
     const svg = `
-      <svg>
-        <image width="${width}" height="${height}" xlink:href="${encodedURL}">
+      <svg version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg" xml:space="preserve">
+        <image width="${width}" height="${height}" xlink:href="${encodedURL}" />
       </svg>
     `;
 

@@ -151,12 +151,12 @@ class Visual {
     saveSVGButton.className = 'btn waves-effect';
     saveSVGButton.innerText = 'Export for Illustrator';
     saveSVGButton.addEventListener('click', async () => {
-      this.editmode = false;
-      this.render();
       let svgData = '';
       const svg = $(`#${this.renderID} svg`);
       const map = document.querySelector(`#${this.renderID} .map`);
       if (svg.length === 1) {
+        this.editmode = false;
+        this.render();
         svg.attr('version', '1.1')
            .attr('xmlns:xlink', 'http://www.w3.org/1999/xlink')
            .attr('xmlns', 'http://www.w3.org/2000/svg')
@@ -185,8 +185,10 @@ class Visual {
         }
         downloadLink.click();
       }
-      this.editmode = true;
-      this.render();
+      if (svg.length === 1 && !this.editmode) {
+        this.editmode = true;
+        this.render();
+      }
     });
 
     const downloadContainer = document.getElementById(id);
