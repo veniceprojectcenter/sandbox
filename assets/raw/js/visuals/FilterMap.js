@@ -66,6 +66,7 @@ class FilterMap extends Visual {
   filterMapHeader(headEditor, index) {
     const shapes = [{ value: 'circle', text: 'Circle' }, { value: 'triangle', text: 'Triangle' }, { value: 'custom', text: 'Custom Image' }];
     headEditor.createSelectBox(`shape${index}`, 'Shape', shapes, 'na', (e) => {
+      e.currentTarget.parentNode.parentNode.parentNode.children[1].remove();
       if (e.currentTarget.parentNode.parentNode.parentNode.children[1]) {
         e.currentTarget.parentNode.parentNode.parentNode.children[1].remove();
       }
@@ -75,17 +76,25 @@ class FilterMap extends Visual {
       } else {
         headEditor.createColorField(`color${index}`, `Series ${index}`, '#ff0000', () => {});
       }
+      headEditor.createRemoveButton(`remove${index}`, (e2) => {
+        this.filter.removeSeries(e2.currentTarget);
+      });
+    });
+    headEditor.createRemoveButton(`remove${index}`, (e2) => {
+      this.filter.removeSeries(e2.currentTarget);
     });
   }
   getColorShape(filters) {
     for (let i = 0; i < filters.length; i += 1) {
-      const theColor = $(document.getElementById(`color${i}-field`));
-      const theShape = $(document.getElementById(`shape${i}-select`));
-      this.attributes.colors[i] = theColor.val();
-      this.attributes.shapes[i] = theShape.val();
-      if (theShape.val() === 'custom') {
-        const url = this.constructor.getSelectedURL(`upload${i}`);
-        this.attributes.images[i] = url;
+      if (filters[i] !== undefined) {
+        const theColor = $(document.getElementById(`color${i}-field`));
+        const theShape = $(document.getElementById(`shape${i}-select`));
+        this.attributes.colors[i] = theColor.val();
+        this.attributes.shapes[i] = theShape.val();
+        if (theShape.val() === 'custom') {
+          const url = this.constructor.getSelectedURL(`upload${i}`);
+          this.attributes.images[i] = url;
+        }
       }
     }
   }
