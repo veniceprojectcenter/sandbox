@@ -154,6 +154,7 @@ class Visual {
       this.editmode = false;
       this.render();
       const svg = $(`#${this.renderID} svg`);
+      const map = document.querySelector(`#${this.renderID} .map`);
       if (svg.length === 1) {
         svg.attr('version', '1.1')
            .attr('xmlns:xlink', 'http://www.w3.org/1999/xlink')
@@ -173,6 +174,12 @@ class Visual {
         document.body.appendChild(downloadLink);
         downloadLink.click();
         document.body.removeChild(downloadLink);
+      } else if (map) {
+        if (this.map) {
+          this.map.export();
+        } else {
+          Materialize.toast('Error exporting map', 3000);
+        }
       } else {
         Materialize.toast('This chart type is not supported for Illustrator!', 3000);
       }
