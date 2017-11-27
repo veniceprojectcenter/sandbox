@@ -12,7 +12,9 @@ class Map {
   }
 
   render(containerID) {
-    this.map = new google.maps.Map(document.getElementById(containerID), {
+    const renderDiv = document.getElementById(containerID);
+    renderDiv.classList.add('map');
+    this.map = new google.maps.Map(renderDiv, {
       center: { lat: 45.435, lng: 12.335 },
       zoom: 14,
       styles: DefaultMapStyle,
@@ -83,11 +85,60 @@ class Map {
     Map.clear(this.polylines);
   }
 
-  static clear(items) {
+  static clear(initialItems) {
+    let items = initialItems;
+
     items.forEach((item) => {
       item.setMap(null);
     });
+
     items = [];
+  }
+
+  async export() {
+    const centerString = `center=${this.map.getCenter().lat()},${this.map.getCenter().lng()}`;
+    const zoomString = `zoom=${this.map.getZoom()}`;
+    const width = this.map.getDiv().offsetWidth;
+    const height = this.map.getDiv().offsetHeight;
+    const sizeString = `size=${width}x${height}`;
+    let styleString = '';
+    for (let i = 0; i < DefaultMapStyle.length; i += 1) {
+      const feature = DefaultMapStyle[i].featureType || 'all';
+      const element = DefaultMapStyle[i].elementType || 'all';
+      const rule = Object.keys(DefaultMapStyle[i].stylers[0])[0];
+      const argument = DefaultMapStyle[i].stylers[0][rule].replace('#', '0x');
+      const style = `style=feature:${feature}|element:${element}|${rule}:${argument}`;
+      if (i !== 0) {
+        styleString += '&';
+      }
+      styleString += style;
+    }
+    const optionsString = `${centerString}&${zoomString}&${sizeString}&${styleString}`;
+    const mapURL = `https://maps.googleapis.com/maps/api/staticmap?${optionsString}&key=AIzaSyCkT74d_hmbDXczCSmtMBdgNSWEDHovxN0`;
+    let response = null;
+    await fetch(mapURL).then((value) => {
+      response = value;
+    });
+    const blob = await response.blob();
+    const promise = new Promise((resolve) => {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        resolve(reader.result);
+      };
+      reader.readAsDataURL(blob);
+    });
+
+    let encodedURL = '';
+    await promise.then((result) => {
+      encodedURL = result;
+    });
+
+    const svg = `
+      <svg>
+        <image width="${width}" height="${height}" xlink:href="${encodedURL}">
+      </svg>
+    `;
+    console.log(svg);
   }
 }
 
