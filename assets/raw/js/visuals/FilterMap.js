@@ -16,6 +16,8 @@ class FilterMap extends Visual {
       this.map.addCircle({ lat: parseFloat(lat), lng: parseFloat(lng) }, color, opacity, r);
     } else if (shapeType === 'triangle') {
       this.map.addTriangle({ lat: parseFloat(lat), lng: parseFloat(lng) }, color, opacity, r);
+    } else if (shapeType === 'custom') {
+
     }
   }
 
