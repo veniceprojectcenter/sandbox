@@ -23,6 +23,7 @@ class CategoryMap extends Visual {
     for (let i = 0; i < 6; i += 1) {
       color += letters[Math.floor(Math.random() * 16)];
     }
+    console.log();
     return color;
   }
 
@@ -40,7 +41,8 @@ class CategoryMap extends Visual {
     const returnColor = this.colors[this.colorNumber];
     this.colorNumber += 1;
 
-    return returnColor;
+    return this.constructor.getRandomColor();
+    // return returnColor;
   }
 
   drawMarkers() {
