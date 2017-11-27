@@ -22,6 +22,9 @@ class FilterMap extends Visual {
     } else if (shapeType === 'triangle') {
       this.map.addTriangle({ lat: parseFloat(lat), lng: parseFloat(lng) }, color, opacity, r);
     } else if (shapeType === 'custom') {
+      if (image === undefined) {
+        return;
+      }
       this.map.addCustomMarker({ lat: parseFloat(lat), lng: parseFloat(lng) }, image, 20);
     }
   }
@@ -89,8 +92,11 @@ class FilterMap extends Visual {
 
   static getSelectedURL(id) {
     const file = document.getElementById(id).childNodes[1].childNodes[3].files[0];
-    const url = window.URL.createObjectURL(file);
-    return url;
+    if (file !== undefined) {
+      const url = window.URL.createObjectURL(file);
+      return url;
+    }
+    return undefined;
   }
 
 }
