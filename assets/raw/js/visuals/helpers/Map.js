@@ -9,6 +9,9 @@ class Map {
     this.map = null;
     this.circles = [];
     this.polylines = [];
+
+    this.customs = [];
+    this.n = 0; // Number of custom icons
   }
 
   render(containerID) {
@@ -23,11 +26,62 @@ class Map {
     google.maps.event.addListener(this.map, 'click', clickFunction);
   }
 
-  addCircle(point, color, opacity, r = 15) {
-    const circle = new google.maps.Circle({
+  addCustomMarker(point, url, size) {
+    const icon = {
+      url,
+      scaledSize: new google.maps.Size(size, size),
+      anchor: new google.maps.Point(size / 2, size / 2),
+      zIndex: this.n,
+    };
+    this.n += 1;
+    const marker = new google.maps.Marker({
+      position: {
+        lat: point.lat,
+        lng: point.lng,
+      },
+      map: this.map,
+      title: '',
+      icon,
+    });
+
+    this.customs.push(marker);
+  }
+
+  addCustomIconZoomListener() {
+    google.maps.event.addListener(this.map, 'zoom_changed', () => {
+      this.customs.forEach((marker) => {
+        marker.setMap(null);
+        marker.setIcon(marker.icon);
+        marker.setMap(this.map);
+      });
+    });
+  }
+
+  addTriangle(point, color, opacity, size) {
+    const triangleCoords = [
+      { lat: point.lat + 0.0002, lng: point.lng },
+      { lat: point.lat - 0.0001, lng: point.lng + 0.0002 },
+      { lat: point.lat - 0.0001, lng: point.lng - 0.0002 },
+      { lat: point.lat + 0.0002, lng: point.lng },
+    ];
+    const shape = new google.maps.Polygon({
+      paths: triangleCoords,
       strokeColor: color,
       strokeOpacity: opacity,
       strokeWeight: 2,
+      fillColor: color,
+      fillOpacity: opacity,
+      map: this.map,
+    });
+
+    this.polylines.push(shape);
+  }
+
+  addCircle(point, color, opacity, r = 15) {
+    const circle = new google.maps.Circle({
+      strokeColor: color,
+      strokeOpacity: 0,
+      strokeWeight: 0,
       fillColor: color,
       fillOpacity: opacity,
       map: this.map,

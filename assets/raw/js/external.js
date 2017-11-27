@@ -8,7 +8,7 @@ import Counter from './visuals/Counter';
 import PieChartMap from './visuals/PieChartMap';
 import BubbleChart from './visuals/BubbleChart';
 import BubbleTimeline from './visuals/BubbleTimeline';
-import PathFinding from './visuals/PathFinding';
+import RouteMap from './visuals/RouteMap';
 import FilterMap from './visuals/FilterMap';
 
 function renderVisualFromConfig(defaultConfig, containerID) {
@@ -42,8 +42,8 @@ function renderVisualFromConfig(defaultConfig, containerID) {
     case 'Filter-Map':
       visual = new FilterMap(config, containerID);
       break;
-    case 'Path-Finding':
-      visual = new PathFinding(config, containerID);
+    case 'Route-Map':
+      visual = new RouteMap(config, containerID);
       break;
     default:
       document.getElementById(containerID).innerHTML = `<p>Error: could not find visualization: ${config.type}.`;

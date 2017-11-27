@@ -20,6 +20,7 @@ class DivOverlay extends google.maps.OverlayView {
     div.style.borderStyle = 'none';
     div.style.borderWidth = '0px';
     div.style.position = 'absolute';
+    div.style.transform = 'translate(-50%, 50%)';
 
     this.div_overlay = div;
 
