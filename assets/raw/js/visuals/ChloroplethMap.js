@@ -25,13 +25,6 @@ class ChloroplethMap extends Visual {
     Visual.empty(this.renderID);
 
     this.map.render(this.renderID);
-
-    this.map.registerClickAction((event) => {
-      console.log(`Lat: ${event.latLng.lat()}| Lng: ${event.latLng.lng()}`);
-      this.map.addCustomMarker({ lat: event.latLng.lat(), lng: event.latLng.lng() },
-      'https://image.flaticon.com/icons/svg/629/629418.svg', 100);
-    });
-    this.map.addCustomIconZoomListener();
   }
 
   renderControls() {
@@ -47,8 +40,12 @@ class ChloroplethMap extends Visual {
 
     editor.createHeader('Editor');
     editor.createButton('selectArea', 'Select Area', () => {
-      const selectedPoints = this.BoundarySelection.selectPoints();
-      console.log(selectedPoints);
+      const selector = new BoundarySelector(this.map);
+      selector.selectPoints((points) => {
+        console.log(points);
+        points.push(points[0]);
+        this.map.addPolyline(points, 'red', 2);
+      });
     });
   }
 }
