@@ -8,7 +8,9 @@ import PieChartMap from './visuals/PieChartMap';
 import BubbleTimeline from './visuals/BubbleTimeline';
 import RouteMap from './visuals/RouteMap';
 import BubbleChart from './visuals/BubbleChart';
+import BubbleMapChart from './visuals/BubbleMapChart';
 import FilterMap from './visuals/FilterMap';
+import ChloroplethMap from './visuals/ChloroplethMap';
 
 function renderEditor(route) {
   const rowContainer = document.createElement('div');
@@ -71,8 +73,14 @@ function renderEditor(route) {
       case 'Bubble-Chart':
         visual = new BubbleChart(config);
         break;
+      case 'Bubble-Map-Chart':
+        visual = new BubbleMapChart(config);
+        break;
       case 'Filter-Map':
         visual = new FilterMap(config);
+        break;
+      case 'Chloropleth-Map':
+        visual = new ChloroplethMap(config);
         break;
       default:
         visualContainer.innerHTML = `<p>Error: could not find visualization: ${route[1]}.`;

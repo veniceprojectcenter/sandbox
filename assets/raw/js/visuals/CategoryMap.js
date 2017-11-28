@@ -1,5 +1,4 @@
 import Visual from './helpers/Visual';
-import DefaultMapStyle from './helpers/DefaultMapStyle';
 import EditorGenerator from './helpers/EditorGenerator';
 import Map from './helpers/Map';
 
@@ -94,7 +93,8 @@ class CategoryMap extends Visual {
       document.getElementById('map-title').innerText = this.attributes.title;
     });
 
-    const columns = Object.keys(this.data[0]);
+    // const columns = Object.keys(this.data[0]);
+    const columns = Object.keys(this.getCategoricalData()[0]);
     const categories = [];
     for (let i = 0; i < columns.length; i += 1) {
       categories.push({

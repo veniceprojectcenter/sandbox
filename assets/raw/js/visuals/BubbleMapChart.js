@@ -1,0 +1,194 @@
+import Visual from './helpers/Visual';
+import DefaultMapStyle from './helpers/DefaultMapStyle';
+import EditorGenerator from './helpers/EditorGenerator';
+import Map from './helpers/Map';
+
+class BubbleMapChart extends Visual {
+  constructor(config) {
+    super(config);
+
+    this.map = new Map();
+  }
+
+  onLoadData() {
+    this.applyDefaultAttributes({
+      title: '',
+      size_by: Object.keys(this.getNumericData()[0])[0],
+      color_by: Object.keys(this.getNumericData()[0])[0],
+      bubble_size: {
+        range: [1, 100],
+      },
+      color: {
+        mode: 'interpolate',
+        colorspace: 'hcl',
+        range: ['#000080', '#CD0000'],
+      },
+    });
+  }
+
+  // filters out non number values from an array
+  static filterNaN(arr) {
+    const temp = [];
+    for (let i = 0; i < arr.length; i += 1) {
+      if (!isNaN(arr[i]) && arr[i] !== '') {
+        temp.push(arr[i]);
+      }
+    }
+    return temp;
+  }
+
+  drawMarkers() {
+    const sgroups = Visual.groupBy(this.attributes.size_by, this.getNumericData());
+    const cgroups = Visual.groupBy(this.attributes.color_by, this.getNumericData());
+    let values = Object.keys(sgroups);
+    values = this.constructor.filterNaN(values);
+    let cvalues = Object.keys(cgroups);
+    cvalues = this.constructor.filterNaN(cvalues);
+    const sMin = Math.max(...values);
+    const sMax = Math.min(...values);
+    const cMin = Math.max(...cvalues);
+    const cMax = Math.min(...cvalues);
+    for (let i = 0; i < values.length; i += 1) {
+      const cval = cvalues[i];
+      const crange = this.attributes.color.range;
+      const getC = d3.scaleLinear().domain([cMin, cMax]).range([crange[0], crange[1]]);
+      const color = getC(cval);
+      console.log(color, cval);
+      const sval = values[i];
+      const group = sgroups[sval];
+      const srange = this.attributes.bubble_size.range;
+      const getR = d3.scaleLinear().domain([sMin, sMax]).range([srange[0], srange[1]]);
+      const radius = getR(sval);
+      group.forEach((point) => {
+        const lat = parseFloat(point.lat);
+        const lng = parseFloat(point.lng);
+        this.map.addCircle({ lat, lng }, color, 0.5, parseFloat(radius));
+      });
+    }
+  }
+
+  render() {
+    const title = document.createElement('h3');
+    title.id = 'map-title';
+    title.innerText = this.attributes.title;
+
+    const mapContainer = document.createElement('div');
+    mapContainer.id = 'map-container';
+    mapContainer.className = 'map-container';
+
+    const visual = document.getElementById(this.renderID);
+    visual.appendChild(title);
+    visual.appendChild(mapContainer);
+
+    this.map.render(mapContainer.id);
+    this.drawMarkers();
+  }
+
+  renderControls() {
+    if (this.getNumericData().length === 0) {
+      alert('Dataset is empty!');
+      return;
+    }
+
+    Visual.empty(this.renderControlsID);
+    const controlsContainer = document.getElementById(this.renderControlsID);
+
+    const editor = new EditorGenerator(controlsContainer);
+
+    editor.createHeader('Configure Map');
+
+    editor.createTextField('map-title-field', 'Map Title', (e) => {
+      this.attributes.title = $(e.currentTarget).val();
+      document.getElementById('map-title').innerText = this.attributes.title;
+    });
+
+    const columns = (Object.keys(this.getNumericData()[0]));
+    const categories = [];
+    for (let i = 0; i < columns.length; i += 1) {
+      categories.push({
+        value: columns[i],
+        text: columns[i],
+      });
+    }
+
+    editor.createSelectBox('bubble-size-col',
+    'Select column to size by', categories, this.attributes.size_by,
+     (event) => {
+       const value = $(event.currentTarget).val();
+       this.attributes.size_by = value;
+       this.map.clearCircles();
+       this.drawMarkers();
+     });
+
+    editor.createNumberSlider('min-bubble-size',
+      'Minimum Bubble Size',
+       this.attributes.bubble_size.range[0],
+        1, 50,
+      (e) => {
+        const value = $(e.currentTarget).val();
+        this.attributes.bubble_size.range[0] = `${value}`;
+        // this.render();
+        this.map.clearCircles();
+        this.drawMarkers();
+      }, 'mouseup');
+
+    editor.createNumberSlider('max-bubble-size',
+       'Maximum Bubble Size',
+         this.attributes.bubble_size.range[1],
+         51, 100,
+       (e) => {
+         const value = $(e.currentTarget).val();
+         this.attributes.bubble_size.range[1] = `${value}`;
+         // this.render();
+         this.map.clearCircles();
+         this.drawMarkers();
+       }, 'mouseup');
+
+    editor.createSelectBox('bubble-color-col',
+        'Select column to color bubbles by', categories, this.attributes.color_by,
+         (event) => {
+           const value = $(event.currentTarget).val();
+           this.attributes.color_by = value;
+           this.map.clearCircles();
+           this.drawMarkers();
+         });
+
+    editor.createColorField('bubble-color-start', 'Color Range Start', this.attributes.color.range[0],
+           (e) => {
+             this.attributes.color.range[0] = $(e.currentTarget).val();
+             this.map.clearCircles();
+             this.drawMarkers();
+           });
+
+    editor.createColorField('bubble-color-end', 'Color Range End', this.attributes.color.range[1],
+          (e) => {
+            this.attributes.color.range[1] = $(e.currentTarget).val();
+            this.map.clearCircles();
+            this.drawMarkers();
+          });
+
+  //   editor.createNumberSlider('bubble-color-start',
+  // 'Color range start',
+  //  this.attributes.color.range[0],
+  //   1, 359,
+  // (e) => {
+  //   const value = $(e.currentTarget).val();
+  //   this.attributes.color.range[0] = `${value}`;
+  //   this.map.clearCircles();
+  //   this.drawMarkers();
+  // });
+  //
+  //   editor.createNumberSlider('bubble-color-end',
+  //   'Color range end',
+  //    this.attributes.color.range[1],
+  //     1, 359,
+  //   (e) => {
+  //     const value = $(e.currentTarget).val();
+  //     this.attributes.color.range[1] = `${value}`;
+  //     this.map.clearCircles();
+  //     this.drawMarkers();
+  //   });
+  }
+}
+
+export default BubbleMapChart;
