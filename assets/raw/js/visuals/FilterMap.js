@@ -73,7 +73,6 @@ class FilterMap extends Visual {
       }
       if ($(e.currentTarget).val() === 'custom') {
         headEditor.createFileUpload(`upload${index}`, 'Upload', async () => {
-          this.setGenerateButton();
           const image = await this.constructor.getSelectedImage(`upload${index}`);
           this.attributes.images[index] = image;
         });
