@@ -93,6 +93,7 @@ class Map {
     });
 
     this.circles.push(circle);
+    return circle;
   }
 
   clearCirclesOfColor(color) {
@@ -125,6 +126,7 @@ class Map {
 
     polyline.setMap(this.map);
     this.polylines.push(polyline);
+    return polyline;
   }
 
   clear() {

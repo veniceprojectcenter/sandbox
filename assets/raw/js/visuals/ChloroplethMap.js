@@ -1,0 +1,125 @@
+import Visual from './helpers/Visual';
+import Map from './helpers/Map';
+import EditorGenerator from './helpers/EditorGenerator';
+import BoundarySelector from './helpers/BoundarySelector';
+
+/* This file is to be used as a default starting point for new map visualizations
+ * that feature adding divs
+*/
+
+class ChloroplethMap extends Visual {
+  constructor(config) {
+    super(config);
+
+    this.map = new Map();
+    this.boundarySelector = new BoundarySelector(this.map);
+  }
+
+  static removeBoundaryWithPoint(point) {
+    const boundaries = JSON.parse(localStorage.boundaries);
+    for (let i = 0; i < boundaries.length; i += 1) {
+      const boundary = boundaries[i];
+      if (boundary !== null) {
+        for (let j = 0; j < boundary.length; j += 1) {
+          const boundPoint = boundary[j];
+          if (boundPoint.lat === point.lat) {
+            boundaries[i] = null;
+          }
+        }
+      }
+    }
+    localStorage.boundaries = JSON.stringify(boundaries);
+  }
+
+  onLoadData() {
+    this.applyDefaultAttributes({
+      title: '',
+    });
+  }
+
+  addDataMarkers() {
+    for (let i = 0; i < this.data.length; i += 1) {
+      const point = this.data[i];
+      this.map.addCircle({ lat: parseFloat(point.lat), lng: parseFloat(point.lng) }, 'blue', 0.5);
+    }
+  }
+
+  render() {
+    Visual.empty(this.renderID);
+
+    this.map.render(this.renderID);
+    this.renderLocalPolyLines();
+    this.addDataMarkers();
+  }
+
+  renderLocalPolyLines() {
+    if (localStorage.boundaries === undefined) {
+      localStorage.boundaries = JSON.stringify([]);
+    }
+    const lines = JSON.parse(localStorage.boundaries);
+    lines.forEach((line) => {
+      if (line !== null) {
+        const boundary = this.map.addPolyline(line, 'red', 5);
+        boundary.addListener('click', () => {
+          boundary.setMap(null);
+          this.constructor.removeBoundaryWithPoint(line[0]);
+        });
+      }
+    });
+  }
+
+  addPointsWithinBoundary(points, boundary) {
+    const pointsWithinBoundary = BoundarySelector.getPointsInBoundary(points, boundary);
+    pointsWithinBoundary.forEach((point) => {
+      this.map.addCircle({ lat: parseFloat(point.lat), lng: parseFloat(point.lng) }, 'red', 1);
+    });
+  }
+
+  drawAndAddBoundary(points) {
+    points.push(points[0]);
+    const line = this.map.addPolyline(points, 'red', 5);
+    if (localStorage.boundaries === undefined) {
+      localStorage.boundaries = JSON.stringify([]);
+    }
+    const boundaries = JSON.parse(localStorage.boundaries);
+    boundaries.push(points);
+    localStorage.boundaries = JSON.stringify(boundaries);
+    line.addListener('click', () => {
+      line.setMap(null);
+      this.constructor.removeBoundaryWithPoint(points[0]);
+    });
+  }
+
+  renderControls() {
+    if (this.data.length === 0) {
+      alert('Dataset is empty!');
+      return;
+    }
+
+    Visual.empty(this.renderControlsID);
+    const controlsContainer = document.getElementById(this.renderControlsID);
+
+    const editor = new EditorGenerator(controlsContainer);
+
+    editor.createHeader('Editor');
+    this.createSelectButton(editor);
+    // this.createColumnSelector(editor);
+  }
+
+  /* createColumnSelector(editor) {
+    editor.createSelectBox('columnSelect', 'Select a column to color by',
+    options, current, onOptionChanged);
+  } */
+
+  createSelectButton(editor) {
+    editor.createButton('selectArea', 'Select Area', () => {
+      const selector = new BoundarySelector(this.map);
+      selector.selectPoints((points) => {
+        this.drawAndAddBoundary(points);
+        this.addPointsWithinBoundary(this.data, points);
+      });
+    });
+  }
+}
+
+export default ChloroplethMap;

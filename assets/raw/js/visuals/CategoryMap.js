@@ -1,5 +1,4 @@
 import Visual from './helpers/Visual';
-import DefaultMapStyle from './helpers/DefaultMapStyle';
 import EditorGenerator from './helpers/EditorGenerator';
 import Map from './helpers/Map';
 
