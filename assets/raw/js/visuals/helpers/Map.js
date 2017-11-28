@@ -60,7 +60,7 @@ class Map {
     });
   }
 
-  addTriangle(point, color, opacity, size) {
+  addTriangle(point, color, opacity) {
     const triangleCoords = [
       { lat: point.lat + 0.0002, lng: point.lng },
       { lat: point.lat - 0.0001, lng: point.lng + 0.0002 },
@@ -178,16 +178,45 @@ class Map {
     };
   }
 
+  latLngToPixel(latLng) {
+    const projection = this.map.getProjection();
+    const bounds = this.map.getBounds();
+    const topRight = projection.fromLatLngToPoint(bounds.getNorthEast());
+    const bottomLeft = projection.fromLatLngToPoint(bounds.getSouthWest());
+    const scale = 2 ** this.map.getZoom();
+    const worldPoint = projection.fromLatLngToPoint(latLng);
+    const metersPerPixel = (156543.03392 * Math.cos((latLng.lat() * Math.PI) / 180)) / scale;
+    const coords = {
+      x: Math.floor((worldPoint.x - bottomLeft.x) * scale),
+      y: Math.floor((worldPoint.y - topRight.y) * scale),
+      metersPerPixel,
+    };
+
+    return coords;
+  }
+
   async export() {
     const map = this.getStaticMap();
-    const mapURL = map.url;
-    const width = map.width;
-    const height = map.height;
-    const encodedURL = await ImageHelper.urlToBase64(mapURL);
+    const encodedURL = await ImageHelper.urlToBase64(map.url);
+
+    let circlesString = '';
+    for (let i = 0; i < this.circles.length; i += 1) {
+      const latLng = this.circles[i].getCenter();
+      const coords = this.latLngToPixel(latLng);
+      const radius = this.circles[i].radius / coords.metersPerPixel;
+      const strokeColor = this.circles[i].strokeColor;
+      const fillColor = this.circles[i].fillColor;
+      const fillOpacity = this.circles[i].fillOpacity;
+      if (coords.x >= 0 && coords.x <= map.width && coords.y >= 0 && coords.y <= map.height) {
+        const circle = `<circle cx="${coords.x}" cy="${coords.y}" r="${radius}" stroke="${strokeColor}" stroke-width="0" fill="${fillColor}" fill-opacity="${fillOpacity}" />`;
+        circlesString += circle;
+      }
+    }
 
     const svg = `
-      <svg version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg" xml:space="preserve">
-        <image width="${width}" height="${height}" xlink:href="${encodedURL}" />
+      <svg width="${map.width}" height="${map.height}" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg" xml:space="preserve">
+        <image width="${map.width}" height="${map.height}" xlink:href="${encodedURL}" />
+        ${circlesString}
       </svg>
     `;
 

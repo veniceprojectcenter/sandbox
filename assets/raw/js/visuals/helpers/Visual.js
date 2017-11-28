@@ -153,7 +153,7 @@ class Visual {
     saveSVGButton.addEventListener('click', async () => {
       let svgData = '';
       const svg = $(`#${this.renderID} svg`);
-      const map = document.querySelector(`#${this.renderID} .map`);
+      const map = document.querySelector(`#${this.renderID} .map`) || document.querySelector(`#${this.renderID}.map`);
       if (svg.length === 1) {
         this.editmode = false;
         this.render();
