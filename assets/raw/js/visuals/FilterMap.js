@@ -103,9 +103,9 @@ class FilterMap extends Visual {
       `;
       checkboxNode.onchange = (evt) => {
         if (evt.target.checked) {
-          const v = $(`select[id=${groupIdJoin}-columnSelect]`).val();
-          if (v !== null) {
-            console.log(v);
+          const selectVal = $(`select[id=${groupIdJoin}-columnSelect]`).val();
+          if (selectVal !== null) {
+            console.log(selectVal);
           } else {
             console.log('select is null');
           }
