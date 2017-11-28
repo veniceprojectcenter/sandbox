@@ -331,14 +331,14 @@ class Visual {
   *Any data with more than maxCategories categories and is numeric is diplayed
   **Data returned is in same format as this.data
   */
-  getNumericData(maxCategories = 25) {
-    const dataKeys = Object.keys(this.data[0]);
-    const numericData = JSON.parse(JSON.stringify(this.data));
+  getNumericData(maxCategories = 25, data = this.data) {
+    const dataKeys = Object.keys(data[0]);
+    const numericData = JSON.parse(JSON.stringify(data));
     for (let i = 0; i < dataKeys.length; i += 1) {
-      const groupedList = this.getGroupedList(dataKeys[i]);
+      const groupedList = this.getGroupedList(dataKeys[i], data);
       if (groupedList.length < maxCategories
-       || isNaN(this.data[0][dataKeys[i]])) {
-        for (let j = 0; j < this.data.length; j += 1) {
+       || isNaN(data[0][dataKeys[i]])) {
+        for (let j = 0; j < data.length; j += 1) {
           delete numericData[j][dataKeys[i]];
         }
       }
@@ -357,13 +357,13 @@ class Visual {
   *Any data attribute with less than  or equal to maxCategories categories are displayed
   *Data returned is in same format as this.data
   */
-  getCategoricalData(maxCategories = 25) {
-    const dataKeys = Object.keys(this.data[0]);
-    const categoricalData = JSON.parse(JSON.stringify(this.data));
+  getCategoricalData(maxCategories = 25, data = this.data) {
+    const dataKeys = Object.keys(data[0]);
+    const categoricalData = JSON.parse(JSON.stringify(data));
     for (let i = 0; i < dataKeys.length; i += 1) {
-      const groupedList = this.getGroupedList(dataKeys[i]);
+      const groupedList = this.getGroupedList(dataKeys[i], data);
       if (groupedList.length >= maxCategories) {
-        for (let j = 0; j < this.data.length; j += 1) {
+        for (let j = 0; j < data.length; j += 1) {
           delete categoricalData[j][dataKeys[i]];
         }
       }
