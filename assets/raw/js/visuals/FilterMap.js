@@ -18,6 +18,8 @@ class FilterMap extends Visual {
     this.renderData = [];
     this.dataSets = [];
     Data.fetchDataSets((e) => { this.getAllDataSets(e); });
+    this.attributes.sliders = ['a', 'b'];
+    this.attributes.slider_vals = { a: 1, b: 2 };
   }
 
 
@@ -59,6 +61,20 @@ class FilterMap extends Visual {
     });
       }
     }
+    const div = document.createElement('div');
+    const visual = document.getElementById('visual');
+    visual.insertBefore(div, visual.firstChild);
+
+    const editor = new EditorGenerator(div);
+    this.attributes.sliders.forEach((e, i) => {
+      editor.createNumberSlider(`slider-${i}`,
+        `${e}`, this.attributes.slider_vals[e], 1, 10,
+        (t) => {
+          const value = $(t.currentTarget).val();
+          this.attributes.slider_vals[e] = `${value}`;
+          this.render();
+        });
+    });
   }
   renderControls() {
     this.renderControlsDiv = document.getElementById(this.renderControlsID);
