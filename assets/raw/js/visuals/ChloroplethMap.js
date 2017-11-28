@@ -19,13 +19,12 @@ class ChloroplethMap extends Visual {
     const boundaries = JSON.parse(localStorage.boundaries);
     for (let i = 0; i < boundaries.length; i += 1) {
       const boundary = boundaries[i];
-      if (boundary === null) {
-        continue;
-      }
-      for (let j = 0; j < boundary.length; j += 1) {
-        const boundPoint = boundary[j];
-        if (boundPoint.lat === point.lat) {
-          boundaries[i] = null;
+      if (boundary !== null) {
+        for (let j = 0; j < boundary.length; j += 1) {
+          const boundPoint = boundary[j];
+          if (boundPoint.lat === point.lat) {
+            boundaries[i] = null;
+          }
         }
       }
     }
@@ -62,6 +61,21 @@ class ChloroplethMap extends Visual {
     });
   }
 
+  drawAndAddBoundary(points) {
+    points.push(points[0]);
+    const line = this.map.addPolyline(points, 'red', 5);
+    if (localStorage.boundaries === undefined) {
+      localStorage.boundaries = JSON.stringify([]);
+    }
+    const boundaries = JSON.parse(localStorage.boundaries);
+    boundaries.push(points);
+    localStorage.boundaries = JSON.stringify(boundaries);
+    line.addListener('click', () => {
+      line.setMap(null);
+      this.constructor.removeBoundaryWithPoint(points[0]);
+    });
+  }
+
   renderControls() {
     if (this.data.length === 0) {
       alert('Dataset is empty!');
@@ -77,19 +91,7 @@ class ChloroplethMap extends Visual {
     editor.createButton('selectArea', 'Select Area', () => {
       const selector = new BoundarySelector(this.map);
       selector.selectPoints((points) => {
-        console.log(points);
-        points.push(points[0]);
-        const line = this.map.addPolyline(points, 'red', 5);
-        if (localStorage.boundaries === undefined) {
-          localStorage.boundaries = JSON.stringify([]);
-        }
-        const boundaries = JSON.parse(localStorage.boundaries);
-        boundaries.push(points);
-        localStorage.boundaries = JSON.stringify(boundaries);
-        line.addListener('click', () => {
-          line.setMap(null);
-          this.constructor.removeBoundaryWithPoint(points[0]);
-        });
+        this.drawAndAddBoundary(points);
       });
     });
   }
