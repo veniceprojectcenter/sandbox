@@ -1,6 +1,7 @@
 import Visual from './helpers/Visual';
 import Map from './helpers/Map';
 import EditorGenerator from './helpers/EditorGenerator';
+import BoundarySelector from './helpers/BoundarySelector';
 
 /* This file is to be used as a default starting point for new map visualizations
  * that feature adding divs
@@ -11,6 +12,7 @@ class ChloroplethMap extends Visual {
     super(config);
 
     this.map = new Map();
+    this.boundarySelector = new BoundarySelector(this.map);
   }
 
   onLoadData() {
@@ -44,6 +46,10 @@ class ChloroplethMap extends Visual {
     const editor = new EditorGenerator(controlsContainer);
 
     editor.createHeader('Editor');
+    editor.createButton('selectArea', 'Select Area', () => {
+      const selectedPoints = this.BoundarySelection.selectPoints();
+      console.log(selectedPoints);
+    });
   }
 }
 
