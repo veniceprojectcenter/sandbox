@@ -1,6 +1,7 @@
 import Visual from './helpers/Visual';
 import Map from './helpers/Map';
 import EditorGenerator from './helpers/EditorGenerator';
+import ImageHelper from './helpers/ImageHelper';
 import Filter from './helpers/Filter';
 
 class FilterMap extends Visual {
@@ -71,7 +72,10 @@ class FilterMap extends Visual {
         e.currentTarget.parentNode.parentNode.parentNode.children[1].remove();
       }
       if ($(e.currentTarget).val() === 'custom') {
-        headEditor.createFileUpload(`upload${index}`, 'Upload', () => {
+        headEditor.createFileUpload(`upload${index}`, 'Upload', async () => {
+          this.setGenerateButton();
+          const image = await this.constructor.getSelectedImage(`upload${index}`);
+          this.attributes.images[index] = image;
         });
       } else {
         headEditor.createColorField(`color${index}`, `Series ${index}`, '#ff0000', () => {});
@@ -84,7 +88,7 @@ class FilterMap extends Visual {
       this.filter.removeSeries(e2.currentTarget);
     });
   }
-  getColorShape(filters) {
+  async getColorShape(filters) {
     for (let i = 0; i < filters.length; i += 1) {
       if (filters[i] !== undefined) {
         const theColor = $(document.getElementById(`color${i}-field`));
@@ -92,23 +96,22 @@ class FilterMap extends Visual {
         this.attributes.colors[i] = theColor.val();
         this.attributes.shapes[i] = theShape.val();
         if (theShape.val() === 'custom') {
-          const url = this.constructor.getSelectedURL(`upload${i}`);
-          this.attributes.images[i] = url;
+
         }
       }
     }
   }
 
-  static getSelectedURL(id) {
+  static async getSelectedImage(id) {
     const file = document.getElementById(id).childNodes[1].childNodes[3].files[0];
     if (file !== undefined) {
       const url = window.URL.createObjectURL(file);
-      const fileReader = new FileReader();
+      /* const fileReader = new FileReader();
       fileReader.onloadend = () => {
         console.log(fileReader.result);
       };
-      fileReader.readAsDataURL(file);
-      return url;
+      fileReader.readAsDataURL(file); */
+      return ImageHelper.urlToBase64(url);
     }
     return undefined;
   }
