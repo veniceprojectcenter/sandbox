@@ -94,6 +94,11 @@ class FilterMap extends Visual {
     const file = document.getElementById(id).childNodes[1].childNodes[3].files[0];
     if (file !== undefined) {
       const url = window.URL.createObjectURL(file);
+      const fileReader = new FileReader();
+      fileReader.onloadend = () => {
+        console.log(fileReader.result);
+      };
+      fileReader.readAsDataURL(file);
       return url;
     }
     return undefined;
