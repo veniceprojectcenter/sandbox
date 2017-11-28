@@ -7,7 +7,7 @@ const visuals = [
   { name: 'Category Map', image: 'http://datavizproject.com/wp-content/uploads/2017/08/DVP_101_200-56-300x300.png', link: 'Category-Map' },
   { name: 'Bubble Map Chart', image: 'http://datavizproject.com/wp-content/uploads/2017/08/DVP_101_200-56-300x300.png', link: 'Bubble-Map-Chart' },
   { name: 'Counter', image: 'http://datavizproject.com/wp-content/uploads/2016/01/DVP_101_200-17-300x300.png', link: 'Counter' },
-  { name: 'Artifact Pathfinding', image: 'http://datavizproject.com/wp-content/uploads/2016/06/DVP_1_100-78-300x300.png', link: 'Path-Finding' },
+  { name: 'Route Map', image: 'http://datavizproject.com/wp-content/uploads/2016/06/DVP_101_200-19.png', link: 'Route-Map' },
   // { name: 'Isochrone Map', image: 'http://datavizproject.com/wp-content/uploads/2015/10/DVP-88-300x300.png', link: 'Isochrone' },
   { name: 'Pie Chart Map', image: 'http://datavizproject.com/wp-content/uploads/2016/06/DVP_101_200-43-300x300.png', link: 'Pie-Chart-Map' },
   { name: 'Bubble Timeline', image: 'http://datavizproject.com/wp-content/uploads/2017/09/DVP_101_200-36.png', link: 'Bubble-Timeline' },

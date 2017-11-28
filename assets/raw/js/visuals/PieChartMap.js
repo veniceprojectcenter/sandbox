@@ -14,7 +14,7 @@ class PieChartMap extends Visual {
   onLoadData() {
     const columnNames = Object.keys(this.data[0]);
     this.applyDefaultAttributes({
-      chart_size: 0.005, // In degrees latitude/longitude
+      chart_size: 0.005, // In degrees lat/lng
       group_column: columnNames[52],
       chart_column: columnNames[76],
     });
@@ -27,7 +27,7 @@ class PieChartMap extends Visual {
     const chartColumn = this.attributes.chart_column;
 
     let groups = this.getGroupsByColumn(groupColumn);
-    groups = PieChartMap.calculatePositions(groups);
+    groups = this.constructor.calculatePositions(groups);
 
 
     const length = Object.keys(groups).length;
@@ -40,18 +40,18 @@ class PieChartMap extends Visual {
 
   renderChart(groupName, group, chartColumn) {
     const chartSize = this.attributes.chart_size;
-    if (group.Latitude === undefined) {
+    if (group.lat === undefined) {
       return;
     }
+    // this.map.addCircle({ lat: group.lat, lng: group.lng }, 'blue', 1);
+    // this.map.addCircle({ lat: group.lat + (chartSize / 1.5), lng: group.lng + chartSize }, 'blue', 1);
 
-    group.Latitude -= 0.0032; // These values are used to center the chart divs
-    group.Longitude -= 0.0037; // to where they look like they should actually be.
 
     const bounds = new google.maps.LatLngBounds(
-       new google.maps.LatLng(group.Latitude,
-                              group.Longitude),
-       new google.maps.LatLng(group.Latitude + chartSize,
-                              group.Longitude + chartSize),
+       new google.maps.LatLng(group.lat,
+                              group.lng),
+       new google.maps.LatLng(group.lat + (chartSize / 1.5),
+                              group.lng + chartSize),
       );
 
     const renderfunction = (id) => {
@@ -63,6 +63,7 @@ class PieChartMap extends Visual {
           group_by: chartColumn,
           dontDefineDimensions: true,
           font_size: 60,
+          show_legend: false,
         },
       };
 
@@ -79,12 +80,10 @@ class PieChartMap extends Visual {
     }
 
     new DivOverlay(bounds, `donut${this.currentId}`, this.map.map, renderfunction);
-
-    // Marker(group.lat, group.lng);
   }
 
   static calculatePositions(groups) {
-    // Calculate the average latitude and longitude
+    // Calculate the average lat and lng
     const length = Object.keys(groups).length;
     for (let i = 0; i < length; i += 1) {
       const groupName = Object.keys(groups)[i];
@@ -93,8 +92,8 @@ class PieChartMap extends Visual {
       let lng = 0;
       let count = 0;
       for (let j = 0; j < group.data.length; j += 1) {
-        const currLat = parseFloat(group.data[j].Latitude);
-        const currLng = parseFloat(group.data[j].Longitude);
+        const currLat = parseFloat(group.data[j].lat);
+        const currLng = parseFloat(group.data[j].lng);
         if (currLat !== 0 && currLng !== 0) {
           lat += currLat;
           lng += currLng;
@@ -105,8 +104,8 @@ class PieChartMap extends Visual {
         lat /= count;
         lng /= count;
       }
-      group.Latitude = lat;
-      group.Longitude = lng;
+      group.lat = lat;
+      group.lng = lng;
     }
 
     return groups;

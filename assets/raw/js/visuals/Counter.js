@@ -26,7 +26,7 @@ class Counter extends Visual {
     this.attributes.dataFilters = [];
     this.attributes.numericFilters = [];
     this.renderData = JSON.parse(JSON.stringify(this.data));
-    this.columnOptions = Object.keys(this.data[0]);
+    this.attributes.columnOptions = Object.keys(this.data[0]);
     this.renderControlsDiv = document.getElementById(this.renderControlsID);
     const catFilterDiv = document.createElement('div');
     const numFilterDiv = document.createElement('div');
@@ -68,7 +68,7 @@ class Counter extends Visual {
     this.renderControlsDiv.appendChild(catFilterDiv);
     editor.createButton('addCat', 'Add Categorical Filter', () => {
       num += 1;
-      catEditor.createDataFilter(`Filter${num}`, ccats, (e) => {
+      catEditor.createDataFilter(`Filter${num}`, ccats, 'catFilter', (e) => {
         const column = $(e.currentTarget).val();
         const categories = this.getGroupedList(column);
         const catSelect = e.currentTarget.parentNode.parentNode.nextSibling.nextSibling
@@ -96,7 +96,7 @@ class Counter extends Visual {
     filterLabel2.style.textAlign = 'center';
     this.renderControlsDiv.appendChild(filterLabel2);
     this.renderControlsDiv.appendChild(numFilterDiv);
-    catEditor.createDataFilter('Filter', ccats, (e) => {
+    catEditor.createDataFilter('Filter', ccats, 'catFilter', (e) => {
       const column = $(e.currentTarget).val();
       const categories = this.getGroupedList(column);
       const catSelect = e.currentTarget.parentNode.parentNode.nextSibling.nextSibling
@@ -117,14 +117,14 @@ class Counter extends Visual {
       $(catSelect).material_select();
     }, (e) => { this.removeFilter(e.currentTarget); });
 
-    numEditor.createNumericFilter('NumFilter', ncats, (e) => {
+    numEditor.createNumericFilter('NumFilter', ncats, 'numFilter', (e) => {
       this.removeFilter(e.currentTarget);
     });
 
 
     editor.createButton('addNum', 'Add Numeric Filter', () => {
       num += 1;
-      numEditor.createNumericFilter(`NumFilter${num}`, ncats, (e) => { this.removeFilter(e.currentTarget); });
+      numEditor.createNumericFilter(`NumFilter${num}`, ncats, 'numFilter', (e) => { this.removeFilter(e.currentTarget); });
     });
 
     this.renderControlsDiv.appendChild(document.createElement('br'));
@@ -132,7 +132,7 @@ class Counter extends Visual {
     editor.createButton('submit', 'Generate Table', () => {
       this.attributes.dataFilters = [];
       this.attributes.numericFilters = [];
-      const catFilters = document.getElementsByClassName('dataFilter');
+      const catFilters = document.getElementsByClassName('catFilter');
       const numFilters = document.getElementsByClassName('numFilter');
       for (let i = 0; i < catFilters.length; i += 1) {
         const filter = catFilters[i];
@@ -167,7 +167,7 @@ class Counter extends Visual {
   */
   render() {
     if (this.attributes.dataFilters !== undefined && this.attributes.numericFilters !== undefined) {
-      this.renderData = this.filterCategorical(this.attributes.dataFilters, this.data);
+      this.renderData = this.filterCategorical(this.attributes.dataFilters, this.renderData);
       this.renderData = this.filterNumerical(this.attributes.numericFilters, this.renderData);
     } else {
       this.renderData = this.data;
@@ -177,7 +177,7 @@ class Counter extends Visual {
     this.tableDiv = document.createElement('div');
     this.renderDiv.appendChild(this.tableDiv);
     this.tableDiv.id = 'tableDiv';
-    if (this.columnOptions === null) {
+    if (this.attributes.columnOptions === null) {
       this.columnOptions = [];
     }
     this.displayTable();
@@ -212,8 +212,6 @@ class Counter extends Visual {
     txt += '</table>';
     document.getElementById('tableDiv').innerHTML = `${txt}Count: ${count}`;
   }
-
-
   removeFilter(buttonID) {
     buttonID.parentNode.parentNode.remove();
   }

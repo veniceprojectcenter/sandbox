@@ -22,6 +22,11 @@ class EditorGenerator {
       onColorChanged(e);
     });
   }
+  createRemoveButton(id, onPress) {
+    const context = { id };
+    this.handlebarsWithContext('remove-button', context);
+    $(`#${id}-button`).on('click', onPress);
+  }
 
   createLeftRightButtons(id, title, onLeftClicked, onRightClicked) {
     const context = { id, title };

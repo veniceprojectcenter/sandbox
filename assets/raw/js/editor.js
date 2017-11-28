@@ -6,7 +6,7 @@ import Counter from './visuals/Counter';
 import DefaultMap from './visuals/helpers/DefaultMap';
 import PieChartMap from './visuals/PieChartMap';
 import BubbleTimeline from './visuals/BubbleTimeline';
-import PathFinding from './visuals/PathFinding';
+import RouteMap from './visuals/RouteMap';
 import BubbleChart from './visuals/BubbleChart';
 import BubbleMapChart from './visuals/BubbleMapChart';
 import FilterMap from './visuals/FilterMap';
@@ -66,8 +66,8 @@ function renderEditor(route) {
       case 'Default-Map':
         visual = new DefaultMap(config);
         break;
-      case 'Path-Finding':
-        visual = new PathFinding(config);
+      case 'Route-Map':
+        visual = new RouteMap(config);
         break;
       case 'Bubble-Chart':
         visual = new BubbleChart(config);

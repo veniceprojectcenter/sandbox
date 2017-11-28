@@ -1,4 +1,5 @@
 import DefaultMapStyle from './DefaultMapStyle';
+import ImageHelper from './ImageHelper';
 
 /* This file is to be used as a default starting point for new map visualizations
  * that feature adding divs
@@ -9,10 +10,15 @@ class Map {
     this.map = null;
     this.circles = [];
     this.polylines = [];
+
+    this.customs = [];
+    this.n = 0; // Number of custom icons
   }
 
   render(containerID) {
-    this.map = new google.maps.Map(document.getElementById(containerID), {
+    const renderDiv = document.getElementById(containerID);
+    renderDiv.classList.add('map');
+    this.map = new google.maps.Map(renderDiv, {
       center: { lat: 45.435, lng: 12.335 },
       zoom: 14,
       styles: DefaultMapStyle,
@@ -23,11 +29,62 @@ class Map {
     google.maps.event.addListener(this.map, 'click', clickFunction);
   }
 
-  addCircle(point, color, opacity, r = 15) {
-    const circle = new google.maps.Circle({
+  addCustomMarker(point, url, size) {
+    const icon = {
+      url,
+      scaledSize: new google.maps.Size(size, size),
+      anchor: new google.maps.Point(size / 2, size / 2),
+      zIndex: this.n,
+    };
+    this.n += 1;
+    const marker = new google.maps.Marker({
+      position: {
+        lat: point.lat,
+        lng: point.lng,
+      },
+      map: this.map,
+      title: '',
+      icon,
+    });
+
+    this.customs.push(marker);
+  }
+
+  addCustomIconZoomListener() {
+    google.maps.event.addListener(this.map, 'zoom_changed', () => {
+      this.customs.forEach((marker) => {
+        marker.setMap(null);
+        marker.setIcon(marker.icon);
+        marker.setMap(this.map);
+      });
+    });
+  }
+
+  addTriangle(point, color, opacity, size) {
+    const triangleCoords = [
+      { lat: point.lat + 0.0002, lng: point.lng },
+      { lat: point.lat - 0.0001, lng: point.lng + 0.0002 },
+      { lat: point.lat - 0.0001, lng: point.lng - 0.0002 },
+      { lat: point.lat + 0.0002, lng: point.lng },
+    ];
+    const shape = new google.maps.Polygon({
+      paths: triangleCoords,
       strokeColor: color,
       strokeOpacity: opacity,
       strokeWeight: 2,
+      fillColor: color,
+      fillOpacity: opacity,
+      map: this.map,
+    });
+
+    this.polylines.push(shape);
+  }
+
+  addCircle(point, color, opacity, r = 15) {
+    const circle = new google.maps.Circle({
+      strokeColor: color,
+      strokeOpacity: 0,
+      strokeWeight: 0,
       fillColor: color,
       fillOpacity: opacity,
       map: this.map,
@@ -83,11 +140,46 @@ class Map {
     Map.clear(this.polylines);
   }
 
-  static clear(items) {
+  static clear(initialItems) {
+    let items = initialItems;
+
     items.forEach((item) => {
       item.setMap(null);
     });
+
     items = [];
+  }
+
+  async export() {
+    const centerString = `center=${this.map.getCenter().lat()},${this.map.getCenter().lng()}`;
+    const zoomString = `zoom=${this.map.getZoom()}`;
+    const width = this.map.getDiv().offsetWidth;
+    const height = this.map.getDiv().offsetHeight;
+    const sizeString = `size=${width}x${height}`;
+    let styleString = '';
+    for (let i = 0; i < DefaultMapStyle.length; i += 1) {
+      const feature = DefaultMapStyle[i].featureType || 'all';
+      const element = DefaultMapStyle[i].elementType || 'all';
+      const rule = Object.keys(DefaultMapStyle[i].stylers[0])[0];
+      const argument = DefaultMapStyle[i].stylers[0][rule].replace('#', '0x');
+      const style = `style=feature:${feature}|element:${element}|${rule}:${argument}`;
+      if (i !== 0) {
+        styleString += '&';
+      }
+      styleString += style;
+    }
+    const optionsString = `${centerString}&${zoomString}&${sizeString}&${styleString}`;
+    const mapURL = `https://maps.googleapis.com/maps/api/staticmap?${optionsString}&key=AIzaSyCkT74d_hmbDXczCSmtMBdgNSWEDHovxN0`;
+
+    const encodedURL = await ImageHelper.urlToBase64(mapURL);
+
+    const svg = `
+      <svg version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg" xml:space="preserve">
+        <image width="${width}" height="${height}" xlink:href="${encodedURL}" />
+      </svg>
+    `;
+
+    return svg;
   }
 }
 
