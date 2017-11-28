@@ -101,6 +101,18 @@ class FilterMap extends Visual {
         <input type="checkbox" id="${groupIdJoin}-toVisual" />
         <label for="${groupIdJoin}-toVisual" style="margin-top:25px"/>
       `;
+      checkboxNode.onchange = (evt) => {
+        if (evt.target.checked) {
+          const v = $(`select[id=${groupIdJoin}-columnSelect]`).val();
+          if (v !== null) {
+            console.log(v);
+          } else {
+            console.log('select is null');
+          }
+        } else {
+          console.log('unchecked');
+        }
+      };
       filterRow.insertBefore(checkboxNode, valueCol.nextSibling);
     }, false);
     this.filter.makeFilterSeries(
