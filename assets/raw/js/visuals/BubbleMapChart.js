@@ -21,7 +21,7 @@ class BubbleMapChart extends Visual {
       color: {
         mode: 'interpolate',
         colorspace: 'hcl',
-        range: [0, 359],
+        range: ['#000080', '#CD0000'],
       },
     });
   }
@@ -38,22 +38,27 @@ class BubbleMapChart extends Visual {
   }
 
   drawMarkers() {
-    // console.log(this.getNumericData());
-    const groups = Visual.groupBy(this.attributes.size_by, this.getNumericData());
-    let values = Object.keys(groups);
+    const sgroups = Visual.groupBy(this.attributes.size_by, this.getNumericData());
+    const cgroups = Visual.groupBy(this.attributes.color_by, this.getNumericData());
+    let values = Object.keys(sgroups);
     values = this.constructor.filterNaN(values);
-    const maxVal = Math.max(...values);
-    const minVal = Math.min(...values);
-    // console.log(minVal, maxVal);
+    let cvalues = Object.keys(cgroups);
+    cvalues = this.constructor.filterNaN(cvalues);
+    const sMin = Math.max(...values);
+    const sMax = Math.min(...values);
+    const cMin = Math.max(...cvalues);
+    const cMax = Math.min(...cvalues);
     for (let i = 0; i < values.length; i += 1) {
-      const val = values[i];
-      const group = groups[val];
-      const color = '#4286f4';
-      // const crange = this.attributes.color.range;
-      // const color = d3.scaleLinear().domain([0, labels.length]).range([crange[0], crange[1]]);
+      const cval = cvalues[i];
+      const crange = this.attributes.color.range;
+      const getC = d3.scaleLinear().domain([cMin, cMax]).range([crange[0], crange[1]]);
+      const color = getC(cval);
+      console.log(color, cval);
+      const sval = values[i];
+      const group = sgroups[sval];
       const srange = this.attributes.bubble_size.range;
-      const getR = d3.scaleLinear().domain([minVal, maxVal]).range([srange[0], srange[1]]);
-      const radius = getR(val);
+      const getR = d3.scaleLinear().domain([sMin, sMax]).range([srange[0], srange[1]]);
+      const radius = getR(sval);
       group.forEach((point) => {
         const lat = parseFloat(point.lat);
         const lng = parseFloat(point.lng);
@@ -80,7 +85,7 @@ class BubbleMapChart extends Visual {
   }
 
   renderControls() {
-    if (this.data.length === 0) {
+    if (this.getNumericData().length === 0) {
       alert('Dataset is empty!');
       return;
     }
@@ -97,7 +102,6 @@ class BubbleMapChart extends Visual {
       document.getElementById('map-title').innerText = this.attributes.title;
     });
 
-    // const columns = Object.keys(this.data[0]);
     const columns = (Object.keys(this.getNumericData()[0]));
     const categories = [];
     for (let i = 0; i < columns.length; i += 1) {
@@ -115,15 +119,6 @@ class BubbleMapChart extends Visual {
        this.map.clearCircles();
        this.drawMarkers();
      });
-
-    // editor.createSelectBox('bubble-color-col',
-    //  'Select column to color by', categories, this.attributes.color_by,
-    //   (event) => {
-    //     const value = $(event.currentTarget).val();
-    //     this.attributes.color_by = value;
-    //     this.map.clearCircles();
-    //     this.drawMarkers();
-    //   });
 
     editor.createNumberSlider('min-bubble-size',
       'Minimum Bubble Size',
@@ -148,6 +143,51 @@ class BubbleMapChart extends Visual {
          this.map.clearCircles();
          this.drawMarkers();
        }, 'mouseup');
+
+    editor.createSelectBox('bubble-color-col',
+        'Select column to color bubbles by', categories, this.attributes.color_by,
+         (event) => {
+           const value = $(event.currentTarget).val();
+           this.attributes.color_by = value;
+           this.map.clearCircles();
+           this.drawMarkers();
+         });
+
+    editor.createColorField('bubble-color-start', 'Color Range Start', this.attributes.color.range[0],
+           (e) => {
+             this.attributes.color.range[0] = $(e.currentTarget).val();
+             this.map.clearCircles();
+             this.drawMarkers();
+           });
+
+    editor.createColorField('bubble-color-end', 'Color Range End', this.attributes.color.range[1],
+          (e) => {
+            this.attributes.color.range[1] = $(e.currentTarget).val();
+            this.map.clearCircles();
+            this.drawMarkers();
+          });
+
+  //   editor.createNumberSlider('bubble-color-start',
+  // 'Color range start',
+  //  this.attributes.color.range[0],
+  //   1, 359,
+  // (e) => {
+  //   const value = $(e.currentTarget).val();
+  //   this.attributes.color.range[0] = `${value}`;
+  //   this.map.clearCircles();
+  //   this.drawMarkers();
+  // });
+  //
+  //   editor.createNumberSlider('bubble-color-end',
+  //   'Color range end',
+  //    this.attributes.color.range[1],
+  //     1, 359,
+  //   (e) => {
+  //     const value = $(e.currentTarget).val();
+  //     this.attributes.color.range[1] = `${value}`;
+  //     this.map.clearCircles();
+  //     this.drawMarkers();
+  //   });
   }
 }
 
