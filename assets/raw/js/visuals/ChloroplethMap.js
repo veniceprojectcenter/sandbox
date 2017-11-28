@@ -71,7 +71,7 @@ class ChloroplethMap extends Visual {
   addPointsWithinBoundary(points, boundary) {
     const pointsWithinBoundary = BoundarySelector.getPointsInBoundary(points, boundary);
     pointsWithinBoundary.forEach((point) => {
-      this.map.addCircle({ lat: point.lat, lng: point.lng }, 'red', 1);
+      this.map.addCircle({ lat: parseFloat(point.lat), lng: parseFloat(point.lng) }, 'red', 1);
     });
   }
 
