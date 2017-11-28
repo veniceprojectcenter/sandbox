@@ -150,7 +150,7 @@ class Map {
     items = [];
   }
 
-  async export() {
+  getStaticMap() {
     const centerString = `center=${this.map.getCenter().lat()},${this.map.getCenter().lng()}`;
     const zoomString = `zoom=${this.map.getZoom()}`;
     const width = this.map.getDiv().offsetWidth;
@@ -171,6 +171,18 @@ class Map {
     const optionsString = `${centerString}&${zoomString}&${sizeString}&${styleString}`;
     const mapURL = `https://maps.googleapis.com/maps/api/staticmap?${optionsString}&key=AIzaSyCkT74d_hmbDXczCSmtMBdgNSWEDHovxN0`;
 
+    return {
+      url: mapURL,
+      width,
+      height,
+    };
+  }
+
+  async export() {
+    const map = this.getStaticMap();
+    const mapURL = map.url;
+    const width = map.width;
+    const height = map.height;
     const encodedURL = await ImageHelper.urlToBase64(mapURL);
 
     const svg = `

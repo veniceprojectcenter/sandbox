@@ -76,10 +76,10 @@ class EditorGenerator {
     $(`#${id}-checkbox`).change(onOptionChanged);
   }
 
-  createNumberSlider(id, title, current, min, max, onValueChanged) {
+  createNumberSlider(id, title, current, min, max, onValueChanged, inputEvent = 'input') {
     const context = { id, title, min, max, current };
     this.handlebarsWithContext('range-entry', context);
-    $(`#${id} input`).on('input', onValueChanged);
+    $(`#${id} input`).on(inputEvent, onValueChanged);
   }
 
   createRangeSlider() {

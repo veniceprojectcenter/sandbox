@@ -8,6 +8,7 @@ import PieChartMap from './visuals/PieChartMap';
 import BubbleTimeline from './visuals/BubbleTimeline';
 import RouteMap from './visuals/RouteMap';
 import BubbleChart from './visuals/BubbleChart';
+import BubbleMapChart from './visuals/BubbleMapChart';
 import FilterMap from './visuals/FilterMap';
 
 function renderEditor(route) {
@@ -70,6 +71,9 @@ function renderEditor(route) {
         break;
       case 'Bubble-Chart':
         visual = new BubbleChart(config);
+        break;
+      case 'Bubble-Map-Chart':
+        visual = new BubbleMapChart(config);
         break;
       case 'Filter-Map':
         visual = new FilterMap(config);
