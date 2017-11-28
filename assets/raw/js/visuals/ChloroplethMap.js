@@ -53,9 +53,8 @@ class ChloroplethMap extends Visual {
   }
 
   renderLocalPolyLines() {
-    console.log(localStorage.boundaries);
-    if (localStorage.boundaries === '') {
-      localStorage.boundaries = '[]';
+    if (localStorage.boundaries === undefined) {
+      localStorage.boundaries = JSON.stringify([]);
     }
     const lines = JSON.parse(localStorage.boundaries);
     lines.forEach((line) => {
@@ -117,7 +116,7 @@ class ChloroplethMap extends Visual {
       const selector = new BoundarySelector(this.map);
       selector.selectPoints((points) => {
         this.drawAndAddBoundary(points);
-        // this.addPointsWithinBoundary(this.data, points);
+        this.addPointsWithinBoundary(this.data, points);
       });
     });
   }

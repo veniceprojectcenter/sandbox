@@ -5,6 +5,10 @@ class BoundarySelector {
     this.connections = [];
   }
 
+  static getPointsInBoundary(points, boundaryPoints) {
+    return points;
+  }
+
   clickActionSelection(event) {
     if (!this.currentlySelecting) {
       return;
