@@ -1,4 +1,5 @@
 import DefaultMapStyle from './DefaultMapStyle';
+import ImageHelper from './ImageHelper';
 
 /* This file is to be used as a default starting point for new map visualizations
  * that feature adding divs
@@ -169,23 +170,8 @@ class Map {
     }
     const optionsString = `${centerString}&${zoomString}&${sizeString}&${styleString}`;
     const mapURL = `https://maps.googleapis.com/maps/api/staticmap?${optionsString}&key=AIzaSyCkT74d_hmbDXczCSmtMBdgNSWEDHovxN0`;
-    let response = null;
-    await fetch(mapURL).then((value) => {
-      response = value;
-    });
-    const blob = await response.blob();
-    const promise = new Promise((resolve) => {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        resolve(reader.result);
-      };
-      reader.readAsDataURL(blob);
-    });
 
-    let encodedURL = '';
-    await promise.then((result) => {
-      encodedURL = result;
-    });
+    const encodedURL = await ImageHelper.urlToBase64(mapURL);
 
     const svg = `
       <svg version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg" xml:space="preserve">
