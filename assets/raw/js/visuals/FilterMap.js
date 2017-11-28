@@ -80,6 +80,29 @@ class FilterMap extends Visual {
     this.renderControlsDiv = document.getElementById(this.renderControlsID);
     this.renderControlsDiv.innerHTML = '';
     this.renderControlsDiv.innerHTML = '<h4 style = "text-align: center">Controls</h4> <br>';
+    this.renderControlsDiv.addEventListener('addSeries', (e) => {
+      const filterRow = e.path[0].querySelector('div[class^="numFilter"]');
+      const valueCol = filterRow.querySelector('div[id$="3"]');
+      valueCol.classList.replace('col-md-5', 'col-md-4');
+
+      const closeButn = filterRow.querySelector('div[id$="4"]');
+      const closeButnId = closeButn.getAttribute('id');
+      const groupId = closeButnId.split('-').slice(0, 2);
+      const newCloseButnIndex = parseInt(closeButnId.split('-')[2], 10);
+      const newCloseButnIdGroup = groupId.slice(0);
+      newCloseButnIdGroup.push(String(newCloseButnIndex + 1));
+      closeButn.id = newCloseButnIdGroup.join('-');
+
+      const checkboxNode = document.createElement('div');
+      checkboxNode.classList.add('col-md-1');
+      checkboxNode.id = closeButnId;
+      const groupIdJoin = groupId.join('-');
+      checkboxNode.innerHTML = `
+        <input type="checkbox" id="${groupIdJoin}-toVisual" />
+        <label for="${groupIdJoin}-toVisual" style="margin-top:25px"/>
+      `;
+      filterRow.insertBefore(checkboxNode, valueCol.nextSibling);
+    }, false);
     this.filter.makeFilterSeries(
       (headEditor, index) => { this.filterMapHeader(headEditor, index); },
       (filters) => { this.getColorShape(filters); },
