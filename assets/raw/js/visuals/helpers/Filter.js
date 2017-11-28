@@ -4,6 +4,8 @@ import EditorGenerator from './EditorGenerator';
 class Filter {
   constructor(avisual) {
     this.visual = avisual;
+    const event = document.createEvent('Event');
+    event.initEvent('addSeries', true, true);
   }
   /**
   *Returns array of data where each represents the data for a single series.
@@ -53,6 +55,8 @@ class Filter {
     filterDiv.classList.add('collapsible-body');
     this.li.appendChild(filterDiv);
     this.renderFilter(filterDiv);
+    filterDiv.dispatchEvent(event);
+
     this.addSeriesButton(editor, makeHeader);
     this.addSubmitButton(editor, buttonText, onButton);
   }
@@ -121,6 +125,7 @@ class Filter {
       this.filterDiv.classList.add('collapsible-body');
       this.li.appendChild(this.filterDiv);
 
+      this.filterDiv.dispatchEvent(event);
       this.renderFilter(this.filterDiv);
     });
   }
