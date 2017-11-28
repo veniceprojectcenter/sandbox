@@ -15,6 +15,23 @@ class ChloroplethMap extends Visual {
     this.boundarySelector = new BoundarySelector(this.map);
   }
 
+  static removeBoundaryWithPoint(point) {
+    const boundaries = JSON.parse(localStorage.boundaries);
+    for (let i = 0; i < boundaries.length; i += 1) {
+      const boundary = boundaries[i];
+      if (boundary === null) {
+        continue;
+      }
+      for (let j = 0; j < boundary.length; j += 1) {
+        const boundPoint = boundary[j];
+        if (boundPoint.lat === point.lat) {
+          boundaries[i] = null;
+        }
+      }
+    }
+    localStorage.boundaries = JSON.stringify(boundaries);
+  }
+
   onLoadData() {
     this.applyDefaultAttributes({
       title: '',
@@ -25,6 +42,24 @@ class ChloroplethMap extends Visual {
     Visual.empty(this.renderID);
 
     this.map.render(this.renderID);
+    this.renderLocalPolyLines();
+  }
+
+  renderLocalPolyLines() {
+    console.log(localStorage.boundaries);
+    if (localStorage.boundaries === '') {
+      localStorage.boundaries = '[]';
+    }
+    const lines = JSON.parse(localStorage.boundaries);
+    lines.forEach((line) => {
+      if (line !== null) {
+        const boundary = this.map.addPolyline(line, 'red', 5);
+        boundary.addListener('click', () => {
+          boundary.setMap(null);
+          this.constructor.removeBoundaryWithPoint(line[0]);
+        });
+      }
+    });
   }
 
   renderControls() {
@@ -44,7 +79,17 @@ class ChloroplethMap extends Visual {
       selector.selectPoints((points) => {
         console.log(points);
         points.push(points[0]);
-        this.map.addPolyline(points, 'red', 2);
+        const line = this.map.addPolyline(points, 'red', 5);
+        if (localStorage.boundaries === undefined) {
+          localStorage.boundaries = JSON.stringify([]);
+        }
+        const boundaries = JSON.parse(localStorage.boundaries);
+        boundaries.push(points);
+        localStorage.boundaries = JSON.stringify(boundaries);
+        line.addListener('click', () => {
+          line.setMap(null);
+          this.constructor.removeBoundaryWithPoint(points[0]);
+        });
       });
     });
   }

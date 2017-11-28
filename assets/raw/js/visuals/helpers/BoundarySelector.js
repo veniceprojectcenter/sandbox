@@ -18,6 +18,7 @@ class BoundarySelector {
       this.points.push(marker);
       const lastMarker = this.points[this.points.length - 2];
       this.addConnection(lastMarker, marker);
+      marker.setMap(null);
     }
   }
 
@@ -37,7 +38,7 @@ class BoundarySelector {
   addVertex(event) {
     const vertex = this.map.addCircle(
       { lat: event.latLng.lat(), lng: event.latLng.lng() },
-      'red', 1, 30,
+      'red', 1, 6,
     );
     return vertex;
   }
@@ -50,6 +51,7 @@ class BoundarySelector {
       }
       this.clearSelection();
       this.currentlySelecting = false;
+      google.maps.event.clearListeners(this.map.map, 'click');
     });
     this.points.push(firstMarker);
   }
