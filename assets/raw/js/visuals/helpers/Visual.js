@@ -178,7 +178,7 @@ class Visual {
         const svgUrl = URL.createObjectURL(svgBlob);
         const downloadLink = document.createElement('a');
         downloadLink.href = svgUrl;
-        if (this.attributes.title !== '') {
+        if (this.attributes.title && this.attributes.title !== '') {
           downloadLink.download = `${this.attributes.title}.svg`;
         } else {
           downloadLink.download = `${this.dataSet}-${this.type}.svg`;
