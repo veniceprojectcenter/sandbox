@@ -11,6 +11,7 @@ import BubbleChart from './visuals/BubbleChart';
 import BubbleMapChart from './visuals/BubbleMapChart';
 import FilterMap from './visuals/FilterMap';
 import ChloroplethMap from './visuals/ChloroplethMap';
+import DataView from './visuals/DataView';
 
 function renderEditor(route) {
   const rowContainer = document.createElement('div');
@@ -60,6 +61,9 @@ function renderEditor(route) {
         break;
       case 'Pie-Chart-Map':
         visual = new PieChartMap(config);
+        break;
+      case 'Data-View':
+        visual = new DataView(config);
         break;
       case 'Bubble-Timeline':
         visual = new BubbleTimeline(config);

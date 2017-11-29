@@ -1,9 +1,8 @@
-
 import EditorGenerator from './helpers/EditorGenerator';
 import Visual from './helpers/Visual';
 import Filter from './helpers/Filter';
 
-class Counter extends Visual {
+class DataView extends Visual {
   constructor(config) {
     super(config);
     this.attributes.columnOptions = null;
@@ -38,9 +37,11 @@ class Counter extends Visual {
     for (let i = 0; i < allDataCols.length; i += 1) {
       cats.push({ value: allDataCols[i], text: allDataCols[i] });
     }
-    const aggDiv = document.createElement('div');
-    this.renderControlsDiv.appendChild(aggDiv);
-    this.createAggregationRow(aggDiv, cats);
+    const editor = new EditorGenerator(this.renderControlsDiv);
+
+    editor.createMultipleSelectBox('check2', 'Show Data', cats, 'na', (e) => {
+      this.attributes.displayColumns = $(e.currentTarget).val();
+    });
     const myDiv = document.createElement('div');
     this.renderControlsDiv.appendChild(myDiv);
     this.filter.makeFilterSeries((a, b) => { this.counterHeader(a, b); }, () => { this.render(); }, 'Create Table', myDiv);
@@ -51,14 +52,14 @@ class Counter extends Visual {
   render() {
     this.filter.getFilteredData(this.attributes.filters);
     this.renderDiv = document.getElementById(this.renderID);
-    this.renderDiv.innerHTML = 'Count';
+    this.renderDiv.innerHTML = 'Data Table:';
     this.tableDiv = document.createElement('div');
     this.renderDiv.appendChild(this.tableDiv);
     this.tableDiv.id = 'tableDiv';
     if (this.attributes.columnOptions === null) {
       this.columnOptions = [];
     }
-    this.displayCount();
+    this.displayTable();
   }
 
 
@@ -68,15 +69,25 @@ class Counter extends Visual {
   /** Displayes the data table on selected Categories
   *
   */
-  displayCount() {
+  displayTable() {
     const renderData = this.renderData;
-    let count = 0;
+    let txt = '';
+    txt += "<table border='1'> <tr>";
+    for (let j = 0; j < this.attributes.displayColumns.length; j += 1) {
+      txt += `<td>${this.attributes.displayColumns[j]}</td>`;
+    }
+    txt += '</tr>';
     for (let i = 0; i < renderData.length; i += 1) {
+      txt += '<tr>';
       if (renderData[i] != null) {
-        count += 1;
+        for (let j = 0; j < this.attributes.displayColumns.length; j += 1) {
+          txt += `<td>${renderData[i][this.attributes.displayColumns[j]]}</td>`;
+        }
+        txt += '</tr>';
       }
     }
-    document.getElementById('tableDiv').innerHTML = `Count: ${count}`;
+    txt += '</table>';
+    document.getElementById('tableDiv').innerHTML = `${txt}`;
   }
   static removeFilter(buttonID) {
     buttonID.parentNode.parentNode.remove();
@@ -88,15 +99,5 @@ class Counter extends Visual {
       this.filter.removeSeries(e2.currentTarget);
     });
   }
-  createAggregationRow(myDiv, cats, num) {
-    myDiv.innerHTML = `<div id=aggDiv${num} class ='col-2'></div><div id=propertyDiv${num} class ='col-6'>
-    </div><div id=titleDiv${num} class ='col-2'></div>`;
-    const editor = new EditorGenerator(myDiv);
-    const operations = [{ value: 'sum', text: 'Sum' }, { value: 'average', text: 'Average' }];
-    editor.createSelectBox('AggregationType', 'Operation', operations, 'na', () => {});
-    editor.createSelectBox('Check', 'Property', cats, 'na', (e) => {
-      this.attributes.displayColumns = $(e.currentTarget).val();
-    });
-  }
 }
-export default Counter;
+export default DataView;
