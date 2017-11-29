@@ -125,8 +125,8 @@ class Filter {
       this.filterDiv.classList.add('collapsible-body');
       this.li.appendChild(this.filterDiv);
 
-      this.filterDiv.dispatchEvent(this.event);
       this.renderFilter(this.filterDiv);
+      this.filterDiv.dispatchEvent(this.event);
     });
   }
   addSubmitButton(editor, buttonText, onButton) {
