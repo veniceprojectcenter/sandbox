@@ -80,7 +80,7 @@ class FilterMap extends Visual {
     this.renderControlsDiv.innerHTML = '';
     this.renderControlsDiv.innerHTML = '<h4 style = "text-align: center">Controls</h4> <br>';
     this.renderControlsDiv.addEventListener('addSeries', (e) => {
-      const filterRow = e.path[0].querySelector('div[class^="numFilter"]');
+      const filterRow = e.path[0].querySelector('div[id="numFilterDiv"]').children[0];
       const valueCol = filterRow.querySelector('div[id$="3"]');
       valueCol.classList.replace('col-md-5', 'col-md-4');
 
@@ -101,15 +101,14 @@ class FilterMap extends Visual {
         <label for="${groupIdJoin}-toVisual" style="margin-top:25px"/>
       `;
       checkboxNode.onchange = (evt) => {
-        if (evt.target.checked) {
-          const selectVal = $(`select[id=${groupIdJoin}-columnSelect]`).val();
-          if (selectVal !== null) {
-            console.log(selectVal);
+        if ($(`select[id=${groupIdJoin}-columnSelect]`).val() !== null) {
+          if (evt.target.checked) {
+            console.log('box was checked');
           } else {
-            console.log('select is null');
+            console.log('box was unchecked');
           }
         } else {
-          console.log('unchecked');
+          console.log('select was null');
         }
       };
       filterRow.insertBefore(checkboxNode, valueCol.nextSibling);
