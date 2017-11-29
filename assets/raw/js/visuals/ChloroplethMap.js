@@ -55,6 +55,7 @@ class ChloroplethMap extends Visual {
   }
 
   renderLocalPolyLines() {
+    console.log(localStorage.boundaries);
     if (localStorage.boundaries === undefined) {
       localStorage.boundaries = JSON.stringify([]);
     }
