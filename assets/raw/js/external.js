@@ -11,6 +11,7 @@ import BubbleMapChart from './visuals/BubbleMapChart';
 import BubbleTimeline from './visuals/BubbleTimeline';
 import RouteMap from './visuals/RouteMap';
 import FilterMap from './visuals/FilterMap';
+import DataView from './visuals/DataView';
 
 function renderVisualFromConfig(defaultConfig, containerID) {
   let config = defaultConfig;
@@ -30,6 +31,9 @@ function renderVisualFromConfig(defaultConfig, containerID) {
       break;
     case 'Counter':
       visual = new Counter(config, containerID);
+      break;
+    case 'Data-View':
+      visual = new DataView(config, containerID);
       break;
     case 'Pie-Chart-Map':
       visual = new PieChartMap(config, containerID);

@@ -35,12 +35,10 @@ class Filter {
 *@param onButton, Function to be called when the render button is pressed
 *@param buttonText, Text for Render/Submit button
 */
-  makeFilterSeries(makeHeader, onButton, buttonText = 'Generate Map') {
-    const editor = new EditorGenerator(this.visual.renderControlsDiv);
-    this.visual.renderControlsDiv.innerHTML += '<ul id=\'collapseUl\'class="collapsible" data-collapsible="accordion">';
+  makeFilterSeries(makeHeader, onButton, buttonText = 'Generate Map', myDiv = this.visual.renderControlsDiv) {
+    const editor = new EditorGenerator(myDiv);
+    myDiv.innerHTML += '<ul id=\'collapseUl\'class="collapsible" data-collapsible="accordion">';
     this.ul = document.getElementById('collapseUl');
-    this.visual.renderControlsDiv.appendChild(this.ul);
-
     this.seriesNumber = 0;
     this.li = document.createElement('li');
     this.ul.appendChild(this.li);
@@ -142,7 +140,7 @@ class Filter {
             const b = $(filter.children[1].children[0].children[3]).val();
             if (b === '0') {
               let categories = null;
-              if (set === '') {
+              if (set === undefined) {
                 categories = this.visual.getGroupedList(columnval);
               } else {
                 categories = this.visual.getGroupedList(columnval, this.visual.dataSets[set]);
