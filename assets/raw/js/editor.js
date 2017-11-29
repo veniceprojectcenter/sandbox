@@ -10,6 +10,7 @@ import RouteMap from './visuals/RouteMap';
 import BubbleChart from './visuals/BubbleChart';
 import BubbleMapChart from './visuals/BubbleMapChart';
 import FilterMap from './visuals/FilterMap';
+import ChloroplethMap from './visuals/ChloroplethMap';
 
 function renderEditor(route) {
   const rowContainer = document.createElement('div');
@@ -77,6 +78,9 @@ function renderEditor(route) {
         break;
       case 'Filter-Map':
         visual = new FilterMap(config);
+        break;
+      case 'Chloropleth-Map':
+        visual = new ChloroplethMap(config);
         break;
       default:
         visualContainer.innerHTML = `<p>Error: could not find visualization: ${route[1]}.`;
