@@ -96,6 +96,17 @@ class Map {
     return circle;
   }
 
+  addInfoBox(contentString, marker, point) {
+    marker.addListener('click', () => {
+      const infowindow = new google.maps.InfoWindow({
+        map: this.map,
+        position: point,
+        content: contentString,
+      });
+      infowindow.open(this.map, marker);
+    });
+  }
+
   clearCirclesOfColor(color) {
     for (let i = 0; i < this.circles.length; i += 1) {
       const circle = this.circles[i];
@@ -248,17 +259,36 @@ class Map {
     return polylinesString;
   }
 
+  getCustomImagesAsSVG() {
+    const map = this.getStaticMap();
+    let customImagesString = '';
+
+    for (let i = 0; i < this.customs.length; i += 1) {
+      const latLng = this.customs[i].getPosition();
+      const coords = this.latLngToPixel(latLng);
+      if (coords.x >= 0 && coords.x <= map.width && coords.y >= 0 && coords.y <= map.height) {
+        const icon = this.customs[i].getIcon();
+        const customImage = `<image x="${coords.x}" y="${coords.y}" width="${icon.scaledSize.width}" height="${icon.scaledSize.height}" transform="translate(-${icon.anchor.x}, -${icon.anchor.y})" xlink:href="${icon.url}" preserveAspectRatio="none" />`;
+        customImagesString += customImage;
+      }
+    }
+
+    return customImagesString;
+  }
+
   async export() {
     const map = this.getStaticMap();
     const encodedURL = await ImageHelper.urlToBase64(map.url);
     const circlesString = this.getCirclesAsSVG();
     const polylinesString = this.getPolylinesAsSVG();
+    const customImagesString = this.getCustomImagesAsSVG();
 
     const svg = `
       <svg width="${map.width}" height="${map.height}" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg" xml:space="preserve">
         <image width="${map.width}" height="${map.height}" xlink:href="${encodedURL}" />
         ${circlesString}
         ${polylinesString}
+        ${customImagesString}
       </svg>
     `;
 

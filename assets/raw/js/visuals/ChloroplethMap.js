@@ -55,6 +55,7 @@ class ChloroplethMap extends Visual {
   }
 
   renderLocalPolyLines() {
+    console.log(localStorage.boundaries);
     if (localStorage.boundaries === undefined) {
       localStorage.boundaries = JSON.stringify([]);
     }
@@ -94,10 +95,10 @@ class ChloroplethMap extends Visual {
     });
   }
 
-  hideBoundaries() {
+  setBoundariesMap(map) {
     this.map.polylines.forEach((polyline) => {
       if (polyline.strokeColor === this.BOUNDARY_COLOR) {
-        polyline.setMap(null);
+        polyline.setMap(map);
       }
     });
   }
@@ -121,12 +122,12 @@ class ChloroplethMap extends Visual {
 
   createHideBoundsBox(editor) {
     const id = 'hideBoundsBox';
-    editor.createCheckBox(id, 'Toggle Showing Selections', 'checked', (e) => {
+    editor.createCheckBox(id, 'Toggle Showing Selections', true, (e) => {
       const checked = document.getElementById(`${id}-checkbox`).checked;
       if (!checked) {
-        this.hideBoundaries();
+        this.setBoundariesMap(null);
       } else {
-
+        this.setBoundariesMap(this.map.map);
       }
     });
   }
