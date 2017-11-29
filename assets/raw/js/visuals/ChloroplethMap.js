@@ -37,17 +37,24 @@ class ChloroplethMap extends Visual {
     });
   }
 
+  addDataMarkers() {
+    for (let i = 0; i < this.data.length; i += 1) {
+      const point = this.data[i];
+      this.map.addCircle({ lat: parseFloat(point.lat), lng: parseFloat(point.lng) }, 'blue', 0.5);
+    }
+  }
+
   render() {
     Visual.empty(this.renderID);
 
     this.map.render(this.renderID);
     this.renderLocalPolyLines();
+    this.addDataMarkers();
   }
 
   renderLocalPolyLines() {
-    console.log(localStorage.boundaries);
-    if (localStorage.boundaries === '') {
-      localStorage.boundaries = '[]';
+    if (localStorage.boundaries === undefined) {
+      localStorage.boundaries = JSON.stringify([]);
     }
     const lines = JSON.parse(localStorage.boundaries);
     lines.forEach((line) => {
@@ -58,6 +65,14 @@ class ChloroplethMap extends Visual {
           this.constructor.removeBoundaryWithPoint(line[0]);
         });
       }
+    });
+  }
+
+  addPointsWithinBoundary(points, boundary) {
+    const selector = new BoundarySelector(this.map);
+    const pointsWithinBoundary = selector.getPointsInBoundary(points, boundary);
+    pointsWithinBoundary.forEach((point) => {
+      this.map.addCircle({ lat: parseFloat(point.lat), lng: parseFloat(point.lng) }, 'red', 1);
     });
   }
 
@@ -88,10 +103,21 @@ class ChloroplethMap extends Visual {
     const editor = new EditorGenerator(controlsContainer);
 
     editor.createHeader('Editor');
+    this.createSelectButton(editor);
+    // this.createColumnSelector(editor);
+  }
+
+  /* createColumnSelector(editor) {
+    editor.createSelectBox('columnSelect', 'Select a column to color by',
+    options, current, onOptionChanged);
+  } */
+
+  createSelectButton(editor) {
     editor.createButton('selectArea', 'Select Area', () => {
       const selector = new BoundarySelector(this.map);
       selector.selectPoints((points) => {
         this.drawAndAddBoundary(points);
+        this.addPointsWithinBoundary(this.data, points);
       });
     });
   }

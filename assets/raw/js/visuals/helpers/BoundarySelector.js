@@ -5,6 +5,54 @@ class BoundarySelector {
     this.connections = [];
   }
 
+  getPointsInBoundary(points, boundaryPoints) {
+    const pointsWithinBoundary = [];
+    for (let i = 0; i < points.length; i += 1) {
+      const point = points[i];
+      if (this.isPointWithinBoundary(point, boundaryPoints)) {
+        pointsWithinBoundary.push(point);
+      }
+    }
+    console.log(pointsWithinBoundary);
+    return pointsWithinBoundary;
+  }
+
+  isPointWithinBoundary(point, boundary) {
+    let intersections = 0;
+    for (let i = 0; i < boundary.length - 1; i += 1) {
+      const p1 = boundary[i];
+      const p2 = boundary[i + 1];
+      if (this.pointIntersectsLine(point, p1, p2)) {
+        intersections += 1;
+      }
+    }
+
+    return intersections % 2 === 1;
+  }
+
+  pointIntersectsLine(point, p1, p2) {
+    const y1 = parseFloat(point.lat);
+    const x1 = parseFloat(point.lng);
+
+    const y2 = p1.lat;
+    const x2 = p1.lng;
+
+    const y3 = p2.lat;
+    const x3 = p2.lng;
+    return this.lineIntersect(x1, y1, x2, y2, x3, y3);
+  }
+
+  lineIntersect(x1, y1, x2, y2, x3, y3) {
+    const slope = (y3 - y2) / (x3 - x2);
+    const x = ((y1 - y2) / slope) + x2;
+    if ((x > x1) &&
+        (((x > x2) && (x < x3)) ||
+            ((x > x3) && (x < x2)))) {
+      return true;
+    }
+    return false;
+  }
+
   clickActionSelection(event) {
     if (!this.currentlySelecting) {
       return;
