@@ -1,4 +1,4 @@
-
+import BoundarySelector from './BoundarySelector';
 import EditorGenerator from './EditorGenerator';
 
 class Filter {
@@ -61,10 +61,13 @@ class Filter {
     const editor = new EditorGenerator(myDiv);
     const catFilterDiv = document.createElement('div');
     const numFilterDiv = document.createElement('div');
+    const areaSelectorDiv = document.createElement('div');
     catFilterDiv.id = 'catFilterDiv';
     numFilterDiv.id = 'numFilterDiv';
+    areaSelectorDiv.id = 'areaSelectorDiv';
     const catEditor = new EditorGenerator(catFilterDiv);
     const numEditor = new EditorGenerator(numFilterDiv);
+    const areaSelectorEditor = new EditorGenerator(areaSelectorDiv);
     const ccats = [];
     const ncats = [];
     const catData = Object.keys(this.visual.getCategoricalData(25, data)[0]);
@@ -87,6 +90,7 @@ class Filter {
     myDiv.appendChild(document.createElement('br'));
     myDiv.appendChild(document.createElement('br'));
     const filterLabel2 = document.createElement('h5');
+
     filterLabel2.innerHTML = 'Numeric Filters';
     filterLabel2.style.textAlign = 'center';
     myDiv.appendChild(filterLabel2);
@@ -98,6 +102,21 @@ class Filter {
     editor.createButton('addNum', 'Add Numeric Filter', () => {
       num += 1;
       numEditor.createNumericFilter(`NumFilter${num}-${this.seriesNumber}`, ncats, `numFilter${this.seriesNumber}`, (e) => { this.removeFilter(e.currentTarget); });
+    });
+
+    myDiv.appendChild(document.createElement('br'));
+    myDiv.appendChild(document.createElement('br'));
+    const filterLabel3 = document.createElement('h5');
+    filterLabel3.innerHTML = 'Area Selection Filter';
+    filterLabel3.style.textAlign = 'center';
+    myDiv.appendChild(filterLabel3);
+    myDiv.appendChild(areaSelectorDiv);
+    editor.createButton('selectArea', 'Select an Area', () => {
+      const selector = new BoundarySelector(this.visual.map);
+      selector.selectPoints((points) => {
+        // this.drawAndAddBoundary(points);
+        // this.addPointsWithinBoundary(this.data, points);
+      });
     });
 
     myDiv.appendChild(document.createElement('br'));
