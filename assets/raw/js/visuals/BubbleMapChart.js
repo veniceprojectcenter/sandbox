@@ -44,16 +44,16 @@ class BubbleMapChart extends Visual {
     values = this.constructor.filterNaN(values);
     let cvalues = Object.keys(cgroups);
     cvalues = this.constructor.filterNaN(cvalues);
-    const sMin = Math.max(...values);
-    const sMax = Math.min(...values);
-    const cMin = Math.max(...cvalues);
-    const cMax = Math.min(...cvalues);
+    const sMin = Math.min(...values);
+    const sMax = Math.max(...values);
+    const cMin = Math.min(...cvalues);
+    const cMax = Math.max(...cvalues);
     for (let i = 0; i < values.length; i += 1) {
       const cval = cvalues[i];
       const crange = this.attributes.color.range;
       const getC = d3.scaleLinear().domain([cMin, cMax]).range([crange[0], crange[1]]);
       const color = getC(cval);
-      console.log(color, cval);
+      // console.log(color, cval);
       const sval = values[i];
       const group = sgroups[sval];
       const srange = this.attributes.bubble_size.range;
@@ -62,7 +62,11 @@ class BubbleMapChart extends Visual {
       group.forEach((point) => {
         const lat = parseFloat(point.lat);
         const lng = parseFloat(point.lng);
-        this.map.addCircle({ lat, lng }, color, 0.5, parseFloat(radius));
+        const content = `${'<div id="content">' +
+              '<p>'}${this.attributes.size_by}: ${sval}</p>` +
+              `<p>${this.attributes.color_by}: ${cval}</p>` +
+              '</div>';
+        this.map.addCircleWithInfo(content, { lat, lng }, color, 0.5, parseFloat(radius));
       });
     }
   }
@@ -76,9 +80,11 @@ class BubbleMapChart extends Visual {
     mapContainer.id = 'map-container';
     mapContainer.className = 'map-container';
 
+
     const visual = document.getElementById(this.renderID);
     visual.appendChild(title);
     visual.appendChild(mapContainer);
+    // visual.appendChild(svg);
 
     this.map.render(mapContainer.id);
     this.drawMarkers();
@@ -127,7 +133,6 @@ class BubbleMapChart extends Visual {
       (e) => {
         const value = $(e.currentTarget).val();
         this.attributes.bubble_size.range[0] = `${value}`;
-        // this.render();
         this.map.clearCircles();
         this.drawMarkers();
       }, 'mouseup');
@@ -139,7 +144,6 @@ class BubbleMapChart extends Visual {
        (e) => {
          const value = $(e.currentTarget).val();
          this.attributes.bubble_size.range[1] = `${value}`;
-         // this.render();
          this.map.clearCircles();
          this.drawMarkers();
        }, 'mouseup');

@@ -96,6 +96,29 @@ class Map {
     return circle;
   }
 
+  addCircleWithInfo(contentString, point, color, opacity, r = 15) {
+    const circle = new google.maps.Circle({
+      strokeColor: color,
+      strokeOpacity: 0,
+      strokeWeight: 0,
+      fillColor: color,
+      fillOpacity: opacity,
+      map: this.map,
+      center: point,
+      radius: r,
+    });
+    circle.addListener('click', () => {
+      const infowindow = new google.maps.InfoWindow({
+        map: this.map,
+        position: point,
+        content: contentString,
+      });
+      infowindow.open(this.map, circle);
+    });
+
+    this.circles.push(circle);
+  }
+
   clearCirclesOfColor(color) {
     for (let i = 0; i < this.circles.length; i += 1) {
       const circle = this.circles[i];
