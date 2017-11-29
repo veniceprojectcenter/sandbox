@@ -9,28 +9,36 @@ class Filter {
   *Returns array of data where each represents the data for a single series.
   */
   getFilteredData(filters) {
-    const renderData = [];
     for (let i = 0; i < filters.length; i += 1) {
-      if (filters[i] !== undefined && filters[i].categorical !== undefined
-      && filters[i].numeric !== undefined) {
-        renderData[i] = this.visual.filterCategorical(filters[i].categorical, this.visual.data);
-        renderData[i] = this.visual.filterNumerical(filters[i].numeric, renderData[i]);
-      }
+      this.getFilteredDatum(i, filters[i]);
     }
-    return renderData;
+    return this.visual.renderData;
   }
+  getFilteredDatum(i, filter, dataSet = null) {
+    if (filter !== undefined && filter.categorical !== undefined
+    && filter.numeric !== undefined) {
+      if (dataSet === null) {
+        this.visual.renderData[i] = this.visual.filterCategorical(filter.categorical,
+          this.visual.data);
+      } else {
+        this.visual.renderData[i] = this.visual.filterCategorical(filter.categorical,
+           dataSet);
+      }
+      this.visual.renderData[i] = this.visual.filterNumerical(filter.numeric,
+        this.visual.renderData[i]);
+    }
+  }
+
 /**
 *Generates a filter series
 *@param makeHeader, Function that is called to design header of drop down
 *@param onButton, Function to be called when the render button is pressed
 *@param buttonText, Text for Render/Submit button
 */
-  makeFilterSeries(makeHeader, onButton, buttonText = 'Generate Map') {
-    const editor = new EditorGenerator(this.visual.renderControlsDiv);
-    this.visual.renderControlsDiv.innerHTML += '<ul id=\'collapseUl\'class="collapsible" data-collapsible="accordion">';
+  makeFilterSeries(makeHeader, onButton, buttonText = 'Generate Map', myDiv = this.visual.renderControlsDiv) {
+    const editor = new EditorGenerator(myDiv);
+    myDiv.innerHTML += '<ul id=\'collapseUl\'class="collapsible" data-collapsible="accordion">';
     this.ul = document.getElementById('collapseUl');
-    this.visual.renderControlsDiv.appendChild(this.ul);
-
     this.seriesNumber = 0;
     this.li = document.createElement('li');
     this.ul.appendChild(this.li);
@@ -42,16 +50,15 @@ class Filter {
     const filterDiv = document.createElement('div');
     filterDiv.classList.add('collapsible-body');
     this.li.appendChild(filterDiv);
-    this.renderFilter(filterDiv, this.seriesNumber);
+    this.renderFilter(filterDiv);
     this.addSeriesButton(editor, makeHeader);
     this.addSubmitButton(editor, buttonText, onButton);
   }
 /** Renders individual filter series
 *
 */
-  renderFilter(myDiv) {
+  renderFilter(myDiv, data = this.visual.data) {
     const editor = new EditorGenerator(myDiv);
-    this.visual.columnOptions = Object.keys(this.visual.data[0]);
     const catFilterDiv = document.createElement('div');
     const numFilterDiv = document.createElement('div');
     catFilterDiv.id = 'catFilterDiv';
@@ -60,8 +67,8 @@ class Filter {
     const numEditor = new EditorGenerator(numFilterDiv);
     const ccats = [];
     const ncats = [];
-    const catData = Object.keys(this.visual.getCategoricalData()[0]);
-    const numData = Object.keys(this.visual.getNumericData(2)[0]);
+    const catData = Object.keys(this.visual.getCategoricalData(25, data)[0]);
+    const numData = Object.keys(this.visual.getNumericData(2, data)[0]);
     let num = 0;
     for (let i = 0; i < catData.length; i += 1) {
       ccats.push({ value: catData[i], text: catData[i] });
@@ -76,7 +83,7 @@ class Filter {
     filterLabel.style.textAlign = 'center';
     myDiv.appendChild(filterLabel);
     myDiv.appendChild(catFilterDiv);
-    this.createAddCategoryButton(editor, catEditor, ccats, num);
+    this.createAddCategoryButton(editor, catEditor, ccats, num, data);
     myDiv.appendChild(document.createElement('br'));
     myDiv.appendChild(document.createElement('br'));
     const filterLabel2 = document.createElement('h5');
@@ -84,7 +91,7 @@ class Filter {
     filterLabel2.style.textAlign = 'center';
     myDiv.appendChild(filterLabel2);
     myDiv.appendChild(numFilterDiv);
-    this.createCategoryFilter(catEditor, ccats);
+    this.createCategoryFilter(catEditor, ccats, data);
     numEditor.createNumericFilter(`NumFilter-${this.seriesNumber}`, ncats, `numFilter${this.seriesNumber}`, (e) => {
       this.removeFilter(e.currentTarget);
     });
@@ -112,12 +119,13 @@ class Filter {
       this.filterDiv.classList.add('collapsible-body');
       this.li.appendChild(this.filterDiv);
 
-      this.renderFilter(this.filterDiv, this.seriesNumber);
+      this.renderFilter(this.filterDiv);
     });
   }
   addSubmitButton(editor, buttonText, onButton) {
     editor.createButton('submit', buttonText, () => {
       for (let k = 0; k <= this.seriesNumber; k += 1) {
+        const set = $(document.getElementById(`dataSet${k}-select`)).val();
         const dataFilters = [];
         const numericFilters = [];
         const catFilters = document.getElementsByClassName(`dataFilter${k}`);
@@ -131,7 +139,12 @@ class Filter {
             let catval = $(filter.children[2].children[0].children[3]).val();
             const b = $(filter.children[1].children[0].children[3]).val();
             if (b === '0') {
-              const categories = this.visual.getGroupedList(columnval);
+              let categories = null;
+              if (set === undefined) {
+                categories = this.visual.getGroupedList(columnval);
+              } else {
+                categories = this.visual.getGroupedList(columnval, this.visual.dataSets[set]);
+              }
               for (let j = 0; j < categories.length; j += 1) {
                 categories[j] = categories[j].key;
                 if (catval.includes(categories[j])) {
@@ -151,6 +164,7 @@ class Filter {
           }
 
           this.visual.attributes.filters[k] = {
+            dataSet: set,
             numeric: numericFilters,
             categorical: dataFilters };
         }
@@ -159,12 +173,12 @@ class Filter {
       this.visual.render();
     });
   }
-  createAddCategoryButton(editor, catEditor, ccats, num) {
+  createAddCategoryButton(editor, catEditor, ccats, num, data) {
     editor.createButton(`addCat-${this.seriesNumber}`, 'Add Categorical Filter', () => {
       num += 1;
       catEditor.createDataFilter(`Filter${num}-${this.seriesNumber}`, ccats, `dataFilter${this.seriesNumber}`, (e) => {
         const column = $(e.currentTarget).val();
-        const categories = this.visual.getGroupedList(column);
+        const categories = this.visual.getGroupedList(column, data);
         const catSelect = e.currentTarget.parentNode.parentNode.nextSibling.nextSibling
     .nextSibling.nextSibling.children[0].children[3];
         $(catSelect).empty().html(' ');
@@ -184,10 +198,10 @@ class Filter {
       }, (e) => { this.removeFilter(e.currentTarget); });
     });
   }
-  createCategoryFilter(catEditor, ccats) {
+  createCategoryFilter(catEditor, ccats, data) {
     catEditor.createDataFilter(`Filter${this.seriesNumber}`, ccats, `dataFilter${this.seriesNumber}`, (e) => {
       const column = $(e.currentTarget).val();
-      const categories = this.visual.getGroupedList(column);
+      const categories = this.visual.getGroupedList(column, data);
       const catSelect = e.currentTarget.parentNode.parentNode.nextSibling.nextSibling
   .nextSibling.nextSibling.children[0].children[3];
       $(catSelect).empty().html(' ');
@@ -211,6 +225,9 @@ class Filter {
   }
   removeFilter(buttonID) {
     buttonID.parentNode.parentNode.remove();
+  }
+  reverseColumns() {
+
   }
 }
 export default Filter;

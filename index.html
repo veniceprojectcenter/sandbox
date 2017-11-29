@@ -180,6 +180,7 @@
     <input  id="{{id}}-dn" category='{{title}}' type="button" value="↓" />
     <p>
 </script>
+
 <script id="file-upload" type="text/x-handlebars-template">
   <div id='{{id}}' class="file-field input-field">
       <div class="btn">
@@ -190,6 +191,35 @@
         <input id={{id}}-input class="file-path validate" type="text">
       </div>
     </div>
+</script>
+
+<script id="Aggreation-Row" type="text/x-handlebars-template">
+<div class= '{{className}} row'>
+  <div class="input-field col-md-2" id="{{id}}-agg1">
+    <select id="{{id}}-aggOperations">
+      <option value="" disabled>-Select-</option>
+      <option value="Sum">Sum</option>
+      <option value="Average">Average</option>
+    </select>
+    <label>Operation</label>
+  </div>
+  <div class="input-field col-md-2" id="{{id}}-agg2">
+    <select id="{{id}}-aggColumnSelect">
+      <option value="" disabled>Select a Property</option>
+      {{#each column}}
+      <option value="{{value}}">{{text}}</option>
+      {{/each}}
+    </select>
+    <label>Select a Property to Aggregate</label>
+  </div>
+  <div class="input-field col-md-5" id="{{id}}-agg3">
+    <input type="text" id="{{id}}-aggField">
+    <label for="{{id}}-aggField">Value</label>
+  </div>
+  <div class="col-md-1" id="{{id}}-agg4">
+    <a id="{{id}}-aggRemove"style="height:22px;width:22px;line-height:25px;margin-top:25px" class="btn-floating btn-large waves-effect waves-light"><font color="white">x</font></a>
+  </div>
+</div>
 </script>
 <!-- Scripts -->
 <!--Import jQuery before materialize.js-->

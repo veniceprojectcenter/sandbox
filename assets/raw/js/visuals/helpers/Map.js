@@ -60,7 +60,7 @@ class Map {
     });
   }
 
-  addTriangle(point, color, opacity, size) {
+  addTriangle(point, color, opacity) {
     const triangleCoords = [
       { lat: point.lat + 0.0002, lng: point.lng },
       { lat: point.lat - 0.0001, lng: point.lng + 0.0002 },
@@ -93,6 +93,7 @@ class Map {
     });
 
     this.circles.push(circle);
+    return circle;
   }
 
   addCircleWithInfo(contentString, point, color, opacity, r = 15) {
@@ -148,6 +149,7 @@ class Map {
 
     polyline.setMap(this.map);
     this.polylines.push(polyline);
+    return polyline;
   }
 
   clear() {
@@ -201,16 +203,85 @@ class Map {
     };
   }
 
+  latLngToPixel(latLng) {
+    const projection = this.map.getProjection();
+    const bounds = this.map.getBounds();
+    const topRight = projection.fromLatLngToPoint(bounds.getNorthEast());
+    const bottomLeft = projection.fromLatLngToPoint(bounds.getSouthWest());
+    const scale = 2 ** this.map.getZoom();
+    const worldPoint = projection.fromLatLngToPoint(latLng);
+    const metersPerPixel = (156543.03392 * Math.cos((latLng.lat() * Math.PI) / 180)) / scale;
+    const coords = {
+      x: Math.floor((worldPoint.x - bottomLeft.x) * scale),
+      y: Math.floor((worldPoint.y - topRight.y) * scale),
+      metersPerPixel,
+    };
+
+    return coords;
+  }
+
+  getCirclesAsSVG() {
+    const map = this.getStaticMap();
+    let circlesString = '';
+
+    for (let i = 0; i < this.circles.length; i += 1) {
+      const latLng = this.circles[i].getCenter();
+      const coords = this.latLngToPixel(latLng);
+      if (coords.x >= 0 && coords.x <= map.width && coords.y >= 0 && coords.y <= map.height) {
+        const radius = this.circles[i].radius / coords.metersPerPixel;
+        const strokeColor = this.circles[i].strokeColor;
+        const fillColor = this.circles[i].fillColor;
+        const fillOpacity = this.circles[i].fillOpacity;
+
+        const circle = `<circle cx="${coords.x}" cy="${coords.y}" r="${radius}" stroke="${strokeColor}" stroke-width="0" fill="${fillColor}" fill-opacity="${fillOpacity}" />`;
+        circlesString += circle;
+      }
+    }
+
+    return circlesString;
+  }
+
+  getPolylinesAsSVG() {
+    const map = this.getStaticMap();
+    let polylinesString = '';
+
+    for (let i = 0; i < this.polylines.length; i += 1) {
+      const path = this.polylines[i].getPath();
+      let pointsString = '';
+      let isInside = false;
+      path.forEach((point) => {
+        const coords = this.latLngToPixel(point);
+        pointsString += `${coords.x},${coords.y} `;
+        if (coords.x >= 0 && coords.x <= map.width && coords.y >= 0 && coords.y <= map.height) {
+          isInside = true;
+        }
+      });
+
+      if (isInside) {
+        const strokeColor = this.polylines[i].strokeColor;
+        const strokeOpacity = this.polylines[i].strokeOpacity;
+        const strokeWeight = this.polylines[i].strokeWeight;
+
+        const style = `fill:${strokeColor};fill-opacity:0.5;stroke:${strokeColor};stroke-width:${strokeWeight};stroke-opacity:${strokeOpacity}`;
+        const polyline = `<polyline points="${pointsString}" style="${style}" />`;
+        polylinesString += polyline;
+      }
+    }
+
+    return polylinesString;
+  }
+
   async export() {
     const map = this.getStaticMap();
-    const mapURL = map.url;
-    const width = map.width;
-    const height = map.height;
-    const encodedURL = await ImageHelper.urlToBase64(mapURL);
+    const encodedURL = await ImageHelper.urlToBase64(map.url);
+    const circlesString = this.getCirclesAsSVG();
+    const polylinesString = this.getPolylinesAsSVG();
 
     const svg = `
-      <svg version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg" xml:space="preserve">
-        <image width="${width}" height="${height}" xlink:href="${encodedURL}" />
+      <svg width="${map.width}" height="${map.height}" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg" xml:space="preserve">
+        <image width="${map.width}" height="${map.height}" xlink:href="${encodedURL}" />
+        ${circlesString}
+        ${polylinesString}
       </svg>
     `;
 
