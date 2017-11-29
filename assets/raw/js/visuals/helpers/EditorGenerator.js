@@ -118,6 +118,13 @@ class EditorGenerator {
     this.handlebarsWithContext('button', context);
     $(`#${id}`).on('click', activationFunction);
   }
+  createAggregationRow(id, text, columns, onRemove) {
+    const context = { id, text, columns };
+    this.handlebarsWithContext('Aggregation-Row', context);
+    $(`#${id}-columnSelect`).val(0).material_select();
+    $(`#${id}-operations`).val(1).material_select();
+    $(`#${id}-aggRemove`).on('click', onRemove);
+  }
 
   handlebarsWithContext(handlebarId, context) {
     const source = document.getElementById(handlebarId).innerHTML;
@@ -126,6 +133,7 @@ class EditorGenerator {
 
     $(this.container).append(html);
   }
+
 }
 
 export default EditorGenerator;

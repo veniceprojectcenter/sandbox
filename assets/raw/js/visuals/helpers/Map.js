@@ -197,28 +197,68 @@ class Map {
     return coords;
   }
 
-  async export() {
+  getCirclesAsSVG() {
     const map = this.getStaticMap();
-    const encodedURL = await ImageHelper.urlToBase64(map.url);
-
     let circlesString = '';
+
     for (let i = 0; i < this.circles.length; i += 1) {
       const latLng = this.circles[i].getCenter();
       const coords = this.latLngToPixel(latLng);
-      const radius = this.circles[i].radius / coords.metersPerPixel;
-      const strokeColor = this.circles[i].strokeColor;
-      const fillColor = this.circles[i].fillColor;
-      const fillOpacity = this.circles[i].fillOpacity;
       if (coords.x >= 0 && coords.x <= map.width && coords.y >= 0 && coords.y <= map.height) {
+        const radius = this.circles[i].radius / coords.metersPerPixel;
+        const strokeColor = this.circles[i].strokeColor;
+        const fillColor = this.circles[i].fillColor;
+        const fillOpacity = this.circles[i].fillOpacity;
+
         const circle = `<circle cx="${coords.x}" cy="${coords.y}" r="${radius}" stroke="${strokeColor}" stroke-width="0" fill="${fillColor}" fill-opacity="${fillOpacity}" />`;
         circlesString += circle;
       }
     }
 
+    return circlesString;
+  }
+
+  getPolylinesAsSVG() {
+    const map = this.getStaticMap();
+    let polylinesString = '';
+
+    for (let i = 0; i < this.polylines.length; i += 1) {
+      const path = this.polylines[i].getPath();
+      let pointsString = '';
+      let isInside = false;
+      path.forEach((point) => {
+        const coords = this.latLngToPixel(point);
+        pointsString += `${coords.x},${coords.y} `;
+        if (coords.x >= 0 && coords.x <= map.width && coords.y >= 0 && coords.y <= map.height) {
+          isInside = true;
+        }
+      });
+
+      if (isInside) {
+        const strokeColor = this.polylines[i].strokeColor;
+        const strokeOpacity = this.polylines[i].strokeOpacity;
+        const strokeWeight = this.polylines[i].strokeWeight;
+
+        const style = `fill:${strokeColor};fill-opacity:0.5;stroke:${strokeColor};stroke-width:${strokeWeight};stroke-opacity:${strokeOpacity}`;
+        const polyline = `<polyline points="${pointsString}" style="${style}" />`;
+        polylinesString += polyline;
+      }
+    }
+
+    return polylinesString;
+  }
+
+  async export() {
+    const map = this.getStaticMap();
+    const encodedURL = await ImageHelper.urlToBase64(map.url);
+    const circlesString = this.getCirclesAsSVG();
+    const polylinesString = this.getPolylinesAsSVG();
+
     const svg = `
       <svg width="${map.width}" height="${map.height}" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg" xml:space="preserve">
         <image width="${map.width}" height="${map.height}" xlink:href="${encodedURL}" />
         ${circlesString}
+        ${polylinesString}
       </svg>
     `;
 
