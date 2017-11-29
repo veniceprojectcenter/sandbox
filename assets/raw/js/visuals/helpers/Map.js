@@ -96,6 +96,17 @@ class Map {
     return circle;
   }
 
+  addInfoBox(contentString, marker, point) {
+    marker.addListener('click', () => {
+      const infowindow = new google.maps.InfoWindow({
+        map: this.map,
+        position: point,
+        content: contentString,
+      });
+      infowindow.open(this.map, marker);
+    });
+  }
+
   clearCirclesOfColor(color) {
     for (let i = 0; i < this.circles.length; i += 1) {
       const circle = this.circles[i];

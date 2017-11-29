@@ -22,7 +22,7 @@ class Donut extends Visual {
     this.applyDefaultAttributes({
       width: 500,
       height: 500,
-      dontDefineDimensions: false,
+      dontDefineDimensions: true,
       font_size: 20,
       hide_empty: true,
       show_legend: true,
@@ -223,7 +223,9 @@ class Donut extends Visual {
       .attr('class', 'donut')
       .attr('viewBox', `0 0 ${width} ${height + extraHeight}`)
       .append('g')
-      .attr('transform', `translate(${width / 2},${height / 2})`);
+      .attr('transform', `translate(${width / 2},${height / 2})`)
+      .style('max-width', '100%')
+      .style('max-height', '100%');
 
     if (!this.attributes.dontDefineDimensions) {
       d3.select(`#${this.renderID} > svg`)

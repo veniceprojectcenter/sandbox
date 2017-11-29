@@ -13,6 +13,8 @@ class ChloroplethMap extends Visual {
 
     this.map = new Map();
     this.boundarySelector = new BoundarySelector(this.map);
+
+    this.BOUNDARY_COLOR = '#ff3333';
   }
 
   static removeBoundaryWithPoint(point) {
@@ -59,7 +61,8 @@ class ChloroplethMap extends Visual {
     const lines = JSON.parse(localStorage.boundaries);
     lines.forEach((line) => {
       if (line !== null) {
-        const boundary = this.map.addPolyline(line, 'red', 5);
+        const boundary = this.map.addPolyline(line, this.BOUNDARY_COLOR, 5);
+        this.addPointsWithinBoundary(this.data, line);
         boundary.addListener('click', () => {
           boundary.setMap(null);
           this.constructor.removeBoundaryWithPoint(line[0]);
@@ -78,7 +81,7 @@ class ChloroplethMap extends Visual {
 
   drawAndAddBoundary(points) {
     points.push(points[0]);
-    const line = this.map.addPolyline(points, 'red', 5);
+    const line = this.map.addPolyline(points, this.BOUNDARY_COLOR, 5);
     if (localStorage.boundaries === undefined) {
       localStorage.boundaries = JSON.stringify([]);
     }
@@ -88,6 +91,14 @@ class ChloroplethMap extends Visual {
     line.addListener('click', () => {
       line.setMap(null);
       this.constructor.removeBoundaryWithPoint(points[0]);
+    });
+  }
+
+  setBoundariesMap(map) {
+    this.map.polylines.forEach((polyline) => {
+      if (polyline.strokeColor === this.BOUNDARY_COLOR) {
+        polyline.setMap(map);
+      }
     });
   }
 
@@ -105,6 +116,19 @@ class ChloroplethMap extends Visual {
     editor.createHeader('Editor');
     this.createSelectButton(editor);
     // this.createColumnSelector(editor);
+    this.createHideBoundsBox(editor);
+  }
+
+  createHideBoundsBox(editor) {
+    const id = 'hideBoundsBox';
+    editor.createCheckBox(id, 'Toggle Showing Selections', true, (e) => {
+      const checked = document.getElementById(`${id}-checkbox`).checked;
+      if (!checked) {
+        this.setBoundariesMap(null);
+      } else {
+        this.setBoundariesMap(this.map.map);
+      }
+    });
   }
 
   /* createColumnSelector(editor) {

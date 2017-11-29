@@ -13,7 +13,6 @@ class BoundarySelector {
         pointsWithinBoundary.push(point);
       }
     }
-    console.log(pointsWithinBoundary);
     return pointsWithinBoundary;
   }
 

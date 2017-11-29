@@ -46,6 +46,7 @@ class FilterMap extends Visual {
   // render the map
   render() {
     const filters = this.attributes.filters;
+    this.map = new Map();
     this.map.render(this.renderID);
     const dataSets = [];
     for (let i = 0; i < filters.length; i += 1) {
