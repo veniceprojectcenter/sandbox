@@ -5,7 +5,7 @@ const visuals = [
   { name: 'Donut Chart', image: 'http://datavizproject.com/wp-content/uploads/2015/10/3-Donut-Chart-300x300.png', link: 'Donut-Chart' },
   { name: 'Bubble Chart', image: 'http://datavizproject.com/wp-content/uploads/2016/06/DVP_1_100-67.png', link: 'Bubble-Chart' },
   { name: 'Category Map', image: 'http://datavizproject.com/wp-content/uploads/2017/08/DVP_101_200-56-300x300.png', link: 'Category-Map' },
-  { name: 'Bubble Map Chart', image: 'http://datavizproject.com/wp-content/uploads/2017/08/DVP_101_200-56-300x300.png', link: 'Bubble-Map-Chart' },
+  { name: 'Bubble Map Chart', image: 'http://datavizproject.com/wp-content/uploads/2016/06/DVP_1_100-87.png', link: 'Bubble-Map-Chart' },
   { name: 'Counter', image: 'http://datavizproject.com/wp-content/uploads/2016/01/DVP_101_200-17-300x300.png', link: 'Counter' },
   { name: 'Data View', image: 'http://datavizproject.com/wp-content/uploads/2016/01/DVP_101_200-17-300x300.png', link: 'Data-View' },
   { name: 'Route Map', image: 'http://datavizproject.com/wp-content/uploads/2016/06/DVP_101_200-19.png', link: 'Route-Map' },
