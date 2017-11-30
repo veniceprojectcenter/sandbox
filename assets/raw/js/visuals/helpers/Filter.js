@@ -61,13 +61,10 @@ class Filter {
     const editor = new EditorGenerator(myDiv);
     const catFilterDiv = document.createElement('div');
     const numFilterDiv = document.createElement('div');
-    const areaSelectorDiv = document.createElement('div');
     catFilterDiv.id = 'catFilterDiv';
     numFilterDiv.id = 'numFilterDiv';
-    areaSelectorDiv.id = 'areaSelectorDiv';
     const catEditor = new EditorGenerator(catFilterDiv);
     const numEditor = new EditorGenerator(numFilterDiv);
-    const areaSelectorEditor = new EditorGenerator(areaSelectorDiv);
     const ccats = [];
     const ncats = [];
     const catData = Object.keys(this.visual.getCategoricalData(25, data)[0]);
@@ -104,6 +101,18 @@ class Filter {
       numEditor.createNumericFilter(`NumFilter${num}-${this.seriesNumber}`, ncats, `numFilter${this.seriesNumber}`, (e) => { this.removeFilter(e.currentTarget); });
     });
 
+    this.addAreaSelectorButton(editor, myDiv);
+
+    myDiv.appendChild(document.createElement('br'));
+    myDiv.appendChild(document.createElement('br'));
+  }
+
+  addAreaSelectorButton(editor, myDiv) {
+    if ((this.visual.map === undefined) || (this.visual.map === null)) {
+      return; // Don't add the area selector button if there's no map in the visual
+    }
+    const areaSelectorDiv = document.createElement('div');
+    areaSelectorDiv.id = 'areaSelectorDiv';
     myDiv.appendChild(document.createElement('br'));
     myDiv.appendChild(document.createElement('br'));
     const filterLabel3 = document.createElement('h5');
@@ -111,16 +120,13 @@ class Filter {
     filterLabel3.style.textAlign = 'center';
     myDiv.appendChild(filterLabel3);
     myDiv.appendChild(areaSelectorDiv);
-    editor.createButton('selectArea', 'Select an Area', () => {
+    editor.createButton(`selectArea-${this.seriesNumber}`, 'Select an Area', () => {
       const selector = new BoundarySelector(this.visual.map);
       selector.selectPoints((points) => {
-        // this.drawAndAddBoundary(points);
-        // this.addPointsWithinBoundary(this.data, points);
+        this.visual.attributes.areaSelections[this.seriesNumber] = points;
+        // console.log(this.visual.attributes.areaSelections);
       });
     });
-
-    myDiv.appendChild(document.createElement('br'));
-    myDiv.appendChild(document.createElement('br'));
   }
 
 
