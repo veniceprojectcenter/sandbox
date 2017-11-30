@@ -9,8 +9,8 @@ import DefaultMapStyle from './helpers/DefaultMapStyle';
 */
 
 class ChloroplethMap extends Visual {
-  constructor(config) {
-    super(config);
+  constructor(config, renderID, renderControlsID) {
+    super(config, renderID, renderControlsID);
 
     this.map = new Map();
     this.boundarySelector = new BoundarySelector(this.map);

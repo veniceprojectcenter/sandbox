@@ -4,8 +4,8 @@ import EditorGenerator from './helpers/EditorGenerator';
 import DefaultMapStyle from './helpers/DefaultMapStyle';
 
 class PathFinding extends Visual {
-  constructor(config) {
-    super(config);
+  constructor(config, renderID, renderControlsID) {
+    super(config, renderID, renderControlsID);
 
     this.map = new Map();
 

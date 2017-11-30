@@ -4,8 +4,8 @@ import Visual from './helpers/Visual';
 import Filter from './helpers/Filter';
 
 class Counter extends Visual {
-  constructor(config) {
-    super(config);
+  constructor(config, renderID, renderControlsID) {
+    super(config, renderID, renderControlsID);
     this.attributes.columnOptions = null;
     this.attributes.displayColumns = [];
     this.renderData = [];
