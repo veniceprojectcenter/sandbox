@@ -1,9 +1,9 @@
 import Visual from './helpers/Visual';
 import Map from './helpers/Map';
-import EditorGenerator from './helpers/EditorGenerator';
 import ImageHelper from './helpers/ImageHelper';
 import Filter from './helpers/Filter';
 import Data from './helpers/Data';
+import Loader from './helpers/Loader';
 
 class FilterMap extends Visual {
   constructor(config, renderID, renderControlsID) {
@@ -19,7 +19,6 @@ class FilterMap extends Visual {
     this.dataSets = [];
     Data.fetchDataSets((e) => { this.getAllDataSets(e); });
   }
-
 
   addMarker(lat, lng, color = 'blue', shapeType = 'triangle', image, opacity = 0.5, r = 15) {
     if (shapeType === 'circle') {
@@ -49,6 +48,7 @@ class FilterMap extends Visual {
     this.map = new Map();
     this.map.render(this.renderID);
     const dataSets = [];
+    this.renderData = [];
     for (let i = 0; i < filters.length; i += 1) {
       if (filters[i] !== undefined && filters[i].categorical !== undefined
         && filters[i].numeric !== undefined) {
@@ -123,14 +123,23 @@ class FilterMap extends Visual {
     }
     this.allSets = selectSet;
   }
-  replaceFilter(target) {
+  async replaceFilter(target) {
     if (target === undefined) {
       return;
     }
+    this.renderControlsDiv.style.disabled = 'true';
+    const set = $(target).val();
+    $(`#${this.renderControlsID} *`).prop('disabled', true);
     const tempDiv = target.parentNode.parentNode.parentNode.parentNode.children[1];
-    tempDiv.innerHTML = '';
-    Data.fetchData($(target).val(), (e) => {
-      this.filter.renderFilter(tempDiv, e); this.dataSets[$(target).val()] = e;
+    tempDiv.innerHTML = ' ';
+    tempDiv.id = 'someID';
+    const loader = new Loader(this.renderID);
+    loader.render();
+    await Data.fetchData(set, (e) => {
+      $(`#${this.renderControlsID} *`).prop('disabled', false);
+      loader.remove();
+      this.filter.renderFilter(tempDiv, e);
+      this.dataSets[$(target).val()] = e;
     });
   }
 }
