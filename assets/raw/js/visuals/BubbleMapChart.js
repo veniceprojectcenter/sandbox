@@ -23,6 +23,7 @@ class BubbleMapChart extends Visual {
         colorspace: 'hcl',
         range: ['#000080', '#CD0000'],
       },
+      mapStyles: DefaultMapStyle,
     });
   }
 
@@ -87,7 +88,7 @@ class BubbleMapChart extends Visual {
     visual.appendChild(mapContainer);
     // visual.appendChild(svg);
 
-    this.map.render(mapContainer.id);
+    this.map.render(mapContainer.id, this.attributes.mapStyles);
     this.drawMarkers();
   }
 
@@ -171,6 +172,12 @@ class BubbleMapChart extends Visual {
             this.map.clearCircles();
             this.drawMarkers();
           });
+
+    this.map.renderMapColorControls(editor, this.attributes, (color) => {
+      this.attributes.mapStyles[0].stylers[0].color = color;
+    }, (color) => {
+      this.attributes.mapStyles[1].stylers[0].color = color;
+    });
 
   //   editor.createNumberSlider('bubble-color-start',
   // 'Color range start',

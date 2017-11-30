@@ -309,6 +309,20 @@ class Map {
 
     return svg;
   }
+
+  renderMapColorControls(editor, attributes, landUpdate, waterUpdate) {
+    editor.createColorField('map-land-color', 'Map Land Color', attributes.mapStyles[0].stylers[0].color, (e) => {
+      const value = $(e.currentTarget).val();
+      this.setLandColor(value);
+      landUpdate(value);
+    });
+
+    editor.createColorField('map-water-color', 'Map Water Color', attributes.mapStyles[1].stylers[0].color, (e) => {
+      const value = $(e.currentTarget).val();
+      this.setWaterColor(value);
+      waterUpdate(value);
+    });
+  }
 }
 
 export default Map;

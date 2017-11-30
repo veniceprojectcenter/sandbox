@@ -67,7 +67,6 @@ class CategoryMap extends Visual {
 
     this.constructor.empty(this.renderControlsID);
     const controlsContainer = document.getElementById(this.renderControlsID);
-
     const editor = new EditorGenerator(controlsContainer);
 
     editor.createHeader('Configure Map');
@@ -94,16 +93,10 @@ class CategoryMap extends Visual {
       this.drawMarkers();
     });
 
-    editor.createColorField('map-land-color', 'Map Land Color', this.attributes.mapStyles[0].stylers[0].color, (e) => {
-      const value = $(e.currentTarget).val();
-      this.attributes.mapStyles[0].stylers[0].color = value;
-      this.map.setLandColor(value);
-    });
-
-    editor.createColorField('map-water-color', 'Map Water Color', this.attributes.mapStyles[1].stylers[0].color, (e) => {
-      const value = $(e.currentTarget).val();
-      this.attributes.mapStyles[1].stylers[0].color = value;
-      this.map.setWaterColor(value);
+    this.map.renderMapColorControls(editor, this.attributes, (color) => {
+      this.attributes.mapStyles[0].stylers[0].color = color;
+    }, (color) => {
+      this.attributes.mapStyles[1].stylers[0].color = color;
     });
   }
 }

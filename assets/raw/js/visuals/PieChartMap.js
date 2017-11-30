@@ -3,6 +3,7 @@ import Map from './helpers/Map';
 import EditorGenerator from './helpers/EditorGenerator';
 import DivOverlay from './helpers/DivOverlay';
 import Donut from './Donut';
+import DefaultMapStyle from './helpers/DefaultMapStyle';
 
 class PieChartMap extends Visual {
   constructor(config) {
@@ -17,11 +18,12 @@ class PieChartMap extends Visual {
       chart_size: 0.005, // In degrees lat/lng
       group_column: columnNames[52],
       chart_column: columnNames[76],
+      mapStyles: DefaultMapStyle,
     });
   }
 
   render() {
-    this.map.render(this.renderID);
+    this.map.render(this.renderID, this.attributes.mapStyles);
 
     const groupColumn = this.attributes.group_column;
     const chartColumn = this.attributes.chart_column;
@@ -160,6 +162,11 @@ class PieChartMap extends Visual {
         this.attributes.chart_column = value;
         this.render();
       });
+    this.map.renderMapColorControls(editor, this.attributes, (color) => {
+      this.attributes.mapStyles[0].stylers[0].color = color;
+    }, (color) => {
+      this.attributes.mapStyles[1].stylers[0].color = color;
+    });
   }
 }
 
