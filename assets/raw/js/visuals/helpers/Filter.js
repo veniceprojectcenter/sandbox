@@ -136,21 +136,6 @@ class Filter {
 
     myDiv.appendChild(document.createElement('br'));
     myDiv.appendChild(document.createElement('br'));
-    const filterLabel3 = document.createElement('h5');
-    filterLabel3.innerHTML = 'Area Selection Filter';
-    filterLabel3.style.textAlign = 'center';
-    myDiv.appendChild(filterLabel3);
-    myDiv.appendChild(areaSelectorDiv);
-    editor.createButton('selectArea', 'Select an Area', () => {
-      const selector = new BoundarySelector(this.visual.map);
-      selector.selectPoints((points) => {
-        // this.drawAndAddBoundary(points);
-        // this.addPointsWithinBoundary(this.data, points);
-      });
-    });
-
-    myDiv.appendChild(document.createElement('br'));
-    myDiv.appendChild(document.createElement('br'));
   }
 
 
