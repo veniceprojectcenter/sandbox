@@ -15,6 +15,7 @@ class FilterMap extends Visual {
     this.attributes.colors = [];
     this.attributes.shapes = [];
     this.attributes.images = [];
+    this.attributes.areaSelections = [];
     this.renderData = [];
     this.dataSets = [];
     Data.fetchDataSets((e) => { this.getAllDataSets(e); });
