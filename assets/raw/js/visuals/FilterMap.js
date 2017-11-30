@@ -13,10 +13,6 @@ class FilterMap extends Visual {
     this.map = new Map();
     this.attributes.filters = [];
     this.filter = new Filter(this);
-    this.attributes.colors = [];
-    this.attributes.shapes = [];
-    this.attributes.images = [];
-    this.attributes.areaSelections = [];
     this.renderData = [];
     this.dataSets = [];
     Data.fetchDataSets((e) => { this.getAllDataSets(e); });
@@ -72,6 +68,10 @@ class FilterMap extends Visual {
   }
 
   renderControls() {
+    this.attributes.colors = [];
+    this.attributes.shapes = [];
+    this.attributes.images = [];
+    this.attributes.areaSelections = [];
     this.renderControlsDiv = document.getElementById(this.renderControlsID);
     const editor = new EditorGenerator(this.renderControlsDiv);
     editor.createHeader('Controls');
