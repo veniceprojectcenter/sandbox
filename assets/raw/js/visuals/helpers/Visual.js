@@ -210,13 +210,25 @@ class Visual {
     };
 
     const db = firebase.database();
-    await db.ref('/viz').push({
+    await db.ref(`/viz/configs/${config.dataSet}`).push({
       type: config.type,
       dataSet: config.dataSet,
       attributes: JSON.stringify(config.attributes),
-    }).then(() => {
-      Materialize.toast('Visual Published', 3000);
-      publishButton.classList.remove('disabled');
+    }).then(async (snapshot) => {
+      await db.ref('/viz/info').push({
+        type: config.type,
+        id: snapshot.key,
+        dataSet: config.dataSet,
+      })
+      .then(() => {
+        Materialize.toast('Visual Published', 3000);
+        publishButton.classList.remove('disabled');
+      })
+      .catch((error) => {
+        Materialize.toast('Error Publishing Visual', 3000);
+        publishButton.classList.remove('disabled');
+        console.error(error);
+      });
     })
     .catch((error) => {
       Materialize.toast('Error Publishing Visual', 3000);
