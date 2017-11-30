@@ -14,6 +14,7 @@ class Filter {
     }
     return this.visual.renderData;
   }
+
   getFilteredDatum(i, filter, dataSet = null) {
     if (filter !== undefined && filter.categorical !== undefined
     && filter.numeric !== undefined) {
@@ -26,6 +27,11 @@ class Filter {
       }
       this.visual.renderData[i] = this.visual.filterNumerical(filter.numeric,
         this.visual.renderData[i]);
+    }
+    if (filter.area !== undefined) { // this.visual.map will be defined if true
+      const selector = new BoundarySelector(this.visual.map);
+      const points = this.visual.renderData[i];
+      this.visual.renderData[i] = selector.getPointsInBoundary(points, filter.area);
     }
   }
 
@@ -188,11 +194,16 @@ class Filter {
             numericFilters.push({ column: columnval, operation: opval, value: val });
           }
 
+          const area = this.visual.attributes.areaSelections[k];
+          if ((area !== undefined) && (area !== null)) {
+            area.push(area[0]);
+          }
+
           this.visual.attributes.filters[k] = {
             dataSet: set,
             numeric: numericFilters,
             categorical: dataFilters,
-            area: this.visual.attributes.areaSelections[k],
+            area,
           };
         }
       }
