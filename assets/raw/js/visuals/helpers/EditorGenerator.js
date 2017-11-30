@@ -57,12 +57,12 @@ class EditorGenerator {
     $(`#${id}-columnSelect`).on('change', onColumn);
     $(`#${id}-remove`).on('click', remove);
   }
-  createNumericFilter(id, column, className, remove) {
-    const context = { id, column, className };
+  createNumericFilter(seriesNum, filterNum, columns, remove) {
+    const context = { seriesNum, filterNum, columns };
     this.handlebarsWithContext('numeric-filter', context);
-    $(`#${id}-columnSelect`).val(0).material_select();
-    $(`#${id}-operations`).val(1).material_select();
-    $(`#${id}-remove`).on('click', remove);
+    $(`#numFilter${seriesNum}-${filterNum}-columnSelect`).val(0).material_select();
+    $(`#numFilter${seriesNum}-${filterNum}-operations`).val(1).material_select();
+    $(`#numFilter${seriesNum}-${filterNum}-remove`).on('click', remove);
   }
 
   createCheckBox(id, title, current, onOptionChanged) {

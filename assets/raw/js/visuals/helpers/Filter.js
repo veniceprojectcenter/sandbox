@@ -4,8 +4,8 @@ import EditorGenerator from './EditorGenerator';
 class Filter {
   constructor(avisual) {
     this.visual = avisual;
-    this.event = document.createEvent('Event');
-    this.event.initEvent('addSeries', true, true);
+    this.addCheckboxEvent = document.createEvent('Event');
+    this.addCheckboxEvent.initEvent('addCheckbox', true, true);
   }
   /**
   *Returns array of data where each represents the data for a single series.
@@ -42,18 +42,18 @@ class Filter {
     myDiv.innerHTML += '<ul id=\'collapseUl\'class="collapsible" data-collapsible="accordion">';
     this.ul = document.getElementById('collapseUl');
     this.seriesNumber = 0;
-    this.li = document.createElement('li');
-    this.ul.appendChild(this.li);
+    const li = document.createElement('li');
+    this.ul.appendChild(li);
     this.filterHead = document.createElement('div');
     this.filterHead.classList.add('collapsible-header');
     this.headEditor = new EditorGenerator(this.filterHead);
-    this.li.appendChild(this.filterHead);
+    li.appendChild(this.filterHead);
     makeHeader(this.headEditor, this.seriesNumber);
     const filterDiv = document.createElement('div');
     filterDiv.classList.add('collapsible-body');
-    this.li.appendChild(filterDiv);
+    li.appendChild(filterDiv);
     this.renderFilter(filterDiv);
-    filterDiv.dispatchEvent(this.event);
+    filterDiv.querySelector('div[id$=numFilterList] div.row').dispatchEvent(this.addCheckboxEvent);
 
     this.addSeriesButton(editor, makeHeader);
     this.addSubmitButton(editor, buttonText, onButton);
@@ -65,15 +65,18 @@ class Filter {
     const editor = new EditorGenerator(myDiv);
     const catFilterDiv = document.createElement('div');
     const numFilterDiv = document.createElement('div');
-    catFilterDiv.id = 'catFilterDiv';
-    numFilterDiv.id = 'numFilterDiv';
+    const newSeriesNum = this.ul.children.length - 1;
+    catFilterDiv.class = 'catFilterDiv';
+    catFilterDiv.id = `series${newSeriesNum}-catFilterList`;
+    numFilterDiv.class = 'numFilterDiv';
+    numFilterDiv.id = `series${newSeriesNum}-numFilterList`;
     const catEditor = new EditorGenerator(catFilterDiv);
     const numEditor = new EditorGenerator(numFilterDiv);
     const ccats = [];
     const ncats = [];
     const catData = Object.keys(this.visual.getCategoricalData(25, data)[0]);
     const numData = Object.keys(this.visual.getNumericData(2, data)[0]);
-    let num = 0;
+
     for (let i = 0; i < catData.length; i += 1) {
       ccats.push({ value: catData[i], text: catData[i] });
     }
@@ -87,7 +90,7 @@ class Filter {
     filterLabel.style.textAlign = 'center';
     myDiv.appendChild(filterLabel);
     myDiv.appendChild(catFilterDiv);
-    this.createAddCategoryButton(editor, catEditor, ccats, num, data);
+    this.createAddCategoryButton(editor, catEditor, ccats, 0, data);
     myDiv.appendChild(document.createElement('br'));
     myDiv.appendChild(document.createElement('br'));
     const filterLabel2 = document.createElement('h5');
@@ -96,12 +99,17 @@ class Filter {
     myDiv.appendChild(filterLabel2);
     myDiv.appendChild(numFilterDiv);
     this.createCategoryFilter(catEditor, ccats, data);
-    numEditor.createNumericFilter(`NumFilter-${this.seriesNumber}`, ncats, `numFilter${this.seriesNumber}`, (e) => {
+    numEditor.createNumericFilter(newSeriesNum, 0, ncats, (e) => {
       this.removeFilter(e.currentTarget);
     });
-    editor.createButton('addNum', 'Add Numeric Filter', () => {
-      num += 1;
-      numEditor.createNumericFilter(`NumFilter${num}-${this.seriesNumber}`, ncats, `numFilter${this.seriesNumber}`, (e) => { this.removeFilter(e.currentTarget); });
+    editor.createButton(`addNum${newSeriesNum}`, 'Add Numeric Filter', () => {
+      const list = myDiv.querySelector('div[id$=numFilterList]');
+      const seriesNum = /series(\d+)/.exec(list.id.split('-')[0])[1];
+      const numChildren = list.children.length;
+      numEditor.createNumericFilter(seriesNum, numChildren, ncats, (e) => {
+        this.removeFilter(e.currentTarget);
+      });
+      document.querySelector(`div#numFilter${seriesNum}-${numChildren}`).dispatchEvent(this.addCheckboxEvent);
     });
 
     myDiv.appendChild(document.createElement('br'));
@@ -111,20 +119,20 @@ class Filter {
 
   addSeriesButton(editor, makeHeader) {
     editor.createButton('addSeries', 'Add a Data Series', () => {
-      this.li = document.createElement('li');
-      this.ul.appendChild(this.li);
+      const li = document.createElement('li');
+      const seriesNum = this.ul.children.length;
+      this.ul.appendChild(li);
       this.filterHead = document.createElement('div');
       this.filterHead.classList.add('collapsible-header');
       const headEditor2 = new EditorGenerator(this.filterHead);
-      this.seriesNumber += 1;
-      this.li.appendChild(this.filterHead);
-      makeHeader(headEditor2, this.seriesNumber);
-      this.filterDiv = document.createElement('div');
-      this.filterDiv.classList.add('collapsible-body');
-      this.li.appendChild(this.filterDiv);
+      li.appendChild(this.filterHead);
+      makeHeader(headEditor2, seriesNum);
+      const filterDiv = document.createElement('div');
+      filterDiv.classList.add('collapsible-body');
+      li.appendChild(filterDiv);
 
-      this.renderFilter(this.filterDiv);
-      this.filterDiv.dispatchEvent(this.event);
+      this.renderFilter(filterDiv);
+      filterDiv.querySelector('div[id$=numFilterList] div.row').dispatchEvent(this.addCheckboxEvent);
     });
   }
   addSubmitButton(editor, buttonText, onButton) {
