@@ -21,7 +21,6 @@ class FilterMap extends Visual {
     this.attributes.sliders = { a: 1, b: 2 };
   }
 
-
   addMarker(lat, lng, color = 'blue', shapeType = 'triangle', image, opacity = 0.5, r = 15) {
     if (shapeType === 'circle') {
       this.map.addCircle({ lat: parseFloat(lat), lng: parseFloat(lng) }, color, opacity, r);
@@ -75,13 +74,13 @@ class FilterMap extends Visual {
         });
     });
   }
+
   renderControls() {
     this.renderControlsDiv = document.getElementById(this.renderControlsID);
     this.renderControlsDiv.innerHTML = '';
     this.renderControlsDiv.innerHTML = '<h4 style = "text-align: center">Controls</h4> <br>';
-    this.renderControlsDiv.addEventListener('addSeries', (e) => {
-      const filterRow = e.path[0].querySelector('div[id="numFilterDiv"]').children[0];
-      this.addCheckboxToFilterRow(filterRow);
+    this.renderControlsDiv.addEventListener('addCheckbox', (e) => {
+      this.addCheckboxToFilterRow(e.target);
     }, false);
     this.filter.makeFilterSeries(
       (headEditor, index) => { this.filterMapHeader(headEditor, index); },
@@ -94,6 +93,9 @@ class FilterMap extends Visual {
   filterMapHeader(headEditor, index) {
     const shapes = [{ value: 'circle', text: 'Circle' }, { value: 'triangle', text: 'Triangle' }, { value: 'custom', text: 'Custom Image' }];
     headEditor.createSelectBox(`dataSet${index}`, 'Data Set', this.allSets, 'na', (e) => { this.replaceFilter(e.currentTarget); });
+    $(`ul#collapseUl li div.collapsible-header div#dataSet${index}`).change((evt) => {
+      $(evt.target).closest('li').find('div[id$=numFilterList] div.row')[0].dispatchEvent(this.filter.addCheckboxEvent);
+    });
     headEditor.createSelectBox(`shape${index}`, 'Shape', shapes, 'na', (e) => {
       e.currentTarget.parentNode.parentNode.parentNode.children[2].remove();
       if (e.currentTarget.parentNode.parentNode.parentNode.children[2]) {
@@ -115,6 +117,7 @@ class FilterMap extends Visual {
       this.filter.removeSeries(e2.currentTarget);
     });
   }
+
   async getColorShape(filters) {
     for (let i = 0; i < filters.length; i += 1) {
       if (filters[i] !== undefined) {
@@ -134,6 +137,7 @@ class FilterMap extends Visual {
     }
     return undefined;
   }
+
   getAllDataSets(allSets) {
     const selectSet = [];
     for (let i = 0; i < allSets.length; i += 1) {
@@ -141,6 +145,7 @@ class FilterMap extends Visual {
     }
     this.allSets = selectSet;
   }
+
   replaceFilter(target) {
     if (target === undefined) {
       return;
@@ -186,4 +191,5 @@ class FilterMap extends Visual {
     filterRow.insertBefore(checkboxNode, valueCol.nextSibling);
   }
 }
+
 export default FilterMap;
