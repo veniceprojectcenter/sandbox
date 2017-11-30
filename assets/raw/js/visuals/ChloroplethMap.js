@@ -101,6 +101,9 @@ class ChloroplethMap extends Visual {
         polyline.setMap(map);
       }
     });
+    this.map.circles.forEach((circle) => {
+      circle.setMap(map);
+    });
   }
 
   renderControls() {
