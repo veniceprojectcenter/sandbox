@@ -4,8 +4,8 @@ import Map from './helpers/Map';
 import DefaultMapStyle from './helpers/DefaultMapStyle';
 
 class CategoryMap extends Visual {
-  constructor(config) {
-    super(config);
+  constructor(config, renderID, renderControlsID) {
+    super(config, renderID, renderControlsID);
 
     this.map = new Map();
   }

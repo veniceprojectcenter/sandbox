@@ -4,8 +4,8 @@ import EditorGenerator from './helpers/EditorGenerator';
 import Map from './helpers/Map';
 
 class BubbleMapChart extends Visual {
-  constructor(config) {
-    super(config);
+  constructor(config, renderID, renderControlsID) {
+    super(config, renderID, renderControlsID);
 
     this.map = new Map();
   }
