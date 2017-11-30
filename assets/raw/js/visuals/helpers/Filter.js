@@ -1,4 +1,4 @@
-
+import BoundarySelector from './BoundarySelector';
 import EditorGenerator from './EditorGenerator';
 
 class Filter {
@@ -87,6 +87,7 @@ class Filter {
     myDiv.appendChild(document.createElement('br'));
     myDiv.appendChild(document.createElement('br'));
     const filterLabel2 = document.createElement('h5');
+
     filterLabel2.innerHTML = 'Numeric Filters';
     filterLabel2.style.textAlign = 'center';
     myDiv.appendChild(filterLabel2);
@@ -100,8 +101,32 @@ class Filter {
       numEditor.createNumericFilter(`NumFilter${num}-${this.seriesNumber}`, ncats, `numFilter${this.seriesNumber}`, (e) => { this.removeFilter(e.currentTarget); });
     });
 
+    this.addAreaSelectorButton(editor, myDiv);
+
     myDiv.appendChild(document.createElement('br'));
     myDiv.appendChild(document.createElement('br'));
+  }
+
+  addAreaSelectorButton(editor, myDiv) {
+    if ((this.visual.map === undefined) || (this.visual.map === null)) {
+      return; // Don't add the area selector button if there's no map in the visual
+    }
+    const areaSelectorDiv = document.createElement('div');
+    areaSelectorDiv.id = 'areaSelectorDiv';
+    myDiv.appendChild(document.createElement('br'));
+    myDiv.appendChild(document.createElement('br'));
+    const filterLabel3 = document.createElement('h5');
+    filterLabel3.innerHTML = 'Area Selection Filter';
+    filterLabel3.style.textAlign = 'center';
+    myDiv.appendChild(filterLabel3);
+    myDiv.appendChild(areaSelectorDiv);
+    editor.createButton(`selectArea-${this.seriesNumber}`, 'Select an Area', () => {
+      const selector = new BoundarySelector(this.visual.map);
+      selector.selectPoints((points) => {
+        this.visual.attributes.areaSelections[this.seriesNumber] = points;
+        // console.log(this.visual.attributes.areaSelections);
+      });
+    });
   }
 
 

@@ -2,6 +2,7 @@ import Visual from './helpers/Visual';
 import Map from './helpers/Map';
 import EditorGenerator from './helpers/EditorGenerator';
 import BoundarySelector from './helpers/BoundarySelector';
+import DefaultMapStyle from './helpers/DefaultMapStyle';
 
 /* This file is to be used as a default starting point for new map visualizations
  * that feature adding divs
@@ -13,6 +14,8 @@ class ChloroplethMap extends Visual {
 
     this.map = new Map();
     this.boundarySelector = new BoundarySelector(this.map);
+
+    this.BOUNDARY_COLOR = '#ff3333';
   }
 
   static removeBoundaryWithPoint(point) {
@@ -34,6 +37,7 @@ class ChloroplethMap extends Visual {
   onLoadData() {
     this.applyDefaultAttributes({
       title: '',
+      mapStyles: DefaultMapStyle,
     });
   }
 
@@ -47,19 +51,21 @@ class ChloroplethMap extends Visual {
   render() {
     Visual.empty(this.renderID);
 
-    this.map.render(this.renderID);
+    this.map.render(this.renderID, this.attributes.mapStyles);
     this.renderLocalPolyLines();
     this.addDataMarkers();
   }
 
   renderLocalPolyLines() {
+    console.log(localStorage.boundaries);
     if (localStorage.boundaries === undefined) {
       localStorage.boundaries = JSON.stringify([]);
     }
     const lines = JSON.parse(localStorage.boundaries);
     lines.forEach((line) => {
       if (line !== null) {
-        const boundary = this.map.addPolyline(line, 'red', 5);
+        const boundary = this.map.addPolyline(line, this.BOUNDARY_COLOR, 5);
+        this.addPointsWithinBoundary(this.data, line);
         boundary.addListener('click', () => {
           boundary.setMap(null);
           this.constructor.removeBoundaryWithPoint(line[0]);
@@ -78,7 +84,7 @@ class ChloroplethMap extends Visual {
 
   drawAndAddBoundary(points) {
     points.push(points[0]);
-    const line = this.map.addPolyline(points, 'red', 5);
+    const line = this.map.addPolyline(points, this.BOUNDARY_COLOR, 5);
     if (localStorage.boundaries === undefined) {
       localStorage.boundaries = JSON.stringify([]);
     }
@@ -88,6 +94,17 @@ class ChloroplethMap extends Visual {
     line.addListener('click', () => {
       line.setMap(null);
       this.constructor.removeBoundaryWithPoint(points[0]);
+    });
+  }
+
+  setBoundariesMap(map) {
+    this.map.polylines.forEach((polyline) => {
+      if (polyline.strokeColor === this.BOUNDARY_COLOR) {
+        polyline.setMap(map);
+      }
+    });
+    this.map.circles.forEach((circle) => {
+      circle.setMap(map);
     });
   }
 
@@ -105,6 +122,24 @@ class ChloroplethMap extends Visual {
     editor.createHeader('Editor');
     this.createSelectButton(editor);
     // this.createColumnSelector(editor);
+    this.createHideBoundsBox(editor);
+    this.map.renderMapColorControls(editor, this.attributes, (color) => {
+      this.attributes.mapStyles[0].stylers[0].color = color;
+    }, (color) => {
+      this.attributes.mapStyles[1].stylers[0].color = color;
+    });
+  }
+
+  createHideBoundsBox(editor) {
+    const id = 'hideBoundsBox';
+    editor.createCheckBox(id, 'Toggle Showing Selections', true, () => {
+      const checked = document.getElementById(`${id}-checkbox`).checked;
+      if (!checked) {
+        this.setBoundariesMap(null);
+      } else {
+        this.setBoundariesMap(this.map.map);
+      }
+    });
   }
 
   /* createColumnSelector(editor) {

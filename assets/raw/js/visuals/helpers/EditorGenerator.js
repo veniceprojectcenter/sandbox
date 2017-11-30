@@ -82,10 +82,6 @@ class EditorGenerator {
     $(`#${id} input`).on(inputEvent, onValueChanged);
   }
 
-  createRangeSlider() {
-
-  }
-
   createFileUpload(id, title, onChange) {
     const context = { id, title };
     this.handlebarsWithContext('file-upload', context);
@@ -102,9 +98,6 @@ class EditorGenerator {
     this.handlebarsWithContext('header-two', context);
   }
 
-  createCategoryEditor() {
-
-  }
   createMoveableList(id, title, color, onChange, onColor) {
     const context = { id, color, title };
     this.handlebarsWithContext('moveable', context);

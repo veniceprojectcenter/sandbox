@@ -3,6 +3,7 @@ import Map from './helpers/Map';
 import ImageHelper from './helpers/ImageHelper';
 import Filter from './helpers/Filter';
 import Data from './helpers/Data';
+import DefaultMapStyle from './helpers/DefaultMapStyle';
 import Loader from './helpers/Loader';
 
 class FilterMap extends Visual {
@@ -15,9 +16,17 @@ class FilterMap extends Visual {
     this.attributes.colors = [];
     this.attributes.shapes = [];
     this.attributes.images = [];
+    this.attributes.areaSelections = [];
     this.renderData = [];
     this.dataSets = [];
     Data.fetchDataSets((e) => { this.getAllDataSets(e); });
+  }
+
+  onLoadData() {
+    this.applyDefaultAttributes({
+      title: '',
+      mapStyles: DefaultMapStyle,
+    });
   }
 
   addMarker(lat, lng, color = 'blue', shapeType = 'triangle', image, opacity = 0.5, r = 15) {
@@ -46,7 +55,7 @@ class FilterMap extends Visual {
   render() {
     const filters = this.attributes.filters;
     this.map = new Map();
-    this.map.render(this.renderID);
+    this.map.render(this.renderID, this.attributes.mapStyles);
     const dataSets = [];
     this.renderData = [];
     for (let i = 0; i < filters.length; i += 1) {
@@ -61,16 +70,21 @@ class FilterMap extends Visual {
       }
     }
   }
+
   renderControls() {
     this.renderControlsDiv = document.getElementById(this.renderControlsID);
-    this.renderControlsDiv.innerHTML = '';
-    this.renderControlsDiv.innerHTML = '<h4 style = "text-align: center">Controls</h4> <br>';
+    const editor = new EditorGenerator(this.renderControlsDiv);
+    editor.createHeader('Controls');
     this.filter.makeFilterSeries(
       (headEditor, index) => { this.filterMapHeader(headEditor, index); },
       (filters) => { this.getColorShape(filters); },
     );
 
-    this.render();
+    this.map.renderMapColorControls(editor, this.attributes, (color) => {
+      this.attributes.mapStyles[0].stylers[0].color = color;
+    }, (color) => {
+      this.attributes.mapStyles[1].stylers[0].color = color;
+    });
   }
 
   filterMapHeader(headEditor, index) {
