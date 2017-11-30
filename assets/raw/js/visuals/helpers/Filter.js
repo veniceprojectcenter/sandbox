@@ -191,7 +191,9 @@ class Filter {
           this.visual.attributes.filters[k] = {
             dataSet: set,
             numeric: numericFilters,
-            categorical: dataFilters };
+            categorical: dataFilters,
+            area: this.visual.attributes.areaSelections[k],
+          };
         }
       }
       onButton(this.visual.attributes.filters);

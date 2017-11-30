@@ -48,10 +48,10 @@ class FilterMap extends Visual {
   render() {
     this.map = new Map();
     this.map.render(this.renderID);
-    this.filterAndRenderPoints();
+    this.applyFiltersAndRender();
   }
 
-  filterAndRenderPoints() {
+  applyFiltersAndRender() {
     console.log(this.attributes.filters);
     const filters = this.attributes.filters;
     const dataSets = [];
