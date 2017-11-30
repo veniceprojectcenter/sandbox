@@ -46,19 +46,26 @@ class FilterMap extends Visual {
 
   // render the map
   render() {
-    const filters = this.attributes.filters;
     this.map = new Map();
     this.map.render(this.renderID);
+    this.filterAndRenderPoints();
+  }
+
+  filterAndRenderPoints() {
+    console.log(this.attributes.filters);
+    const filters = this.attributes.filters;
     const dataSets = [];
     for (let i = 0; i < filters.length; i += 1) {
-      if (filters[i] !== undefined && filters[i].categorical !== undefined
-        && filters[i].numeric !== undefined) {
-        dataSets[i] = Data.fetchData(filters[i].dataSet,
-    (e) => {
-      this.filter.getFilteredDatum(i, filters[i], e);
-      this.renderPoints(this.renderData[i], this.attributes.colors[i], this.attributes.shapes[i],
-      this.attributes.images[i]);
-    });
+      const filter = filters[i];
+      if (filter !== undefined && filter.categorical !== undefined
+        && filter.numeric !== undefined) {
+        dataSets[i] = Data.fetchData(filter.dataSet,
+          (dataSet) => {
+            this.filter.getFilteredDatum(i, filter, dataSet);
+            this.renderPoints(this.renderData[i],
+              this.attributes.colors[i], this.attributes.shapes[i],
+            this.attributes.images[i]);
+          });
       }
     }
   }
