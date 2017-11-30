@@ -185,11 +185,11 @@ class Map {
     const height = this.map.getDiv().offsetHeight;
     const sizeString = `size=${width}x${height}`;
     let styleString = '';
-    for (let i = 0; i < DefaultMapStyle.length; i += 1) {
-      const feature = DefaultMapStyle[i].featureType || 'all';
-      const element = DefaultMapStyle[i].elementType || 'all';
-      const rule = Object.keys(DefaultMapStyle[i].stylers[0])[0];
-      const argument = DefaultMapStyle[i].stylers[0][rule].replace('#', '0x');
+    for (let i = 0; i < this.styles.length; i += 1) {
+      const feature = this.styles[i].featureType || 'all';
+      const element = this.styles[i].elementType || 'all';
+      const rule = Object.keys(this.styles[i].stylers[0])[0];
+      const argument = this.styles[i].stylers[0][rule].replace('#', '0x');
       const style = `style=feature:${feature}|element:${element}|${rule}:${argument}`;
       if (i !== 0) {
         styleString += '&';
