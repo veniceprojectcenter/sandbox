@@ -1,10 +1,11 @@
 import Visual from './helpers/Visual';
 import Map from './helpers/Map';
 import EditorGenerator from './helpers/EditorGenerator';
+import DefaultMapStyle from './helpers/DefaultMapStyle';
 
 class PathFinding extends Visual {
-  constructor(config) {
-    super(config);
+  constructor(config, renderID, renderControlsID) {
+    super(config, renderID, renderControlsID);
 
     this.map = new Map();
 
@@ -18,6 +19,7 @@ class PathFinding extends Visual {
     this.applyDefaultAttributes({
       aggregationColumn: Object.keys(this.data[0])[107],
       title: '',
+      mapStyles: DefaultMapStyle,
     });
   }
 
@@ -28,7 +30,7 @@ class PathFinding extends Visual {
     mapDiv.className = 'map-container';
     renderDiv.appendChild(mapDiv);
 
-    this.map.render(mapDiv.id);
+    this.map.render(mapDiv.id, this.attributes.mapStyles);
 
     const text = document.createElement('p');
     text.id = 'infoText';
@@ -281,6 +283,12 @@ class PathFinding extends Visual {
       } else {
         this.map.clearCirclesOfColor('blue');
       }
+    });
+
+    this.map.renderMapColorControls(editor, this.attributes, (color) => {
+      this.attributes.mapStyles[0].stylers[0].color = color;
+    }, (color) => {
+      this.attributes.mapStyles[1].stylers[0].color = color;
     });
   }
 }

@@ -8,7 +8,6 @@ import Counter from './visuals/Counter';
 import PieChartMap from './visuals/PieChartMap';
 import BubbleChart from './visuals/BubbleChart';
 import BubbleMapChart from './visuals/BubbleMapChart';
-import BubbleTimeline from './visuals/BubbleTimeline';
 import RouteMap from './visuals/RouteMap';
 import FilterMap from './visuals/FilterMap';
 import DataView from './visuals/DataView';
@@ -37,9 +36,6 @@ function renderVisualFromConfig(defaultConfig, containerID) {
       break;
     case 'Pie-Chart-Map':
       visual = new PieChartMap(config, containerID);
-      break;
-    case 'Bubble-Timeline':
-      visual = new BubbleTimeline(config, containerID);
       break;
     case 'Bubble-Chart':
       visual = new BubbleChart(config, containerID);

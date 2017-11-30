@@ -2,14 +2,15 @@ import Visual from './helpers/Visual';
 import Map from './helpers/Map';
 import EditorGenerator from './helpers/EditorGenerator';
 import BoundarySelector from './helpers/BoundarySelector';
+import DefaultMapStyle from './helpers/DefaultMapStyle';
 
 /* This file is to be used as a default starting point for new map visualizations
  * that feature adding divs
 */
 
 class ChloroplethMap extends Visual {
-  constructor(config) {
-    super(config);
+  constructor(config, renderID, renderControlsID) {
+    super(config, renderID, renderControlsID);
 
     this.map = new Map();
     this.boundarySelector = new BoundarySelector(this.map);
@@ -36,6 +37,7 @@ class ChloroplethMap extends Visual {
   onLoadData() {
     this.applyDefaultAttributes({
       title: '',
+      mapStyles: DefaultMapStyle,
     });
   }
 
@@ -49,7 +51,7 @@ class ChloroplethMap extends Visual {
   render() {
     Visual.empty(this.renderID);
 
-    this.map.render(this.renderID);
+    this.map.render(this.renderID, this.attributes.mapStyles);
     this.renderLocalPolyLines();
     this.addDataMarkers();
   }
@@ -121,11 +123,16 @@ class ChloroplethMap extends Visual {
     this.createSelectButton(editor);
     // this.createColumnSelector(editor);
     this.createHideBoundsBox(editor);
+    this.map.renderMapColorControls(editor, this.attributes, (color) => {
+      this.attributes.mapStyles[0].stylers[0].color = color;
+    }, (color) => {
+      this.attributes.mapStyles[1].stylers[0].color = color;
+    });
   }
 
   createHideBoundsBox(editor) {
     const id = 'hideBoundsBox';
-    editor.createCheckBox(id, 'Toggle Showing Selections', true, (e) => {
+    editor.createCheckBox(id, 'Toggle Showing Selections', true, () => {
       const checked = document.getElementById(`${id}-checkbox`).checked;
       if (!checked) {
         this.setBoundariesMap(null);

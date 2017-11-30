@@ -10,23 +10,38 @@ class Map {
     this.map = null;
     this.circles = [];
     this.polylines = [];
-
     this.customs = [];
     this.n = 0; // Number of custom icons
+    this.styles = [];
   }
 
-  render(containerID) {
+  render(containerID, styles = DefaultMapStyle) {
     const renderDiv = document.getElementById(containerID);
+    this.styles = styles;
     renderDiv.classList.add('map');
     this.map = new google.maps.Map(renderDiv, {
       center: { lat: 45.435, lng: 12.335 },
       zoom: 14,
-      styles: DefaultMapStyle,
+      styles,
     });
   }
 
   registerClickAction(clickFunction) {
     google.maps.event.addListener(this.map, 'click', clickFunction);
+  }
+
+  setLandColor(color) {
+    this.styles[0].stylers[0].color = color;
+    this.map.setOptions({
+      styles: this.styles,
+    });
+  }
+
+  setWaterColor(color) {
+    this.styles[1].stylers[0].color = color;
+    this.map.setOptions({
+      styles: this.styles,
+    });
   }
 
   addCustomMarker(point, url, size) {
@@ -170,11 +185,11 @@ class Map {
     const height = this.map.getDiv().offsetHeight;
     const sizeString = `size=${width}x${height}`;
     let styleString = '';
-    for (let i = 0; i < DefaultMapStyle.length; i += 1) {
-      const feature = DefaultMapStyle[i].featureType || 'all';
-      const element = DefaultMapStyle[i].elementType || 'all';
-      const rule = Object.keys(DefaultMapStyle[i].stylers[0])[0];
-      const argument = DefaultMapStyle[i].stylers[0][rule].replace('#', '0x');
+    for (let i = 0; i < this.styles.length; i += 1) {
+      const feature = this.styles[i].featureType || 'all';
+      const element = this.styles[i].elementType || 'all';
+      const rule = Object.keys(this.styles[i].stylers[0])[0];
+      const argument = this.styles[i].stylers[0][rule].replace('#', '0x');
       const style = `style=feature:${feature}|element:${element}|${rule}:${argument}`;
       if (i !== 0) {
         styleString += '&';
@@ -293,6 +308,20 @@ class Map {
     `;
 
     return svg;
+  }
+
+  renderMapColorControls(editor, attributes, landUpdate, waterUpdate) {
+    editor.createColorField('map-land-color', 'Map Land Color', attributes.mapStyles[0].stylers[0].color, (e) => {
+      const value = $(e.currentTarget).val();
+      this.setLandColor(value);
+      landUpdate(value);
+    });
+
+    editor.createColorField('map-water-color', 'Map Water Color', attributes.mapStyles[1].stylers[0].color, (e) => {
+      const value = $(e.currentTarget).val();
+      this.setWaterColor(value);
+      waterUpdate(value);
+    });
   }
 }
 

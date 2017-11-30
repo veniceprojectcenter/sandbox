@@ -4,13 +4,15 @@ import Visual from './helpers/Visual';
 import Filter from './helpers/Filter';
 
 class Counter extends Visual {
-  constructor(config) {
-    super(config);
+  constructor(config, renderID, renderControlsID) {
+    super(config, renderID, renderControlsID);
     this.attributes.columnOptions = null;
     this.attributes.displayColumns = [];
     this.renderData = [];
     this.attributes.filters = [];
     this.filter = new Filter(this);
+    this.attributes.aggs = [];
+    this.num = 0;
     this.applyDefaultAttributes({
       width: 500,
       height: 500,
@@ -32,35 +34,38 @@ class Counter extends Visual {
     this.attributes.columnOptions = Object.keys(this.data[0]);
     this.renderControlsDiv = document.getElementById(this.renderControlsID);
     this.renderControlsDiv.innerHTML = '<h4 style = "text-align: center">Controls</h4> <br>';
-
-    const cats = [];
-    const allDataCols = Object.keys(this.data[0]);
-    for (let i = 0; i < allDataCols.length; i += 1) {
-      cats.push({ value: allDataCols[i], text: allDataCols[i] });
+    this.cats = [];
+    const numericCols = Object.keys(this.getNumericData()[0]);
+    for (let i = 0; i < numericCols.length; i += 1) {
+      this.cats.push({ value: numericCols[i], text: numericCols[i] });
     }
     const aggDiv = document.createElement('div');
     this.renderControlsDiv.appendChild(aggDiv);
-    this.createAggregationRow(aggDiv, cats);
+    Counter.createAggregationRow(aggDiv, this.cats, 0);
     const myDiv = document.createElement('div');
+    this.createAddAggregation(this.renderControlsDiv, aggDiv);
     this.renderControlsDiv.appendChild(myDiv);
-    this.filter.makeFilterSeries((a, b) => { this.counterHeader(a, b); }, () => { this.render(); }, 'Create Table', myDiv);
+    this.filter.makeFilterSeries((a, b) => { this.counterHeader(a, b); }, () => { this.updateRender(); }, 'Generate Numbers', myDiv);
   }
+
   /** Renders the App section
   *
   */
   render() {
     this.filter.getFilteredData(this.attributes.filters);
+    if (this.renderData.length > 0) {
+      this.renderData = this.renderData[0];
+    }
     this.renderDiv = document.getElementById(this.renderID);
-    this.renderDiv.innerHTML = 'Count';
-    this.tableDiv = document.createElement('div');
-    this.renderDiv.appendChild(this.tableDiv);
-    this.tableDiv.id = 'tableDiv';
+    this.renderDiv.innerHTML = '';
+    const svg = document.createElement('svg');
+    this.renderDiv.appendChild(svg);
+    svg.viewBox = '0 0 500 500';
     if (this.attributes.columnOptions === null) {
       this.columnOptions = [];
     }
-    this.displayCount();
+    this.displayCount(svg);
   }
-
 
   /** Updates app display when actions are taken in controls
   *
@@ -68,16 +73,40 @@ class Counter extends Visual {
   /** Displayes the data table on selected Categories
   *
   */
-  displayCount() {
+  displayCount(svg) {
     const renderData = this.renderData;
     let count = 0;
+    let sum = 0;
+    let text = '';
     for (let i = 0; i < renderData.length; i += 1) {
-      if (renderData[i] != null) {
+      if (renderData[i] !== null && renderData[i] !== undefined) {
         count += 1;
       }
     }
-    document.getElementById('tableDiv').innerHTML = `Count: ${count}`;
+
+    for (let j = 0; j < this.attributes.aggs.length; j += 1) {
+      const agg = this.attributes.aggs[j];
+      for (let i = 0; i < renderData.length; i += 1) {
+        if (renderData[i] !== null && renderData[i] !== undefined
+          && !isNaN(renderData[i][agg.column])) {
+          sum += Number(renderData[i][agg.column]);
+        }
+      }
+      if (agg.operation === 'Sum') {
+        text = document.createElement('text');
+        svg.appendChild(text);
+        text.innerHTML += (`${agg.title} ${Math.round(sum * 100) / 100} <br/>`);
+      } else {
+        text = document.createElement('text');
+        svg.appendChild(text);
+        text.innerHTML += (`${agg.title} ${Math.round((sum / count) * 100) / 100} <br/>`);
+      }
+    }
+    text = document.createElement('text');
+    svg.appendChild(text);
+    text.innerHTML += `Count: ${count}`;
   }
+
   static removeFilter(buttonID) {
     buttonID.parentNode.parentNode.remove();
   }
@@ -88,15 +117,27 @@ class Counter extends Visual {
       this.filter.removeSeries(e2.currentTarget);
     });
   }
-  createAggregationRow(myDiv, cats, num) {
-    myDiv.innerHTML = `<div id=aggDiv${num} class ='col-2'></div><div id=propertyDiv${num} class ='col-6'>
-    </div><div id=titleDiv${num} class ='col-2'></div>`;
+  static createAggregationRow(myDiv, cats, num) {
     const editor = new EditorGenerator(myDiv);
-    const operations = [{ value: 'sum', text: 'Sum' }, { value: 'average', text: 'Average' }];
-    editor.createSelectBox('AggregationType', 'Operation', operations, 'na', () => {});
-    editor.createSelectBox('Check', 'Property', cats, 'na', (e) => {
-      this.attributes.displayColumns = $(e.currentTarget).val();
+    editor.createAggregationRow(num, 'TEXT', cats, 'aggs', (e) => { Counter.removeFilter(e.currentTarget); });
+  }
+
+  createAddAggregation(myDiv, aggDiv) {
+    const editor = new EditorGenerator(myDiv);
+    editor.createButton('addAgg', 'New Sum or Average', () => {
+      this.num += 1;
+      Counter.createAggregationRow(aggDiv, this.cats, this.num);
     });
   }
+  updateRender() {
+    const aggRows = document.getElementsByClassName('aggs');
+    for (let i = 0; i < aggRows.length; i += 1) {
+      this.attributes.aggs[i] = {};
+      this.attributes.aggs[i].operation = $(aggRows[i].childNodes[1].children[0].children[3]).val();
+      this.attributes.aggs[i].column = $(aggRows[i].childNodes[3].children[0].children[3]).val();
+      this.attributes.aggs[i].title = $(aggRows[i].childNodes[5].children[0]).val();
+    }
+  }
+
 }
 export default Counter;
