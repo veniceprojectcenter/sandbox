@@ -10,23 +10,38 @@ class Map {
     this.map = null;
     this.circles = [];
     this.polylines = [];
-
     this.customs = [];
     this.n = 0; // Number of custom icons
+    this.styles = [];
   }
 
-  render(containerID) {
+  render(containerID, styles = DefaultMapStyle) {
     const renderDiv = document.getElementById(containerID);
+    this.styles = styles;
     renderDiv.classList.add('map');
     this.map = new google.maps.Map(renderDiv, {
       center: { lat: 45.435, lng: 12.335 },
       zoom: 14,
-      styles: DefaultMapStyle,
+      styles,
     });
   }
 
   registerClickAction(clickFunction) {
     google.maps.event.addListener(this.map, 'click', clickFunction);
+  }
+
+  setLandColor(color) {
+    this.styles[0].stylers[0].color = color;
+    this.map.setOptions({
+      styles: this.styles,
+    });
+  }
+
+  setWaterColor(color) {
+    this.styles[1].stylers[0].color = color;
+    this.map.setOptions({
+      styles: this.styles,
+    });
   }
 
   addCustomMarker(point, url, size) {
