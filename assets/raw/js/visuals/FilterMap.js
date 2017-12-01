@@ -162,6 +162,7 @@ class FilterMap extends Visual {
       loader.remove();
       this.filter.renderFilter(tempDiv, e);
       this.dataSets[$(target).val()] = e;
+      this.map.render(this.renderID, this.attributes.mapStyles);
     });
   }
 }
