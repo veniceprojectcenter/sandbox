@@ -97,14 +97,17 @@ class Map {
   }
 
   addInfoBox(contentString, marker, point) {
-    marker.addListener('click', () => {
-      const infowindow = new google.maps.InfoWindow({
-        map: this.map,
-        position: point,
-        content: contentString,
-      });
-      infowindow.open(this.map, marker);
+    const infowindow = new google.maps.InfoWindow({
+      map: this.map,
+      position: point,
+      content: contentString,
     });
+    // google.maps.event.addListener(marker, 'mouseover', () => {
+    //   infowindow.open(this.map, marker);
+    // });
+    // google.maps.event.addListener(marker, 'mouseout', () => {
+    //   infowindow.close();
+    // });
   }
 
   clearCirclesOfColor(color) {

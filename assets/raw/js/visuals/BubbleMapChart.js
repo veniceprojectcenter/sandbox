@@ -1,7 +1,7 @@
 import Visual from './helpers/Visual';
-import DefaultMapStyle from './helpers/DefaultMapStyle';
 import EditorGenerator from './helpers/EditorGenerator';
 import Map from './helpers/Map';
+import DivOverlay from './helpers/DivOverlay';
 
 class BubbleMapChart extends Visual {
   constructor(config) {
@@ -67,7 +67,7 @@ class BubbleMapChart extends Visual {
               `<p>${this.attributes.color_by}: ${cval}</p>` +
               '</div>';
         const circle = this.map.addCircle({ lat, lng }, color, 0.5, parseFloat(radius));
-        this.map.addInfoBox(content, circle, { lat, lng });
+        // this.map.addInfoBox(content, circle, { lat, lng });
       });
     }
   }
@@ -80,7 +80,6 @@ class BubbleMapChart extends Visual {
     const mapContainer = document.createElement('div');
     mapContainer.id = 'map-container';
     mapContainer.className = 'map-container';
-
 
     const visual = document.getElementById(this.renderID);
     visual.appendChild(title);
