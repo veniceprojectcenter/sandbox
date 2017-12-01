@@ -194,12 +194,13 @@
 </script>
 
 <script id="Aggregation-Row" type="text/x-handlebars-template">
-<div class= '{{className}} row'>
+<div id ='{{id}}' class= '{{className}} row'>
   <div class="input-field col-md-2" id="{{id}}-agg1">
     <select id="{{id}}-aggOperations">
       <option value="" disabled>-Select-</option>
       <option value="Sum">Sum</option>
       <option value="Average">Average</option>
+      <option value="Count">Count</option>
     </select>
     <label>Operation</label>
   </div>
@@ -214,10 +215,7 @@
   </div>
   <div class="input-field col-md-5" id="{{id}}-agg3">
     <input type="text" id="{{id}}-aggField">
-    <label for="{{id}}-aggField">Value</label>
-  </div>
-  <div class="col-md-1" id="{{id}}-agg4">
-    <a id="{{id}}-aggRemove"style="height:22px;width:22px;line-height:25px;margin-top:25px" class="btn-floating btn-large waves-effect waves-light"><font color="white">x</font></a>
+    <label for="{{id}}-aggField">Number Label</label>
   </div>
 </div>
 </script>
