@@ -6,7 +6,6 @@ import Data from './helpers/Data';
 import DefaultMapStyle from './helpers/DefaultMapStyle';
 import EditorGenerator from './helpers/EditorGenerator';
 import Loader from './helpers/Loader';
-import EditorGenerator from './helpers/EditorGenerator';
 
 class FilterMap extends Visual {
   constructor(config, renderID, renderControlsID) {
