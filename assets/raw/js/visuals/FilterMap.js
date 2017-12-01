@@ -5,6 +5,7 @@ import Filter from './helpers/Filter';
 import Data from './helpers/Data';
 import DefaultMapStyle from './helpers/DefaultMapStyle';
 import Loader from './helpers/Loader';
+import EditorGenerator from './helpers/EditorGenerator';
 
 class FilterMap extends Visual {
   constructor(config, renderID, renderControlsID) {
@@ -154,6 +155,7 @@ class FilterMap extends Visual {
       loader.remove();
       this.filter.renderFilter(tempDiv, e);
       this.dataSets[$(target).val()] = e;
+      this.map.render(this.renderID, this.attributes.mapStyles);
     });
   }
 }

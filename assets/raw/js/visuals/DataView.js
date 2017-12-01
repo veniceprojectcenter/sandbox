@@ -5,10 +5,9 @@ import Filter from './helpers/Filter';
 class DataView extends Visual {
   constructor(config, renderID, renderControlsID) {
     super(config, renderID, renderControlsID);
-    this.attributes.columnOptions = null;
-    this.attributes.displayColumns = [];
+
     this.renderData = [];
-    this.attributes.filters = [];
+
     this.filter = new Filter(this);
     this.applyDefaultAttributes({
       width: 500,
@@ -25,6 +24,9 @@ class DataView extends Visual {
   *
   */
   renderControls() {
+    this.attributes.columnOptions = null;
+    this.attributes.filters = [];
+    this.attributes.displayColumns = [];
     this.attributes.dataFilters = [];
     this.attributes.numericFilters = [];
     this.renderData = JSON.parse(JSON.stringify(this.data));
@@ -59,7 +61,9 @@ class DataView extends Visual {
     if (this.attributes.columnOptions === null) {
       this.columnOptions = [];
     }
-    this.displayTable();
+    if (this.attributes.aggs !== undefined) {
+      this.displayTable();
+    }
   }
 
 
