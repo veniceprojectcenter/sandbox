@@ -17,7 +17,9 @@ class FilterMap extends Visual {
     this.renderData = [];
     this.dataSets = [];
     Data.fetchDataSets((e) => { this.getAllDataSets(e); });
-    this.attributes.sliders = { a: 1, b: 2 };
+    this.attributes.sliders = {};
+    this.generateMapEvent = document.createEvent('Event');
+    this.generateMapEvent.initEvent('generateMap', true, true);
   }
 
   onLoadData() {
@@ -57,8 +59,9 @@ class FilterMap extends Visual {
   }
 
   applyFiltersAndRender() {
-    console.log(this.attributes.filters);
     const filters = this.attributes.filters;
+    this.map.render(this.renderID);
+    document.getElementById(this.renderID).firstChild.style['z-index'] = '-1';
     const dataSets = [];
     this.renderData = [];
     for (let i = 0; i < filters.length; i += 1) {
@@ -78,15 +81,18 @@ class FilterMap extends Visual {
     const visual = document.getElementById('visual');
     visual.insertBefore(div, visual.firstChild);
 
+    console.log(this.attributes.sliders);
     const editor = new EditorGenerator(div);
-    Object.keys(this.attributes.sliders).forEach((e, i) => {
-      editor.createNumberSlider(`slider-${i}`,
-        `${e}`, this.attributes.sliders[e], 1, 10,
-        (t) => {
-          const value = $(t.currentTarget).val();
-          this.attributes.sliders[e] = `${value}`;
-          this.render();
-        });
+    Object.keys(this.attributes.sliders).forEach((outerElem, outerIndex) => {
+      Object.keys(this.attributes.sliders[outerElem].attributes).forEach((innerElem, innerIndex) => {
+        editor.createNumberSlider(`slider-${outerIndex}-${innerIndex}`,
+          `${this.attributes.sliders[outerElem].name} ${innerElem}`, this.attributes.sliders[outerElem].attributes[innerElem], 1, 10,
+          (t) => {
+            const value = $(t.currentTarget).val();
+            this.attributes.sliders[outerElem].attributes[innerElem] = `${value}`;
+            // this.render();
+          });
+      });
     });
   }
 
@@ -103,9 +109,31 @@ class FilterMap extends Visual {
     this.renderControlsDiv.addEventListener('addCheckbox', (e) => {
       this.addCheckboxToFilterRow(e.target);
     }, false);
+
+    this.renderControlsDiv.addEventListener('generateMap', () => {
+      const sliders = {};
+      $(this.filter.ul).children('li').each(function (datasetIndex) {
+        const dataset = $(this).find('div.collapsible-header div[id^=dataSet]').find('li.selected span')[0].innerText;
+        sliders[datasetIndex] = {
+          name: dataset,
+          attributes: {},
+        }
+        $(this).find('div[id$=numFilterList] div.row').each(function () {
+          const column = $(this).find('div[id$=1]').find('li.selected span')[0].innerText;
+          if ($(this).find('div[id$=4] :checkbox:checked').length !== 0) {
+            sliders[datasetIndex].attributes[column] = 0;
+          }
+        });
+      });
+      this.attributes.sliders = sliders;
+    }, false);
+
     this.filter.makeFilterSeries(
       (headEditor, index) => { this.filterMapHeader(headEditor, index); },
-      (filters) => { this.getColorShape(filters); },
+      (filters) => {
+        this.getColorShape(filters);
+        this.filter.ul.dispatchEvent(this.generateMapEvent);
+      },
     );
 
     this.map.renderMapColorControls(editor, this.attributes, (color) => {
@@ -212,17 +240,6 @@ class FilterMap extends Visual {
       <input type="checkbox" id="${groupIdJoin}-toVisual" />
       <label for="${groupIdJoin}-toVisual" style="margin-top:25px"/>
     `;
-    checkboxNode.onchange = (evt) => {
-      if ($(`select[id=${groupIdJoin}-columnSelect]`).val() !== null) {
-        if (evt.target.checked) {
-          console.log('box was checked');
-        } else {
-          console.log('box was unchecked');
-        }
-      } else {
-        console.log('select was null');
-      }
-    };
     filterRow.insertBefore(checkboxNode, valueCol.nextSibling);
   }
 }

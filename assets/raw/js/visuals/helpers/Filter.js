@@ -153,7 +153,6 @@ class Filter {
     });
   }
 
-
   addSeriesButton(editor, makeHeader) {
     editor.createButton('addSeries', 'Add a Data Series', () => {
       const li = document.createElement('li');
@@ -172,6 +171,7 @@ class Filter {
       filterDiv.querySelector('div[id$=numFilterList] div.row').dispatchEvent(this.addCheckboxEvent);
     });
   }
+
   addSubmitButton(editor, buttonText, onButton) {
     editor.createButton('submit', buttonText, () => {
       for (let k = 0; k <= this.seriesNumber; k += 1) {
@@ -230,6 +230,7 @@ class Filter {
       this.visual.render();
     });
   }
+
   createAddCategoryButton(editor, catEditor, ccats, num, data) {
     editor.createButton(`addCat-${this.seriesNumber}`, 'Add Categorical Filter', () => {
       num += 1;
@@ -255,6 +256,7 @@ class Filter {
       }, (e) => { this.removeFilter(e.currentTarget); });
     });
   }
+
   createCategoryFilter(catEditor, ccats, data) {
     catEditor.createDataFilter(`Filter${this.seriesNumber}`, ccats, `dataFilter${this.seriesNumber}`, (e) => {
       const column = $(e.currentTarget).val();
@@ -277,12 +279,15 @@ class Filter {
       $(catSelect).material_select();
     }, (e) => { this.removeFilter(e.currentTarget); });
   }
+
   removeSeries(target) {
     target.parentNode.parentNode.remove();
   }
+
   removeFilter(buttonID) {
     buttonID.parentNode.parentNode.remove();
   }
+
   reverseColumns() {
 
   }
