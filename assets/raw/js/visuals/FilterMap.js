@@ -20,8 +20,6 @@ class FilterMap extends Visual {
     this.attributes.sliders = { a: 1, b: 2 };
   }
 
-<<<<<<< HEAD
-=======
   onLoadData() {
     this.applyDefaultAttributes({
       title: '',
@@ -29,7 +27,6 @@ class FilterMap extends Visual {
     });
   }
 
->>>>>>> c6c50d19bc5b6416fe34b6551c2199768c0c023d
   addMarker(lat, lng, color = 'blue', shapeType = 'triangle', image, opacity = 0.5, r = 15) {
     if (shapeType === 'circle') {
       this.map.addCircle({ lat: parseFloat(lat), lng: parseFloat(lng) }, color, opacity, r);
@@ -54,10 +51,6 @@ class FilterMap extends Visual {
 
   // render the map
   render() {
-<<<<<<< HEAD
-    const filters = this.attributes.filters;
-    this.map.render(this.renderID);
-=======
     this.map = new Map();
     this.map.render(this.renderID, this.attributes.mapStyles);
     this.applyFiltersAndRender();
@@ -66,7 +59,6 @@ class FilterMap extends Visual {
   applyFiltersAndRender() {
     console.log(this.attributes.filters);
     const filters = this.attributes.filters;
->>>>>>> c6c50d19bc5b6416fe34b6551c2199768c0c023d
     const dataSets = [];
     this.renderData = [];
     for (let i = 0; i < filters.length; i += 1) {
@@ -104,16 +96,13 @@ class FilterMap extends Visual {
     this.attributes.images = [];
     this.attributes.areaSelections = [];
     this.renderControlsDiv = document.getElementById(this.renderControlsID);
-<<<<<<< HEAD
-    this.renderControlsDiv.innerHTML = '';
-    this.renderControlsDiv.innerHTML = '<h4 style = "text-align: center">Controls</h4> <br>';
+
+    const editor = new EditorGenerator(this.renderControlsDiv);
+    editor.createHeader('Controls');
+
     this.renderControlsDiv.addEventListener('addCheckbox', (e) => {
       this.addCheckboxToFilterRow(e.target);
     }, false);
-=======
-    const editor = new EditorGenerator(this.renderControlsDiv);
-    editor.createHeader('Controls');
->>>>>>> c6c50d19bc5b6416fe34b6551c2199768c0c023d
     this.filter.makeFilterSeries(
       (headEditor, index) => { this.filterMapHeader(headEditor, index); },
       (filters) => { this.getColorShape(filters); },
@@ -181,12 +170,8 @@ class FilterMap extends Visual {
     }
     this.allSets = selectSet;
   }
-<<<<<<< HEAD
 
-  replaceFilter(target) {
-=======
   async replaceFilter(target) {
->>>>>>> c6c50d19bc5b6416fe34b6551c2199768c0c023d
     if (target === undefined) {
       return;
     }
