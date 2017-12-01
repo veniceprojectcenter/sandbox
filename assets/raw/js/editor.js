@@ -5,7 +5,6 @@ import Bar from './visuals/Bar';
 import Counter from './visuals/Counter';
 import DefaultMap from './visuals/helpers/DefaultMap';
 import PieChartMap from './visuals/PieChartMap';
-import BubbleTimeline from './visuals/BubbleTimeline';
 import RouteMap from './visuals/RouteMap';
 import BubbleChart from './visuals/BubbleChart';
 import BubbleMapChart from './visuals/BubbleMapChart';
@@ -18,11 +17,11 @@ function renderEditor(route) {
   rowContainer.className = 'row';
 
   const visualContainer = document.createElement('div');
-  visualContainer.className = 'visual col-md-6';
+  visualContainer.className = 'visual col-md-7';
   visualContainer.id = Visual.DEFAULT_RENDER_ID;
 
   const controlsContainer = document.createElement('div');
-  controlsContainer.className = 'controls col-md-6';
+  controlsContainer.className = 'controls col-md-5';
   controlsContainer.id = Visual.DEFAULT_RENDER_CONTROLS_ID;
 
   const downloadContainer = document.createElement('div');
@@ -64,9 +63,6 @@ function renderEditor(route) {
         break;
       case 'Data-View':
         visual = new DataView(config);
-        break;
-      case 'Bubble-Timeline':
-        visual = new BubbleTimeline(config);
         break;
       case 'Default-Map':
         visual = new DefaultMap(config);

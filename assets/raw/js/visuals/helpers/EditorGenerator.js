@@ -82,10 +82,6 @@ class EditorGenerator {
     $(`#${id} input`).on(inputEvent, onValueChanged);
   }
 
-  createRangeSlider() {
-
-  }
-
   createFileUpload(id, title, onChange) {
     const context = { id, title };
     this.handlebarsWithContext('file-upload', context);
@@ -102,9 +98,6 @@ class EditorGenerator {
     this.handlebarsWithContext('header-two', context);
   }
 
-  createCategoryEditor() {
-
-  }
   createMoveableList(id, title, color, onChange, onColor) {
     const context = { id, color, title };
     this.handlebarsWithContext('moveable', context);
@@ -118,12 +111,11 @@ class EditorGenerator {
     this.handlebarsWithContext('button', context);
     $(`#${id}`).on('click', activationFunction);
   }
-  createAggregationRow(id, text, columns, onRemove) {
-    const context = { id, text, columns };
+  createAggregationRow(id, text, column, className) {
+    const context = { id, text, column, className };
     this.handlebarsWithContext('Aggregation-Row', context);
-    $(`#${id}-columnSelect`).val(0).material_select();
-    $(`#${id}-operations`).val(1).material_select();
-    $(`#${id}-aggRemove`).on('click', onRemove);
+    $(`#${id}-aggOperations`).val(0).material_select();
+    $(`#${id}-aggColumnSelect`).val(1).material_select();
   }
 
   handlebarsWithContext(handlebarId, context) {

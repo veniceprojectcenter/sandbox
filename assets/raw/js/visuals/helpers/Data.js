@@ -22,26 +22,28 @@ class Data {
       for (let i = 0; i < dataIDs.length; i += 1) {
         promises.push(db.ref(`/data/${dataIDs[i]}`).once('value').then((result) => {
           const entry = result.val();
-          const entryData = entry.data;
-          const birthID = entry.birth_certificate;
-          entryData.id = result.key;
-          if (entryData.id !== 'undefined') {
-            if (birthID.lat && !entryData.lat) {
-              entryData.lat = birthID.lat;
-            }
-
-            if (birthID.lon && !entryData.lng) {
-              entryData.lng = birthID.lon;
-            }
-
-            const keys = Object.keys(entryData);
-            for (let j = 0; j < keys.length; j += 1) {
-              if (keys[j].toLowerCase().includes('photo')) {
-                delete entryData[keys[j]];
+          if (entry !== null) {
+            const entryData = entry.data;
+            const birthID = entry.birth_certificate;
+            entryData.id = result.key;
+            if (entryData.id !== 'undefined') {
+              if (birthID.lat && !entryData.lat) {
+                entryData.lat = birthID.lat;
               }
-            }
 
-            data.push(entryData);
+              if (birthID.lon && !entryData.lng) {
+                entryData.lng = birthID.lon;
+              }
+
+              const keys = Object.keys(entryData);
+              for (let j = 0; j < keys.length; j += 1) {
+                if (keys[j].toLowerCase().includes('photo')) {
+                  delete entryData[keys[j]];
+                }
+              }
+
+              data.push(entryData);
+            }
           }
         }));
       }

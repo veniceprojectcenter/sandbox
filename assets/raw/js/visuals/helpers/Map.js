@@ -10,23 +10,38 @@ class Map {
     this.map = null;
     this.circles = [];
     this.polylines = [];
-
     this.customs = [];
     this.n = 0; // Number of custom icons
+    this.styles = [];
   }
 
-  render(containerID) {
+  render(containerID, styles = DefaultMapStyle) {
     const renderDiv = document.getElementById(containerID);
+    this.styles = styles;
     renderDiv.classList.add('map');
     this.map = new google.maps.Map(renderDiv, {
       center: { lat: 45.435, lng: 12.335 },
       zoom: 14,
-      styles: DefaultMapStyle,
+      styles,
     });
   }
 
   registerClickAction(clickFunction) {
     google.maps.event.addListener(this.map, 'click', clickFunction);
+  }
+
+  setLandColor(color) {
+    this.styles[0].stylers[0].color = color;
+    this.map.setOptions({
+      styles: this.styles,
+    });
+  }
+
+  setWaterColor(color) {
+    this.styles[1].stylers[0].color = color;
+    this.map.setOptions({
+      styles: this.styles,
+    });
   }
 
   addCustomMarker(point, url, size) {
@@ -173,11 +188,11 @@ class Map {
     const height = this.map.getDiv().offsetHeight;
     const sizeString = `size=${width}x${height}`;
     let styleString = '';
-    for (let i = 0; i < DefaultMapStyle.length; i += 1) {
-      const feature = DefaultMapStyle[i].featureType || 'all';
-      const element = DefaultMapStyle[i].elementType || 'all';
-      const rule = Object.keys(DefaultMapStyle[i].stylers[0])[0];
-      const argument = DefaultMapStyle[i].stylers[0][rule].replace('#', '0x');
+    for (let i = 0; i < this.styles.length; i += 1) {
+      const feature = this.styles[i].featureType || 'all';
+      const element = this.styles[i].elementType || 'all';
+      const rule = Object.keys(this.styles[i].stylers[0])[0];
+      const argument = this.styles[i].stylers[0][rule].replace('#', '0x');
       const style = `style=feature:${feature}|element:${element}|${rule}:${argument}`;
       if (i !== 0) {
         styleString += '&';
@@ -216,18 +231,21 @@ class Map {
     let circlesString = '';
 
     for (let i = 0; i < this.circles.length; i += 1) {
-      const latLng = this.circles[i].getCenter();
-      const coords = this.latLngToPixel(latLng);
-      if (coords.x >= 0 && coords.x <= map.width && coords.y >= 0 && coords.y <= map.height) {
-        const radius = this.circles[i].radius / coords.metersPerPixel;
-        const strokeColor = this.circles[i].strokeColor;
-        const fillColor = this.circles[i].fillColor;
-        const fillOpacity = this.circles[i].fillOpacity;
+      if (this.circles[i].getMap()) {
+        const latLng = this.circles[i].getCenter();
+        const coords = this.latLngToPixel(latLng);
+        if (coords.x >= 0 && coords.x <= map.width && coords.y >= 0 && coords.y <= map.height) {
+          const radius = this.circles[i].radius / coords.metersPerPixel;
+          const strokeColor = this.circles[i].strokeColor;
+          const fillColor = this.circles[i].fillColor;
+          const fillOpacity = this.circles[i].fillOpacity;
 
-        const circle = `<circle cx="${coords.x}" cy="${coords.y}" r="${radius}" stroke="${strokeColor}" stroke-width="0" fill="${fillColor}" fill-opacity="${fillOpacity}" />`;
-        circlesString += circle;
+          const circle = `<circle cx="${coords.x}" cy="${coords.y}" r="${radius}" stroke="${strokeColor}" stroke-width="0" fill="${fillColor}" fill-opacity="${fillOpacity}" />`;
+          circlesString += circle;
+        }
       }
     }
+
 
     return circlesString;
   }
@@ -237,29 +255,48 @@ class Map {
     let polylinesString = '';
 
     for (let i = 0; i < this.polylines.length; i += 1) {
-      const path = this.polylines[i].getPath();
-      let pointsString = '';
-      let isInside = false;
-      path.forEach((point) => {
-        const coords = this.latLngToPixel(point);
-        pointsString += `${coords.x},${coords.y} `;
-        if (coords.x >= 0 && coords.x <= map.width && coords.y >= 0 && coords.y <= map.height) {
-          isInside = true;
+      if (this.polyline[i].getMap()) {
+        const path = this.polylines[i].getPath();
+        let pointsString = '';
+        let isInside = false;
+        path.forEach((point) => {
+          const coords = this.latLngToPixel(point);
+          pointsString += `${coords.x},${coords.y} `;
+          if (coords.x >= 0 && coords.x <= map.width && coords.y >= 0 && coords.y <= map.height) {
+            isInside = true;
+          }
+        });
+
+        if (isInside) {
+          const strokeColor = this.polylines[i].strokeColor;
+          const strokeOpacity = this.polylines[i].strokeOpacity;
+          const strokeWeight = this.polylines[i].strokeWeight;
+
+          const style = `fill:${strokeColor};fill-opacity:0.5;stroke:${strokeColor};stroke-width:${strokeWeight};stroke-opacity:${strokeOpacity}`;
+          const polyline = `<polyline points="${pointsString}" style="${style}" />`;
+          polylinesString += polyline;
         }
-      });
-
-      if (isInside) {
-        const strokeColor = this.polylines[i].strokeColor;
-        const strokeOpacity = this.polylines[i].strokeOpacity;
-        const strokeWeight = this.polylines[i].strokeWeight;
-
-        const style = `fill:${strokeColor};fill-opacity:0.5;stroke:${strokeColor};stroke-width:${strokeWeight};stroke-opacity:${strokeOpacity}`;
-        const polyline = `<polyline points="${pointsString}" style="${style}" />`;
-        polylinesString += polyline;
       }
     }
 
     return polylinesString;
+  }
+
+  getCustomImagesAsSVG() {
+    const map = this.getStaticMap();
+    let customImagesString = '';
+
+    for (let i = 0; i < this.customs.length; i += 1) {
+      const latLng = this.customs[i].getPosition();
+      const coords = this.latLngToPixel(latLng);
+      if (coords.x >= 0 && coords.x <= map.width && coords.y >= 0 && coords.y <= map.height) {
+        const icon = this.customs[i].getIcon();
+        const customImage = `<image x="${coords.x}" y="${coords.y}" width="${icon.scaledSize.width}" height="${icon.scaledSize.height}" transform="translate(-${icon.anchor.x}, -${icon.anchor.y})" xlink:href="${icon.url}" preserveAspectRatio="none" />`;
+        customImagesString += customImage;
+      }
+    }
+
+    return customImagesString;
   }
 
   async export() {
@@ -267,16 +304,32 @@ class Map {
     const encodedURL = await ImageHelper.urlToBase64(map.url);
     const circlesString = this.getCirclesAsSVG();
     const polylinesString = this.getPolylinesAsSVG();
+    const customImagesString = this.getCustomImagesAsSVG();
 
     const svg = `
       <svg width="${map.width}" height="${map.height}" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg" xml:space="preserve">
         <image width="${map.width}" height="${map.height}" xlink:href="${encodedURL}" />
         ${circlesString}
         ${polylinesString}
+        ${customImagesString}
       </svg>
     `;
 
     return svg;
+  }
+
+  renderMapColorControls(editor, attributes, landUpdate, waterUpdate) {
+    editor.createColorField('map-land-color', 'Map Land Color', attributes.mapStyles[0].stylers[0].color, (e) => {
+      const value = $(e.currentTarget).val();
+      this.setLandColor(value);
+      landUpdate(value);
+    });
+
+    editor.createColorField('map-water-color', 'Map Water Color', attributes.mapStyles[1].stylers[0].color, (e) => {
+      const value = $(e.currentTarget).val();
+      this.setWaterColor(value);
+      waterUpdate(value);
+    });
   }
 }
 

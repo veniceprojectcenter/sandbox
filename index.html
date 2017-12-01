@@ -21,7 +21,7 @@
 <div id="page" class="container body">
 </div>
 <footer>
-  Copyright © 2017 · Venice Project Center · All Rights Reserved · <button id="clear-cache">Clear Cache</button>
+Venice Project Center · <a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank"><object class="cc" data="/assets/prod/images/by-sa.svg" type="image/svg+xml"></object></a> · <button id="clear-cache">Clear Cache</button>
 </footer>
 
 <!-- Templates -->
@@ -193,13 +193,14 @@
     </div>
 </script>
 
-<script id="Aggreation-Row" type="text/x-handlebars-template">
-<div class= '{{className}} row'>
+<script id="Aggregation-Row" type="text/x-handlebars-template">
+<div id ='{{id}}' class= '{{className}} row'>
   <div class="input-field col-md-2" id="{{id}}-agg1">
     <select id="{{id}}-aggOperations">
       <option value="" disabled>-Select-</option>
       <option value="Sum">Sum</option>
       <option value="Average">Average</option>
+      <option value="Count">Count</option>
     </select>
     <label>Operation</label>
   </div>
@@ -210,14 +211,11 @@
       <option value="{{value}}">{{text}}</option>
       {{/each}}
     </select>
-    <label>Select a Property to Aggregate</label>
+    <label>Select a Property</label>
   </div>
   <div class="input-field col-md-5" id="{{id}}-agg3">
     <input type="text" id="{{id}}-aggField">
-    <label for="{{id}}-aggField">Value</label>
-  </div>
-  <div class="col-md-1" id="{{id}}-agg4">
-    <a id="{{id}}-aggRemove"style="height:22px;width:22px;line-height:25px;margin-top:25px" class="btn-floating btn-large waves-effect waves-light"><font color="white">x</font></a>
+    <label for="{{id}}-aggField">Number Label</label>
   </div>
 </div>
 </script>

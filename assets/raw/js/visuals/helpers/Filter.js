@@ -1,4 +1,4 @@
-
+import BoundarySelector from './BoundarySelector';
 import EditorGenerator from './EditorGenerator';
 
 class Filter {
@@ -14,6 +14,7 @@ class Filter {
     }
     return this.visual.renderData;
   }
+
   getFilteredDatum(i, filter, dataSet = null) {
     if (filter !== undefined && filter.categorical !== undefined
     && filter.numeric !== undefined) {
@@ -26,6 +27,12 @@ class Filter {
       }
       this.visual.renderData[i] = this.visual.filterNumerical(filter.numeric,
         this.visual.renderData[i]);
+    }
+    if (filter.area !== undefined &&
+      this.visual.map !== undefined) { // this.visual.map will be defined if true
+      const selector = new BoundarySelector(this.visual.map);
+      const points = this.visual.renderData[i];
+      this.visual.renderData[i] = selector.getPointsInBoundary(points, filter.area);
     }
   }
 
@@ -100,8 +107,32 @@ class Filter {
       numEditor.createNumericFilter(`NumFilter${num}-${this.seriesNumber}`, ncats, `numFilter${this.seriesNumber}`, (e) => { this.removeFilter(e.currentTarget); });
     });
 
+    this.addAreaSelectorButton(editor, myDiv);
+
     myDiv.appendChild(document.createElement('br'));
     myDiv.appendChild(document.createElement('br'));
+  }
+
+  addAreaSelectorButton(editor, myDiv) {
+    if ((this.visual.map === undefined) || (this.visual.map === null)) {
+      return; // Don't add the area selector button if there's no map in the visual
+    }
+    const areaSelectorDiv = document.createElement('div');
+    areaSelectorDiv.id = 'areaSelectorDiv';
+    myDiv.appendChild(document.createElement('br'));
+    myDiv.appendChild(document.createElement('br'));
+    const filterLabel3 = document.createElement('h5');
+    filterLabel3.innerHTML = 'Area Selection Filter';
+    filterLabel3.style.textAlign = 'center';
+    myDiv.appendChild(filterLabel3);
+    myDiv.appendChild(areaSelectorDiv);
+    editor.createButton(`selectArea-${this.seriesNumber}`, 'Select an Area', () => {
+      const selector = new BoundarySelector(this.visual.map);
+      selector.selectPoints((points) => {
+        this.visual.attributes.areaSelections[this.seriesNumber] = points;
+        // console.log(this.visual.attributes.areaSelections);
+      });
+    });
   }
 
 
@@ -162,11 +193,19 @@ class Filter {
             const val = $(filter.children[2].children[0]).val();
             numericFilters.push({ column: columnval, operation: opval, value: val });
           }
-
+          let area = null;
+          if (this.visual.attributes.areaSelections !== undefined) {
+            area = this.visual.attributes.areaSelections[k];
+            if ((area !== undefined) && (area !== null)) {
+              area.push(area[0]);
+            }
+          }
           this.visual.attributes.filters[k] = {
             dataSet: set,
             numeric: numericFilters,
-            categorical: dataFilters };
+            categorical: dataFilters,
+            area,
+          };
         }
       }
       onButton(this.visual.attributes.filters);
