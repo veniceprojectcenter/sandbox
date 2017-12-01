@@ -17,11 +17,11 @@ function renderEditor(route) {
   rowContainer.className = 'row';
 
   const visualContainer = document.createElement('div');
-  visualContainer.className = 'visual col-md-6';
+  visualContainer.className = 'visual col-md-7';
   visualContainer.id = Visual.DEFAULT_RENDER_ID;
 
   const controlsContainer = document.createElement('div');
-  controlsContainer.className = 'controls col-md-6';
+  controlsContainer.className = 'controls col-md-5';
   controlsContainer.id = Visual.DEFAULT_RENDER_CONTROLS_ID;
 
   const downloadContainer = document.createElement('div');
