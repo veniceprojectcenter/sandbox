@@ -1,9 +1,11 @@
 import Visual from './helpers/Visual';
 import Map from './helpers/Map';
-import EditorGenerator from './helpers/EditorGenerator';
 import ImageHelper from './helpers/ImageHelper';
 import Filter from './helpers/Filter';
 import Data from './helpers/Data';
+import DefaultMapStyle from './helpers/DefaultMapStyle';
+import EditorGenerator from './helpers/EditorGenerator';
+import Loader from './helpers/Loader';
 
 class FilterMap extends Visual {
   constructor(config, renderID, renderControlsID) {
@@ -12,15 +14,22 @@ class FilterMap extends Visual {
     this.map = new Map();
     this.attributes.filters = [];
     this.filter = new Filter(this);
-    this.attributes.colors = [];
-    this.attributes.shapes = [];
-    this.attributes.images = [];
     this.renderData = [];
     this.dataSets = [];
     Data.fetchDataSets((e) => { this.getAllDataSets(e); });
     this.attributes.sliders = { a: 1, b: 2 };
   }
 
+<<<<<<< HEAD
+=======
+  onLoadData() {
+    this.applyDefaultAttributes({
+      title: '',
+      mapStyles: DefaultMapStyle,
+    });
+  }
+
+>>>>>>> c6c50d19bc5b6416fe34b6551c2199768c0c023d
   addMarker(lat, lng, color = 'blue', shapeType = 'triangle', image, opacity = 0.5, r = 15) {
     if (shapeType === 'circle') {
       this.map.addCircle({ lat: parseFloat(lat), lng: parseFloat(lng) }, color, opacity, r);
@@ -45,18 +54,32 @@ class FilterMap extends Visual {
 
   // render the map
   render() {
+<<<<<<< HEAD
     const filters = this.attributes.filters;
     this.map.render(this.renderID);
+=======
+    this.map = new Map();
+    this.map.render(this.renderID, this.attributes.mapStyles);
+    this.applyFiltersAndRender();
+  }
+
+  applyFiltersAndRender() {
+    console.log(this.attributes.filters);
+    const filters = this.attributes.filters;
+>>>>>>> c6c50d19bc5b6416fe34b6551c2199768c0c023d
     const dataSets = [];
+    this.renderData = [];
     for (let i = 0; i < filters.length; i += 1) {
-      if (filters[i] !== undefined && filters[i].categorical !== undefined
-        && filters[i].numeric !== undefined) {
-        dataSets[i] = Data.fetchData(filters[i].dataSet,
-    (e) => {
-      this.filter.getFilteredDatum(i, filters[i], e);
-      this.renderPoints(this.renderData[i], this.attributes.colors[i], this.attributes.shapes[i],
-      this.attributes.images[i]);
-    });
+      const filter = filters[i];
+      if (filter !== undefined && filter.categorical !== undefined
+        && filter.numeric !== undefined) {
+        dataSets[i] = Data.fetchData(filter.dataSet,
+          (dataSet) => {
+            this.filter.getFilteredDatum(i, filter, dataSet);
+            this.renderPoints(this.renderData[i],
+              this.attributes.colors[i], this.attributes.shapes[i],
+            this.attributes.images[i]);
+          });
       }
     }
     const div = document.createElement('div');
@@ -76,18 +99,31 @@ class FilterMap extends Visual {
   }
 
   renderControls() {
+    this.attributes.colors = [];
+    this.attributes.shapes = [];
+    this.attributes.images = [];
+    this.attributes.areaSelections = [];
     this.renderControlsDiv = document.getElementById(this.renderControlsID);
+<<<<<<< HEAD
     this.renderControlsDiv.innerHTML = '';
     this.renderControlsDiv.innerHTML = '<h4 style = "text-align: center">Controls</h4> <br>';
     this.renderControlsDiv.addEventListener('addCheckbox', (e) => {
       this.addCheckboxToFilterRow(e.target);
     }, false);
+=======
+    const editor = new EditorGenerator(this.renderControlsDiv);
+    editor.createHeader('Controls');
+>>>>>>> c6c50d19bc5b6416fe34b6551c2199768c0c023d
     this.filter.makeFilterSeries(
       (headEditor, index) => { this.filterMapHeader(headEditor, index); },
       (filters) => { this.getColorShape(filters); },
     );
 
-    this.render();
+    this.map.renderMapColorControls(editor, this.attributes, (color) => {
+      this.attributes.mapStyles[0].stylers[0].color = color;
+    }, (color) => {
+      this.attributes.mapStyles[1].stylers[0].color = color;
+    });
   }
 
   filterMapHeader(headEditor, index) {
@@ -145,15 +181,29 @@ class FilterMap extends Visual {
     }
     this.allSets = selectSet;
   }
+<<<<<<< HEAD
 
   replaceFilter(target) {
+=======
+  async replaceFilter(target) {
+>>>>>>> c6c50d19bc5b6416fe34b6551c2199768c0c023d
     if (target === undefined) {
       return;
     }
+    this.renderControlsDiv.style.disabled = 'true';
+    const set = $(target).val();
+    $(`#${this.renderControlsID} *`).prop('disabled', true);
     const tempDiv = target.parentNode.parentNode.parentNode.parentNode.children[1];
-    tempDiv.innerHTML = '';
-    Data.fetchData($(target).val(), (e) => {
-      this.filter.renderFilter(tempDiv, e); this.dataSets[$(target).val()] = e;
+    tempDiv.innerHTML = ' ';
+    tempDiv.id = 'someID';
+    const loader = new Loader(this.renderID);
+    loader.render();
+    await Data.fetchData(set, (e) => {
+      $(`#${this.renderControlsID} *`).prop('disabled', false);
+      loader.remove();
+      this.filter.renderFilter(tempDiv, e);
+      this.dataSets[$(target).val()] = e;
+      this.map.render(this.renderID, this.attributes.mapStyles);
     });
   }
 

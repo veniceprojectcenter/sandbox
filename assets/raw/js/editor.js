@@ -5,7 +5,6 @@ import Bar from './visuals/Bar';
 import Counter from './visuals/Counter';
 import DefaultMap from './visuals/helpers/DefaultMap';
 import PieChartMap from './visuals/PieChartMap';
-import BubbleTimeline from './visuals/BubbleTimeline';
 import RouteMap from './visuals/RouteMap';
 import BubbleChart from './visuals/BubbleChart';
 import BubbleMapChart from './visuals/BubbleMapChart';
@@ -64,9 +63,6 @@ function renderEditor(route) {
         break;
       case 'Data-View':
         visual = new DataView(config);
-        break;
-      case 'Bubble-Timeline':
-        visual = new BubbleTimeline(config);
         break;
       case 'Default-Map':
         visual = new DefaultMap(config);
