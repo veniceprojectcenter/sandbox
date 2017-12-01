@@ -228,18 +228,21 @@ class Map {
     let circlesString = '';
 
     for (let i = 0; i < this.circles.length; i += 1) {
-      const latLng = this.circles[i].getCenter();
-      const coords = this.latLngToPixel(latLng);
-      if (coords.x >= 0 && coords.x <= map.width && coords.y >= 0 && coords.y <= map.height) {
-        const radius = this.circles[i].radius / coords.metersPerPixel;
-        const strokeColor = this.circles[i].strokeColor;
-        const fillColor = this.circles[i].fillColor;
-        const fillOpacity = this.circles[i].fillOpacity;
+      if (this.circles[i].getMap()) {
+        const latLng = this.circles[i].getCenter();
+        const coords = this.latLngToPixel(latLng);
+        if (coords.x >= 0 && coords.x <= map.width && coords.y >= 0 && coords.y <= map.height) {
+          const radius = this.circles[i].radius / coords.metersPerPixel;
+          const strokeColor = this.circles[i].strokeColor;
+          const fillColor = this.circles[i].fillColor;
+          const fillOpacity = this.circles[i].fillOpacity;
 
-        const circle = `<circle cx="${coords.x}" cy="${coords.y}" r="${radius}" stroke="${strokeColor}" stroke-width="0" fill="${fillColor}" fill-opacity="${fillOpacity}" />`;
-        circlesString += circle;
+          const circle = `<circle cx="${coords.x}" cy="${coords.y}" r="${radius}" stroke="${strokeColor}" stroke-width="0" fill="${fillColor}" fill-opacity="${fillOpacity}" />`;
+          circlesString += circle;
+        }
       }
     }
+
 
     return circlesString;
   }
@@ -249,25 +252,27 @@ class Map {
     let polylinesString = '';
 
     for (let i = 0; i < this.polylines.length; i += 1) {
-      const path = this.polylines[i].getPath();
-      let pointsString = '';
-      let isInside = false;
-      path.forEach((point) => {
-        const coords = this.latLngToPixel(point);
-        pointsString += `${coords.x},${coords.y} `;
-        if (coords.x >= 0 && coords.x <= map.width && coords.y >= 0 && coords.y <= map.height) {
-          isInside = true;
+      if (this.polyline[i].getMap()) {
+        const path = this.polylines[i].getPath();
+        let pointsString = '';
+        let isInside = false;
+        path.forEach((point) => {
+          const coords = this.latLngToPixel(point);
+          pointsString += `${coords.x},${coords.y} `;
+          if (coords.x >= 0 && coords.x <= map.width && coords.y >= 0 && coords.y <= map.height) {
+            isInside = true;
+          }
+        });
+
+        if (isInside) {
+          const strokeColor = this.polylines[i].strokeColor;
+          const strokeOpacity = this.polylines[i].strokeOpacity;
+          const strokeWeight = this.polylines[i].strokeWeight;
+
+          const style = `fill:${strokeColor};fill-opacity:0.5;stroke:${strokeColor};stroke-width:${strokeWeight};stroke-opacity:${strokeOpacity}`;
+          const polyline = `<polyline points="${pointsString}" style="${style}" />`;
+          polylinesString += polyline;
         }
-      });
-
-      if (isInside) {
-        const strokeColor = this.polylines[i].strokeColor;
-        const strokeOpacity = this.polylines[i].strokeOpacity;
-        const strokeWeight = this.polylines[i].strokeWeight;
-
-        const style = `fill:${strokeColor};fill-opacity:0.5;stroke:${strokeColor};stroke-width:${strokeWeight};stroke-opacity:${strokeOpacity}`;
-        const polyline = `<polyline points="${pointsString}" style="${style}" />`;
-        polylinesString += polyline;
       }
     }
 
