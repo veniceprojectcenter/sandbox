@@ -56,6 +56,7 @@ class FilterMap extends Visual {
     this.map = new Map();
     this.map.render(this.renderID, this.attributes.mapStyles);
     this.applyFiltersAndRender();
+    this.createVisualSliderControls();
   }
 
   applyFiltersAndRender() {
@@ -77,6 +78,9 @@ class FilterMap extends Visual {
           });
       }
     }
+  }
+
+  createVisualSliderControls() {
     const div = document.createElement('div');
     const visual = document.getElementById('visual');
     visual.insertBefore(div, null);
@@ -258,16 +262,16 @@ class FilterMap extends Visual {
         upperBoundNode.classList.add('input-field', 'col-md-2');
         upperBoundNode.id = `${seriesNum}-${filterNum}-5`;
         upperBoundNode.innerHTML = `
-          <input type="number" id="numFilter{seriesNum}-{filterNum}-bound2">
-          <label for="numFilter{seriesNum}-{filterNum}-upperBound">Upper Bound</label>
+          <input type="number" id="numFilter${seriesNum}-${filterNum}-bound2">
+          <label for="numFilter${seriesNum}-${filterNum}-upperBound">Upper Bound</label>
         `;
         filterRow.insertBefore(upperBoundNode, checkboxNode);
         const stepSizeNode = document.createElement('div');
         stepSizeNode.classList.add('input-field', 'col-md-2');
         stepSizeNode.id = `${seriesNum}-${filterNum}-4`;
         stepSizeNode.innerHTML = `
-          <input type="number" id="numFilter{seriesNum}-{filterNum}-step">
-          <label for="numFilter{seriesNum}-{filterNum}-stepSize">Step Size</label>
+          <input type="number" id="numFilter${seriesNum}-${filterNum}-step">
+          <label for="numFilter${seriesNum}-${filterNum}-stepSize">Step Size</label>
         `;
         filterRow.insertBefore(stepSizeNode, upperBoundNode);
         const lowerBoundNode = document.createElement('div');
