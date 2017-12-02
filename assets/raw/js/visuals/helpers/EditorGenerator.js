@@ -57,6 +57,7 @@ class EditorGenerator {
     $(`#${id}-columnSelect`).on('change', onColumn);
     $(`#${id}-remove`).on('click', remove);
   }
+
   createNumericFilter(seriesNum, filterNum, columns, remove) {
     const context = { seriesNum, filterNum, columns };
     this.handlebarsWithContext('numeric-filter', context);
@@ -111,6 +112,7 @@ class EditorGenerator {
     this.handlebarsWithContext('button', context);
     $(`#${id}`).on('click', activationFunction);
   }
+
   createAggregationRow(id, text, column, className, onRemove) {
     const context = { id, text, column, className };
     this.handlebarsWithContext('Aggregation-Row', context);

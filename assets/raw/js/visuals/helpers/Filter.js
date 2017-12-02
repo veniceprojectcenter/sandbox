@@ -4,8 +4,8 @@ import EditorGenerator from './EditorGenerator';
 class Filter {
   constructor(avisual) {
     this.visual = avisual;
-    this.addCheckboxEvent = document.createEvent('Event');
-    this.addCheckboxEvent.initEvent('addCheckbox', true, true);
+    this.newNumericFilterEvent = document.createEvent('Event');
+    this.newNumericFilterEvent.initEvent('newNumericFilter', true, true);
   }
   /**
   *Returns array of data where each represents the data for a single series.
@@ -47,19 +47,18 @@ class Filter {
     const editor = new EditorGenerator(myDiv);
     myDiv.innerHTML += '<ul id=\'collapseUl\'class="collapsible" data-collapsible="accordion">';
     this.ul = document.getElementById('collapseUl');
-    this.seriesNumber = 0;
     const li = document.createElement('li');
     this.ul.appendChild(li);
     this.filterHead = document.createElement('div');
     this.filterHead.classList.add('collapsible-header');
     this.headEditor = new EditorGenerator(this.filterHead);
     li.appendChild(this.filterHead);
-    makeHeader(this.headEditor, this.seriesNumber);
+    makeHeader(this.headEditor, 0);
     const filterDiv = document.createElement('div');
     filterDiv.classList.add('collapsible-body');
     li.appendChild(filterDiv);
     this.renderFilter(filterDiv);
-    filterDiv.querySelector('div[id$=numFilterList] div.row').dispatchEvent(this.addCheckboxEvent);
+    filterDiv.querySelector('div[id$=numFilterList] div.row').dispatchEvent(this.newNumericFilterEvent);
 
     this.addSeriesButton(editor, makeHeader);
     this.addSubmitButton(editor, buttonText, onButton);
@@ -102,7 +101,30 @@ class Filter {
     filterLabel.style.textAlign = 'center';
     myDiv.appendChild(filterLabel);
     myDiv.appendChild(catFilterDiv);
-    this.createAddCategoryButton(editor, catEditor, ccats, 0, data);
+    editor.createButton(`addCat-${newSeriesNum}`, 'Add Categorical Filter', () => {
+      const filterNum = $(myDiv).find('[id$=catFilterList]')[0].children.length;
+      catEditor.createDataFilter(`Filter${newSeriesNum}-${filterNum}`, ccats, `dataFilter${newSeriesNum}`, (e) => {
+        const column = $(e.currentTarget).val();
+        const categories = this.visual.getGroupedList(column, data);
+        const catSelect = e.currentTarget.parentNode.parentNode.nextSibling.nextSibling
+    .nextSibling.nextSibling.children[0].children[3];
+        $(catSelect).empty().html(' ');
+        $(catSelect).append(
+    $('<option disabled=true></option>')
+      .attr('Select', '-Select-')
+      .text('-Select-'));
+        for (let i = 0; i < categories.length; i += 1) {
+          const value = categories[i].key;
+          $(catSelect).append(
+        $('<option></option>')
+        .attr('value', value)
+        .text(value),
+      );
+        }
+        $(catSelect).material_select();
+      }, (e) => { this.removeFilter(e.currentTarget); });
+    });
+    //this.createAddCategoryButton(editor, catEditor, ccats, data);
     myDiv.appendChild(document.createElement('br'));
     myDiv.appendChild(document.createElement('br'));
     const filterLabel2 = document.createElement('h5');
@@ -122,7 +144,7 @@ class Filter {
       numEditor.createNumericFilter(seriesNum, numChildren, ncats, (e) => {
         this.removeFilter(e.currentTarget);
       });
-      document.querySelector(`div#numFilter${seriesNum}-${numChildren}`).dispatchEvent(this.addCheckboxEvent);
+      document.querySelector(`div#numFilter${seriesNum}-${numChildren}`).dispatchEvent(this.newNumericFilterEvent);
     });
 
     this.addAreaSelectorButton(editor, myDiv);
@@ -144,10 +166,11 @@ class Filter {
     filterLabel3.style.textAlign = 'center';
     myDiv.appendChild(filterLabel3);
     myDiv.appendChild(areaSelectorDiv);
-    editor.createButton(`selectArea-${this.seriesNumber}`, 'Select an Area', () => {
+    const seriesNum = /series(\d+)-catFilterList/.exec($(myDiv).find('[id$=catFilterList]').attr('id'))[1];
+    editor.createButton(`selectArea-${seriesNum}`, 'Select an Area', () => {
       const selector = new BoundarySelector(this.visual.map);
       selector.selectPoints((points) => {
-        this.visual.attributes.areaSelections[this.seriesNumber] = points;
+        this.visual.attributes.areaSelections[seriesNum] = points;
         // console.log(this.visual.attributes.areaSelections);
       });
     });
@@ -168,13 +191,13 @@ class Filter {
       li.appendChild(filterDiv);
 
       this.renderFilter(filterDiv);
-      filterDiv.querySelector('div[id$=numFilterList] div.row').dispatchEvent(this.addCheckboxEvent);
+      filterDiv.querySelector('div[id$=numFilterList] div.row').dispatchEvent(this.newNumericFilterEvent);
     });
   }
 
   addSubmitButton(editor, buttonText, onButton) {
     editor.createButton('submit', buttonText, () => {
-      for (let k = 0; k <= this.seriesNumber; k += 1) {
+      for (let k = 0; k <= this.ul.childNodes.length; k += 1) {
         const set = $(document.getElementById(`dataSet${k}-select`)).val();
         const dataFilters = [];
         const numericFilters = [];
@@ -231,50 +254,25 @@ class Filter {
     });
   }
 
-  createAddCategoryButton(editor, catEditor, ccats, num, data) {
-    editor.createButton(`addCat-${this.seriesNumber}`, 'Add Categorical Filter', () => {
-      num += 1;
-      catEditor.createDataFilter(`Filter${num}-${this.seriesNumber}`, ccats, `dataFilter${this.seriesNumber}`, (e) => {
-        const column = $(e.currentTarget).val();
-        const categories = this.visual.getGroupedList(column, data);
-        const catSelect = e.currentTarget.parentNode.parentNode.nextSibling.nextSibling
-    .nextSibling.nextSibling.children[0].children[3];
-        $(catSelect).empty().html(' ');
-        $(catSelect).append(
-    $('<option disabled=true></option>')
-      .attr('Select', '-Select-')
-      .text('-Select-'));
-        for (let i = 0; i < categories.length; i += 1) {
-          const value = categories[i].key;
-          $(catSelect).append(
-        $('<option></option>')
-        .attr('value', value)
-        .text(value),
-      );
-        }
-        $(catSelect).material_select();
-      }, (e) => { this.removeFilter(e.currentTarget); });
-    });
-  }
-
   createCategoryFilter(catEditor, ccats, data) {
-    catEditor.createDataFilter(`Filter${this.seriesNumber}`, ccats, `dataFilter${this.seriesNumber}`, (e) => {
+    const seriesNum = this.ul.childNodes.length - 1;
+    const filterNum =
+    catEditor.createDataFilter(`Filter${seriesNum}`, ccats, `dataFilter${seriesNum}`, (e) => {
       const column = $(e.currentTarget).val();
       const categories = this.visual.getGroupedList(column, data);
       const catSelect = e.currentTarget.parentNode.parentNode.nextSibling.nextSibling
-  .nextSibling.nextSibling.children[0].children[3];
+        .nextSibling.nextSibling.children[0].children[3];
       $(catSelect).empty().html(' ');
       $(catSelect).append(
-    $('<option disabled=true></option>')
-    .attr('Select', '-Select-')
-    .text('-Select-'));
+        $('<option disabled=true></option>')
+        .attr('Select', '-Select-')
+        .text('-Select-'));
       for (let i = 0; i < categories.length; i += 1) {
         const value = categories[i].key;
         $(catSelect).append(
-      $('<option></option>')
-      .attr('value', value)
-      .text(value),
-    );
+        $('<option></option>')
+          .attr('value', value)
+          .text(value));
       }
       $(catSelect).material_select();
     }, (e) => { this.removeFilter(e.currentTarget); });
