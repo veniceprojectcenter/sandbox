@@ -60,9 +60,13 @@ class FilterMap extends Visual {
   }
 
   applyFiltersAndRender() {
-    const filters = this.attributes.filters;
     this.map.render(this.renderID);
     document.getElementById(this.renderID).firstChild.style.height = '85%';
+    this.applyFilters();
+  }
+
+  applyFilters() {
+    const filters = this.attributes.filters;
     const dataSets = [];
     this.renderData = [];
     for (let i = 0; i < filters.length; i += 1) {
@@ -71,6 +75,15 @@ class FilterMap extends Visual {
         && filter.numeric !== undefined) {
         dataSets[i] = Data.fetchData(filter.dataSet,
           (dataSet) => {
+            console.log(i, this.attributes.sliders[i], filter);
+            Object.keys(this.attributes.sliders[i].attributes).forEach((e) => {
+              const filterToChange = filter.numeric.findIndex((a) => {
+                return e === a.column;
+              });
+              if (filterToChange >= 0) {
+                filter.numeric[filterToChange].value = this.attributes.sliders[i].attributes[e].value;
+              }
+            });
             this.filter.getFilteredDatum(i, filter, dataSet);
             this.renderPoints(this.renderData[i],
               this.attributes.colors[i], this.attributes.shapes[i],
@@ -97,7 +110,8 @@ class FilterMap extends Visual {
           (t) => {
             const value = $(t.currentTarget).val();
             this.attributes.sliders[outerElem].attributes[innerElem].value = `${value}`;
-            // this.render();
+            this.map.clearCircles();
+            this.applyFilters();
           });
       });
     });
