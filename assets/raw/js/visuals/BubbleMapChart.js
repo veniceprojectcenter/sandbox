@@ -1,6 +1,7 @@
 import Visual from './helpers/Visual';
 import EditorGenerator from './helpers/EditorGenerator';
 import Map from './helpers/Map';
+import DefaultMapStyle from './helpers/DefaultMapStyle';
 import DivOverlay from './helpers/DivOverlay';
 
 class BubbleMapChart extends Visual {
@@ -21,7 +22,7 @@ class BubbleMapChart extends Visual {
       color: {
         mode: 'interpolate',
         colorspace: 'hcl',
-        range: ['#000080', '#CD0000'],
+        range: ['#00FF00', '#FFFF00', '#FF0000'],
       },
       mapStyles: DefaultMapStyle,
     });
@@ -49,10 +50,14 @@ class BubbleMapChart extends Visual {
     const sMax = Math.max(...values);
     const cMin = Math.min(...cvalues);
     const cMax = Math.max(...cvalues);
+    const cMid = (cMax + cMin) / 2;
     for (let i = 0; i < values.length; i += 1) {
       const cval = cvalues[i];
       const crange = this.attributes.color.range;
-      const getC = d3.scaleLinear().domain([cMin, cMax]).range([crange[0], crange[1]]);
+      // const getC = d3.scaleLinear().domain([cMin, cMax]).range([crange[0], crange[1]]);
+      const getC = d3.scaleLinear()
+        .domain([cMin, cMid, cMax])
+        .range([crange[0], crange[1], crange[2]]);
       const color = getC(cval);
       // console.log(color, cval);
       const sval = values[i];
@@ -165,9 +170,16 @@ class BubbleMapChart extends Visual {
              this.drawMarkers();
            });
 
-    editor.createColorField('bubble-color-end', 'Color Range End', this.attributes.color.range[1],
+    editor.createColorField('bubble-color-mid', 'Color Range Mid', this.attributes.color.range[1],
           (e) => {
             this.attributes.color.range[1] = $(e.currentTarget).val();
+            this.map.clearCircles();
+            this.drawMarkers();
+          });
+
+    editor.createColorField('bubble-color-end', 'Color Range End', this.attributes.color.range[2],
+          (e) => {
+            this.attributes.color.range[2] = $(e.currentTarget).val();
             this.map.clearCircles();
             this.drawMarkers();
           });
