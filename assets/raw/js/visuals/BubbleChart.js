@@ -86,7 +86,7 @@ class BubbleChart extends Visual {
           this.attributes.label_mode = value;
           this.render();
         });
-    editor.createNumberSlider('bubble-labelsize', 'Label Size', this.attributes.font_size, 1, 60,
+    editor.createNumberSlider('bubble-labelsize', 'Label Size', this.attributes.font_size, 1, 60, 1,
     (e) => {
       const value = $(e.currentTarget).val();
       this.attributes.font_size = `${value}`;

@@ -85,7 +85,8 @@ class FilterMap extends Visual {
     Object.keys(this.attributes.sliders).forEach((outerElem, outerIndex) => {
       Object.keys(this.attributes.sliders[outerElem].attributes).forEach((innerElem, innerIndex) => {
         editor.createNumberSlider(`slider-${outerIndex}-${innerIndex}`,
-          `${this.attributes.sliders[outerElem].name} ${innerElem}`, this.attributes.sliders[outerElem].attributes[innerElem], 1, 10,
+          `${this.attributes.sliders[outerElem].name} ${innerElem}`, this.attributes.sliders[outerElem].attributes[innerElem],
+          1, 10, 1,
           (t) => {
             const value = $(t.currentTarget).val();
             this.attributes.sliders[outerElem].attributes[innerElem] = `${value}`;
