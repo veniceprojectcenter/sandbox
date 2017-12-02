@@ -117,12 +117,13 @@ class Map {
       position: point,
       content: contentString,
     });
-    // google.maps.event.addListener(marker, 'mouseover', () => {
-    //   infowindow.open(this.map, marker);
-    // });
-    // google.maps.event.addListener(marker, 'mouseout', () => {
-    //   infowindow.close();
-    // });
+    infowindow.close();
+    google.maps.event.addListener(marker, 'mouseover', () => {
+      infowindow.open(this.map, marker);
+    });
+    google.maps.event.addListener(marker, 'mouseout', () => {
+      infowindow.close();
+    });
   }
 
   clearCirclesOfColor(color) {

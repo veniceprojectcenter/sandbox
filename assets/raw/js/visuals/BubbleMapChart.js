@@ -22,7 +22,7 @@ class BubbleMapChart extends Visual {
       color: {
         mode: 'interpolate',
         colorspace: 'hcl',
-        range: ['#00FF00', '#FFFF00', '#FF0000'],
+        range: ['#008000', '#FFFF00', '#FF0000'],
       },
       mapStyles: DefaultMapStyle,
     });
@@ -72,8 +72,8 @@ class BubbleMapChart extends Visual {
               '<p>'}${this.attributes.size_by}: ${sval}</p>` +
               `<p>${this.attributes.color_by}: ${cval}</p>` +
               '</div>';
-        const circle = this.map.addCircle({ lat, lng }, color, 0.5, parseFloat(radius));
-        // this.map.addInfoBox(content, circle, { lat, lng });
+        const circle = this.map.addCircle({ lat, lng }, color, 0.7, parseFloat(radius));
+        this.map.addInfoBox(content, circle, { lat, lng });
       });
     }
   }
@@ -135,7 +135,7 @@ class BubbleMapChart extends Visual {
     editor.createNumberSlider('min-bubble-size',
       'Minimum Bubble Size',
        this.attributes.bubble_size.range[0],
-        1, 50,
+        1, 49,
       (e) => {
         const value = $(e.currentTarget).val();
         this.attributes.bubble_size.range[0] = `${value}`;
@@ -146,7 +146,7 @@ class BubbleMapChart extends Visual {
     editor.createNumberSlider('max-bubble-size',
        'Maximum Bubble Size',
          this.attributes.bubble_size.range[1],
-         51, 100,
+         50, 100,
        (e) => {
          const value = $(e.currentTarget).val();
          this.attributes.bubble_size.range[1] = `${value}`;
@@ -170,7 +170,7 @@ class BubbleMapChart extends Visual {
              this.drawMarkers();
            });
 
-    editor.createColorField('bubble-color-mid', 'Color Range Mid', this.attributes.color.range[1],
+    editor.createColorField('bubble-color-mid', 'Color Range Middle', this.attributes.color.range[1],
           (e) => {
             this.attributes.color.range[1] = $(e.currentTarget).val();
             this.map.clearCircles();
