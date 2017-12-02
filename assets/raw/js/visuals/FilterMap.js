@@ -255,10 +255,10 @@ class FilterMap extends Visual {
         filterRow.insertBefore(upperBoundNode, checkboxNode);
         const lowerBoundNode = document.createElement('div');
         lowerBoundNode.classList.add('input-field', 'col-md-2');
-        lowerBoundNode.id = `numFilter${seriesNum}-${filterNum}-3`;
+        lowerBoundNode.id = `${seriesNum}-${filterNum}-3`;
         lowerBoundNode.innerHTML = `
-          <input type="number" id="numFilter${seriesNum}-${filterNum}-bound1">
-          <label for="numFilter${seriesNum}-${filterNum}-lowerBound">Lower Bound</label>
+          <input type="number" id="${seriesNum}-${filterNum}-bound1">
+          <label for="${seriesNum}-${filterNum}-lowerBound">Lower Bound</label>
         `;
         filterRow.insertBefore(lowerBoundNode, upperBoundNode);
       } else {
@@ -268,10 +268,10 @@ class FilterMap extends Visual {
         filterRow.removeChild(upperBoundNode);
         const valueBoxNode = document.createElement('div');
         valueBoxNode.classList.add('input-field', 'col-md-4');
-        valueBoxNode.id = `numFilter${seriesNum}-${filterNum}-3`;
+        valueBoxNode.id = `${seriesNum}-${filterNum}-3`;
         valueBoxNode.innerHTML = `
-          <input type="number" id="numFilter${seriesNum}-${filterNum}-field">
-          <label for="numFilter${seriesNum}-${filterNum}-number">Value</label>
+          <input type="number" id="${seriesNum}-${filterNum}-field">
+          <label for="${seriesNum}-${filterNum}-number">Value</label>
         `;
         filterRow.insertBefore(valueBoxNode, checkboxNode);
       }

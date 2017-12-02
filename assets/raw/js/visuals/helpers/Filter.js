@@ -104,7 +104,7 @@ class Filter {
     myDiv.appendChild(catFilterDiv);
     editor.createButton(`addCat-${newSeriesNum}`, 'Add Categorical Filter', () => {
       const filterNum = $(myDiv).find('[id$=catFilterList]')[0].children.length;
-      catEditor.createDataFilter(`Filter${newSeriesNum}-${filterNum}`, ccats, `dataFilter${newSeriesNum}`, (e) => {
+      catEditor.createDataFilter(`Filter${newSeriesNum}-${filterNum}`, ccats, `series${seriesNum} catFilterRow`, (e) => {
         const column = $(e.currentTarget).val();
         const categories = this.visual.getGroupedList(column, data);
         const catSelect = e.currentTarget.parentNode.parentNode.nextSibling.nextSibling
@@ -201,8 +201,8 @@ class Filter {
         const set = $(document.getElementById(`dataSet${k}-select`)).val();
         const dataFilters = [];
         const numericFilters = [];
-        const catFilters = document.getElementsByClassName(`dataFilter${k}`);
-        const numFilters = document.getElementsByClassName(`numFilter${k}`);
+        const catFilters = document.getElementsByClassName(`series${k} catFilterRow`);
+        const numFilters = document.getElementsByClassName(`series${k} numFilterRow`);
         if (catFilters.length === 0 && numFilters.length === 0) {
           this.visual.attributes.filters[k] = undefined;
         } else {
@@ -257,8 +257,7 @@ class Filter {
 
   createCategoryFilter(catEditor, ccats, data) {
     const seriesNum = this.ul.childNodes.length - 1;
-    const filterNum =
-    catEditor.createDataFilter(`Filter${seriesNum}`, ccats, `dataFilter${seriesNum}`, (e) => {
+    catEditor.createDataFilter(`Filter${seriesNum}-0`, ccats, `series${seriesNum} catFilterRow`, (e) => {
       const column = $(e.currentTarget).val();
       const categories = this.visual.getGroupedList(column, data);
       const catSelect = e.currentTarget.parentNode.parentNode.nextSibling.nextSibling
