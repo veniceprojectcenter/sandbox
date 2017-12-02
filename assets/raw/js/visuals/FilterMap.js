@@ -75,7 +75,6 @@ class FilterMap extends Visual {
         && filter.numeric !== undefined) {
         dataSets[i] = Data.fetchData(filter.dataSet,
           (dataSet) => {
-            console.log(i, this.attributes.sliders[i], filter);
             Object.keys(this.attributes.sliders[i].attributes).forEach((e) => {
               const filterToChange = filter.numeric.findIndex((a) => {
                 return e === a.column;
