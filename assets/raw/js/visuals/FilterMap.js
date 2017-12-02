@@ -86,11 +86,13 @@ class FilterMap extends Visual {
     Object.keys(this.attributes.sliders).forEach((outerElem, outerIndex) => {
       Object.keys(this.attributes.sliders[outerElem].attributes).forEach((innerElem, innerIndex) => {
         editor.createNumberSlider(`slider-${outerIndex}-${innerIndex}`,
-          `${this.attributes.sliders[outerElem].name} ${innerElem}`, this.attributes.sliders[outerElem].attributes[innerElem],
-          1, 10, 1,
+          `${this.attributes.sliders[outerElem].name} ${innerElem}`, this.attributes.sliders[outerElem].attributes[innerElem].value,
+          this.attributes.sliders[outerElem].attributes[innerElem].lowerBound,
+          this.attributes.sliders[outerElem].attributes[innerElem].upperBound,
+          this.attributes.sliders[outerElem].attributes[innerElem].stepSize,
           (t) => {
             const value = $(t.currentTarget).val();
-            this.attributes.sliders[outerElem].attributes[innerElem] = `${value}`;
+            this.attributes.sliders[outerElem].attributes[innerElem].value = `${value}`;
             // this.render();
           });
       });
@@ -121,8 +123,13 @@ class FilterMap extends Visual {
         };
         $(this).find('div[id$=numFilterList] div.row').each(function () {
           const column = $(this).find('div[id$=1]').find('li.selected span')[0].innerText;
-          if ($(this).find('div[id$=4] :checkbox:checked').length !== 0) {
-            sliders[datasetIndex].attributes[column] = 0;
+          if ($(this).find('div[id$=6] :checkbox:checked').length !== 0) {
+            sliders[datasetIndex].attributes[column] = {
+              value: $(this).find('div[id$=3]')[0].children[0].value,
+              lowerBound: $(this).find('div[id$=3]')[0].children[0].value,
+              stepSize: $(this).find('div[id$=4]')[0].children[0].value,
+              upperBound: $(this).find('div[id$=5]')[0].children[0].value,
+            };
           }
         });
       });
@@ -230,11 +237,11 @@ class FilterMap extends Visual {
     const groupId = closeButnId.split('-').slice(0, 2);
     const seriesNum = groupId[0];
     const filterNum = groupId[1];
-    closeButn.id = `numFilter${seriesNum}-${filterNum}-6`;
+    closeButn.id = `${seriesNum}-${filterNum}-7`;
 
     const checkboxNode = document.createElement('div');
     checkboxNode.classList.add('col-md-1');
-    checkboxNode.id = `numFilter${seriesNum}-${filterNum}-5`;
+    checkboxNode.id = `${seriesNum}-${filterNum}-6`;
     const groupIdJoin = groupId.join('-');
     checkboxNode.innerHTML = `
       <input type="checkbox" id="${groupIdJoin}-toVisual" />
@@ -244,16 +251,25 @@ class FilterMap extends Visual {
 
     checkboxNode.onchange = (evt) => {
       if (evt.target.checked) {
-        const valueBoxNode = filterRow.querySelector('[id$="3"]');
-        filterRow.removeChild(valueBoxNode);
+        filterRow.querySelector('[id$="1"]').classList.replace('col-md-4', 'col-md-3');
+        filterRow.querySelector('[id$="2"]').classList.replace('col-md-2', 'col-md-1');
+        filterRow.removeChild(filterRow.querySelector('[id$="3"]'));
         const upperBoundNode = document.createElement('div');
         upperBoundNode.classList.add('input-field', 'col-md-2');
-        upperBoundNode.id = `numFilter${seriesNum}-${filterNum}-4`;
+        upperBoundNode.id = `${seriesNum}-${filterNum}-5`;
         upperBoundNode.innerHTML = `
           <input type="number" id="numFilter{seriesNum}-{filterNum}-bound2">
           <label for="numFilter{seriesNum}-{filterNum}-upperBound">Upper Bound</label>
         `;
         filterRow.insertBefore(upperBoundNode, checkboxNode);
+        const stepSizeNode = document.createElement('div');
+        stepSizeNode.classList.add('input-field', 'col-md-2');
+        stepSizeNode.id = `${seriesNum}-${filterNum}-4`;
+        stepSizeNode.innerHTML = `
+          <input type="number" id="numFilter{seriesNum}-{filterNum}-step">
+          <label for="numFilter{seriesNum}-{filterNum}-stepSize">Step Size</label>
+        `;
+        filterRow.insertBefore(stepSizeNode, upperBoundNode);
         const lowerBoundNode = document.createElement('div');
         lowerBoundNode.classList.add('input-field', 'col-md-2');
         lowerBoundNode.id = `${seriesNum}-${filterNum}-3`;
@@ -261,12 +277,13 @@ class FilterMap extends Visual {
           <input type="number" id="${seriesNum}-${filterNum}-bound1">
           <label for="${seriesNum}-${filterNum}-lowerBound">Lower Bound</label>
         `;
-        filterRow.insertBefore(lowerBoundNode, upperBoundNode);
+        filterRow.insertBefore(lowerBoundNode, stepSizeNode);
       } else {
-        const lowerBoundNode = filterRow.querySelector('[id$="3"]');
-        const upperBoundNode = filterRow.querySelector('[id$="4"]');
-        filterRow.removeChild(lowerBoundNode);
-        filterRow.removeChild(upperBoundNode);
+        filterRow.querySelector('[id$="1"]').classList.replace('col-md-3', 'col-md-4');
+        filterRow.querySelector('[id$="2"]').classList.replace('col-md-1', 'col-md-2');
+        filterRow.removeChild(filterRow.querySelector('[id$="3"]'));
+        filterRow.removeChild(filterRow.querySelector('[id$="4"]'));
+        filterRow.removeChild(filterRow.querySelector('[id$="5"]'));
         const valueBoxNode = document.createElement('div');
         valueBoxNode.classList.add('input-field', 'col-md-4');
         valueBoxNode.id = `${seriesNum}-${filterNum}-3`;
