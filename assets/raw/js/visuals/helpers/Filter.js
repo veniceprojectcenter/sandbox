@@ -30,7 +30,8 @@ class Filter {
       this.visual.renderData[i] = this.visual.filterNumerical(filter.numeric,
         this.visual.renderData[i]);
     }
-    if (filter.area !== undefined) { // this.visual.map will be defined if true
+    if (filter.area !== undefined &&
+      this.visual.map !== undefined) { // this.visual.map will be defined if true
       const selector = new BoundarySelector(this.visual.map);
       const points = this.visual.renderData[i];
       this.visual.renderData[i] = selector.getPointsInBoundary(points, filter.area);
@@ -128,7 +129,6 @@ class Filter {
     myDiv.appendChild(document.createElement('br'));
     myDiv.appendChild(document.createElement('br'));
     const filterLabel2 = document.createElement('h5');
-
     filterLabel2.innerHTML = 'Numeric Filters';
     filterLabel2.style.textAlign = 'center';
     myDiv.appendChild(filterLabel2);
@@ -235,12 +235,13 @@ class Filter {
             const val = $(filter.children[2].children[0]).val();
             numericFilters.push({ column: columnval, operation: opval, value: val });
           }
-
-          const area = this.visual.attributes.areaSelections[k];
-          if ((area !== undefined) && (area !== null)) {
-            area.push(area[0]);
+          let area = null;
+          if (this.visual.attributes.areaSelections !== undefined) {
+            area = this.visual.attributes.areaSelections[k];
+            if ((area !== undefined) && (area !== null)) {
+              area.push(area[0]);
+            }
           }
-
           this.visual.attributes.filters[k] = {
             dataSet: set,
             numeric: numericFilters,

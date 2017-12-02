@@ -46,27 +46,26 @@ class DataView extends Visual {
     });
     const myDiv = document.createElement('div');
     this.renderControlsDiv.appendChild(myDiv);
-    this.filter.makeFilterSeries((a, b) => { this.counterHeader(a, b); }, () => { this.render(); }, 'Create Table', myDiv);
+    this.filter.makeFilterSeries((a, b) => { this.counterHeader(a, b); }, () => { }, 'Create Table', myDiv);
   }
   /** Renders the App section
   *
   */
   render() {
-    this.filter.getFilteredData(this.attributes.filters);
-    this.renderDiv = document.getElementById(this.renderID);
-    this.renderDiv.innerHTML = 'Data Table:';
-    this.tableDiv = document.createElement('div');
-    this.renderDiv.appendChild(this.tableDiv);
-    this.tableDiv.id = 'tableDiv';
-    if (this.attributes.columnOptions === null) {
-      this.columnOptions = [];
-    }
-    if (this.attributes.aggs !== undefined) {
+    if (this.attributes.filters !== undefined) {
+      this.filter.getFilteredData(this.attributes.filters);
+      this.renderDiv = document.getElementById(this.renderID);
+      this.renderDiv.innerHTML = 'Data Table:';
+      this.tableDiv = document.createElement('div');
+      this.renderDiv.appendChild(this.tableDiv);
+      this.tableDiv.id = 'tableDiv';
+      if (this.attributes.columnOptions === null) {
+        this.columnOptions = [];
+      }
+
       this.displayTable();
     }
   }
-
-
   /** Updates app display when actions are taken in controls
   *
   */

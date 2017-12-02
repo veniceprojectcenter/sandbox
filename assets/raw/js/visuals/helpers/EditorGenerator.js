@@ -113,12 +113,11 @@ class EditorGenerator {
     $(`#${id}`).on('click', activationFunction);
   }
 
-  createAggregationRow(id, text, column, className, onRemove) {
+  createAggregationRow(id, text, column, className) {
     const context = { id, text, column, className };
     this.handlebarsWithContext('Aggregation-Row', context);
     $(`#${id}-aggOperations`).val(0).material_select();
     $(`#${id}-aggColumnSelect`).val(1).material_select();
-    $(`#${id}-aggRemove`).on('click', onRemove);
   }
 
   handlebarsWithContext(handlebarId, context) {
