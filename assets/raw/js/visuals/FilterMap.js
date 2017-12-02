@@ -61,7 +61,7 @@ class FilterMap extends Visual {
   applyFiltersAndRender() {
     const filters = this.attributes.filters;
     this.map.render(this.renderID);
-    //document.getElementById(this.renderID).firstChild.style['z-index'] = '-1';
+    document.getElementById(this.renderID).firstChild.style.height = '85%';
     const dataSets = [];
     this.renderData = [];
     for (let i = 0; i < filters.length; i += 1) {
@@ -79,7 +79,8 @@ class FilterMap extends Visual {
     }
     const div = document.createElement('div');
     const visual = document.getElementById('visual');
-    visual.insertBefore(div, visual.firstChild);
+    visual.insertBefore(div, null);
+    div.style = 'position: relative; height: 12%; top: 85%; z-index: 2';
 
     const editor = new EditorGenerator(div);
     Object.keys(this.attributes.sliders).forEach((outerElem, outerIndex) => {
