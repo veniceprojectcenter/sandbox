@@ -1,6 +1,7 @@
 import Visual from './helpers/Visual';
 import EditorGenerator from './helpers/EditorGenerator';
 import Map from './helpers/Map';
+import DefaultMapStyle from './helpers/DefaultMapStyle';
 import DivOverlay from './helpers/DivOverlay';
 
 class BubbleMapChart extends Visual {
