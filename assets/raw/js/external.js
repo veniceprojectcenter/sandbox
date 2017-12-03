@@ -72,3 +72,4 @@ window.visualize.renderVisualFromConfig = renderVisualFromConfig;
 window.visualize.Visual = Visual;
 window.visualize.Firebase = Firebase;
 window.visualize.getDataSetList = getDataSetList;
+window.visualize.Data = Data;
