@@ -1,0 +1,27 @@
+.grid {
+  .block {
+    background: $white;
+    border-radius: 10px;
+    cursor: pointer;
+    margin-bottom: 15px;
+    margin-top: 15px;
+    padding: 10px;
+
+    img {
+      width: 100%;
+    }
+
+    object {
+      pointer-events: none;
+      width: 100%;
+    }
+
+    .name {
+      display: flex;
+      font-size: 1.5rem;
+      justify-content: center;
+      padding: 5px;
+      text-align: center;
+    }
+  }
+}
