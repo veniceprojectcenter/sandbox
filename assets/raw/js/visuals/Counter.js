@@ -49,7 +49,7 @@ class Counter extends Visual {
     const br = document.createElement('br');
     this.renderControlsDiv.appendChild(br);
     br.style.margin = '10px';
-    editor.createNumberSlider('fontSlider', 'Font Size', this.attributes.fontSize, 1, 128, (e) => {
+    editor.createNumberSlider('fontSlider', 'Font Size', this.attributes.fontSize, 1, 128, 1, (e) => {
       this.attributes.fontSize = $(e.currentTarget).val();
       this.render();
     });

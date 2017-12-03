@@ -112,13 +112,17 @@ class Map {
   }
 
   addInfoBox(contentString, marker, point) {
-    marker.addListener('click', () => {
-      const infowindow = new google.maps.InfoWindow({
-        map: this.map,
-        position: point,
-        content: contentString,
-      });
+    const infowindow = new google.maps.InfoWindow({
+      map: this.map,
+      position: point,
+      content: contentString,
+    });
+    infowindow.close();
+    google.maps.event.addListener(marker, 'mouseover', () => {
       infowindow.open(this.map, marker);
+    });
+    google.maps.event.addListener(marker, 'mouseout', () => {
+      infowindow.close();
     });
   }
 

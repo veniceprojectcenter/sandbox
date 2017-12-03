@@ -1,7 +1,8 @@
 import Visual from './helpers/Visual';
-import DefaultMapStyle from './helpers/DefaultMapStyle';
 import EditorGenerator from './helpers/EditorGenerator';
 import Map from './helpers/Map';
+import DefaultMapStyle from './helpers/DefaultMapStyle';
+import DivOverlay from './helpers/DivOverlay';
 
 class BubbleMapChart extends Visual {
   constructor(config, renderID, renderControlsID) {
@@ -21,7 +22,7 @@ class BubbleMapChart extends Visual {
       color: {
         mode: 'interpolate',
         colorspace: 'hcl',
-        range: ['#000080', '#CD0000'],
+        range: ['#008000', '#FFFF00', '#FF0000'],
       },
       mapStyles: DefaultMapStyle,
     });
@@ -49,10 +50,14 @@ class BubbleMapChart extends Visual {
     const sMax = Math.max(...values);
     const cMin = Math.min(...cvalues);
     const cMax = Math.max(...cvalues);
+    const cMid = (cMax + cMin) / 2;
     for (let i = 0; i < values.length; i += 1) {
       const cval = cvalues[i];
       const crange = this.attributes.color.range;
-      const getC = d3.scaleLinear().domain([cMin, cMax]).range([crange[0], crange[1]]);
+      // const getC = d3.scaleLinear().domain([cMin, cMax]).range([crange[0], crange[1]]);
+      const getC = d3.scaleLinear()
+        .domain([cMin, cMid, cMax])
+        .range([crange[0], crange[1], crange[2]]);
       const color = getC(cval);
       // console.log(color, cval);
       const sval = values[i];
@@ -67,7 +72,7 @@ class BubbleMapChart extends Visual {
               '<p>'}${this.attributes.size_by}: ${sval}</p>` +
               `<p>${this.attributes.color_by}: ${cval}</p>` +
               '</div>';
-        const circle = this.map.addCircle({ lat, lng }, color, 0.5, parseFloat(radius));
+        const circle = this.map.addCircle({ lat, lng }, color, 0.7, parseFloat(radius));
         this.map.addInfoBox(content, circle, { lat, lng });
       });
     }
@@ -81,7 +86,6 @@ class BubbleMapChart extends Visual {
     const mapContainer = document.createElement('div');
     mapContainer.id = 'map-container';
     mapContainer.className = 'map-container';
-
 
     const visual = document.getElementById(this.renderID);
     visual.appendChild(title);
@@ -131,7 +135,7 @@ class BubbleMapChart extends Visual {
     editor.createNumberSlider('min-bubble-size',
       'Minimum Bubble Size',
        this.attributes.bubble_size.range[0],
-        1, 50,
+        1, 49,
       (e) => {
         const value = $(e.currentTarget).val();
         this.attributes.bubble_size.range[0] = `${value}`;
@@ -142,7 +146,7 @@ class BubbleMapChart extends Visual {
     editor.createNumberSlider('max-bubble-size',
        'Maximum Bubble Size',
          this.attributes.bubble_size.range[1],
-         51, 100,
+         50, 100,
        (e) => {
          const value = $(e.currentTarget).val();
          this.attributes.bubble_size.range[1] = `${value}`;
@@ -166,9 +170,16 @@ class BubbleMapChart extends Visual {
              this.drawMarkers();
            });
 
-    editor.createColorField('bubble-color-end', 'Color Range End', this.attributes.color.range[1],
+    editor.createColorField('bubble-color-mid', 'Color Range Middle', this.attributes.color.range[1],
           (e) => {
             this.attributes.color.range[1] = $(e.currentTarget).val();
+            this.map.clearCircles();
+            this.drawMarkers();
+          });
+
+    editor.createColorField('bubble-color-end', 'Color Range End', this.attributes.color.range[2],
+          (e) => {
+            this.attributes.color.range[2] = $(e.currentTarget).val();
             this.map.clearCircles();
             this.drawMarkers();
           });
@@ -182,7 +193,7 @@ class BubbleMapChart extends Visual {
   //   editor.createNumberSlider('bubble-color-start',
   // 'Color range start',
   //  this.attributes.color.range[0],
-  //   1, 359,
+  //   1, 359, 1,
   // (e) => {
   //   const value = $(e.currentTarget).val();
   //   this.attributes.color.range[0] = `${value}`;
@@ -193,7 +204,7 @@ class BubbleMapChart extends Visual {
   //   editor.createNumberSlider('bubble-color-end',
   //   'Color range end',
   //    this.attributes.color.range[1],
-  //     1, 359,
+  //     1, 359, 1,
   //   (e) => {
   //     const value = $(e.currentTarget).val();
   //     this.attributes.color.range[1] = `${value}`;

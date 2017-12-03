@@ -161,7 +161,7 @@ class Donut extends Visual {
     editor.createNumberSlider('donut-font-size',
      'Label Font Size',
       this.attributes.font_size,
-       1, 60,
+       1, 60, 1,
      (e) => {
        const value = $(e.currentTarget).val();
        this.attributes.font_size = `${value}`;

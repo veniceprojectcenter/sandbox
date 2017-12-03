@@ -77,7 +77,7 @@ class Bar extends Visual {
      });
 
     editor.createNumberSlider('bar-font-size',
-      'Label Font Size', this.attributes.font_size, 1, 60,
+      'Label Font Size', this.attributes.font_size, 1, 60, 1,
       (e) => {
         const value = $(e.currentTarget).val();
         this.attributes.font_size = `${value}`;
@@ -85,21 +85,21 @@ class Bar extends Visual {
       });
 
     editor.createNumberSlider('bar-x-font-rotation',
-      'X Axis Font Rotation', this.attributes.x_font_rotation, 0, 90,
+      'X Axis Font Rotation', this.attributes.x_font_rotation, 0, 90, 1,
       (e) => {
         const value = $(e.currentTarget).val();
         this.attributes.x_font_rotation = `${value}`;
         this.render();
       });
     editor.createNumberSlider('bar-x-font-x-offset',
-      'X Axis Font X Offset', this.attributes.x_font_x_offset, -50, 50,
+      'X Axis Font X Offset', this.attributes.x_font_x_offset, -50, 50, 1,
       (e) => {
         const value = $(e.currentTarget).val();
         this.attributes.x_font_x_offset = `${value}`;
         this.render();
       });
     editor.createNumberSlider('bar-x-font-y-offset',
-      'X Axis Font Y Offset', this.attributes.x_font_y_offset, -50, 50,
+      'X Axis Font Y Offset', this.attributes.x_font_y_offset, -50, 50, 1,
       (e) => {
         const value = $(e.currentTarget).val();
         this.attributes.x_font_y_offset = `${value}`;
@@ -107,7 +107,7 @@ class Bar extends Visual {
       });
 
     editor.createNumberSlider('bar-color',
-      'Bar color', this.attributes.color.list[0], 0, 359,
+      'Bar color', this.attributes.color.list[0], 0, 359, 1,
       (e) => {
         const value = $(e.currentTarget).val();
         this.attributes.color.list[0] = `${value}`;

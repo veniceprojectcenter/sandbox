@@ -57,12 +57,13 @@ class EditorGenerator {
     $(`#${id}-columnSelect`).on('change', onColumn);
     $(`#${id}-remove`).on('click', remove);
   }
-  createNumericFilter(id, column, className, remove) {
-    const context = { id, column, className };
+
+  createNumericFilter(seriesNum, filterNum, columns, remove) {
+    const context = { seriesNum, filterNum, columns };
     this.handlebarsWithContext('numeric-filter', context);
-    $(`#${id}-columnSelect`).val(0).material_select();
-    $(`#${id}-operations`).val(1).material_select();
-    $(`#${id}-remove`).on('click', remove);
+    $(`#numFilter${seriesNum}-${filterNum}-columnSelect`).val(0).material_select();
+    $(`#numFilter${seriesNum}-${filterNum}-operations`).val(1).material_select();
+    $(`#numFilter${seriesNum}-${filterNum}-remove`).on('click', remove);
   }
 
   createCheckBox(id, title, current, onOptionChanged) {
@@ -76,8 +77,8 @@ class EditorGenerator {
     $(`#${id}-checkbox`).change(onOptionChanged);
   }
 
-  createNumberSlider(id, title, current, min, max, onValueChanged, inputEvent = 'input') {
-    const context = { id, title, min, max, current };
+  createNumberSlider(id, title, current, min, max, step, onValueChanged, inputEvent = 'input') {
+    const context = { id, title, min, max, step, current };
     this.handlebarsWithContext('range-entry', context);
     $(`#${id} input`).on(inputEvent, onValueChanged);
   }
@@ -111,6 +112,7 @@ class EditorGenerator {
     this.handlebarsWithContext('button', context);
     $(`#${id}`).on('click', activationFunction);
   }
+
   createAggregationRow(id, text, column, className) {
     const context = { id, text, column, className };
     this.handlebarsWithContext('Aggregation-Row', context);

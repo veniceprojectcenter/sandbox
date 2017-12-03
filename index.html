@@ -45,69 +45,69 @@ Venice Project Center · <a href="https://creativecommons.org/licenses/by-sa/4.0
 </script>
 
 <script id="data-filter" type="text/x-handlebars-template">
-<div class= '{{className}} row'>
-  <div class="input-field col-md-4" id="{{id}}-1">
-    <select id="{{id}}-columnSelect">
-      <option value="" disabled>Select a Property</option>
-      {{#each column}}
-      <option value="{{value}}">{{text}}</option>
-      {{/each}}
-    </select>
-    <label>Select Property to Filter by</label>
+  <div class= '{{className}} row'>
+    <div class="input-field col-md-4" id="{{id}}-1">
+      <select id="{{id}}-columnSelect">
+        <option value="" disabled>Select a Property</option>
+        {{#each column}}
+        <option value="{{value}}">{{text}}</option>
+        {{/each}}
+      </select>
+      <label>Select Property to Filter by</label>
     </div>
     <div class="input-field col-md-2" id="{{id}}-2">
-  <select id="{{id}}-operations">
-    <option value=1>is one of</option>
-    <option value=0>is not one of</option>
-  </select>
-  <label>Operation</label>
-</div>
-<div class="input-field col-md-5" id="{{id}}-3">
-<select multiple id="{{id}}-categories">
-  <option value="" disabled>NA</option>
-  {{#each category}}
-  <option value="{{value}}">{{text}}</option>
-  {{/each}}
-</select>
-<label>Values</label>
+      <select id="{{id}}-operations">
+        <option value=1>is one of</option>
+        <option value=0>is not one of</option>
+      </select>
+      <label>Operation</label>
+    </div>
+    <div class="input-field col-md-5" id="{{id}}-3">
+      <select multiple id="{{id}}-categories">
+        <option value="" disabled>NA</option>
+        {{#each category}}
+        <option value="{{value}}">{{text}}</option>
+        {{/each}}
+      </select>
+      <label>Values</label>
+    </div>
+    <div class="col-md-1" id="{{id}}-4">
+      <a id="{{id}}-remove" style="height:22px;width:22px;line-height:25px;margin-top:25px" class="btn-floating btn-large waves-effect waves-light"><font color="white">x</font></a>
+    </div>
   </div>
-  <div class="col-md-1" id="{{id}}-4">
-  <a id="{{id}}-remove" style="height:22px;width:22px;line-height:25px;margin-top:25px" class="btn-floating btn-large waves-effect waves-light"><font color="white">x</font></a>
-</div>
-</div>
 </script>
 
 <script id="numeric-filter" type="text/x-handlebars-template">
-<div class= '{{className}} row'>
-  <div class="input-field col-md-4" id="{{id}}-1">
-    <select id="{{id}}-columnSelect">
-      <option value="" disabled>Select a Property</option>
-      {{#each column}}
-      <option value="{{value}}">{{text}}</option>
-      {{/each}}
-    </select>
-    <label>Select Numeric Property to Filter by</label>
+  <div class="series{{seriesNum}} numFilterRow row" id="numFilter{{seriesNum}}-{{filterNum}}">
+    <div class="input-field col-md-4" id="numFilter{{seriesNum}}-{{filterNum}}-1">
+      <select id="numFilter{{seriesNum}}-{{filterNum}}-columnSelect">
+        <option value="" disabled>Select a Property</option>
+        {{#each columns}}
+        <option value="{{value}}">{{text}}</option>
+        {{/each}}
+      </select>
+      <label>Select Numeric Property to Filter by</label>
     </div>
-    <div class="input-field col-md-2" id="{{id}}-2">
-  <select id="{{id}}-operations">
-    <option value="" disabled>-Select-</option>
-    <option value="=">=</option>
-    <option value=">">&gt;</option>
-    <option value="<">&lt;</option>
-    <option value=">=">≥</option>
-    <option value="<=">≤</option>
-    <option value="!=">≠</option>
-  </select>
-  <label>Operation</label>
-</div>
-<div class="input-field col-md-5" id="{{id}}-3">
-    <input type="number" id="{{id}}-field">
-    <label for="{{id}}-number">Value</label>
+    <div class="input-field col-md-2" id="numFilter{{seriesNum}}-{{filterNum}}-2">
+      <select id="numFilter{{seriesNum}}-{{filterNum}}-operations">
+        <option value="" disabled>-Select-</option>
+        <option value="=">=</option>
+        <option value=">">&gt;</option>
+        <option value="<">&lt;</option>
+        <option value=">=">≥</option>
+        <option value="<=">≤</option>
+        <option value="!=">≠</option>
+      </select>
+      <label>Operation</label>
+    </div>
+    <div class="input-field col-md-5" id="numFilter{{seriesNum}}-{{filterNum}}-3">
+      <input type="number" id="numFilter{{seriesNum}}-{{filterNum}}-field">
+      <label for="numFilter{{seriesNum}}-{{filterNum}}-number">Value</label>
+    </div>
+    <div class="col-md-1" id="numFilter{{seriesNum}}-{{filterNum}}-4">
+      <a id="numFilter{{seriesNum}}-{{filterNum}}-remove"style="height:22px;width:22px;line-height:25px;margin-top:25px" class="btn-floating btn-large waves-effect waves-light"><font color="white">x</font></a>
+    </div>
   </div>
-  <div class="col-md-1" id="{{id}}-4">
-  <a id="{{id}}-remove"style="height:22px;width:22px;line-height:25px;margin-top:25px" class="btn-floating btn-large waves-effect waves-light"><font color="white">x</font></a>
-</div>
-</div>
 </script>
 
 <script id="remove-button" type="text/x-handlebars-template">
@@ -145,7 +145,7 @@ Venice Project Center · <a href="https://creativecommons.org/licenses/by-sa/4.0
   <label for="{{id}}-field">{{title}}</label>
   <form action="#" id="{{id}}">
     <p class="range-field" >
-      <input type="range" id="{{id}}-field" min="{{min}}" max="{{max}}" value="{{current}}"/>
+      <input type="range" id="{{id}}-field" min="{{min}}" max="{{max}}" step="{{step}}" value="{{current}}"/>
     </p>
   </form>
 </script>
