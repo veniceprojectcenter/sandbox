@@ -120,6 +120,11 @@ class EditorGenerator {
     $(`#${id}-aggColumnSelect`).val(1).material_select();
   }
 
+  createSpacer() {
+    const context = {};
+    this.handlebarsWithContext('spacer', context);
+  }
+
   handlebarsWithContext(handlebarId, context) {
     const source = document.getElementById(handlebarId).innerHTML;
     const template = Handlebars.compile(source);
@@ -127,7 +132,6 @@ class EditorGenerator {
 
     $(this.container).append(html);
   }
-
 }
 
 export default EditorGenerator;
