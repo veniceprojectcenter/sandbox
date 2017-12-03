@@ -193,7 +193,7 @@ class BubbleMapChart extends Visual {
   //   editor.createNumberSlider('bubble-color-start',
   // 'Color range start',
   //  this.attributes.color.range[0],
-  //   1, 359,
+  //   1, 359, 1,
   // (e) => {
   //   const value = $(e.currentTarget).val();
   //   this.attributes.color.range[0] = `${value}`;
@@ -204,7 +204,7 @@ class BubbleMapChart extends Visual {
   //   editor.createNumberSlider('bubble-color-end',
   //   'Color range end',
   //    this.attributes.color.range[1],
-  //     1, 359,
+  //     1, 359, 1,
   //   (e) => {
   //     const value = $(e.currentTarget).val();
   //     this.attributes.color.range[1] = `${value}`;

@@ -17,6 +17,9 @@ class FilterMap extends Visual {
     this.renderData = [];
     this.dataSets = [];
     Data.fetchDataSets((e) => { this.getAllDataSets(e); });
+    this.attributes.sliders = {};
+    this.generateMapEvent = document.createEvent('Event');
+    this.generateMapEvent.initEvent('generateMap', true, true);
   }
 
   onLoadData() {
@@ -53,10 +56,16 @@ class FilterMap extends Visual {
     this.map = new Map();
     this.map.render(this.renderID, this.attributes.mapStyles);
     this.applyFiltersAndRender();
+    this.createVisualSliderControls();
   }
 
   applyFiltersAndRender() {
-    console.log(this.attributes.filters);
+    this.map.render(this.renderID);
+    document.getElementById(this.renderID).firstChild.style.height = '85%';
+    this.applyFilters();
+  }
+
+  applyFilters() {
     const filters = this.attributes.filters;
     const dataSets = [];
     this.renderData = [];
@@ -66,6 +75,14 @@ class FilterMap extends Visual {
         && filter.numeric !== undefined) {
         dataSets[i] = Data.fetchData(filter.dataSet,
           (dataSet) => {
+            Object.keys(this.attributes.sliders[i].attributes).forEach((e) => {
+              const filterToChange = filter.numeric.findIndex((a) => {
+                return e === a.column;
+              });
+              if (filterToChange >= 0) {
+                filter.numeric[filterToChange].value = this.attributes.sliders[i].attributes[e].value;
+              }
+            });
             this.filter.getFilteredDatum(i, filter, dataSet);
             this.renderPoints(this.renderData[i],
               this.attributes.colors[i], this.attributes.shapes[i],
@@ -75,17 +92,73 @@ class FilterMap extends Visual {
     }
   }
 
+  createVisualSliderControls() {
+    const div = document.createElement('div');
+    const visual = document.getElementById('visual');
+    visual.insertBefore(div, null);
+    div.style = 'position: relative; height: 12%; top: 85%; z-index: 2';
+
+    const editor = new EditorGenerator(div);
+    Object.keys(this.attributes.sliders).forEach((outerElem, outerIndex) => {
+      Object.keys(this.attributes.sliders[outerElem].attributes).forEach((innerElem, innerIndex) => {
+        editor.createNumberSlider(`slider-${outerIndex}-${innerIndex}`,
+          `${this.attributes.sliders[outerElem].name} ${innerElem}`, this.attributes.sliders[outerElem].attributes[innerElem].value,
+          this.attributes.sliders[outerElem].attributes[innerElem].lowerBound,
+          this.attributes.sliders[outerElem].attributes[innerElem].upperBound,
+          this.attributes.sliders[outerElem].attributes[innerElem].stepSize,
+          (t) => {
+            const value = $(t.currentTarget).val();
+            this.attributes.sliders[outerElem].attributes[innerElem].value = `${value}`;
+            this.map.clearCircles();
+            this.applyFilters();
+          });
+      });
+    });
+  }
+
   renderControls() {
     this.attributes.colors = [];
     this.attributes.shapes = [];
     this.attributes.images = [];
     this.attributes.areaSelections = [];
     this.renderControlsDiv = document.getElementById(this.renderControlsID);
+
     const editor = new EditorGenerator(this.renderControlsDiv);
     editor.createHeader('Controls');
+
+    this.renderControlsDiv.addEventListener('newNumericFilter', (e) => {
+      this.addCheckboxToFilterRow(e.target);
+    }, false);
+
+    this.renderControlsDiv.addEventListener('generateMap', () => {
+      const sliders = {};
+      $(this.filter.ul).children('li').each(function (datasetIndex) {
+        const dataset = $(this).find('div.collapsible-header div[id^=dataSet]').find('li.selected span')[0].innerText;
+        sliders[datasetIndex] = {
+          name: dataset,
+          attributes: {},
+        };
+        $(this).find('div[id$=numFilterList] div.row').each(function () {
+          const column = $(this).find('div[id$=1]').find('li.selected span')[0].innerText;
+          if ($(this).find('div[id$=6] :checkbox:checked').length !== 0) {
+            sliders[datasetIndex].attributes[column] = {
+              value: $(this).find('div[id$=3]')[0].children[0].value,
+              lowerBound: $(this).find('div[id$=3]')[0].children[0].value,
+              stepSize: $(this).find('div[id$=4]')[0].children[0].value,
+              upperBound: $(this).find('div[id$=5]')[0].children[0].value,
+            };
+          }
+        });
+      });
+      this.attributes.sliders = sliders;
+    }, false);
+
     this.filter.makeFilterSeries(
       (headEditor, index) => { this.filterMapHeader(headEditor, index); },
-      (filters) => { this.getColorShape(filters); },
+      (filters) => {
+        this.getColorShape(filters);
+        this.filter.ul.dispatchEvent(this.generateMapEvent);
+      },
     );
 
     this.map.renderMapColorControls(editor, this.attributes, (color) => {
@@ -98,6 +171,9 @@ class FilterMap extends Visual {
   filterMapHeader(headEditor, index) {
     const shapes = [{ value: 'circle', text: 'Circle' }, { value: 'triangle', text: 'Triangle' }, { value: 'custom', text: 'Custom Image' }];
     headEditor.createSelectBox(`dataSet${index}`, 'Data Set', this.allSets, 'na', (e) => { this.replaceFilter(e.currentTarget); });
+    $(`ul#collapseUl li div.collapsible-header div#dataSet${index}`).change((evt) => {
+      $(evt.target).closest('li').find('div[id$=numFilterList] div.row')[0].dispatchEvent(this.filter.newNumericFilterEvent);
+    });
     headEditor.createSelectBox(`shape${index}`, 'Shape', shapes, 'na', (e) => {
       e.currentTarget.parentNode.parentNode.parentNode.children[2].remove();
       if (e.currentTarget.parentNode.parentNode.parentNode.children[2]) {
@@ -119,6 +195,7 @@ class FilterMap extends Visual {
       this.filter.removeSeries(e2.currentTarget);
     });
   }
+
   async getColorShape(filters) {
     for (let i = 0; i < filters.length; i += 1) {
       if (filters[i] !== undefined) {
@@ -138,6 +215,7 @@ class FilterMap extends Visual {
     }
     return undefined;
   }
+
   getAllDataSets(allSets) {
     const selectSet = [];
     for (let i = 0; i < allSets.length; i += 1) {
@@ -145,6 +223,7 @@ class FilterMap extends Visual {
     }
     this.allSets = selectSet;
   }
+
   async replaceFilter(target) {
     if (target === undefined) {
       return;
@@ -165,5 +244,74 @@ class FilterMap extends Visual {
       this.map.render(this.renderID, this.attributes.mapStyles);
     });
   }
+
+  addCheckboxToFilterRow(filterRow) {
+    const valueCol = filterRow.querySelector('div[id$="3"]');
+    valueCol.classList.replace('col-md-5', 'col-md-4');
+
+    const closeButn = filterRow.querySelector('div[id$="4"]');
+    const closeButnId = closeButn.getAttribute('id');
+    const groupId = closeButnId.split('-').slice(0, 2);
+    const seriesNum = groupId[0];
+    const filterNum = groupId[1];
+    closeButn.id = `${seriesNum}-${filterNum}-7`;
+
+    const checkboxNode = document.createElement('div');
+    checkboxNode.classList.add('col-md-1');
+    checkboxNode.id = `${seriesNum}-${filterNum}-6`;
+    const groupIdJoin = groupId.join('-');
+    checkboxNode.innerHTML = `
+      <input type="checkbox" id="${groupIdJoin}-toVisual" />
+      <label for="${groupIdJoin}-toVisual" style="margin-top:25px"/>
+    `;
+    filterRow.insertBefore(checkboxNode, valueCol.nextSibling);
+
+    checkboxNode.onchange = (evt) => {
+      if (evt.target.checked) {
+        filterRow.querySelector('[id$="1"]').classList.replace('col-md-4', 'col-md-3');
+        filterRow.querySelector('[id$="2"]').classList.replace('col-md-2', 'col-md-1');
+        filterRow.removeChild(filterRow.querySelector('[id$="3"]'));
+        const upperBoundNode = document.createElement('div');
+        upperBoundNode.classList.add('input-field', 'col-md-2');
+        upperBoundNode.id = `${seriesNum}-${filterNum}-5`;
+        upperBoundNode.innerHTML = `
+          <input type="number" id="numFilter${seriesNum}-${filterNum}-bound2">
+          <label for="numFilter${seriesNum}-${filterNum}-upperBound">Upper Bound</label>
+        `;
+        filterRow.insertBefore(upperBoundNode, checkboxNode);
+        const stepSizeNode = document.createElement('div');
+        stepSizeNode.classList.add('input-field', 'col-md-2');
+        stepSizeNode.id = `${seriesNum}-${filterNum}-4`;
+        stepSizeNode.innerHTML = `
+          <input type="number" id="numFilter${seriesNum}-${filterNum}-step">
+          <label for="numFilter${seriesNum}-${filterNum}-stepSize">Step Size</label>
+        `;
+        filterRow.insertBefore(stepSizeNode, upperBoundNode);
+        const lowerBoundNode = document.createElement('div');
+        lowerBoundNode.classList.add('input-field', 'col-md-2');
+        lowerBoundNode.id = `${seriesNum}-${filterNum}-3`;
+        lowerBoundNode.innerHTML = `
+          <input type="number" id="${seriesNum}-${filterNum}-bound1">
+          <label for="${seriesNum}-${filterNum}-lowerBound">Lower Bound</label>
+        `;
+        filterRow.insertBefore(lowerBoundNode, stepSizeNode);
+      } else {
+        filterRow.querySelector('[id$="1"]').classList.replace('col-md-3', 'col-md-4');
+        filterRow.querySelector('[id$="2"]').classList.replace('col-md-1', 'col-md-2');
+        filterRow.removeChild(filterRow.querySelector('[id$="3"]'));
+        filterRow.removeChild(filterRow.querySelector('[id$="4"]'));
+        filterRow.removeChild(filterRow.querySelector('[id$="5"]'));
+        const valueBoxNode = document.createElement('div');
+        valueBoxNode.classList.add('input-field', 'col-md-4');
+        valueBoxNode.id = `${seriesNum}-${filterNum}-3`;
+        valueBoxNode.innerHTML = `
+          <input type="number" id="${seriesNum}-${filterNum}-field">
+          <label for="${seriesNum}-${filterNum}-number">Value</label>
+        `;
+        filterRow.insertBefore(valueBoxNode, checkboxNode);
+      }
+    };
+  }
 }
+
 export default FilterMap;
