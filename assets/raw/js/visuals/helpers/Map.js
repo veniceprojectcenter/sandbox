@@ -320,6 +320,9 @@ class Map {
   }
 
   renderMapColorControls(editor, attributes, landUpdate, waterUpdate) {
+    editor.createSpacer();
+    editor.createSubHeader('Map Styles');
+
     editor.createColorField('map-land-color', 'Map Land Color', attributes.mapStyles[0].stylers[0].color, (e) => {
       const value = $(e.currentTarget).val();
       this.setLandColor(value);
