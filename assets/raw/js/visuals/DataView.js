@@ -47,6 +47,7 @@ class DataView extends Visual {
     const myDiv = document.createElement('div');
     this.renderControlsDiv.appendChild(myDiv);
     this.filter.makeFilterSeries((a, b) => { this.counterHeader(a, b); }, () => { }, 'Create Table', myDiv);
+    document.getElementById('addSeries').remove();
   }
   /** Renders the App section
   *
@@ -62,7 +63,6 @@ class DataView extends Visual {
       if (this.attributes.columnOptions === null) {
         this.columnOptions = [];
       }
-
       this.displayTable();
     }
   }
@@ -92,15 +92,10 @@ class DataView extends Visual {
     txt += '</table>';
     document.getElementById('tableDiv').innerHTML = `${txt}`;
   }
-  static removeFilter(buttonID) {
-    buttonID.parentNode.parentNode.remove();
-  }
 
 
   counterHeader(headEditor, index) {
-    headEditor.createRemoveButton(`remove${index}`, (e2) => {
-      this.filter.removeSeries(e2.currentTarget);
-    });
+    headEditor.createHeader('Filters');
   }
 }
 export default DataView;
