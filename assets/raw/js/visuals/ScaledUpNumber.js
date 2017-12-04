@@ -59,7 +59,8 @@ class ScaledUpNumber extends Visual {
     });
     const myDiv = document.createElement('div');
     this.renderControlsDiv.appendChild(myDiv);
-    this.filter.makeFilterSeries((a, b) => { this.ScaledUpNumberHeader(a, b); }, () => { this.updateRender(); }, 'Generate Numbers', myDiv);
+    this.filter.makeFilterSeries((a, b) => { this.ScaledUpNumberHeader(a, b); }, () => { this.updateRender(); }, 'Generate Number', myDiv);
+    document.getElementById('addSeries').remove();
   }
 
   /** Renders the App section
@@ -141,9 +142,7 @@ class ScaledUpNumber extends Visual {
 
 
   ScaledUpNumberHeader(headEditor, index) {
-    headEditor.createRemoveButton(`remove${index}`, (e2) => {
-      this.filter.removeSeries(e2.currentTarget);
-    });
+    headEditor.createHeader('Filters');
   }
 
   static createAggregationRow(myDiv, cats) {
