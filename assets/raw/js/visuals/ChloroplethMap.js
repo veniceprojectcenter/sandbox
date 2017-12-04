@@ -39,6 +39,7 @@ class ChloroplethMap extends Visual {
     this.applyDefaultAttributes({
       title: '',
       mapStyles: DefaultMapStyle,
+      colorBy: Object.keys(this.data[0])[0],
     });
 
     if (this.constructor.localStorageIsEmptyOrNulls()) {
@@ -77,7 +78,6 @@ class ChloroplethMap extends Visual {
   }
 
   renderLocalPolyLines() {
-    // console.log(localStorage.boundaries);
     if (localStorage.boundaries === undefined) {
       localStorage.boundaries = JSON.stringify([]);
     }
@@ -141,8 +141,9 @@ class ChloroplethMap extends Visual {
 
     editor.createHeader('Editor');
     this.createSelectButton(editor);
-    // this.createColumnSelector(editor);
     this.createHideBoundsBox(editor);
+    this.createColumnSelector(editor);
+
     this.map.renderMapColorControls(editor, this.attributes, (color) => {
       this.attributes.mapStyles[0].stylers[0].color = color;
     }, (color) => {
@@ -162,10 +163,17 @@ class ChloroplethMap extends Visual {
     });
   }
 
-  /* createColumnSelector(editor) {
+  createColumnSelector(editor) {
+    const options = [];
+    Object.keys(this.data[0]).forEach((option) => {
+      options.push({ text: option, value: option });
+    });
+    const current = this.attributes.colorBy;
     editor.createSelectBox('columnSelect', 'Select a column to color by',
-    options, current, onOptionChanged);
-  } */
+    options, current, (event) => {
+      console.log(event.currentTarget.value);
+    });
+  }
 
   createSelectButton(editor) {
     editor.createButton('selectArea', 'Select Area', () => {
