@@ -104,7 +104,7 @@ class Filter {
     myDiv.appendChild(catFilterDiv);
     editor.createButton(`addCat-${newSeriesNum}`, 'Add Categorical Filter', () => {
       const filterNum = $(myDiv).find('[id$=catFilterList]')[0].children.length;
-      catEditor.createDataFilter(`Filter${newSeriesNum}-${filterNum}`, ccats, `series${seriesNum} catFilterRow`, (e) => {
+      catEditor.createDataFilter(`Filter${newSeriesNum}-${filterNum}`, ccats, `series${newSeriesNum} catFilterRow`, (e) => {
         const column = $(e.currentTarget).val();
         const categories = this.visual.getGroupedList(column, data);
         const catSelect = e.currentTarget.parentNode.parentNode.nextSibling.nextSibling
