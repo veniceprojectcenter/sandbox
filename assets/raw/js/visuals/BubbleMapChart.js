@@ -53,7 +53,6 @@ class BubbleMapChart extends Visual {
     const cMid = (cMax + cMin) / 2;
     for (let i = 0; i < values.length; i += 1) {
       const cval = cvalues[i];
-      console.log(cval);
       const crange = this.attributes.color.range;
       // const getC = d3.scaleLinear().domain([cMin, cMax]).range([crange[0], crange[1]]);
       const getC = d3.scaleLinear()
@@ -65,7 +64,7 @@ class BubbleMapChart extends Visual {
       const srange = this.attributes.bubble_size.range;
       const getR = d3.scaleLinear().domain([sMin, sMax]).range([srange[0], srange[1]]);
       const radius = getR(sval);
-      // console.log(sval, cval);
+      // console.log(cval, sval);
       group.forEach((point) => {
         const lat = parseFloat(point.lat);
         const lng = parseFloat(point.lng);
@@ -91,7 +90,6 @@ class BubbleMapChart extends Visual {
     const visual = document.getElementById(this.renderID);
     visual.appendChild(title);
     visual.appendChild(mapContainer);
-    // visual.appendChild(svg);
 
     this.map.render(mapContainer.id, this.attributes.mapStyles);
     this.drawMarkers();

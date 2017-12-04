@@ -62,6 +62,7 @@ class FilterMap extends Visual {
   applyFiltersAndRender() {
     this.map.render(this.renderID);
     document.getElementById(this.renderID).firstChild.style.height = '85%';
+    document.getElementById(this.renderID).firstChild.style.overflow = 'hidden';
     this.applyFilters();
   }
 
@@ -111,6 +112,8 @@ class FilterMap extends Visual {
             this.attributes.sliders[outerElem].attributes[innerElem].value = `${value}`;
             this.map.clearCircles();
             this.applyFilters();
+            document.getElementById(this.renderID).firstChild.style.height = '85%';
+            document.getElementById(this.renderID).firstChild.style.overflow = 'hidden';
           });
       });
     });
