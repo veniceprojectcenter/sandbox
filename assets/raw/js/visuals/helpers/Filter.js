@@ -12,7 +12,9 @@ class Filter {
   */
   getFilteredData(filters) {
     for (let i = 0; i < filters.length; i += 1) {
-      this.getFilteredDatum(i, filters[i]);
+      if (filters[i] !== undefined) {
+        this.getFilteredDatum(i, filters[i]);
+      }
     }
     return this.visual.renderData;
   }
@@ -125,7 +127,7 @@ class Filter {
         $(catSelect).material_select();
       }, (e) => { this.removeFilter(e.currentTarget); });
     });
-    //this.createAddCategoryButton(editor, catEditor, ccats, data);
+    // this.createAddCategoryButton(editor, catEditor, ccats, data);
     myDiv.appendChild(document.createElement('br'));
     myDiv.appendChild(document.createElement('br'));
     const filterLabel2 = document.createElement('h5');

@@ -3,6 +3,7 @@ import Map from './helpers/Map';
 import EditorGenerator from './helpers/EditorGenerator';
 import BoundarySelector from './helpers/BoundarySelector';
 import DefaultMapStyle from './helpers/DefaultMapStyle';
+import VeniceOutline from './helpers/VeniceOutline';
 
 /* This file is to be used as a default starting point for new map visualizations
  * that feature adding divs
@@ -39,6 +40,25 @@ class ChloroplethMap extends Visual {
       title: '',
       mapStyles: DefaultMapStyle,
     });
+
+    if (this.constructor.localStorageIsEmptyOrNulls()) {
+      console.log('Local storage is empty, overwriting with venice data');
+      localStorage.boundaries = JSON.stringify(VeniceOutline);
+    }
+  }
+
+  static localStorageIsEmptyOrNulls() {
+    let result = true;
+    if ((localStorage.boundaries === '') || (localStorage.boundaries === undefined)) {
+      return true;
+    }
+    const storage = JSON.parse(localStorage.boundaries);
+    storage.forEach((path) => {
+      if ((path !== null) && (path !== undefined)) {
+        result = false;
+      }
+    });
+    return result;
   }
 
   addDataMarkers() {
@@ -57,7 +77,7 @@ class ChloroplethMap extends Visual {
   }
 
   renderLocalPolyLines() {
-    console.log(localStorage.boundaries);
+    // console.log(localStorage.boundaries);
     if (localStorage.boundaries === undefined) {
       localStorage.boundaries = JSON.stringify([]);
     }

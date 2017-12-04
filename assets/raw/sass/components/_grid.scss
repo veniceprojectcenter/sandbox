@@ -6,6 +6,7 @@
     margin-bottom: 15px;
     margin-top: 15px;
     padding: 10px;
+    transition: .7s;
 
     img {
       width: 100%;
@@ -17,11 +18,24 @@
     }
 
     .name {
+      color: $text;
       display: flex;
       font-size: 1.5rem;
       justify-content: center;
       padding: 5px;
       text-align: center;
+    }
+
+    &:hover,
+    &:focus {
+      transform: scale(1.05);
+    }
+  }
+
+  a {
+    &:hover,
+    &:focus {
+      text-decoration: none;
     }
   }
 }

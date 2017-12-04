@@ -4,7 +4,7 @@ import Data from './visuals/helpers/Data';
 import CategoryMap from './visuals/CategoryMap';
 import Donut from './visuals/Donut';
 import Bar from './visuals/Bar';
-import Counter from './visuals/Counter';
+import ScaledUpNumber from './visuals/ScaledUpNumber';
 import PieChartMap from './visuals/PieChartMap';
 import BubbleChart from './visuals/BubbleChart';
 import BubbleMapChart from './visuals/BubbleMapChart';
@@ -28,8 +28,8 @@ function renderVisualFromConfig(defaultConfig, containerID) {
     case 'Bar-Chart':
       visual = new Bar(config, containerID);
       break;
-    case 'Counter':
-      visual = new Counter(config, containerID);
+    case 'Scaled-Up-Number':
+      visual = new ScaledUpNumber(config, containerID);
       break;
     case 'Data-View':
       visual = new DataView(config, containerID);
