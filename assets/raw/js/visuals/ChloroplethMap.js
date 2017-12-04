@@ -3,6 +3,7 @@ import Map from './helpers/Map';
 import EditorGenerator from './helpers/EditorGenerator';
 import BoundarySelector from './helpers/BoundarySelector';
 import DefaultMapStyle from './helpers/DefaultMapStyle';
+import VeniceOutline from './helpers/VeniceOutline';
 
 /* This file is to be used as a default starting point for new map visualizations
  * that feature adding divs
@@ -39,6 +40,8 @@ class ChloroplethMap extends Visual {
       title: '',
       mapStyles: DefaultMapStyle,
     });
+
+    localStorage.boundaries = JSON.stringify(VeniceOutline);
   }
 
   addDataMarkers() {
