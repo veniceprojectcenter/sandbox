@@ -73,7 +73,7 @@ class FilterMap extends Visual {
     for (let i = 0; i < filters.length; i += 1) {
       const filter = filters[i];
       if (filter !== undefined && filter.categorical !== undefined
-        && filter.numeric !== undefined) {
+          && filter.numeric !== undefined && filter.dataSet !== null) {
         dataSets[i] = Data.fetchData(filter.dataSet,
           (dataSet) => {
             if (this.attributes.sliders[i] !== undefined) {
