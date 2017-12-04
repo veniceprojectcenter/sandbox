@@ -53,6 +53,7 @@ class Data {
       try {
         localStorage[dataSet] = JSON.stringify(data);
       } catch (e) {
+        console.error(e, 'Clearing local storage and trying again');
         localStorage.clear(); // Really should find a better solution
         localStorage[dataSet] = JSON.stringify(data);
       }
@@ -84,7 +85,14 @@ class Data {
         });
 
         localStorage.dataSetsDate = new Date().toString();
-        localStorage.dataSets = JSON.stringify(dataSets);
+        try {
+          localStorage.dataSets = JSON.stringify(dataSets);
+        } catch (e) {
+          console.error(e, 'Clearing local storage and trying again');
+          localStorage.clear(); // Really should find a better solution
+          localStorage.dataSets = JSON.stringify(dataSets);
+        }
+
         if (callback) {
           callback(dataSets);
         }
