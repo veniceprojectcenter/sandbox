@@ -273,6 +273,8 @@ class FilterMap extends Visual {
 
     checkboxNode.onchange = (evt) => {
       if (evt.target.checked) {
+        const valueCol = filterRow.querySelector('[id$="3"]');
+        valueCol.innerHTML = '';
         const lowerBoundNode = document.createElement('div');
         lowerBoundNode.classList.add('input-field', 'col-md-3');
         lowerBoundNode.id = `${seriesNum}-${filterNum}-6`;
@@ -298,6 +300,11 @@ class FilterMap extends Visual {
         `;
         filterRow.insertBefore(upperBoundNode, null);
       } else {
+        const valueCol = filterRow.querySelector('[id$="3"]');
+        valueCol.innerHTML = `
+          <input type="number" id="numFilter${seriesNum}-${filterNum}-field">
+          <label for="numFilter${seriesNum}-${filterNum}-number">Value</label>
+        `;
         filterRow.removeChild($(filterRow).children('[id$="6"]')[0]);
         filterRow.removeChild($(filterRow).children('[id$="7"]')[0]);
         filterRow.removeChild($(filterRow).children('[id$="8"]')[0]);
