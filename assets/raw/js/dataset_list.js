@@ -6,35 +6,43 @@ function render(dataSets) {
   page.classList.remove('container-fluid');
   page.classList.add('container');
 
-  const datarows = document.createElement('div');
-  datarows.className = 'data-row';
+  const visualBlocks = document.createElement('div');
+  visualBlocks.className = 'grid';
+
+  const gridRow = document.createElement('div');
+  gridRow.className = 'row';
 
   const selectionHeader = document.createElement('h2');
-  selectionHeader.innerHTML = 'Please select a dataset:';
-  datarows.appendChild(selectionHeader);
+  selectionHeader.innerHTML = 'Please select a data set:';
+  visualBlocks.appendChild(selectionHeader);
+
+  visualBlocks.appendChild(gridRow);
 
   for (let i = 0; i < dataSets.length; i += 1) {
-    const row = document.createElement('div');
+    const col = document.createElement('div');
+    col.className = 'col-12 col-sm-6 col-md-4 col-lg-3';
+
+    const block = document.createElement('div');
+    block.className = 'block';
+
     const link = document.createElement('a');
     link.href = `/${dataSets[i].id}/`;
 
-    row.className = 'data-row';
     const name = document.createElement('div');
     name.className = 'name';
     name.innerHTML = dataSets[i].name;
+    const image = document.createElement('object');
+    image.data = `/assets/prod/images/datasets/${dataSets[i].id}.svg`;
+    image.type = 'image/svg+xml';
+    block.appendChild(image);
+    block.appendChild(name);
+    link.appendChild(block);
+    col.appendChild(link);
 
-    const description = document.createElement('div');
-    description.className = 'description';
-    description.innerHTML = dataSets[i].description;
-
-    link.appendChild(name);
-    link.appendChild(description);
-    row.appendChild(link);
-
-    datarows.appendChild(row);
+    gridRow.appendChild(col);
   }
 
-  page.appendChild(datarows);
+  page.appendChild(visualBlocks);
 }
 
 async function renderDatasetList() {

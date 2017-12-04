@@ -80,7 +80,7 @@ class EditorGenerator {
   createNumberSlider(id, title, current, min, max, step, onValueChanged, inputEvent = 'input') {
     const context = { id, title, min, max, step, current };
     this.handlebarsWithContext('range-entry', context);
-    $(`#${id} input`).on(inputEvent, onValueChanged);
+    $(`#${id}-field`).on(inputEvent, onValueChanged);
   }
 
   createFileUpload(id, title, onChange) {
@@ -120,6 +120,11 @@ class EditorGenerator {
     $(`#${id}-aggColumnSelect`).val(1).material_select();
   }
 
+  createSpacer() {
+    const context = {};
+    this.handlebarsWithContext('spacer', context);
+  }
+
   handlebarsWithContext(handlebarId, context) {
     const source = document.getElementById(handlebarId).innerHTML;
     const template = Handlebars.compile(source);
@@ -127,7 +132,6 @@ class EditorGenerator {
 
     $(this.container).append(html);
   }
-
 }
 
 export default EditorGenerator;

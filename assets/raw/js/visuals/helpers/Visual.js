@@ -87,12 +87,11 @@ class Visual {
     const loginButton = document.createElement('button');
     loginButton.className = 'waves-effect btn-flat';
     loginButton.innerText = 'Login And Publish';
-    loginButton.addEventListener('click', () => {
+    loginButton.addEventListener('click', async () => {
       loginButton.classList.add('disabled');
       const email = emailInput.value;
       const password = passwordInput.value;
       Firebase.login(email, password, () => {
-        this.publishConfig();
         $('#login-modal').modal('close');
         console.log('Successful login');
       }, () => {
@@ -131,15 +130,27 @@ class Visual {
     publishButton.className = 'btn waves-effectr';
     publishButton.innerText = 'Publish Visual';
     publishButton.id = 'publish-button';
-    publishButton.addEventListener('click', () => {
-      firebase.auth().onAuthStateChanged((user) => {
-        if (user) {
-          this.publishConfig();
-          console.log('Already logged in');
-        } else {
-          $('#login-modal').modal('open');
-        }
-      });
+    let isStateChangeRegistered = false;
+    let isAuthenticated = false;
+    publishButton.addEventListener('click', async () => {
+      if (!isStateChangeRegistered) {
+        isStateChangeRegistered = true;
+        firebase.auth().onAuthStateChanged((user) => {
+          if (user) {
+            isAuthenticated = true;
+            this.publishConfig();
+            console.log('Publishing');
+          } else {
+            $('#login-modal').modal('open');
+            console.log('Not logged in so opening');
+          }
+        });
+      } else if (isAuthenticated) {
+        this.publishConfig();
+      } else {
+        $('#login-modal').modal('open');
+        console.log('Opening after been clicked once');
+      }
     });
 
     const downloadButton = document.createElement('button');

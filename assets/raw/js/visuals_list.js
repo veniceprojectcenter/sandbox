@@ -30,7 +30,7 @@ function renderVisualsList(route) {
   page.classList.add('container');
 
   const visualBlocks = document.createElement('div');
-  visualBlocks.className = 'visual-grid';
+  visualBlocks.className = 'grid';
 
   const gridRow = document.createElement('div');
   gridRow.className = 'row';
@@ -42,8 +42,11 @@ function renderVisualsList(route) {
   visualBlocks.appendChild(gridRow);
 
   for (let i = 0; i < visuals.length; i += 1) {
+    const col = document.createElement('div');
+    col.className = 'col-12 col-sm-6 col-md-4 col-lg-3';
+
     const block = document.createElement('div');
-    block.className = 'col-12 col-sm-6 col-md-4 col-lg-3 block';
+    block.className = 'block';
 
     const link = document.createElement('a');
     link.href = visuals[i].link;
@@ -56,8 +59,9 @@ function renderVisualsList(route) {
     link.appendChild(image);
     link.appendChild(name);
     block.appendChild(link);
+    col.appendChild(block);
 
-    gridRow.appendChild(block);
+    gridRow.appendChild(col);
   }
   page.appendChild(visualBlocks);
 }

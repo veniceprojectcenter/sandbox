@@ -117,12 +117,13 @@ class Map {
       position: point,
       content: contentString,
     });
-    // google.maps.event.addListener(marker, 'mouseover', () => {
-    //   infowindow.open(this.map, marker);
-    // });
-    // google.maps.event.addListener(marker, 'mouseout', () => {
-    //   infowindow.close();
-    // });
+    infowindow.close();
+    google.maps.event.addListener(marker, 'mouseover', () => {
+      infowindow.open(this.map, marker);
+    });
+    google.maps.event.addListener(marker, 'mouseout', () => {
+      infowindow.close();
+    });
   }
 
   clearCirclesOfColor(color) {
@@ -319,6 +320,9 @@ class Map {
   }
 
   renderMapColorControls(editor, attributes, landUpdate, waterUpdate) {
+    editor.createSpacer();
+    editor.createSubHeader('Map Styles');
+
     editor.createColorField('map-land-color', 'Map Land Color', attributes.mapStyles[0].stylers[0].color, (e) => {
       const value = $(e.currentTarget).val();
       this.setLandColor(value);

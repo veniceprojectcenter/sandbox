@@ -2,7 +2,7 @@ import Visual from './helpers/Visual';
 import EditorGenerator from './helpers/EditorGenerator';
 import Map from './helpers/Map';
 import DefaultMapStyle from './helpers/DefaultMapStyle';
-import DivOverlay from './helpers/DivOverlay';
+// import DivOverlay from './helpers/DivOverlay';
 
 class BubbleMapChart extends Visual {
   constructor(config, renderID, renderControlsID) {
@@ -22,7 +22,7 @@ class BubbleMapChart extends Visual {
       color: {
         mode: 'interpolate',
         colorspace: 'hcl',
-        range: ['#00FF00', '#FFFF00', '#FF0000'],
+        range: ['#008000', '#FFFF00', '#FF0000'],
       },
       mapStyles: DefaultMapStyle,
     });
@@ -59,12 +59,12 @@ class BubbleMapChart extends Visual {
         .domain([cMin, cMid, cMax])
         .range([crange[0], crange[1], crange[2]]);
       const color = getC(cval);
-      // console.log(color, cval);
       const sval = values[i];
       const group = sgroups[sval];
       const srange = this.attributes.bubble_size.range;
       const getR = d3.scaleLinear().domain([sMin, sMax]).range([srange[0], srange[1]]);
       const radius = getR(sval);
+      // console.log(cval, sval);
       group.forEach((point) => {
         const lat = parseFloat(point.lat);
         const lng = parseFloat(point.lng);
@@ -73,7 +73,7 @@ class BubbleMapChart extends Visual {
               `<p>${this.attributes.color_by}: ${cval}</p>` +
               '</div>';
         const circle = this.map.addCircle({ lat, lng }, color, 0.5, parseFloat(radius));
-        // this.map.addInfoBox(content, circle, { lat, lng });
+        this.map.addInfoBox(content, circle, { lat, lng });
       });
     }
   }
@@ -90,7 +90,6 @@ class BubbleMapChart extends Visual {
     const visual = document.getElementById(this.renderID);
     visual.appendChild(title);
     visual.appendChild(mapContainer);
-    // visual.appendChild(svg);
 
     this.map.render(mapContainer.id, this.attributes.mapStyles);
     this.drawMarkers();
@@ -135,7 +134,7 @@ class BubbleMapChart extends Visual {
     editor.createNumberSlider('min-bubble-size',
       'Minimum Bubble Size',
        this.attributes.bubble_size.range[0],
-        1, 50, 1,
+        1, 49, 1,
       (e) => {
         const value = $(e.currentTarget).val();
         this.attributes.bubble_size.range[0] = `${value}`;
@@ -146,7 +145,7 @@ class BubbleMapChart extends Visual {
     editor.createNumberSlider('max-bubble-size',
        'Maximum Bubble Size',
          this.attributes.bubble_size.range[1],
-         51, 100, 1,
+         50, 100, 1,
        (e) => {
          const value = $(e.currentTarget).val();
          this.attributes.bubble_size.range[1] = `${value}`;
@@ -170,7 +169,7 @@ class BubbleMapChart extends Visual {
              this.drawMarkers();
            });
 
-    editor.createColorField('bubble-color-mid', 'Color Range Mid', this.attributes.color.range[1],
+    editor.createColorField('bubble-color-mid', 'Color Range Middle', this.attributes.color.range[1],
           (e) => {
             this.attributes.color.range[1] = $(e.currentTarget).val();
             this.map.clearCircles();
@@ -189,28 +188,6 @@ class BubbleMapChart extends Visual {
     }, (color) => {
       this.attributes.mapStyles[1].stylers[0].color = color;
     });
-
-  //   editor.createNumberSlider('bubble-color-start',
-  // 'Color range start',
-  //  this.attributes.color.range[0],
-  //   1, 359, 1,
-  // (e) => {
-  //   const value = $(e.currentTarget).val();
-  //   this.attributes.color.range[0] = `${value}`;
-  //   this.map.clearCircles();
-  //   this.drawMarkers();
-  // });
-  //
-  //   editor.createNumberSlider('bubble-color-end',
-  //   'Color range end',
-  //    this.attributes.color.range[1],
-  //     1, 359, 1,
-  //   (e) => {
-  //     const value = $(e.currentTarget).val();
-  //     this.attributes.color.range[1] = `${value}`;
-  //     this.map.clearCircles();
-  //     this.drawMarkers();
-  //   });
   }
 }
 
