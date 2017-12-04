@@ -255,69 +255,52 @@ class FilterMap extends Visual {
   }
 
   addCheckboxToFilterRow(filterRow) {
-    const valueCol = filterRow.querySelector('div[id$="3"]');
-    valueCol.classList.replace('col-md-5', 'col-md-4');
-
-    const closeButn = filterRow.querySelector('div[id$="4"]');
+    const closeButn = filterRow.children[3];
     const closeButnId = closeButn.getAttribute('id');
     const groupId = closeButnId.split('-').slice(0, 2);
     const seriesNum = groupId[0];
     const filterNum = groupId[1];
-    closeButn.id = `${seriesNum}-${filterNum}-7`;
 
     const checkboxNode = document.createElement('div');
-    checkboxNode.classList.add('col-md-1');
-    checkboxNode.id = `${seriesNum}-${filterNum}-6`;
+    checkboxNode.classList.add('col-md-3');
+    checkboxNode.id = `${seriesNum}-${filterNum}-5`;
     const groupIdJoin = groupId.join('-');
     checkboxNode.innerHTML = `
       <input type="checkbox" id="${groupIdJoin}-toVisual" />
-      <label for="${groupIdJoin}-toVisual" style="margin-top:25px"/>
+      <label for="${groupIdJoin}-toVisual" style="margin-top:25px">Slider</label>
     `;
-    filterRow.insertBefore(checkboxNode, valueCol.nextSibling);
+    filterRow.insertBefore(checkboxNode, null);
 
     checkboxNode.onchange = (evt) => {
       if (evt.target.checked) {
-        filterRow.querySelector('[id$="1"]').classList.replace('col-md-4', 'col-md-3');
-        filterRow.querySelector('[id$="2"]').classList.replace('col-md-2', 'col-md-1');
-        filterRow.removeChild(filterRow.querySelector('[id$="3"]'));
-        const upperBoundNode = document.createElement('div');
-        upperBoundNode.classList.add('input-field', 'col-md-2');
-        upperBoundNode.id = `${seriesNum}-${filterNum}-5`;
-        upperBoundNode.innerHTML = `
-          <input type="number" id="numFilter${seriesNum}-${filterNum}-bound2">
-          <label for="numFilter${seriesNum}-${filterNum}-upperBound">Upper Bound</label>
-        `;
-        filterRow.insertBefore(upperBoundNode, checkboxNode);
-        const stepSizeNode = document.createElement('div');
-        stepSizeNode.classList.add('input-field', 'col-md-2');
-        stepSizeNode.id = `${seriesNum}-${filterNum}-4`;
-        stepSizeNode.innerHTML = `
-          <input type="number" id="numFilter${seriesNum}-${filterNum}-step">
-          <label for="numFilter${seriesNum}-${filterNum}-stepSize">Step Size</label>
-        `;
-        filterRow.insertBefore(stepSizeNode, upperBoundNode);
         const lowerBoundNode = document.createElement('div');
-        lowerBoundNode.classList.add('input-field', 'col-md-2');
-        lowerBoundNode.id = `${seriesNum}-${filterNum}-3`;
+        lowerBoundNode.classList.add('input-field', 'col-md-3');
+        lowerBoundNode.id = `${seriesNum}-${filterNum}-6`;
         lowerBoundNode.innerHTML = `
           <input type="number" id="${seriesNum}-${filterNum}-bound1">
           <label for="${seriesNum}-${filterNum}-lowerBound">Lower Bound</label>
         `;
-        filterRow.insertBefore(lowerBoundNode, stepSizeNode);
-      } else {
-        filterRow.querySelector('[id$="1"]').classList.replace('col-md-3', 'col-md-4');
-        filterRow.querySelector('[id$="2"]').classList.replace('col-md-1', 'col-md-2');
-        filterRow.removeChild(filterRow.querySelector('[id$="3"]'));
-        filterRow.removeChild(filterRow.querySelector('[id$="4"]'));
-        filterRow.removeChild(filterRow.querySelector('[id$="5"]'));
-        const valueBoxNode = document.createElement('div');
-        valueBoxNode.classList.add('input-field', 'col-md-4');
-        valueBoxNode.id = `${seriesNum}-${filterNum}-3`;
-        valueBoxNode.innerHTML = `
-          <input type="number" id="${seriesNum}-${filterNum}-field">
-          <label for="${seriesNum}-${filterNum}-number">Value</label>
+        filterRow.insertBefore(lowerBoundNode, null);
+        const stepSizeNode = document.createElement('div');
+        stepSizeNode.classList.add('input-field', 'col-md-3');
+        stepSizeNode.id = `${seriesNum}-${filterNum}-7`;
+        stepSizeNode.innerHTML = `
+          <input type="number" id="numFilter${seriesNum}-${filterNum}-step">
+          <label for="numFilter${seriesNum}-${filterNum}-stepSize">Step Size</label>
         `;
-        filterRow.insertBefore(valueBoxNode, checkboxNode);
+        filterRow.insertBefore(stepSizeNode, null);
+        const upperBoundNode = document.createElement('div');
+        upperBoundNode.classList.add('input-field', 'col-md-3');
+        upperBoundNode.id = `${seriesNum}-${filterNum}-8`;
+        upperBoundNode.innerHTML = `
+          <input type="number" id="numFilter${seriesNum}-${filterNum}-bound2">
+          <label for="numFilter${seriesNum}-${filterNum}-upperBound">Upper Bound</label>
+        `;
+        filterRow.insertBefore(upperBoundNode, null);
+      } else {
+        filterRow.removeChild($(filterRow).children('[id$="6"]')[0]);
+        filterRow.removeChild($(filterRow).children('[id$="7"]')[0]);
+        filterRow.removeChild($(filterRow).children('[id$="8"]')[0]);
       }
     };
   }
