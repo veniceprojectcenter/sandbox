@@ -128,6 +128,25 @@ class ChloroplethMap extends Visual {
     });
   }
 
+  drawPolygonsByColor() {
+    if (localStorage.boundaries === undefined) {
+      localStorage.boundaries = JSON.stringify([]);
+    }
+    const boundaries = JSON.parse(localStorage.boundaries);
+    boundaries.forEach((boundary) => {
+      this.drawPolygonByColor(boundary);
+    });
+  }
+
+  drawPolygonByColor(boundary) {
+    const colorBy = this.attributes.colorBy;
+    const data = this.data;
+
+    /* const selector = new BoundarySelector(this.map);
+    const pointsWithinBoundary = selector.getPointsInBoundary(points, boundary); */
+    this.map.addPolygon(boundary, 'green');
+  }
+
   renderControls() {
     if (this.data.length === 0) {
       alert('Dataset is empty!');
@@ -171,7 +190,8 @@ class ChloroplethMap extends Visual {
     const current = this.attributes.colorBy;
     editor.createSelectBox('columnSelect', 'Select a column to color by',
     options, current, (event) => {
-      console.log(event.currentTarget.value);
+      this.attributes.colorBy = event.currentTarget.value;
+      this.drawPolygonsByColor();
     });
   }
 
