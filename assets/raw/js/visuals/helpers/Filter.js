@@ -18,7 +18,7 @@ class Filter {
     }
     return this.visual.renderData;
   }
-
+  // filters by a single filter
   getFilteredDatum(i, filter, dataSet = null) {
     if (filter !== undefined && filter.categorical !== undefined
     && filter.numeric !== undefined) {
@@ -177,7 +177,7 @@ class Filter {
       });
     });
   }
-
+  // Creates the add a Series button
   addSeriesButton(editor, makeHeader) {
     editor.createButton('addSeries', 'Add a Data Series', () => {
       const li = document.createElement('li');
@@ -196,7 +196,7 @@ class Filter {
       filterDiv.querySelector('div[id$=numFilterList] div.row').dispatchEvent(this.newNumericFilterEvent);
     });
   }
-
+// Creates the submit button, such as  'Generate Map' or 'Create Table'
   addSubmitButton(editor, buttonText, onButton) {
     editor.createButton('submit', buttonText, () => {
       for (let k = 0; k <= this.ul.childNodes.length; k += 1) {
@@ -256,7 +256,7 @@ class Filter {
       this.visual.render();
     });
   }
-
+  // Creates a categorical Filter
   createCategoryFilter(catEditor, ccats, data) {
     const seriesNum = this.ul.childNodes.length - 1;
     catEditor.createDataFilter(`Filter${seriesNum}-0`, ccats, `series${seriesNum} catFilterRow`, (e) => {
@@ -279,11 +279,11 @@ class Filter {
       $(catSelect).material_select();
     }, (e) => { this.removeFilter(e.currentTarget); });
   }
-
+// Remove a single Series from controls called by little x button at top of each drop down
   removeSeries(target) {
     target.parentNode.parentNode.remove();
   }
-
+// Removes an individual numeric or categorical filter
   removeFilter(buttonID) {
     buttonID.parentNode.parentNode.remove();
   }

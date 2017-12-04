@@ -73,7 +73,7 @@ class DataView extends Visual {
   *
   */
   displayTable() {
-    const renderData = this.renderData;
+    const renderData = this.renderData[0];
     let txt = '';
     txt += "<table border='1'> <tr>";
     for (let j = 0; j < this.attributes.displayColumns.length; j += 1) {
