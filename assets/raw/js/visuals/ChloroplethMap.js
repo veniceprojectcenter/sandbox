@@ -133,21 +133,16 @@ class ChloroplethMap extends Visual {
       localStorage.boundaries = JSON.stringify([]);
     }
     const boundaries = JSON.parse(localStorage.boundaries);
+    const boundaryInfoObjects = [];
     boundaries.forEach((boundary) => {
-      this.drawPolygonByColor(boundary);
+      boundaryInfoObjects.concat(this.getBoundaryInfo(boundary));
     });
   }
 
-  drawPolygonByColor(boundary) {
-    if (boundary === null) {
-      return;
-    }
-    const colorBy = this.attributes.colorBy;
-    const data = this.data;
+  // Returns an array with an object with the average of a given category
+  // And the given boundary as attributes.
+  getBoundaryInfo(boundary) {
 
-    /* const selector = new BoundarySelector(this.map);
-    const pointsWithinBoundary = selector.getPointsInBoundary(points, boundary); */
-    this.map.addPolygon(boundary, 'green');
   }
 
   renderControls() {
