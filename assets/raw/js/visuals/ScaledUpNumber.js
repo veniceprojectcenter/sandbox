@@ -4,7 +4,7 @@ import Visual from './helpers/Visual';
 import Filter from './helpers/Filter';
 
 
-class Counter extends Visual {
+class ScaledUpNumber extends Visual {
   constructor(config, renderID, renderControlsID) {
     super(config, renderID, renderControlsID);
     this.renderData = [];
@@ -45,7 +45,7 @@ class Counter extends Visual {
     const editor = new EditorGenerator(this.renderControlsDiv);
     const aggDiv = document.createElement('div');
     this.renderControlsDiv.appendChild(aggDiv);
-    Counter.createAggregationRow(aggDiv, this.cats);
+    ScaledUpNumber.createAggregationRow(aggDiv, this.cats);
     const br = document.createElement('br');
     this.renderControlsDiv.appendChild(br);
     br.style.margin = '10px';
@@ -59,7 +59,7 @@ class Counter extends Visual {
     });
     const myDiv = document.createElement('div');
     this.renderControlsDiv.appendChild(myDiv);
-    this.filter.makeFilterSeries((a, b) => { this.counterHeader(a, b); }, () => { this.updateRender(); }, 'Generate Numbers', myDiv);
+    this.filter.makeFilterSeries((a, b) => { this.ScaledUpNumberHeader(a, b); }, () => { this.updateRender(); }, 'Generate Numbers', myDiv);
   }
 
   /** Renders the App section
@@ -121,15 +121,15 @@ class Counter extends Visual {
         }
       }
       if (agg.operation === 'Sum') {
-        text = Counter.createTSpan(svg);
+        text = ScaledUpNumber.createTSpan(svg);
         text.innerHTML += (`${agg.title} ${Math.round(sum * 100) / 100}`);
       }
       if (agg.operation === 'Average') {
-        text = Counter.createTSpan(svg);
+        text = ScaledUpNumber.createTSpan(svg);
         text.innerHTML += (`${agg.title} ${Math.round((sum / count) * 100) / 100}`);
       }
       if (agg.operation === 'Count') {
-        text = Counter.createTSpan(svg);
+        text = ScaledUpNumber.createTSpan(svg);
         text.innerHTML += `${agg.title} ${count}`;
       }
     }
@@ -140,7 +140,7 @@ class Counter extends Visual {
   }
 
 
-  counterHeader(headEditor, index) {
+  ScaledUpNumberHeader(headEditor, index) {
     headEditor.createRemoveButton(`remove${index}`, (e2) => {
       this.filter.removeSeries(e2.currentTarget);
     });
@@ -173,4 +173,4 @@ class Counter extends Visual {
     return text;
   }
 }
-export default Counter;
+export default ScaledUpNumber;

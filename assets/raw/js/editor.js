@@ -2,7 +2,7 @@ import Visual from './visuals/helpers/Visual';
 import CategoryMap from './visuals/CategoryMap';
 import Donut from './visuals/Donut';
 import Bar from './visuals/Bar';
-import Counter from './visuals/Counter';
+import ScaledUpNumber from './visuals/ScaledUpNumber';
 import DefaultMap from './visuals/helpers/DefaultMap';
 import PieChartMap from './visuals/PieChartMap';
 import RouteMap from './visuals/RouteMap';
@@ -55,8 +55,8 @@ function renderEditor(route) {
       case 'Bar-Chart':
         visual = new Bar(config);
         break;
-      case 'Counter':
-        visual = new Counter(config);
+      case 'Scaled-Up-Number':
+        visual = new ScaledUpNumber(config);
         break;
       case 'Pie-Chart-Map':
         visual = new PieChartMap(config);
