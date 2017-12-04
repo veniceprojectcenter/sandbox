@@ -139,6 +139,9 @@ class ChloroplethMap extends Visual {
   }
 
   drawPolygonByColor(boundary) {
+    if (boundary === null) {
+      return;
+    }
     const colorBy = this.attributes.colorBy;
     const data = this.data;
 
