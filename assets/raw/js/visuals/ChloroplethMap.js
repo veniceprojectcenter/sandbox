@@ -3,6 +3,7 @@ import Map from './helpers/Map';
 import EditorGenerator from './helpers/EditorGenerator';
 import BoundarySelector from './helpers/BoundarySelector';
 import DefaultMapStyle from './helpers/DefaultMapStyle';
+import VeniceOutline from './helpers/VeniceOutline';
 
 /* This file is to be used as a default starting point for new map visualizations
  * that feature adding divs
@@ -38,7 +39,27 @@ class ChloroplethMap extends Visual {
     this.applyDefaultAttributes({
       title: '',
       mapStyles: DefaultMapStyle,
+      colorBy: Object.keys(this.data[0])[0],
     });
+
+    if (this.constructor.localStorageIsEmptyOrNulls()) {
+      console.log('Local storage is empty, overwriting with venice data');
+      localStorage.boundaries = JSON.stringify(VeniceOutline);
+    }
+  }
+
+  static localStorageIsEmptyOrNulls() {
+    let result = true;
+    if ((localStorage.boundaries === '') || (localStorage.boundaries === undefined)) {
+      return true;
+    }
+    const storage = JSON.parse(localStorage.boundaries);
+    storage.forEach((path) => {
+      if ((path !== null) && (path !== undefined)) {
+        result = false;
+      }
+    });
+    return result;
   }
 
   addDataMarkers() {
@@ -57,7 +78,6 @@ class ChloroplethMap extends Visual {
   }
 
   renderLocalPolyLines() {
-    console.log(localStorage.boundaries);
     if (localStorage.boundaries === undefined) {
       localStorage.boundaries = JSON.stringify([]);
     }
@@ -121,8 +141,9 @@ class ChloroplethMap extends Visual {
 
     editor.createHeader('Editor');
     this.createSelectButton(editor);
-    // this.createColumnSelector(editor);
     this.createHideBoundsBox(editor);
+    this.createColumnSelector(editor);
+
     this.map.renderMapColorControls(editor, this.attributes, (color) => {
       this.attributes.mapStyles[0].stylers[0].color = color;
     }, (color) => {
@@ -142,10 +163,17 @@ class ChloroplethMap extends Visual {
     });
   }
 
-  /* createColumnSelector(editor) {
+  createColumnSelector(editor) {
+    const options = [];
+    Object.keys(this.data[0]).forEach((option) => {
+      options.push({ text: option, value: option });
+    });
+    const current = this.attributes.colorBy;
     editor.createSelectBox('columnSelect', 'Select a column to color by',
-    options, current, onOptionChanged);
-  } */
+    options, current, (event) => {
+      console.log(event.currentTarget.value);
+    });
+  }
 
   createSelectButton(editor) {
     editor.createButton('selectArea', 'Select Area', () => {

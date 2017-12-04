@@ -73,15 +73,17 @@ class FilterMap extends Visual {
     for (let i = 0; i < filters.length; i += 1) {
       const filter = filters[i];
       if (filter !== undefined && filter.categorical !== undefined
-        && filter.numeric !== undefined) {
+          && filter.numeric !== undefined && filter.dataSet !== null) {
         dataSets[i] = Data.fetchData(filter.dataSet,
           (dataSet) => {
-            Object.keys(this.attributes.sliders[i].attributes).forEach((e) => {
-              const filterToChange = filter.numeric.findIndex(a => e === a.column);
-              if (filterToChange >= 0) {
-                filter.numeric[filterToChange].value = this.attributes.sliders[i].attributes[e].value;
-              }
-            });
+            if (this.attributes.sliders[i] !== undefined) {
+              Object.keys(this.attributes.sliders[i].attributes).forEach((e) => {
+                const filterToChange = filter.numeric.findIndex(a => e === a.column);
+                if (filterToChange >= 0) {
+                  filter.numeric[filterToChange].value = this.attributes.sliders[i].attributes[e].value;
+                }
+              });
+            }
             this.filter.getFilteredDatum(i, filter, dataSet);
             this.renderPoints(this.renderData[i],
               this.attributes.colors[i], this.attributes.shapes[i],
@@ -134,22 +136,26 @@ class FilterMap extends Visual {
     this.renderControlsDiv.addEventListener('generateMap', () => {
       const sliders = {};
       $(this.filter.ul).children('li').each(function (datasetIndex) {
-        const dataset = $(this).find('div.collapsible-header div[id^=dataSet]').find('li.selected span')[0].innerText;
-        sliders[datasetIndex] = {
-          name: dataset,
-          attributes: {},
-        };
-        $(this).find('div[id$=numFilterList] div.row').each(function () {
-          const column = $(this).find('div[id$=1]').find('li.selected span')[0].innerText;
-          if ($(this).find('div[id$=6] :checkbox:checked').length !== 0) {
-            sliders[datasetIndex].attributes[column] = {
-              value: $(this).find('div[id$=3]')[0].children[0].value,
-              lowerBound: $(this).find('div[id$=3]')[0].children[0].value,
-              stepSize: $(this).find('div[id$=4]')[0].children[0].value,
-              upperBound: $(this).find('div[id$=5]')[0].children[0].value,
-            };
-          }
-        });
+        const datasetSelect = $(this).find('div.collapsible-header div[id^=dataSet]').find('li.selected span')[0];
+        if (datasetSelect !== undefined) {
+          sliders[datasetIndex] = {
+            name: datasetSelect.innerText,
+            attributes: {},
+          };
+          $(this).find('div[id$=numFilterList] div.row').each(function () {
+            const columnSelect = $(this).find('div[id$=1]').find('li.selected span')[0];
+            if (columnSelect !== undefined) {
+              if ($(this).find('div[id$=6] :checkbox:checked').length !== 0) {
+                sliders[datasetIndex].attributes[columnSelect.innerText] = {
+                  value: $(this).find('div[id$=3]')[0].children[0].value,
+                  lowerBound: $(this).find('div[id$=3]')[0].children[0].value,
+                  stepSize: $(this).find('div[id$=4]')[0].children[0].value,
+                  upperBound: $(this).find('div[id$=5]')[0].children[0].value,
+                };
+              }
+            }
+          });
+        }
       });
       this.attributes.sliders = sliders;
     }, false);
