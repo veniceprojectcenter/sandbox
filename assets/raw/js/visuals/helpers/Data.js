@@ -50,7 +50,13 @@ class Data {
 
       await Promise.all(promises);
       localStorage[`${dataSet}-date`] = new Date().toString();
-      localStorage[dataSet] = JSON.stringify(data);
+      try {
+        localStorage[dataSet] = JSON.stringify(data);
+      } catch (e) {
+        localStorage.clear(); // Really should find a better solution
+        localStorage[dataSet] = JSON.stringify(data);
+      }
+
       if (callback) {
         callback(data);
       }
