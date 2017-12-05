@@ -35,8 +35,8 @@ class EditorGenerator {
     $(`#${id}-right`).click(onRightClicked);
   }
 
-  createSelectBox(id, title, options, current, onOptionChanged) {
-    const context = { id, title, options };
+  createSelectBox(id, title, options, current, onOptionChanged, defaultValue = '', defaultText = 'Select a Property') {
+    const context = { id, title, options, defaultValue, defaultText };
     this.handlebarsWithContext('select-entry', context);
     $(`#${id}-select`).val(current).material_select();
     $(`#${id}-select`).change(onOptionChanged);
