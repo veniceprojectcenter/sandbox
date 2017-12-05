@@ -58,7 +58,6 @@ class FilterMap extends Visual {
   // render the map
   render() {
     this.map = new Map();
-    this.map.render(this.renderID, this.attributes.mapStyles);
     this.applyFiltersAndRender();
     this.createVisualSliderControls();
     this.renderBasics();
