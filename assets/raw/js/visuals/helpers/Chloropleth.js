@@ -1,10 +1,12 @@
 import BoundarySelector from './BoundarySelector';
 
 class Chloropleth {
-  constructor(colorBy, boundaries, dataPoints) {
+  constructor(colorBy, boundaries, dataPoints, minColor, maxColor) {
     this.colorBy = colorBy;
     this.boundaries = boundaries;
     this.dataPoints = dataPoints;
+    this.minColor = minColor;
+    this.maxColor = maxColor;
 
     this.boundaryObjects = this.computeChloroplethColors();
     console.log(this.boundaryObjects);
@@ -80,10 +82,19 @@ class Chloropleth {
   }
 
   static computeBoundaryColors(minMax, boundaryObjects) {
+    const getColor = d3.scaleLinear()
+      .domain([minMax.min, minMax.max])
+      .range([this.maxColor, this.maxColor]);
+
     const newBoundaryObjects = [];
     for (let i = 0; i < boundaryObjects.length; i += 1) {
       const boundaryObject = boundaryObjects[i];
-      boundaryObject.color = 'red';
+      const value = boundaryObject.average;
+      if (value !== null) {
+        boundaryObject.color = getColor(boundaryObject.average);
+      } else {
+        boundaryObject.color = null;
+      }
       newBoundaryObjects.push(boundaryObject);
     }
     return newBoundaryObjects;
