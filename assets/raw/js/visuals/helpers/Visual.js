@@ -93,10 +93,8 @@ class Visual {
       const password = passwordInput.value;
       Firebase.login(email, password, () => {
         $('#login-modal').modal('close');
-        console.log('Successful login');
       }, () => {
         loginButton.classList.remove('disabled');
-        console.log('Unable to login');
       });
     });
 
@@ -140,17 +138,14 @@ class Visual {
             if (user) {
               isAuthenticated = true;
               this.publishConfig();
-              console.log('Publishing');
             } else {
               $('#login-modal').modal('open');
-              console.log('Not logged in so opening');
             }
           });
         } else if (isAuthenticated) {
           this.publishConfig();
         } else {
           $('#login-modal').modal('open');
-          console.log('Opening after been clicked once');
         }
       } else {
         Materialize.toast('A title is required to publish a visual', 3000);
