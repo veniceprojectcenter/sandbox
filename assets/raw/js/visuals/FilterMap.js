@@ -114,7 +114,7 @@ class FilterMap extends Visual {
         const current = this.attributes.sliders[outerElem].attributes[innerElem].value;
         div.innerHTML = `
           <label for="${id}-field">${title}</label>
-          <form action="#" id="${id}">
+          <form action="#" id="${id}" class="slider">
             <p class="range-field">
               <input type="range" id="${id}-field" min="${min}" max="${max}" step="${step}" value="${current}"/>
             </p>
