@@ -128,6 +128,40 @@ class ChloroplethMap extends Visual {
     });
   }
 
+  drawPolygonsByColor() {
+    if (localStorage.boundaries === undefined) {
+      localStorage.boundaries = JSON.stringify([]);
+    }
+    const boundaries = JSON.parse(localStorage.boundaries);
+    let boundaryInfoObjects = [];
+    boundaries.forEach((boundary) => {
+      const info = this.getBoundaryInfo(boundary);
+      boundaryInfoObjects = boundaryInfoObjects.concat(info);
+    });
+    console.log(boundaryInfoObjects);
+  }
+
+  // Returns an array with an object with the average of a given category
+  // And the given boundary as attributes.
+  getBoundaryInfo(boundary) {
+    if (boundary === null) {
+      return [];
+    }
+
+    const info = { boundary };
+    const selector = new BoundarySelector(null);
+    const pointsWithinBoundary = selector.getPointsInBoundary(this.data, boundary);
+
+    const average = this.constructor.getAverageOfField(pointsWithinBoundary,
+        this.attributes.colorBy);
+    info.average = average;
+    return [info];
+  }
+
+  static getAverageOfField(points, field) {
+    return 5;
+  }
+
   renderControls() {
     if (this.data.length === 0) {
       alert('Dataset is empty!');
@@ -171,7 +205,8 @@ class ChloroplethMap extends Visual {
     const current = this.attributes.colorBy;
     editor.createSelectBox('columnSelect', 'Select a column to color by',
     options, current, (event) => {
-      console.log(event.currentTarget.value);
+      this.attributes.colorBy = event.currentTarget.value;
+      this.drawPolygonsByColor();
     });
   }
 

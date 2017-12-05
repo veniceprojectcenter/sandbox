@@ -3,7 +3,7 @@ import EditorGenerator from './helpers/EditorGenerator';
 
 class Bar extends Visual {
   onLoadData() {
-    this.categoricalData = this.getCategoricalData();
+    this.categoricalData = this.getCategoricalData(50);
     let defaultCat1 = '';
     let defaultCat2 = '';
     if (this.data.length > 0) {
