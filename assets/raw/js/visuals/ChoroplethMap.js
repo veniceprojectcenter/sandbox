@@ -189,7 +189,12 @@ class ChoroplethMap extends Visual {
 
     editor.createSubHeader('Polygon Coloring');
     this.createColumnSelector(editor);
-    this.createCategoricalValueSelector(editor);
+    // this.createCategoricalValueSelector(editor);
+
+    const categorySelectContainer = document.createElement('div');
+    categorySelectContainer.id = 'categorySelectContainer';
+    controlsContainer.appendChild(categorySelectContainer);
+
     this.createShowCategoryBox(editor);
     editor.createSpacer();
 
@@ -238,19 +243,14 @@ class ChoroplethMap extends Visual {
     editor.createCheckBox(id, 'Color by percent in category', false, () => {
       const checked = document.getElementById(`${id}-checkbox`).checked;
       if (!checked) {
-        $('#categorySelect').hide();
+        $('#categorySelect').remove();
         this.attributes.colorByCategory = null;
       } else {
-        $('#categorySelect').show();
-        this.populateCategorySelect();
+        const categorySelectEditor =
+          new EditorGenerator(document.getElementById('categorySelectContainer'));
+        this.createCategoricalValueSelector(categorySelectEditor);
       }
     });
-  }
-
-  populateCategorySelect() {
-    const selectedAttribute = document.getElementById('columnSelect-select').value;
-    console.log(selectedAttribute);
-    const options = this.getCategories(selectedAttribute);
   }
 
   getCategories() {
@@ -258,13 +258,15 @@ class ChoroplethMap extends Visual {
   }
 
   createCategoricalValueSelector(editor) {
-    const options = [];
+    const selectedAttribute = document.getElementById('columnSelect-select').value;
+    const options = this.getCategories(selectedAttribute);
+
+    // const options = [];
     const id = 'categorySelect';
     editor.createSelectBox(id, 'Select a category to color by',
     options, null, (event) => {
       this.drawChoropleth();
     });
-    $(`#${id}`).hide();
   }
 
   createSelectButton(editor) {
