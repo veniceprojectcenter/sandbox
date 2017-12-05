@@ -12,7 +12,6 @@ class FilterMap extends Visual {
     super(config, renderID, renderControlsID);
     this.columnOptions = null;
     this.map = new Map();
-    this.attributes.filters = [];
     this.filter = new Filter(this);
     this.renderData = [];
     this.dataSets = [];
@@ -30,6 +29,7 @@ class FilterMap extends Visual {
       shapes: [],
       images: [],
       areaSelections: [],
+      filters: [],
     });
   }
 
