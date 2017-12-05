@@ -57,9 +57,10 @@ class FilterMap extends Visual {
 
   // render the map
   render() {
+    Visual.empty(this.renderID);
     this.map = new Map();
     const mapContainer = document.createElement('div');
-    mapContainer.id = 'map-container';
+    mapContainer.id = `map-container${this.renderID}`;
     mapContainer.className = 'map-container';
 
     const visual = document.getElementById(this.renderID);

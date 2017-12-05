@@ -27,7 +27,7 @@ class PathFinding extends Visual {
   render() {
     const renderDiv = document.getElementById(this.renderID);
     const mapDiv = document.createElement('div');
-    mapDiv.id = 'mapDiv';
+    mapDiv.id = `map-container${this.renderID}`;
     mapDiv.className = 'map-container';
     renderDiv.appendChild(mapDiv);
 

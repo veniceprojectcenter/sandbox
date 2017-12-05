@@ -45,7 +45,7 @@ class CategoryMap extends Visual {
 
   render() {
     const mapContainer = document.createElement('div');
-    mapContainer.id = 'map-container';
+    mapContainer.id = `map-container${this.renderID}`;
     mapContainer.className = 'map-container';
 
     const visual = document.getElementById(this.renderID);
