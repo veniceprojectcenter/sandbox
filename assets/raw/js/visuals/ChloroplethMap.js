@@ -4,6 +4,7 @@ import EditorGenerator from './helpers/EditorGenerator';
 import BoundarySelector from './helpers/BoundarySelector';
 import DefaultMapStyle from './helpers/DefaultMapStyle';
 import VeniceOutline from './helpers/VeniceOutline';
+import Chloropleth from './helpers/Chloropleth';
 
 /* This file is to be used as a default starting point for new map visualizations
  * that feature adding divs
@@ -87,7 +88,7 @@ class ChloroplethMap extends Visual {
       this.setBoundariesMap(null);
     }
 
-    this.drawPolygonsByColor();
+    this.drawChloropleth();
   }
 
   renderLocalPolyLines() {
@@ -141,93 +142,15 @@ class ChloroplethMap extends Visual {
     });
   }
 
-  drawPolygonsByColor() {
+  drawChloropleth() {
     console.log(`Drawing polygons by field: ${this.attributes.colorBy}`);
     if (localStorage.boundaries === undefined) {
       localStorage.boundaries = JSON.stringify([]);
     }
     const boundaries = JSON.parse(localStorage.boundaries);
 
-    let boundaryInfoObjects = [];
-    boundaries.forEach((boundary) => {
-      const info = this.getBoundaryInfo(boundary);
-      boundaryInfoObjects = boundaryInfoObjects.concat(info);
-    });
-
-    const minMax = this.constructor.getBoundaryAveragesMinMax(boundaryInfoObjects);
-
-    boundaryInfoObjects = this.constructor.computeBoundaryColors(
-      minMax, boundaryInfoObjects);
-
-    this.drawBoundaryObjects(boundaryInfoObjects);
-  }
-
-  drawBoundaryObjects(boundaryObjects) {
-
-  }
-
-  static computeBoundaryColors(minMax, boundaryObjects) {
-    const newBoundaryObjects = [];
-    for (let i = 0; i < boundaryObjects.length; i += 1) {
-      const boundaryObject = boundaryObjects[i];
-      boundaryObject.color = 'red';
-      newBoundaryObjects.push(boundaryObject);
-    }
-    return newBoundaryObjects;
-  }
-
-  // Returns an array with an object with the average of a given category
-  // And the given boundary as attributes.
-  getBoundaryInfo(boundary) {
-    if (boundary === null) {
-      return [];
-    }
-
-    const info = { boundary };
-    const selector = new BoundarySelector(null);
-    const pointsWithinBoundary = selector.getPointsInBoundary(this.data, boundary);
-
-    const average = this.constructor.getAverageOfField(pointsWithinBoundary,
-        this.attributes.colorBy);
-    info.average = average;
-    return [info];
-  }
-
-  static getAverageOfField(points, field) {
-    let sum = 0;
-    let num = 0;
-    points.forEach((point) => {
-      const value = parseFloat(point[field]);
-      if (value !== null && !isNaN(value)) {
-        sum += value;
-        num += 1;
-      }
-    });
-
-    const average = (num === 0) ? null : sum / num;
-    return average;
-  }
-
-  static getBoundaryAveragesMinMax(infoObjects) {
-    if (infoObjects.length === 0) {
-      return { min: null, max: null }; // Edge case
-    }
-
-    let min = infoObjects[0].average;
-    let max = min;
-    for (let i = 0; i < infoObjects.length; i += 1) {
-      const value = infoObjects[i].average;
-      if (value !== null) {
-        if (value < min) {
-          min = value;
-        }
-        if (value > max) {
-          max = value;
-        }
-      }
-    }
-
-    return { min, max };
+    const chloropleth = new Chloropleth(this.attributes.colorBy, boundaries, this.data);
+    // chloropleth.draw(this.map);
   }
 
   renderControls() {
@@ -274,7 +197,7 @@ class ChloroplethMap extends Visual {
     editor.createSelectBox('columnSelect', 'Select a column to color by',
     options, current, (event) => {
       this.attributes.colorBy = event.currentTarget.value;
-      this.drawPolygonsByColor();
+      this.drawChloropleth();
     });
   }
 
