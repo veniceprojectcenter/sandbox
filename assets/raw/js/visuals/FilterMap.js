@@ -95,7 +95,7 @@ class FilterMap extends Visual {
 
   createVisualSliderControls() {
     const div = document.createElement('div');
-    const visual = document.getElementById('visual');
+    const visual = document.getElementById(this.renderID);
     visual.insertBefore(div, null);
     div.style = 'position: relative; height: 12%; top: 85%; z-index: 2';
 
