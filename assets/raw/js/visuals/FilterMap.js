@@ -58,16 +58,9 @@ class FilterMap extends Visual {
   // render the map
   render() {
     this.map = new Map();
-    this.applyFiltersAndRender();
-    this.createVisualSliderControls();
-    this.renderBasics();
-  }
-
-  applyFiltersAndRender() {
     this.map.render(this.renderID, this.attributes.mapStyles);
-    // document.getElementById(this.renderID).firstChild.style.height = '85%';
-    // document.getElementById(this.renderID).firstChild.style.overflow = 'hidden';
     this.applyFilters();
+    this.createVisualSliderControls();
     this.renderBasics();
   }
 
@@ -94,6 +87,8 @@ class FilterMap extends Visual {
               this.attributes.colors[i], this.attributes.shapes[i],
             this.attributes.images[i]);
           });
+      } else {
+        console.err('No filter defined!');
       }
     }
   }
