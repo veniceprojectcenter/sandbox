@@ -44,6 +44,8 @@ class ChloroplethMap extends Visual {
       title: '',
       mapStyles: DefaultMapStyle,
       colorBy: Object.keys(this.data[0])[0],
+      minColor: '#aaffaa',
+      maxColor: '#00ca00',
     });
 
     if (this.constructor.localStorageIsEmptyOrNulls()) {

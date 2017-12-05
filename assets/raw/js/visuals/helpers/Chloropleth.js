@@ -21,7 +21,7 @@ class Chloropleth {
 
     const minMax = this.constructor.getBoundaryAveragesMinMax(boundaryInfoObjects);
 
-    boundaryInfoObjects = this.constructor.computeBoundaryColors(
+    boundaryInfoObjects = this.computeBoundaryColors(
       minMax, boundaryInfoObjects);
 
     return boundaryInfoObjects;
@@ -81,10 +81,12 @@ class Chloropleth {
     return { min, max };
   }
 
-  static computeBoundaryColors(minMax, boundaryObjects) {
+  computeBoundaryColors(minMax, boundaryObjects) {
     const getColor = d3.scaleLinear()
       .domain([minMax.min, minMax.max])
-      .range([this.maxColor, this.maxColor]);
+      .range([this.minColor, this.maxColor]);
+
+    console.log(`${this.minColor} | ${this.maxColor}`);
 
     const newBoundaryObjects = [];
     for (let i = 0; i < boundaryObjects.length; i += 1) {
@@ -92,6 +94,7 @@ class Chloropleth {
       const value = boundaryObject.average;
       if (value !== null) {
         boundaryObject.color = getColor(boundaryObject.average);
+        console.log(boundaryObject.color);
       } else {
         boundaryObject.color = null;
       }
