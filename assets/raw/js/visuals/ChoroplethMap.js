@@ -45,7 +45,8 @@ class ChoroplethMap extends Visual {
       description: '',
       mapStyles: DefaultMapStyle,
       colorBy: Object.keys(this.data[0])[0],
-      minColor: '#aaffaa',
+      colorByCategory: null,
+      minColor: '#f9fff9',
       maxColor: '#00ca00',
     });
 
@@ -154,14 +155,15 @@ class ChoroplethMap extends Visual {
   }
 
   drawChoropleth() {
-    console.log(`Drawing polygons by field: ${this.attributes.colorBy}`);
+    // console.log(`Drawing polygons by field: ${this.attributes.colorBy}`);
     if (localStorage.boundaries === undefined) {
       localStorage.boundaries = JSON.stringify([]);
     }
     const boundaries = JSON.parse(localStorage.boundaries);
 
     Map.clear(this.map.polygons);
-    const choropleth = new Choropleth(this.attributes.colorBy, boundaries,
+    const choropleth = new Choropleth(this.attributes.colorBy,
+      this.attributes.colorByCategory, boundaries,
       this.data, this.attributes.minColor, this.attributes.maxColor);
     choropleth.draw(this.map);
   }
