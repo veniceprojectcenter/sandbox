@@ -180,9 +180,18 @@ class ChoroplethMap extends Visual {
     editor.createHeader('Editor');
 
     this.renderBasicControls(editor);
+
+    editor.createSpacer();
+    editor.createSubHeader('Polygon Creation');
     this.createSelectButton(editor);
     this.createHideBoundsBox(editor);
+    editor.createSpacer();
+
+    editor.createSubHeader('Polygon Coloring');
     this.createColumnSelector(editor);
+    this.createCategoricalValueSelector(editor);
+    this.createShowCategoryBox(editor);
+    editor.createSpacer();
 
     this.renderColorControls(editor);
 
@@ -210,12 +219,52 @@ class ChoroplethMap extends Visual {
     Object.keys(this.data[0]).forEach((option) => {
       options.push({ text: option, value: option });
     });
+
     const current = this.attributes.colorBy;
     editor.createSelectBox('columnSelect', 'Select a column to color by',
     options, current, (event) => {
       this.attributes.colorBy = event.currentTarget.value;
+      const categoryBoxChecked = document.getElementById('showCategoriesBox-checkbox').checked;
+      if (!categoryBoxChecked) {
+        this.drawChoropleth();
+      } else {
+        this.populateCategorySelect();
+      }
+    });
+  }
+
+  createShowCategoryBox(editor) {
+    const id = 'showCategoriesBox';
+    editor.createCheckBox(id, 'Color by percent in category', false, () => {
+      const checked = document.getElementById(`${id}-checkbox`).checked;
+      if (!checked) {
+        $('#categorySelect').hide();
+        this.attributes.colorByCategory = null;
+      } else {
+        $('#categorySelect').show();
+        this.populateCategorySelect();
+      }
+    });
+  }
+
+  populateCategorySelect() {
+    const selectedAttribute = document.getElementById('columnSelect-select').value;
+    console.log(selectedAttribute);
+    const options = this.getCategories(selectedAttribute);
+  }
+
+  getCategories() {
+    return ['test1', 'test2'];
+  }
+
+  createCategoricalValueSelector(editor) {
+    const options = [];
+    const id = 'categorySelect';
+    editor.createSelectBox(id, 'Select a category to color by',
+    options, null, (event) => {
       this.drawChoropleth();
     });
+    $(`#${id}`).hide();
   }
 
   createSelectButton(editor) {
