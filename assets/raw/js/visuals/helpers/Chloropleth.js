@@ -22,7 +22,30 @@ class Chloropleth {
         (() => { opacity = 0.1; return this.minColor; })() : color;
 
       const polygon = map.addPolygon(points, color, opacity);
+      this.addPolygonHoverListener(map.map, polygon, boundary);
       this.polygons.push(polygon);
+    });
+  }
+
+  addPolygonHoverListener(map, polygon, info) {
+    const average = info.average;
+    const boundary = info.boundary;
+
+    const contentString = `${this.colorBy}: ${average}`;
+    const position = BoundarySelector.getCentroid(boundary);
+    position.lat += 0.001;
+
+    const infowindow = new google.maps.InfoWindow({
+      map,
+      position,
+      content: contentString,
+    });
+    infowindow.close();
+    google.maps.event.addListener(polygon, 'mouseover', () => {
+      infowindow.open(map);
+    });
+    google.maps.event.addListener(polygon, 'mouseout', () => {
+      infowindow.close();
     });
   }
 
