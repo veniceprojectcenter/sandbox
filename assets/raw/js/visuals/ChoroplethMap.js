@@ -4,13 +4,13 @@ import EditorGenerator from './helpers/EditorGenerator';
 import BoundarySelector from './helpers/BoundarySelector';
 import DefaultMapStyle from './helpers/DefaultMapStyle';
 import VeniceOutline from './helpers/VeniceOutline';
-import Chloropleth from './helpers/Chloropleth';
+import Choropleth from './helpers/Choropleth';
 
 /* This file is to be used as a default starting point for new map visualizations
  * that feature adding divs
 */
 
-class ChloroplethMap extends Visual {
+class ChoroplethMap extends Visual {
   constructor(config, renderID, renderControlsID) {
     super(config, renderID, renderControlsID);
 
@@ -99,7 +99,7 @@ class ChloroplethMap extends Visual {
       this.setBoundariesMap(null);
     }
 
-    this.drawChloropleth();
+    this.drawChoropleth();
   }
 
   renderLocalPolyLines() {
@@ -153,7 +153,7 @@ class ChloroplethMap extends Visual {
     });
   }
 
-  drawChloropleth() {
+  drawChoropleth() {
     console.log(`Drawing polygons by field: ${this.attributes.colorBy}`);
     if (localStorage.boundaries === undefined) {
       localStorage.boundaries = JSON.stringify([]);
@@ -161,9 +161,9 @@ class ChloroplethMap extends Visual {
     const boundaries = JSON.parse(localStorage.boundaries);
 
     Map.clear(this.map.polygons);
-    const chloropleth = new Chloropleth(this.attributes.colorBy, boundaries,
+    const choropleth = new Choropleth(this.attributes.colorBy, boundaries,
       this.data, this.attributes.minColor, this.attributes.maxColor);
-    chloropleth.draw(this.map);
+    choropleth.draw(this.map);
   }
 
   renderControls() {
@@ -214,7 +214,7 @@ class ChloroplethMap extends Visual {
     editor.createSelectBox('columnSelect', 'Select a column to color by',
     options, current, (event) => {
       this.attributes.colorBy = event.currentTarget.value;
-      this.drawChloropleth();
+      this.drawChoropleth();
     });
   }
 
@@ -235,15 +235,15 @@ class ChloroplethMap extends Visual {
     editor.createColorField('color-min', 'Minimum Color', this.attributes.minColor, (e) => {
       const value = $(e.currentTarget).val();
       this.attributes.minColor = value;
-      this.drawChloropleth();
+      this.drawChoropleth();
     });
 
     editor.createColorField('color-max', 'Maximum Color', this.attributes.maxColor, (e) => {
       const value = $(e.currentTarget).val();
       this.attributes.maxColor = value;
-      this.drawChloropleth();
+      this.drawChoropleth();
     });
   }
 }
 
-export default ChloroplethMap;
+export default ChoroplethMap;

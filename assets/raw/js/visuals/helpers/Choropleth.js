@@ -1,6 +1,6 @@
 import BoundarySelector from './BoundarySelector';
 
-class Chloropleth {
+class Choropleth {
   constructor(colorBy, boundaries, dataPoints, minColor, maxColor) {
     this.colorBy = colorBy;
     this.boundaries = boundaries;
@@ -8,8 +8,7 @@ class Chloropleth {
     this.minColor = minColor;
     this.maxColor = maxColor;
 
-    this.boundaryObjects = this.computeChloroplethColors();
-    console.log(this.boundaryObjects);
+    this.boundaryObjects = this.computeChoroplethColors();
     this.polygons = [];
   }
 
@@ -22,7 +21,7 @@ class Chloropleth {
         (() => { opacity = 0.1; return this.minColor; })() : color;
 
       const polygon = map.addPolygon(points, color, opacity);
-      this.addPolygonHoverListener(map.map, polygon, boundary);
+      this.addPolygonHoverListener(map, polygon, boundary);
       this.polygons.push(polygon);
     });
   }
@@ -36,20 +35,20 @@ class Chloropleth {
     position.lat += 0.001;
 
     const infowindow = new google.maps.InfoWindow({
-      map,
+      map: map.map,
       position,
       content: contentString,
     });
     infowindow.close();
     google.maps.event.addListener(polygon, 'mouseover', () => {
-      infowindow.open(map);
+      infowindow.open(map.map);
     });
     google.maps.event.addListener(polygon, 'mouseout', () => {
       infowindow.close();
     });
   }
 
-  computeChloroplethColors() {
+  computeChoroplethColors() {
     let boundaryInfoObjects = [];
     this.boundaries.forEach((boundary) => {
       const info = this.getBoundaryInfo(boundary);
@@ -141,4 +140,4 @@ class Chloropleth {
     return newBoundaryObjects;
   }
 }
-export default Chloropleth;
+export default Choropleth;

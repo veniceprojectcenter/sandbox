@@ -5,12 +5,13 @@ import CategoryMap from './visuals/CategoryMap';
 import Donut from './visuals/Donut';
 import Bar from './visuals/Bar';
 import ScaledUpNumber from './visuals/ScaledUpNumber';
-import PieChartMap from './visuals/PieChartMap';
+import DonutChartMap from './visuals/DonutChartMap';
 import BubbleChart from './visuals/BubbleChart';
 import BubbleMapChart from './visuals/BubbleMapChart';
 import RouteMap from './visuals/RouteMap';
 import FilterMap from './visuals/FilterMap';
 import DataView from './visuals/DataView';
+import ChoroplethMap from './visuals/ChoroplethMap';
 
 function renderVisualFromConfig(defaultConfig, containerID) {
   let config = defaultConfig;
@@ -34,8 +35,8 @@ function renderVisualFromConfig(defaultConfig, containerID) {
     case 'Data-View':
       visual = new DataView(config, containerID);
       break;
-    case 'Pie-Chart-Map':
-      visual = new PieChartMap(config, containerID);
+    case 'Donut-Chart-Map':
+      visual = new DonutChartMap(config, containerID);
       break;
     case 'Bubble-Chart':
       visual = new BubbleChart(config, containerID);
@@ -48,6 +49,9 @@ function renderVisualFromConfig(defaultConfig, containerID) {
       break;
     case 'Route-Map':
       visual = new RouteMap(config, containerID);
+      break;
+    case 'Choropleth-Map':
+      visual = new ChoroplethMap(config, containerID);
       break;
     default:
       document.getElementById(containerID).innerHTML = `<p>Error: could not find visualization: ${config.type}.`;

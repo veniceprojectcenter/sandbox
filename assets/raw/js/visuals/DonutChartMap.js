@@ -5,7 +5,7 @@ import DivOverlay from './helpers/DivOverlay';
 import Donut from './Donut';
 import DefaultMapStyle from './helpers/DefaultMapStyle';
 
-class PieChartMap extends Visual {
+class DonutChartMap extends Visual {
   constructor(config, renderID, renderControlsID) {
     super(config, renderID, renderControlsID);
 
@@ -183,4 +183,4 @@ class PieChartMap extends Visual {
   }
 }
 
-export default PieChartMap;
+export default DonutChartMap;
