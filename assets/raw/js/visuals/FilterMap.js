@@ -26,6 +26,10 @@ class FilterMap extends Visual {
     this.applyDefaultAttributes({
       title: '',
       mapStyles: DefaultMapStyle,
+      colors: [],
+      shapes: [],
+      images: [],
+      areaSelections: [],
     });
   }
 
@@ -127,10 +131,6 @@ class FilterMap extends Visual {
   }
 
   renderControls() {
-    this.attributes.colors = [];
-    this.attributes.shapes = [];
-    this.attributes.images = [];
-    this.attributes.areaSelections = [];
     this.renderControlsDiv = document.getElementById(this.renderControlsID);
 
     const editor = new EditorGenerator(this.renderControlsDiv);

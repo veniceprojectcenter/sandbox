@@ -11,11 +11,11 @@ class ScaledUpNumber extends Visual {
     this.filter = new Filter(this);
     this.num = 0;
     this.applyDefaultAttributes({
-      width: 500,
-      height: 500,
-      font_size: '2em',
-      colors: [],
-      category_order: '',
+      filters: [],
+      columnOptions: null,
+      color: '#000000',
+      fontSize: 32,
+      aggs: {},
     });
   }
   /** ************************************************************************
@@ -25,14 +25,6 @@ class ScaledUpNumber extends Visual {
   *
   */
   renderControls() {
-    this.attributes.filters = [];
-    this.attributes.aggs = [];
-    this.attributes.columnOptions = null;
-    this.attributes.displayColumns = [];
-    this.attributes.dataFilters = [];
-    this.attributes.numericFilters = [];
-    this.attributes.fontSize = 32;
-    this.attributes.color = '#000000';
     this.renderData = JSON.parse(JSON.stringify(this.data));
     this.attributes.columnOptions = Object.keys(this.data[0]);
     this.renderControlsDiv = document.getElementById(this.renderControlsID);
