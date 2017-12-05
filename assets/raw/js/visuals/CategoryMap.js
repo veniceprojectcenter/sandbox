@@ -13,6 +13,7 @@ class CategoryMap extends Visual {
   onLoadData() {
     this.applyDefaultAttributes({
       title: '',
+      description: '',
       color_by: Object.keys(this.data[0])[0],
       mapStyles: DefaultMapStyle,
     });
@@ -43,20 +44,17 @@ class CategoryMap extends Visual {
   }
 
   render() {
-    const title = document.createElement('h3');
-    title.id = 'map-title';
-    title.innerText = this.attributes.title;
-
     const mapContainer = document.createElement('div');
     mapContainer.id = 'map-container';
     mapContainer.className = 'map-container';
 
     const visual = document.getElementById(this.renderID);
-    visual.appendChild(title);
     visual.appendChild(mapContainer);
 
     this.map.render(mapContainer.id, this.attributes.mapStyles);
     this.drawMarkers();
+
+    this.renderBasics();
   }
 
   renderControls() {
@@ -71,10 +69,7 @@ class CategoryMap extends Visual {
 
     editor.createHeader('Configure Map');
 
-    editor.createTextField('map-title-field', 'Map Title', (e) => {
-      this.attributes.title = $(e.currentTarget).val();
-      document.getElementById('map-title').innerText = this.attributes.title;
-    });
+    this.renderBasicControls(editor);
 
     // const columns = Object.keys(this.data[0]);
     const columns = Object.keys(this.getCategoricalData()[0]);

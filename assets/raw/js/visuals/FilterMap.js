@@ -61,13 +61,15 @@ class FilterMap extends Visual {
     this.map.render(this.renderID, this.attributes.mapStyles);
     this.applyFiltersAndRender();
     this.createVisualSliderControls();
+    this.renderBasics();
   }
 
   applyFiltersAndRender() {
-    this.map.render(this.renderID);
+    this.map.render(this.renderID, this.attributes.mapStyles);
     // document.getElementById(this.renderID).firstChild.style.height = '85%';
     // document.getElementById(this.renderID).firstChild.style.overflow = 'hidden';
     this.applyFilters();
+    this.renderBasics();
   }
 
   applyFilters() {
@@ -135,6 +137,8 @@ class FilterMap extends Visual {
 
     const editor = new EditorGenerator(this.renderControlsDiv);
     editor.createHeader('Controls');
+
+    this.renderBasicControls(editor);
 
     this.renderControlsDiv.addEventListener('newNumericFilter', (e) => {
       this.addCheckboxToFilterRow(e.target);
