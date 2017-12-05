@@ -18,7 +18,8 @@ class ChloroplethMap extends Visual {
 
     this.BOUNDARY_COLOR = '#ff3333';
 
-    this.shouldRenderCache = true; // Should localStorage polylines and data markers be rendered up front?
+    this.shouldRenderCache = true; // Should localStorage polylines and
+    // data markers be rendered up front?
   }
 
   static removeBoundaryWithPoint(point) {
@@ -85,6 +86,8 @@ class ChloroplethMap extends Visual {
     if (!this.shouldRendercache) {
       this.setBoundariesMap(null);
     }
+
+    this.drawPolygonsByColor();
   }
 
   renderLocalPolyLines() {
@@ -139,6 +142,7 @@ class ChloroplethMap extends Visual {
   }
 
   drawPolygonsByColor() {
+    console.log(`Drawing polygons by field: ${this.attributes.colorBy}`);
     if (localStorage.boundaries === undefined) {
       localStorage.boundaries = JSON.stringify([]);
     }
