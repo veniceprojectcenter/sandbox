@@ -4,8 +4,6 @@ import EditorGenerator from './EditorGenerator';
 class Filter {
   constructor(avisual) {
     this.visual = avisual;
-    this.newNumericFilterEvent = document.createEvent('Event');
-    this.newNumericFilterEvent.initEvent('newNumericFilter', true, true);
   }
   /**
   *Returns array of data where each represents the data for a single series.
@@ -48,6 +46,8 @@ class Filter {
 */
   makeFilterSeries(makeHeader, onButton, buttonText = 'Generate Map', myDiv = this.visual.renderControlsDiv) {
     const editor = new EditorGenerator(myDiv);
+    this.newNumericFilterEvent = document.createEvent('Event');
+    this.newNumericFilterEvent.initEvent('newNumericFilter', true, true);
     myDiv.innerHTML += '<ul id=\'collapseUl\'class="collapsible" data-collapsible="accordion">';
     this.ul = document.getElementById('collapseUl');
     const li = document.createElement('li');
@@ -65,6 +65,9 @@ class Filter {
 
     this.addSeriesButton(editor, makeHeader);
     this.addSubmitButton(editor, buttonText, onButton);
+    $('.collapsible').collapsible({
+      accordion: true,
+    });
   }
 /** Renders individual filter series
 *
