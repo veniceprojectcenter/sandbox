@@ -10,11 +10,8 @@ class DataView extends Visual {
 
     this.filter = new Filter(this);
     this.applyDefaultAttributes({
-      width: 500,
-      height: 500,
-      font_size: '2em',
-      colors: [],
-      category_order: '',
+      displayColumns: [],
+      filters: [],
     });
   }
   /** ************************************************************************
@@ -24,13 +21,7 @@ class DataView extends Visual {
   *
   */
   renderControls() {
-    this.attributes.columnOptions = null;
-    this.attributes.filters = [];
-    this.attributes.displayColumns = [];
-    this.attributes.dataFilters = [];
-    this.attributes.numericFilters = [];
     this.renderData = JSON.parse(JSON.stringify(this.data));
-    this.attributes.columnOptions = Object.keys(this.data[0]);
     this.renderControlsDiv = document.getElementById(this.renderControlsID);
     this.renderControlsDiv.innerHTML = '<h4 style = "text-align: center">Controls</h4> <br>';
 
@@ -60,9 +51,6 @@ class DataView extends Visual {
       this.tableDiv = document.createElement('div');
       this.renderDiv.appendChild(this.tableDiv);
       this.tableDiv.id = 'tableDiv';
-      if (this.attributes.columnOptions === null) {
-        this.columnOptions = [];
-      }
       this.displayTable();
     }
   }

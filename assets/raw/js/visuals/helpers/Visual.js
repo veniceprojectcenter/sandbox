@@ -559,7 +559,45 @@ class Visual {
     return groups;
   }
 
+  renderBasicControls(editor) {
+    editor.createTextField('title-input', 'Title', (e) => {
+      this.attributes.title = e.currentTarget.value;
+      this.renderBasics();
+    });
 
+    editor.createTextField('description-input', 'Description', (e) => {
+      this.attributes.description = e.currentTarget.value;
+      this.renderBasics();
+    });
+  }
+
+  renderBasics() {
+    const visual = document.getElementById(this.renderID);
+
+    let title = document.querySelector(`#${this.renderID} .visual-title`);
+    if (title && this.attributes.title) {
+      title.innerText = this.attributes.title;
+    } else if (!title && this.attributes.title) {
+      title = document.createElement('h3');
+      title.className = 'visual-title';
+      title.innerText = this.attributes.title;
+      visual.insertBefore(title, visual.childNodes[0]);
+    } else if (title) {
+      visual.removeChild(title);
+    }
+
+    let description = document.querySelector(`#${this.renderID} .visual-description`);
+    if (description && this.attributes.description) {
+      description.innerText = this.attributes.description;
+    } else if (!description && this.attributes.description) {
+      description = document.createElement('p');
+      description.className = 'visual-description';
+      description.innerText = this.attributes.description;
+      visual.appendChild(description);
+    } else if (description) {
+      visual.removeChild(description);
+    }
+  }
 }
 
 Visual.DEFAULT_RENDER_ID = 'visual';

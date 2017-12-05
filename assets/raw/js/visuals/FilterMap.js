@@ -26,6 +26,10 @@ class FilterMap extends Visual {
     this.applyDefaultAttributes({
       title: '',
       mapStyles: DefaultMapStyle,
+      colors: [],
+      shapes: [],
+      images: [],
+      areaSelections: [],
     });
   }
 
@@ -57,13 +61,15 @@ class FilterMap extends Visual {
     this.map.render(this.renderID, this.attributes.mapStyles);
     this.applyFiltersAndRender();
     this.createVisualSliderControls();
+    this.renderBasics();
   }
 
   applyFiltersAndRender() {
-    this.map.render(this.renderID);
+    this.map.render(this.renderID, this.attributes.mapStyles);
     // document.getElementById(this.renderID).firstChild.style.height = '85%';
     // document.getElementById(this.renderID).firstChild.style.overflow = 'hidden';
     this.applyFilters();
+    this.renderBasics();
   }
 
   applyFilters() {
@@ -125,14 +131,12 @@ class FilterMap extends Visual {
   }
 
   renderControls() {
-    this.attributes.colors = [];
-    this.attributes.shapes = [];
-    this.attributes.images = [];
-    this.attributes.areaSelections = [];
     this.renderControlsDiv = document.getElementById(this.renderControlsID);
 
     const editor = new EditorGenerator(this.renderControlsDiv);
     editor.createHeader('Controls');
+
+    this.renderBasicControls(editor);
 
     this.renderControlsDiv.addEventListener('newNumericFilter', (e) => {
       this.addCheckboxToFilterRow(e.target);
@@ -183,13 +187,10 @@ class FilterMap extends Visual {
 
   filterMapHeader(headEditor, index) {
     const shapes = [{ value: 'circle', text: 'Circle' }, { value: 'triangle', text: 'Triangle' }, { value: 'custom', text: 'Custom Image' }];
-    let text = 'NA';
-    for (let i = 0; i < this.allSets.length; i += 1) {
-      if (this.allSets[i].value === this.dataSet) {
-        text = this.allSets[i].text;
-      }
-    }
-    headEditor.createSelectBox(`dataSet${index}`, 'Data Set', this.allSets, 'na', (e) => { this.replaceFilter(e.currentTarget); }, this.dataSet, text);
+
+    headEditor.createSelectBox(`dataSet${index}`, 'Data Set', this.allSets, 'na', (e) => { this.replaceFilter(e.currentTarget); });
+    $('#dataSet0-select').val(this.dataSet);
+    $('#dataSet0-select').material_select();
     headEditor.createSelectBox(`shape${index}`, 'Shape', shapes, 'na', (e) => {
       e.currentTarget.parentNode.parentNode.parentNode.children[2].remove();
       if (e.currentTarget.parentNode.parentNode.parentNode.children[2]) {
