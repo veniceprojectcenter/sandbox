@@ -17,9 +17,11 @@ class Chloropleth {
     this.boundaryObjects.forEach((boundary) => {
       const points = boundary.boundary;
       let color = boundary.color;
-      color = color === null ? 'black' : color;
+      let opacity = 1;
+      color = (color === null) ?
+        (() => { opacity = 0.1; return this.minColor; })() : color;
 
-      const polygon = map.addPolygon(points, color);
+      const polygon = map.addPolygon(points, color, opacity);
       this.polygons.push(polygon);
     });
   }
