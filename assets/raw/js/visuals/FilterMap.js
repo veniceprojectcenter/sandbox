@@ -90,7 +90,7 @@ class FilterMap extends Visual {
                 }
               });
             }
-            this.filter.getFilteredDatum(i, filter, dataSet);
+            this.filter.getFilteredDatum(i, filters[i], dataSet);
             this.renderPoints(this.renderData[i],
               this.attributes.colors[i], this.attributes.shapes[i],
             this.attributes.images[i]);
@@ -103,29 +103,35 @@ class FilterMap extends Visual {
     const div = document.createElement('div');
     const visual = document.getElementById(this.renderID);
     let thereAreSliders = false;
-    const editor = new EditorGenerator(div);
     Object.keys(this.attributes.sliders).forEach((outerElem, outerIndex) => {
       Object.keys(this.attributes.sliders[outerElem].attributes).forEach((innerElem, innerIndex) => {
         thereAreSliders = true;
-        editor.createNumberSlider(`slider-${outerIndex}-${innerIndex}`,
-          `${this.attributes.sliders[outerElem].name} ${innerElem}`,
-          this.attributes.sliders[outerElem].attributes[innerElem].value,
-          this.attributes.sliders[outerElem].attributes[innerElem].lowerBound,
-          this.attributes.sliders[outerElem].attributes[innerElem].upperBound,
-          this.attributes.sliders[outerElem].attributes[innerElem].stepSize,
-          (t) => {
-            const value = $(t.currentTarget).val();
-            this.attributes.sliders[outerElem].attributes[innerElem].value = `${value}`;
-            this.map.clearCircles();
-            this.applyFilters();
-          });
+        const id = `slider-${outerIndex}-${innerIndex}`;
+        const title = `${this.attributes.sliders[outerElem].name} ${innerElem}`;
+        const min = this.attributes.sliders[outerElem].attributes[innerElem].lowerBound;
+        const max = this.attributes.sliders[outerElem].attributes[innerElem].upperBound;
+        const step = this.attributes.sliders[outerElem].attributes[innerElem].stepSize;
+        const current = this.attributes.sliders[outerElem].attributes[innerElem].value;
+        div.innerHTML = `
+          <label for="${id}-field">${title}</label>
+          <form action="#" id="${id}">
+            <p class="range-field">
+              <input type="range" id="${id}-field" min="${min}" max="${max}" step="${step}" value="${current}"/>
+            </p>
+          </form>
+        `;
+        $(div).find(`#${id}-field`).on('input', (t) => {
+          const value = $(t.currentTarget).val();
+          this.attributes.sliders[outerElem].attributes[innerElem].value = `${value}`;
+          this.map.clearCircles();
+          this.applyFilters();
+        });
       });
     });
 
     if (thereAreSliders) {
-      document.getElementById(this.renderID).firstChild.style.height = '85%';
       document.getElementById(this.renderID).firstChild.style.overflow = 'hidden';
-      div.style = 'position: relative; height: 12%; top: 85%; z-index: 2';
+      div.style = 'position: relative; height: 12%;  z-index: 2';
       visual.insertBefore(div, null);
     }
   }
@@ -146,10 +152,12 @@ class FilterMap extends Visual {
       const sliders = {};
 
       $(this.filter.ul).children('li').each(function (datasetIndex) {
-        const datasetSelect = $(this).find('div.collapsible-header div[id^=dataSet]').find('li.selected span')[0];
-        if (datasetSelect !== undefined) {
+        const datasetSelect = $(this).find('div.collapsible-header div[id^=dataSet]').find('select');
+        const datasetName = datasetSelect.find(`option[value=${datasetSelect.val()}]`)[0].innerText;
+
+        if (datasetName !== undefined) {
           sliders[datasetIndex] = {
-            name: datasetSelect.innerText,
+            name: datasetName,
             attributes: {},
           };
           $(this).find('div[id$=numFilterList] div.row').each(function () {
@@ -258,7 +266,7 @@ class FilterMap extends Visual {
       loader.remove();
       this.filter.renderFilter(tempDiv, e);
       this.dataSets[$(target).val()] = e;
-      this.map.render(this.renderID, this.attributes.mapStyles);
+      this.render();
       $(tempDiv).find('div[id$=numFilterList] div.row')[0].dispatchEvent(this.filter.newNumericFilterEvent);
     });
   }

@@ -1,0 +1,9 @@
+// Some code in visuals/_map.scss as well. This is sandbox only styling
+
+.map-container {
+  height: calc(100vh - 150px);
+  margin-left: auto;
+  margin-right: auto;
+  max-height: 640px;
+  max-width: 640px;
+}
