@@ -47,16 +47,25 @@ class BubbleMapChart extends Visual {
     return temp;
   }
 
+  // returns all values within a column of an array
+  static getVals(arr, col) {
+    const temp = [];
+    arr.forEach((x) => {
+      if (!isNaN(x[col]) && x[col] !== '') {
+        temp.push(x[col]);
+      }
+    });
+    return temp;
+  }
+
   drawMarkers() {
     const numData = this.getNumericData();
-    const sgroups = Visual.groupBy(this.attributes.size_by, numData);
-    const cgroups = Visual.groupBy(this.attributes.color_by, numData);
-    let values = Object.keys(sgroups);
-    values = this.constructor.filterNaN(values);
-    let cvalues = Object.keys(cgroups);
-    cvalues = this.constructor.filterNaN(cvalues);
-    const sMin = Math.min(...values);
-    const sMax = Math.max(...values);
+    const groups = Visual.groupBy(this.attributes.size_by, numData);
+    const values = Object.keys(groups);
+    const svalues = this.constructor.getVals(numData, this.attributes.size_by);
+    const cvalues = this.constructor.getVals(numData, this.attributes.color_by);
+    const sMin = Math.min(...svalues);
+    const sMax = Math.max(...svalues);
     const cMin = Math.min(...cvalues);
     const cMax = Math.max(...cvalues);
     const cMid = (cMax + cMin) / 2;
@@ -67,22 +76,20 @@ class BubbleMapChart extends Visual {
     const srange = this.attributes.bubble_size.range;
     const getR = d3.scaleLinear().domain([sMin, sMax]).range([srange[0], srange[1]]);
     for (let i = 0; i < values.length; i += 1) {
-      const cval = cvalues[i];
-      const color = getC(cval);
       const sval = values[i];
       const radius = getR(sval);
-      const group = sgroups[sval];
+      const group = groups[sval];
       group.forEach((point) => {
+        const cval = point[this.attributes.color_by];
+        const color = getC(cval);
         const lat = parseFloat(point.lat);
         const lng = parseFloat(point.lng);
         // const selected = this.attributes.infoCols;
         // let content = '<div id="content">';
         // for (let j = 0; j < selected.length; j += 1) {
-        //   const igroups = Visual.groupBy(selected, numData);
-        //   let ivalues = Object.keys(igroups);
-        //   ivalues = this.constructor.filterNaN(ivalues);
-        //   const ival = values[j];
-        //   // content += `<p>${selected[j]}: ${ival}</p>`;
+        //   const ivalues = this.constructor.getVals(numData, selected);
+        //   const ival = ivalues[j];
+        //   content += `<p>${selected[j]}: ${ival}</p>`;
         // }
         // content += '</div>';
         // console.log(content);
