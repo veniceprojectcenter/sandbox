@@ -16,7 +16,6 @@ class FilterMap extends Visual {
     this.renderData = [];
     this.dataSets = [];
     Data.fetchDataSets((e) => { this.getAllDataSets(e); });
-    this.attributes.sliders = {};
     this.generateMapEvent = document.createEvent('Event');
     this.generateMapEvent.initEvent('generateMap', true, true);
   }
@@ -30,6 +29,7 @@ class FilterMap extends Visual {
       images: [],
       areaSelections: [],
       filters: [],
+      sliders: {},
     });
   }
 

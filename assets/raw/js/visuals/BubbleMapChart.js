@@ -71,11 +71,10 @@ class BubbleMapChart extends Visual {
       const color = getC(cval);
       const sval = values[i];
       const radius = getR(sval);
-      const point = sgroups[sval][0];
-      // const group = sgroups[sval];
-      // group.forEach((point) => {
-      const lat = parseFloat(point.lat);
-      const lng = parseFloat(point.lng);
+      const group = sgroups[sval];
+      group.forEach((point) => {
+        const lat = parseFloat(point.lat);
+        const lng = parseFloat(point.lng);
         // const selected = this.attributes.infoCols;
         // let content = '<div id="content">';
         // for (let j = 0; j < selected.length; j += 1) {
@@ -91,9 +90,9 @@ class BubbleMapChart extends Visual {
       //   //       '<p>'}${this.attributes.size_by}: ${sval}</p>` +
       //   //       `<p>${this.attributes.color_by}: ${cval}</p>` +
       //   //       '</div>';
-      const circle = this.map.addCircle({ lat, lng }, color, 0.5, parseFloat(radius));
+        const circle = this.map.addCircle({ lat, lng }, color, 0.5, parseFloat(radius));
         // this.map.addInfoBox(content, circle, { lat, lng });
-      // });
+      });
     }
   }
 

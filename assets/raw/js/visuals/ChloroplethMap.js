@@ -45,6 +45,8 @@ class ChloroplethMap extends Visual {
       description: '',
       mapStyles: DefaultMapStyle,
       colorBy: Object.keys(this.data[0])[0],
+      minColor: '#aaffaa',
+      maxColor: '#00ca00',
     });
 
     if (this.constructor.localStorageIsEmptyOrNulls()) {
@@ -158,8 +160,10 @@ class ChloroplethMap extends Visual {
     }
     const boundaries = JSON.parse(localStorage.boundaries);
 
-    const chloropleth = new Chloropleth(this.attributes.colorBy, boundaries, this.data);
-    // chloropleth.draw(this.map);
+    Map.clear(this.map.polygons);
+    const chloropleth = new Chloropleth(this.attributes.colorBy, boundaries,
+      this.data, this.attributes.minColor, this.attributes.maxColor);
+    chloropleth.draw(this.map);
   }
 
   renderControls() {
@@ -179,6 +183,8 @@ class ChloroplethMap extends Visual {
     this.createSelectButton(editor);
     this.createHideBoundsBox(editor);
     this.createColumnSelector(editor);
+
+    this.renderColorControls(editor);
 
     this.map.renderMapColorControls(editor, this.attributes, (color) => {
       this.attributes.mapStyles[0].stylers[0].color = color;
@@ -219,6 +225,23 @@ class ChloroplethMap extends Visual {
         this.drawAndAddBoundary(points);
         this.addPointsWithinBoundary(this.data, points);
       });
+    });
+  }
+
+  renderColorControls(editor) {
+    editor.createSpacer();
+    editor.createSubHeader('Polygon Color Range');
+
+    editor.createColorField('color-min', 'Minimum Color', this.attributes.minColor, (e) => {
+      const value = $(e.currentTarget).val();
+      this.attributes.minColor = value;
+      this.drawChloropleth();
+    });
+
+    editor.createColorField('color-max', 'Maximum Color', this.attributes.maxColor, (e) => {
+      const value = $(e.currentTarget).val();
+      this.attributes.maxColor = value;
+      this.drawChloropleth();
     });
   }
 }
