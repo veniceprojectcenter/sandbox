@@ -49,12 +49,13 @@ class Data {
       }
 
       await Promise.all(promises);
-      localStorage[`${dataSet}-date`] = new Date().toString();
       try {
+        localStorage[`${dataSet}-date`] = new Date().toString();
         localStorage[dataSet] = JSON.stringify(data);
       } catch (e) {
         console.error(e, 'Clearing local storage and trying again');
         localStorage.clear(); // Really should find a better solution
+        localStorage[`${dataSet}-date`] = new Date().toString();
         localStorage[dataSet] = JSON.stringify(data);
       }
 

@@ -62,8 +62,8 @@ class Donut extends Visual {
     });
 
     const cats = [];
-    let catsRaw = Object.keys(this.getCategoricalData()[0]);
-    catsRaw = catsRaw.concat(Object.keys(this.getNumericData()[0]));
+    let catsRaw = Object.keys(this.getCategoricalData(30)[0]);
+    catsRaw = catsRaw.concat(Object.keys(this.getNumericData(2)[0]));
     for (let i = 0; i < catsRaw.length; i += 1) {
       cats.push({ value: catsRaw[i], text: catsRaw[i] });
     }

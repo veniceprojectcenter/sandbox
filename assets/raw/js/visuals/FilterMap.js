@@ -61,8 +61,8 @@ class FilterMap extends Visual {
 
   applyFiltersAndRender() {
     this.map.render(this.renderID);
-    document.getElementById(this.renderID).firstChild.style.height = '85%';
-    document.getElementById(this.renderID).firstChild.style.overflow = 'hidden';
+    //document.getElementById(this.renderID).firstChild.style.height = '85%';
+    //document.getElementById(this.renderID).firstChild.style.overflow = 'hidden';
     this.applyFilters();
   }
 
@@ -76,6 +76,7 @@ class FilterMap extends Visual {
           && filter.numeric !== undefined && filter.dataSet !== null) {
         dataSets[i] = Data.fetchData(filter.dataSet,
           (dataSet) => {
+            console.log(this.attributes.sliders);
             if (this.attributes.sliders[i] !== undefined) {
               Object.keys(this.attributes.sliders[i].attributes).forEach((e) => {
                 const filterToChange = filter.numeric.findIndex(a => e === a.column);
@@ -95,15 +96,16 @@ class FilterMap extends Visual {
 
   createVisualSliderControls() {
     const div = document.createElement('div');
-    const visual = document.getElementById('visual');
-    visual.insertBefore(div, null);
-    div.style = 'position: relative; height: 12%; top: 85%; z-index: 2';
+    const visual = document.getElementById(this.renderID);
+    let thereAreSliders = false;
 
     const editor = new EditorGenerator(div);
     Object.keys(this.attributes.sliders).forEach((outerElem, outerIndex) => {
       Object.keys(this.attributes.sliders[outerElem].attributes).forEach((innerElem, innerIndex) => {
+        thereAreSliders = true;
         editor.createNumberSlider(`slider-${outerIndex}-${innerIndex}`,
-          `${this.attributes.sliders[outerElem].name} ${innerElem}`, this.attributes.sliders[outerElem].attributes[innerElem].value,
+          `${this.attributes.sliders[outerElem].name} ${innerElem}`,
+          this.attributes.sliders[outerElem].attributes[innerElem].value,
           this.attributes.sliders[outerElem].attributes[innerElem].lowerBound,
           this.attributes.sliders[outerElem].attributes[innerElem].upperBound,
           this.attributes.sliders[outerElem].attributes[innerElem].stepSize,
@@ -112,11 +114,16 @@ class FilterMap extends Visual {
             this.attributes.sliders[outerElem].attributes[innerElem].value = `${value}`;
             this.map.clearCircles();
             this.applyFilters();
-            document.getElementById(this.renderID).firstChild.style.height = '85%';
-            document.getElementById(this.renderID).firstChild.style.overflow = 'hidden';
           });
       });
     });
+
+    if (thereAreSliders) {
+      document.getElementById(this.renderID).firstChild.style.height = '85%';
+      document.getElementById(this.renderID).firstChild.style.overflow = 'hidden';
+      div.style = 'position: relative; height: 12%; top: 85%; z-index: 2';
+      visual.insertBefore(div, null);
+    }
   }
 
   renderControls() {
@@ -145,12 +152,12 @@ class FilterMap extends Visual {
           $(this).find('div[id$=numFilterList] div.row').each(function () {
             const columnSelect = $(this).find('div[id$=1]').find('li.selected span')[0];
             if (columnSelect !== undefined) {
-              if ($(this).find('div[id$=6] :checkbox:checked').length !== 0) {
+              if ($(this).find('div[id$=5] :checkbox:checked').length !== 0) {
                 sliders[datasetIndex].attributes[columnSelect.innerText] = {
-                  value: $(this).find('div[id$=3]')[0].children[0].value,
-                  lowerBound: $(this).find('div[id$=3]')[0].children[0].value,
-                  stepSize: $(this).find('div[id$=4]')[0].children[0].value,
-                  upperBound: $(this).find('div[id$=5]')[0].children[0].value,
+                  value: $(this).find('div[id$=6]')[0].children[0].value,
+                  lowerBound: $(this).find('div[id$=6]')[0].children[0].value,
+                  stepSize: $(this).find('div[id$=7]')[0].children[0].value,
+                  upperBound: $(this).find('div[id$=8]')[0].children[0].value,
                 };
               }
             }
@@ -177,10 +184,13 @@ class FilterMap extends Visual {
 
   filterMapHeader(headEditor, index) {
     const shapes = [{ value: 'circle', text: 'Circle' }, { value: 'triangle', text: 'Triangle' }, { value: 'custom', text: 'Custom Image' }];
-    headEditor.createSelectBox(`dataSet${index}`, 'Data Set', this.allSets, 'na', (e) => { this.replaceFilter(e.currentTarget); });
-    $(`ul#collapseUl li div.collapsible-header div#dataSet${index}`).change((evt) => {
-      $(evt.target).closest('li').find('div[id$=numFilterList] div.row')[0].dispatchEvent(this.filter.newNumericFilterEvent);
-    });
+    let text = 'NA';
+    for (let i = 0; i < this.allSets.length; i += 1) {
+      if (this.allSets[i].value === this.dataSet) {
+        text = this.allSets[i].text;
+      }
+    }
+    headEditor.createSelectBox(`dataSet${index}`, 'Data Set', this.allSets, 'na', (e) => { this.replaceFilter(e.currentTarget); }, this.dataSet, text);
     headEditor.createSelectBox(`shape${index}`, 'Shape', shapes, 'na', (e) => {
       e.currentTarget.parentNode.parentNode.parentNode.children[2].remove();
       if (e.currentTarget.parentNode.parentNode.parentNode.children[2]) {
@@ -249,6 +259,7 @@ class FilterMap extends Visual {
       this.filter.renderFilter(tempDiv, e);
       this.dataSets[$(target).val()] = e;
       this.map.render(this.renderID, this.attributes.mapStyles);
+      $(tempDiv).find('div[id$=numFilterList] div.row')[0].dispatchEvent(this.filter.newNumericFilterEvent);
     });
   }
 
