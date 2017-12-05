@@ -93,10 +93,8 @@ class Visual {
       const password = passwordInput.value;
       Firebase.login(email, password, () => {
         $('#login-modal').modal('close');
-        console.log('Successful login');
       }, () => {
         loginButton.classList.remove('disabled');
-        console.log('Unable to login');
       });
     });
 
@@ -133,23 +131,24 @@ class Visual {
     let isStateChangeRegistered = false;
     let isAuthenticated = false;
     publishButton.addEventListener('click', async () => {
-      if (!isStateChangeRegistered) {
-        isStateChangeRegistered = true;
-        firebase.auth().onAuthStateChanged((user) => {
-          if (user) {
-            isAuthenticated = true;
-            this.publishConfig();
-            console.log('Publishing');
-          } else {
-            $('#login-modal').modal('open');
-            console.log('Not logged in so opening');
-          }
-        });
-      } else if (isAuthenticated) {
-        this.publishConfig();
+      if (this.attributes.title) {
+        if (!isStateChangeRegistered) {
+          isStateChangeRegistered = true;
+          firebase.auth().onAuthStateChanged((user) => {
+            if (user) {
+              isAuthenticated = true;
+              this.publishConfig();
+            } else {
+              $('#login-modal').modal('open');
+            }
+          });
+        } else if (isAuthenticated) {
+          this.publishConfig();
+        } else {
+          $('#login-modal').modal('open');
+        }
       } else {
-        $('#login-modal').modal('open');
-        console.log('Opening after been clicked once');
+        Materialize.toast('A title is required to publish a visual', 3000);
       }
     });
 
