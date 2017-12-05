@@ -1,13 +1,29 @@
 import BoundarySelector from './BoundarySelector';
 
 class Chloropleth {
-  constructor(colorBy, boundaries, dataPoints) {
+  constructor(colorBy, boundaries, dataPoints, minColor, maxColor) {
     this.colorBy = colorBy;
     this.boundaries = boundaries;
     this.dataPoints = dataPoints;
+    this.minColor = minColor;
+    this.maxColor = maxColor;
 
     this.boundaryObjects = this.computeChloroplethColors();
     console.log(this.boundaryObjects);
+    this.polygons = [];
+  }
+
+  draw(map) {
+    this.boundaryObjects.forEach((boundary) => {
+      const points = boundary.boundary;
+      let color = boundary.color;
+      let opacity = 1;
+      color = (color === null) ?
+        (() => { opacity = 0.1; return this.minColor; })() : color;
+
+      const polygon = map.addPolygon(points, color, opacity);
+      this.polygons.push(polygon);
+    });
   }
 
   computeChloroplethColors() {
@@ -19,7 +35,7 @@ class Chloropleth {
 
     const minMax = this.constructor.getBoundaryAveragesMinMax(boundaryInfoObjects);
 
-    boundaryInfoObjects = this.constructor.computeBoundaryColors(
+    boundaryInfoObjects = this.computeBoundaryColors(
       minMax, boundaryInfoObjects);
 
     return boundaryInfoObjects;
@@ -35,26 +51,30 @@ class Chloropleth {
     const info = { boundary };
     const selector = new BoundarySelector(null);
     const pointsWithinBoundary = selector.getPointsInBoundary(this.dataPoints, boundary);
+    info.points = pointsWithinBoundary;
 
-    const average = this.constructor.getAverageOfField(pointsWithinBoundary,
+    const result = this.constructor.getAverageOfField(pointsWithinBoundary,
         this.colorBy);
-    info.average = average;
+    info.average = result.average;
+    info.values = result.values;
     return [info];
   }
 
   static getAverageOfField(points, field) {
     let sum = 0;
     let num = 0;
+    const values = [];
     points.forEach((point) => {
       const value = parseFloat(point[field]);
       if (value !== null && !isNaN(value)) {
         sum += value;
         num += 1;
       }
+      values.push(value);
     });
 
     const average = (num === 0) ? null : sum / num;
-    return average;
+    return { average, values };
   }
 
   static getBoundaryAveragesMinMax(infoObjects) {
@@ -79,11 +99,20 @@ class Chloropleth {
     return { min, max };
   }
 
-  static computeBoundaryColors(minMax, boundaryObjects) {
+  computeBoundaryColors(minMax, boundaryObjects) {
+    const getColor = d3.scaleLinear()
+      .domain([minMax.min, minMax.max])
+      .range([this.minColor, this.maxColor]);
+
     const newBoundaryObjects = [];
     for (let i = 0; i < boundaryObjects.length; i += 1) {
       const boundaryObject = boundaryObjects[i];
-      boundaryObject.color = 'red';
+      const value = boundaryObject.average;
+      if (value !== null) {
+        boundaryObject.color = getColor(boundaryObject.average);
+      } else {
+        boundaryObject.color = null;
+      }
       newBoundaryObjects.push(boundaryObject);
     }
     return newBoundaryObjects;
