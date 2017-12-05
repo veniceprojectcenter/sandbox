@@ -86,12 +86,12 @@ class BubbleMapChart extends Visual {
         // }
         // content += '</div>';
         // console.log(content);
-      //   // const content = `${'<div id="content">' +
-      //   //       '<p>'}${this.attributes.size_by}: ${sval}</p>` +
-      //   //       `<p>${this.attributes.color_by}: ${cval}</p>` +
-      //   //       '</div>';
+        const content = `${'<div id="content">' +
+              '<p>'}${this.attributes.size_by}: ${sval}</p>` +
+              `<p>${this.attributes.color_by}: ${cval}</p>` +
+              '</div>';
         const circle = this.map.addCircle({ lat, lng }, color, 0.5, parseFloat(radius));
-        // this.map.addInfoBox(content, circle, { lat, lng });
+        this.map.addInfoBox(content, circle, { lat, lng });
       });
     }
   }
