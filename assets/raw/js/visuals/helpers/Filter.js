@@ -88,7 +88,7 @@ class Filter {
 
     const ccats = [];
     const ncats = [];
-    const catData = Object.keys(this.visual.getCategoricalData(25, data)[0]);
+    const catData = Object.keys(this.visual.getCategoricalData(100, data)[0]);
     const numData = Object.keys(this.visual.getNumericData(2, data)[0]);
 
     for (let i = 0; i < catData.length; i += 1) {
