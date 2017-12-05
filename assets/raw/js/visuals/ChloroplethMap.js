@@ -151,9 +151,10 @@ class ChloroplethMap extends Visual {
     }
     const boundaries = JSON.parse(localStorage.boundaries);
 
+    Map.clear(this.map.polygons);
     const chloropleth = new Chloropleth(this.attributes.colorBy, boundaries,
       this.data, this.attributes.minColor, this.attributes.maxColor);
-    // chloropleth.draw(this.map);
+    chloropleth.draw(this.map);
   }
 
   renderControls() {

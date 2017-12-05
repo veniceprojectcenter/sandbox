@@ -10,6 +10,18 @@ class Chloropleth {
 
     this.boundaryObjects = this.computeChloroplethColors();
     console.log(this.boundaryObjects);
+    this.polygons = [];
+  }
+
+  draw(map) {
+    this.boundaryObjects.forEach((boundary) => {
+      const points = boundary.boundary;
+      let color = boundary.color;
+      color = color === null ? 'black' : color;
+
+      const polygon = map.addPolygon(points, color);
+      this.polygons.push(polygon);
+    });
   }
 
   computeChloroplethColors() {
@@ -37,26 +49,30 @@ class Chloropleth {
     const info = { boundary };
     const selector = new BoundarySelector(null);
     const pointsWithinBoundary = selector.getPointsInBoundary(this.dataPoints, boundary);
+    info.points = pointsWithinBoundary;
 
-    const average = this.constructor.getAverageOfField(pointsWithinBoundary,
+    const result = this.constructor.getAverageOfField(pointsWithinBoundary,
         this.colorBy);
-    info.average = average;
+    info.average = result.average;
+    info.values = result.values;
     return [info];
   }
 
   static getAverageOfField(points, field) {
     let sum = 0;
     let num = 0;
+    const values = [];
     points.forEach((point) => {
       const value = parseFloat(point[field]);
       if (value !== null && !isNaN(value)) {
         sum += value;
         num += 1;
       }
+      values.push(value);
     });
 
     const average = (num === 0) ? null : sum / num;
-    return average;
+    return { average, values };
   }
 
   static getBoundaryAveragesMinMax(infoObjects) {
