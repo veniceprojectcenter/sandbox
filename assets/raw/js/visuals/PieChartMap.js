@@ -19,11 +19,20 @@ class PieChartMap extends Visual {
       group_column: columnNames[52],
       chart_column: columnNames[76],
       mapStyles: DefaultMapStyle,
+      title: '',
+      description: '',
     });
   }
 
   render() {
-    this.map.render(this.renderID, this.attributes.mapStyles);
+    const mapContainer = document.createElement('div');
+    mapContainer.id = 'map-container';
+    mapContainer.className = 'map-container';
+
+    const visual = document.getElementById(this.renderID);
+    visual.appendChild(mapContainer);
+
+    this.map.render(mapContainer.id, this.attributes.mapStyles);
 
     const groupColumn = this.attributes.group_column;
     const chartColumn = this.attributes.chart_column;
@@ -38,6 +47,8 @@ class PieChartMap extends Visual {
       const group = groups[groupName];
       this.renderChart(groupName, group, chartColumn);
     }
+
+    this.renderBasics();
   }
 
   renderChart(groupName, group, chartColumn) {
@@ -150,6 +161,8 @@ class PieChartMap extends Visual {
     const categories = this.getCategoryNameObjects();
 
     editor.createHeader('Editor');
+    this.renderBasicControls(editor);
+
     editor.createSelectBox('group-column', 'Select column to group by',
       categories, this.attributes.group_column, (e) => {
         const value = $(e.currentTarget).val();

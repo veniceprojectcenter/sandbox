@@ -42,6 +42,7 @@ class ChloroplethMap extends Visual {
   onLoadData() {
     this.applyDefaultAttributes({
       title: '',
+      description: '',
       mapStyles: DefaultMapStyle,
       colorBy: Object.keys(this.data[0])[0],
       minColor: '#aaffaa',
@@ -78,8 +79,16 @@ class ChloroplethMap extends Visual {
   render() {
     Visual.empty(this.renderID);
 
-    this.map.render(this.renderID, this.attributes.mapStyles);
+    const mapContainer = document.createElement('div');
+    mapContainer.id = 'map-container';
+    mapContainer.className = 'map-container';
+
+    const visual = document.getElementById(this.renderID);
+    visual.appendChild(mapContainer);
+
+    this.map.render(mapContainer.id, this.attributes.mapStyles);
     this.renderCache();
+    this.renderBasics();
   }
 
   renderCache() {
@@ -169,6 +178,8 @@ class ChloroplethMap extends Visual {
     const editor = new EditorGenerator(controlsContainer);
 
     editor.createHeader('Editor');
+
+    this.renderBasicControls(editor);
     this.createSelectButton(editor);
     this.createHideBoundsBox(editor);
     this.createColumnSelector(editor);

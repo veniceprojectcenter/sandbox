@@ -12,11 +12,18 @@ class BubbleMapChart extends Visual {
   }
 
   onLoadData() {
+    let defaultCat;
+    if (this.data.length > 0) {
+      const cats = Object.keys(this.getNumericData()[0]);
+      if (cats.length > 1) {
+        defaultCat = cats[1];
+      }
+    }
     this.applyDefaultAttributes({
       title: '',
-      description: '',
-      size_by: Object.keys(this.getNumericData()[0])[0],
-      color_by: Object.keys(this.getNumericData()[0])[0],
+      infoCols: [], // selected columns for infowindow
+      size_by: defaultCat,
+      color_by: defaultCat,
       bubble_size: {
         range: [1, 100],
       },
@@ -41,8 +48,9 @@ class BubbleMapChart extends Visual {
   }
 
   drawMarkers() {
-    const sgroups = Visual.groupBy(this.attributes.size_by, this.getNumericData());
-    const cgroups = Visual.groupBy(this.attributes.color_by, this.getNumericData());
+    const numData = this.getNumericData();
+    const sgroups = Visual.groupBy(this.attributes.size_by, numData);
+    const cgroups = Visual.groupBy(this.attributes.color_by, numData);
     let values = Object.keys(sgroups);
     values = this.constructor.filterNaN(values);
     let cvalues = Object.keys(cgroups);
@@ -52,29 +60,38 @@ class BubbleMapChart extends Visual {
     const cMin = Math.min(...cvalues);
     const cMax = Math.max(...cvalues);
     const cMid = (cMax + cMin) / 2;
+    const crange = this.attributes.color.range;
+    const getC = d3.scaleLinear()
+      .domain([cMin, cMid, cMax])
+      .range([crange[0], crange[1], crange[2]]);
+    const srange = this.attributes.bubble_size.range;
+    const getR = d3.scaleLinear().domain([sMin, sMax]).range([srange[0], srange[1]]);
     for (let i = 0; i < values.length; i += 1) {
       const cval = cvalues[i];
-      const crange = this.attributes.color.range;
-      // const getC = d3.scaleLinear().domain([cMin, cMax]).range([crange[0], crange[1]]);
-      const getC = d3.scaleLinear()
-        .domain([cMin, cMid, cMax])
-        .range([crange[0], crange[1], crange[2]]);
       const color = getC(cval);
       const sval = values[i];
-      const group = sgroups[sval];
-      const srange = this.attributes.bubble_size.range;
-      const getR = d3.scaleLinear().domain([sMin, sMax]).range([srange[0], srange[1]]);
       const radius = getR(sval);
-      // console.log(cval, sval);
+      const group = sgroups[sval];
       group.forEach((point) => {
         const lat = parseFloat(point.lat);
         const lng = parseFloat(point.lng);
-        const content = `${'<div id="content">' +
-              '<p>'}${this.attributes.size_by}: ${sval}</p>` +
-              `<p>${this.attributes.color_by}: ${cval}</p>` +
-              '</div>';
+        // const selected = this.attributes.infoCols;
+        // let content = '<div id="content">';
+        // for (let j = 0; j < selected.length; j += 1) {
+        //   const igroups = Visual.groupBy(selected, numData);
+        //   let ivalues = Object.keys(igroups);
+        //   ivalues = this.constructor.filterNaN(ivalues);
+        //   const ival = values[j];
+        //   // content += `<p>${selected[j]}: ${ival}</p>`;
+        // }
+        // content += '</div>';
+        // console.log(content);
+      //   // const content = `${'<div id="content">' +
+      //   //       '<p>'}${this.attributes.size_by}: ${sval}</p>` +
+      //   //       `<p>${this.attributes.color_by}: ${cval}</p>` +
+      //   //       '</div>';
         const circle = this.map.addCircle({ lat, lng }, color, 0.5, parseFloat(radius));
-        this.map.addInfoBox(content, circle, { lat, lng });
+        // this.map.addInfoBox(content, circle, { lat, lng });
       });
     }
   }
@@ -86,14 +103,15 @@ class BubbleMapChart extends Visual {
 
     const visual = document.getElementById(this.renderID);
     visual.appendChild(mapContainer);
-    this.renderBasics();
 
     this.map.render(mapContainer.id, this.attributes.mapStyles);
     this.drawMarkers();
+
+    this.renderBasics();
   }
 
   renderControls() {
-    if (this.getNumericData().length === 0) {
+    if (this.data.length === 0) {
       alert('Dataset is empty!');
       return;
     }
@@ -176,6 +194,13 @@ class BubbleMapChart extends Visual {
             this.map.clearCircles();
             this.drawMarkers();
           });
+
+    // editor.createMultipleSelectBox('infowindow-display',
+    //       'Select column(s) to display in Infobox', categories, 'na', (e) => {
+    //         this.attributes.infoCols = $(e.currentTarget).val();
+    //         this.map.clearCircles();
+    //         this.drawMarkers();
+    //       });
 
     this.map.renderMapColorControls(editor, this.attributes, (color) => {
       this.attributes.mapStyles[0].stylers[0].color = color;
