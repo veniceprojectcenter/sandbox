@@ -103,22 +103,29 @@ class FilterMap extends Visual {
     const div = document.createElement('div');
     const visual = document.getElementById(this.renderID);
     let thereAreSliders = false;
-    const editor = new EditorGenerator(div);
     Object.keys(this.attributes.sliders).forEach((outerElem, outerIndex) => {
       Object.keys(this.attributes.sliders[outerElem].attributes).forEach((innerElem, innerIndex) => {
         thereAreSliders = true;
-        editor.createNumberSlider(`slider-${outerIndex}-${innerIndex}`,
-          `${this.attributes.sliders[outerElem].name} ${innerElem}`,
-          this.attributes.sliders[outerElem].attributes[innerElem].value,
-          this.attributes.sliders[outerElem].attributes[innerElem].lowerBound,
-          this.attributes.sliders[outerElem].attributes[innerElem].upperBound,
-          this.attributes.sliders[outerElem].attributes[innerElem].stepSize,
-          (t) => {
-            const value = $(t.currentTarget).val();
-            this.attributes.sliders[outerElem].attributes[innerElem].value = `${value}`;
-            this.map.clearCircles();
-            this.applyFilters();
-          });
+        const id = `slider-${outerIndex}-${innerIndex}`;
+        const title = `${this.attributes.sliders[outerElem].name} ${innerElem}`;
+        const min = this.attributes.sliders[outerElem].attributes[innerElem].lowerBound;
+        const max = this.attributes.sliders[outerElem].attributes[innerElem].upperBound;
+        const step = this.attributes.sliders[outerElem].attributes[innerElem].stepSize;
+        const current = this.attributes.sliders[outerElem].attributes[innerElem].value;
+        div.innerHTML = `
+          <label for="${id}-field">${title}</label>
+          <form action="#" id="${id}">
+            <p class="range-field">
+              <input type="range" id="${id}-field" min="${min}" max="${max}" step="${step}" value="${current}"/>
+            </p>
+          </form>
+        `;
+        $(div).find(`#${id}-field`).on('input', (t) => {
+          const value = $(t.currentTarget).val();
+          this.attributes.sliders[outerElem].attributes[innerElem].value = `${value}`;
+          this.map.clearCircles();
+          this.applyFilters();
+        });
       });
     });
 
