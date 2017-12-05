@@ -90,7 +90,7 @@ class FilterMap extends Visual {
                 }
               });
             }
-            this.filter.getFilteredDatum(i, filter, dataSet);
+            this.filter.getFilteredDatum(i, filters[i], dataSet);
             this.renderPoints(this.renderData[i],
               this.attributes.colors[i], this.attributes.shapes[i],
             this.attributes.images[i]);
@@ -123,9 +123,8 @@ class FilterMap extends Visual {
     });
 
     if (thereAreSliders) {
-      document.getElementById(this.renderID).firstChild.style.height = '85%';
       document.getElementById(this.renderID).firstChild.style.overflow = 'hidden';
-      div.style = 'position: relative; height: 12%; top: 85%; z-index: 2';
+      div.style = 'position: relative; height: 12%;  z-index: 2';
       visual.insertBefore(div, null);
     }
   }
@@ -146,7 +145,8 @@ class FilterMap extends Visual {
       const sliders = {};
 
       $(this.filter.ul).children('li').each(function (datasetIndex) {
-        const datasetSelect = $(this).find('div.collapsible-header div[id^=dataSet]').find('li.selected span')[0];
+        let datasetSelect = $(this).find('div.collapsible-header div[id^=dataSet]');
+        datasetSelect = $(datasetSelect.find('select')[0]).val();
         if (datasetSelect !== undefined) {
           sliders[datasetIndex] = {
             name: datasetSelect.innerText,
