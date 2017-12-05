@@ -133,15 +133,33 @@ class ChloroplethMap extends Visual {
       localStorage.boundaries = JSON.stringify([]);
     }
     const boundaries = JSON.parse(localStorage.boundaries);
+
     let boundaryInfoObjects = [];
     boundaries.forEach((boundary) => {
       const info = this.getBoundaryInfo(boundary);
       boundaryInfoObjects = boundaryInfoObjects.concat(info);
     });
 
-    const minMax = this.constructor.getInfoObjectsMinMax(boundaryInfoObjects);
-    console.log(boundaryInfoObjects);
-    console.log(minMax);
+    const minMax = this.constructor.getBoundaryAveragesMinMax(boundaryInfoObjects);
+
+    boundaryInfoObjects = this.constructor.computeBoundaryColors(
+      minMax, boundaryInfoObjects);
+
+    this.drawBoundaryObjects(boundaryInfoObjects);
+  }
+
+  drawBoundaryObjects(boundaryObjects) {
+
+  }
+
+  static computeBoundaryColors(minMax, boundaryObjects) {
+    const newBoundaryObjects = [];
+    for (let i = 0; i < boundaryObjects.length; i += 1) {
+      const boundaryObject = boundaryObjects[i];
+      boundaryObject.color = 'red';
+      newBoundaryObjects.push(boundaryObject);
+    }
+    return newBoundaryObjects;
   }
 
   // Returns an array with an object with the average of a given category
@@ -176,7 +194,7 @@ class ChloroplethMap extends Visual {
     return average;
   }
 
-  static getInfoObjectsMinMax(infoObjects) {
+  static getBoundaryAveragesMinMax(infoObjects) {
     if (infoObjects.length === 0) {
       return { min: null, max: null }; // Edge case
     }
