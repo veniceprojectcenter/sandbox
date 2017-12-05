@@ -70,7 +70,7 @@ class FilterMap extends Visual {
     this.renderData = [];
     for (let i = 0; i < filters.length; i += 1) {
       const filter = filters[i];
-      if (filter !== undefined && filter.categorical !== undefined
+      if (filter !== undefined && filter !== null && filter.categorical !== undefined
           && filter.numeric !== undefined && filter.dataSet !== null) {
         dataSets[i] = Data.fetchData(filter.dataSet,
           (dataSet) => {
@@ -87,8 +87,6 @@ class FilterMap extends Visual {
               this.attributes.colors[i], this.attributes.shapes[i],
             this.attributes.images[i]);
           });
-      } else {
-        console.err('No filter defined!');
       }
     }
   }
