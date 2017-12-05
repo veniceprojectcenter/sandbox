@@ -145,11 +145,12 @@ class FilterMap extends Visual {
       const sliders = {};
 
       $(this.filter.ul).children('li').each(function (datasetIndex) {
-        let datasetSelect = $(this).find('div.collapsible-header div[id^=dataSet]');
-        datasetSelect = $(datasetSelect.find('select')[0]).val();
-        if (datasetSelect !== undefined) {
+        const datasetSelect = $(this).find('div.collapsible-header div[id^=dataSet]').find('select');
+        const datasetName = datasetSelect.find(`option[value=${datasetSelect.val()}]`)[0].innerText;
+
+        if (datasetName !== undefined) {
           sliders[datasetIndex] = {
-            name: datasetSelect.innerText,
+            name: datasetName,
             attributes: {},
           };
           $(this).find('div[id$=numFilterList] div.row').each(function () {

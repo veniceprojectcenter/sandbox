@@ -427,35 +427,36 @@ class Visual {
         const filterColumn = filters[i].column;
         if (data[j] !== null && data[j] !== undefined
           && filterColumn !== null && filterColumn !== undefined) {
-          const x = data[j][filterColumn];
+          const x = Number(data[j][filterColumn]);
+          const y = Number(filters[i].value);
           switch (true) {
             case (filters[i].operation === '='):
-              if (numericalData[j] !== null && x !== filters[i].value) {
+              if (numericalData[j] !== null && x !== y) {
                 delete numericalData[j];
               }
               break;
             case (filters[i].operation === '!='):
-              if (numericalData[j] !== null && x === filters[i].value) {
+              if (numericalData[j] !== null && x === y) {
                 delete numericalData[j];
               }
               break;
             case (filters[i].operation === '<'):
-              if (numericalData[j] !== null && x >= filters[i].value) {
+              if (numericalData[j] !== null && x >= y) {
                 delete numericalData[j];
               }
               break;
             case (filters[i].operation === '<='):
-              if (numericalData[j] !== null && x > filters[i].value) {
+              if (numericalData[j] !== null && x > y) {
                 delete numericalData[j];
               }
               break;
             case (filters[i].operation === '>'):
-              if (numericalData[j] !== null && x <= filters[i].value) {
+              if (numericalData[j] !== null && x <= y) {
                 delete numericalData[j];
               }
               break;
             case (filters[i].operation === '>='):
-              if (numericalData[j] !== null && x < filters[i].value) {
+              if (numericalData[j] !== null && x < y) {
                 delete numericalData[j];
               }
               break;
