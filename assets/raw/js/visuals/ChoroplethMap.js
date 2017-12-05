@@ -233,7 +233,9 @@ class ChoroplethMap extends Visual {
       if (!categoryBoxChecked) {
         this.drawChoropleth();
       } else {
-        this.populateCategorySelect();
+        $('#categorySelect').remove();
+        this.attributes.colorByCategory = null;
+        this.addCategorySelector();
       }
     });
   }
@@ -246,27 +248,50 @@ class ChoroplethMap extends Visual {
         $('#categorySelect').remove();
         this.attributes.colorByCategory = null;
       } else {
-        const categorySelectEditor =
-          new EditorGenerator(document.getElementById('categorySelectContainer'));
-        this.createCategoricalValueSelector(categorySelectEditor);
+        this.addCategorySelector();
       }
     });
   }
 
-  getCategories() {
-    return ['test1', 'test2'];
+  addCategorySelector() {
+    const categorySelectEditor =
+      new EditorGenerator(document.getElementById('categorySelectContainer'));
+    this.createCategoricalValueSelector(categorySelectEditor);
+  }
+
+  // Gets a list of unique values in objects in this.data
+  // with the given attribute as a key
+  getCategories(attribute) {
+    const uniqueValues = [];
+    this.data.forEach((point) => {
+      const value = point[attribute];
+      if (!uniqueValues.includes(value)) {
+        uniqueValues.push(value);
+      }
+    });
+    return uniqueValues;
   }
 
   createCategoricalValueSelector(editor) {
     const selectedAttribute = document.getElementById('columnSelect-select').value;
-    const options = this.getCategories(selectedAttribute);
+    const categories = this.getCategories(selectedAttribute);
+    const options = this.constructor.getOptions(categories);
 
-    // const options = [];
     const id = 'categorySelect';
     editor.createSelectBox(id, 'Select a category to color by',
     options, null, (event) => {
+      const value = event.currentTarget.value;
+      this.attributes.colorByCategory = value;
       this.drawChoropleth();
     });
+  }
+
+  static getOptions(strings) {
+    const options = [];
+    strings.forEach((string) => {
+      options.push({ text: string, value: string });
+    });
+    return options;
   }
 
   createSelectButton(editor) {
