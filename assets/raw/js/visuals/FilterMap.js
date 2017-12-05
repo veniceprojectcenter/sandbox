@@ -61,8 +61,8 @@ class FilterMap extends Visual {
 
   applyFiltersAndRender() {
     this.map.render(this.renderID);
-    //document.getElementById(this.renderID).firstChild.style.height = '85%';
-    //document.getElementById(this.renderID).firstChild.style.overflow = 'hidden';
+    // document.getElementById(this.renderID).firstChild.style.height = '85%';
+    // document.getElementById(this.renderID).firstChild.style.overflow = 'hidden';
     this.applyFilters();
   }
 
@@ -76,7 +76,6 @@ class FilterMap extends Visual {
           && filter.numeric !== undefined && filter.dataSet !== null) {
         dataSets[i] = Data.fetchData(filter.dataSet,
           (dataSet) => {
-            console.log(this.attributes.sliders);
             if (this.attributes.sliders[i] !== undefined) {
               Object.keys(this.attributes.sliders[i].attributes).forEach((e) => {
                 const filterToChange = filter.numeric.findIndex(a => e === a.column);
@@ -98,7 +97,6 @@ class FilterMap extends Visual {
     const div = document.createElement('div');
     const visual = document.getElementById(this.renderID);
     let thereAreSliders = false;
-
     const editor = new EditorGenerator(div);
     Object.keys(this.attributes.sliders).forEach((outerElem, outerIndex) => {
       Object.keys(this.attributes.sliders[outerElem].attributes).forEach((innerElem, innerIndex) => {
@@ -142,6 +140,7 @@ class FilterMap extends Visual {
 
     this.renderControlsDiv.addEventListener('generateMap', () => {
       const sliders = {};
+
       $(this.filter.ul).children('li').each(function (datasetIndex) {
         const datasetSelect = $(this).find('div.collapsible-header div[id^=dataSet]').find('li.selected span')[0];
         if (datasetSelect !== undefined) {
