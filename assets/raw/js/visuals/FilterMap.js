@@ -188,13 +188,10 @@ class FilterMap extends Visual {
 
   filterMapHeader(headEditor, index) {
     const shapes = [{ value: 'circle', text: 'Circle' }, { value: 'triangle', text: 'Triangle' }, { value: 'custom', text: 'Custom Image' }];
-    let text = 'NA';
-    for (let i = 0; i < this.allSets.length; i += 1) {
-      if (this.allSets[i].value === this.dataSet) {
-        text = this.allSets[i].text;
-      }
-    }
-    headEditor.createSelectBox(`dataSet${index}`, 'Data Set', this.allSets, 'na', (e) => { this.replaceFilter(e.currentTarget); }, this.dataSet, text);
+
+    headEditor.createSelectBox(`dataSet${index}`, 'Data Set', this.allSets, 'na', (e) => { this.replaceFilter(e.currentTarget); });
+    $('#dataSet0-select').val(this.dataSet);
+    $('#dataSet0-select').material_select();
     headEditor.createSelectBox(`shape${index}`, 'Shape', shapes, 'na', (e) => {
       e.currentTarget.parentNode.parentNode.parentNode.children[2].remove();
       if (e.currentTarget.parentNode.parentNode.parentNode.children[2]) {
