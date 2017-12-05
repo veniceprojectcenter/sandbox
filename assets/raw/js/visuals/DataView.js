@@ -51,7 +51,9 @@ class DataView extends Visual {
       this.tableDiv = document.createElement('div');
       this.renderDiv.appendChild(this.tableDiv);
       this.tableDiv.id = 'tableDiv';
-      this.displayTable();
+      if (this.renderData[0] !== undefined) {
+        this.displayTable();
+      }
     }
   }
   /** Updates app display when actions are taken in controls

@@ -16,7 +16,6 @@ class FilterMap extends Visual {
     this.renderData = [];
     this.dataSets = [];
     Data.fetchDataSets((e) => { this.getAllDataSets(e); });
-    this.attributes.sliders = {};
     this.generateMapEvent = document.createEvent('Event');
     this.generateMapEvent.initEvent('generateMap', true, true);
   }
@@ -30,6 +29,7 @@ class FilterMap extends Visual {
       images: [],
       areaSelections: [],
       filters: [],
+      sliders: {},
     });
   }
 
@@ -57,8 +57,16 @@ class FilterMap extends Visual {
 
   // render the map
   render() {
+    Visual.empty(this.renderID);
     this.map = new Map();
-    this.map.render(this.renderID, this.attributes.mapStyles);
+    const mapContainer = document.createElement('div');
+    mapContainer.id = `map-container${this.renderID}`;
+    mapContainer.className = 'map-container';
+
+    const visual = document.getElementById(this.renderID);
+    visual.appendChild(mapContainer);
+
+    this.map.render(mapContainer.id, this.attributes.mapStyles);
     this.applyFilters();
     this.createVisualSliderControls();
     this.renderBasics();
@@ -70,7 +78,7 @@ class FilterMap extends Visual {
     this.renderData = [];
     for (let i = 0; i < filters.length; i += 1) {
       const filter = filters[i];
-      if (filter !== undefined && filter.categorical !== undefined
+      if (filter !== undefined && filter !== null && filter.categorical !== undefined
           && filter.numeric !== undefined && filter.dataSet !== null) {
         dataSets[i] = Data.fetchData(filter.dataSet,
           (dataSet) => {
@@ -87,8 +95,6 @@ class FilterMap extends Visual {
               this.attributes.colors[i], this.attributes.shapes[i],
             this.attributes.images[i]);
           });
-      } else {
-        console.err('No filter defined!');
       }
     }
   }

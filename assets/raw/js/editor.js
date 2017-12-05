@@ -4,12 +4,12 @@ import Donut from './visuals/Donut';
 import Bar from './visuals/Bar';
 import ScaledUpNumber from './visuals/ScaledUpNumber';
 import DefaultMap from './visuals/helpers/DefaultMap';
-import PieChartMap from './visuals/PieChartMap';
+import DonutChartMap from './visuals/DonutChartMap';
 import RouteMap from './visuals/RouteMap';
 import BubbleChart from './visuals/BubbleChart';
 import BubbleMapChart from './visuals/BubbleMapChart';
 import FilterMap from './visuals/FilterMap';
-import ChloroplethMap from './visuals/ChloroplethMap';
+import ChoroplethMap from './visuals/ChoroplethMap';
 import DataView from './visuals/DataView';
 
 function renderEditor(route) {
@@ -58,8 +58,8 @@ function renderEditor(route) {
       case 'Scaled-Up-Number':
         visual = new ScaledUpNumber(config);
         break;
-      case 'Pie-Chart-Map':
-        visual = new PieChartMap(config);
+      case 'Donut-Chart-Map':
+        visual = new DonutChartMap(config);
         break;
       case 'Data-View':
         visual = new DataView(config);
@@ -79,8 +79,8 @@ function renderEditor(route) {
       case 'Filter-Map':
         visual = new FilterMap(config);
         break;
-      case 'Chloropleth-Map':
-        visual = new ChloroplethMap(config);
+      case 'Choropleth-Map':
+        visual = new ChoroplethMap(config);
         break;
       default:
         visualContainer.innerHTML = `<p>Error: could not find visualization: ${route[1]}.`;

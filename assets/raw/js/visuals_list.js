@@ -8,11 +8,11 @@ const visuals = [
   { name: 'Bubble Chart', image: 'http://datavizproject.com/wp-content/uploads/2016/06/DVP_1_100-67.png', link: 'Bubble-Chart' },
   { name: 'Category Map', image: 'http://datavizproject.com/wp-content/uploads/2017/08/DVP_101_200-56-300x300.png', link: 'Category-Map' },
   { name: 'Route Map', image: 'http://datavizproject.com/wp-content/uploads/2016/06/DVP_101_200-19.png', link: 'Route-Map' },
-  { name: 'Pie Chart Map', image: 'http://datavizproject.com/wp-content/uploads/2016/06/DVP_101_200-43-300x300.png', link: 'Pie-Chart-Map' },
+  { name: 'Donut Chart Map', image: 'http://datavizproject.com/wp-content/uploads/2016/06/DVP_101_200-43-300x300.png', link: 'Donut-Chart-Map' },
   { name: 'Scaled Up Number', image: 'http://datavizproject.com/wp-content/uploads/2016/01/DVP_101_200-17-300x300.png', link: 'Scaled-Up-Number' },
   { name: 'Data View', image: 'http://datavizproject.com/wp-content/uploads/2016/01/DVP_101_200-17-300x300.png', link: 'Data-View' },
   // { name: 'Isochrone Map', image: 'http://datavizproject.com/wp-content/uploads/2015/10/DVP-88-300x300.png', link: 'Isochrone' },
-  { name: 'Chloropleth Map', image: 'http://datavizproject.com/wp-content/uploads/2016/06/DVP_1_100-28-300x300.png', link: 'Chloropleth-Map' },
+  { name: 'Choropleth Map', image: 'http://datavizproject.com/wp-content/uploads/2016/06/DVP_1_100-28-300x300.png', link: 'Choropleth-Map' },
 ];
 
 async function prefetchData(route) {

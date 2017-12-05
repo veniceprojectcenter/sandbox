@@ -7,7 +7,9 @@ class EditorGenerator {
   createTextField(id, title, onTextChanged) {
     const context = { id, title };
     this.handlebarsWithContext('text-field-entry', context);
-    $(`#${id} > input`).on('input', onTextChanged);
+    $(document).ready(() => {
+      $(`#${id} > input`).on('input', onTextChanged);
+    });
   }
 
   createColorField(id, title, color, onColorChanged) {

@@ -4,13 +4,13 @@ import EditorGenerator from './helpers/EditorGenerator';
 import BoundarySelector from './helpers/BoundarySelector';
 import DefaultMapStyle from './helpers/DefaultMapStyle';
 import VeniceOutline from './helpers/VeniceOutline';
-import Chloropleth from './helpers/Chloropleth';
+import Choropleth from './helpers/Choropleth';
 
 /* This file is to be used as a default starting point for new map visualizations
  * that feature adding divs
 */
 
-class ChloroplethMap extends Visual {
+class ChoroplethMap extends Visual {
   constructor(config, renderID, renderControlsID) {
     super(config, renderID, renderControlsID);
 
@@ -45,6 +45,8 @@ class ChloroplethMap extends Visual {
       description: '',
       mapStyles: DefaultMapStyle,
       colorBy: Object.keys(this.data[0])[0],
+      minColor: '#aaffaa',
+      maxColor: '#00ca00',
     });
 
     if (this.constructor.localStorageIsEmptyOrNulls()) {
@@ -97,7 +99,7 @@ class ChloroplethMap extends Visual {
       this.setBoundariesMap(null);
     }
 
-    this.drawChloropleth();
+    this.drawChoropleth();
   }
 
   renderLocalPolyLines() {
@@ -151,15 +153,17 @@ class ChloroplethMap extends Visual {
     });
   }
 
-  drawChloropleth() {
+  drawChoropleth() {
     console.log(`Drawing polygons by field: ${this.attributes.colorBy}`);
     if (localStorage.boundaries === undefined) {
       localStorage.boundaries = JSON.stringify([]);
     }
     const boundaries = JSON.parse(localStorage.boundaries);
 
-    const chloropleth = new Chloropleth(this.attributes.colorBy, boundaries, this.data);
-    // chloropleth.draw(this.map);
+    Map.clear(this.map.polygons);
+    const choropleth = new Choropleth(this.attributes.colorBy, boundaries,
+      this.data, this.attributes.minColor, this.attributes.maxColor);
+    choropleth.draw(this.map);
   }
 
   renderControls() {
@@ -179,6 +183,8 @@ class ChloroplethMap extends Visual {
     this.createSelectButton(editor);
     this.createHideBoundsBox(editor);
     this.createColumnSelector(editor);
+
+    this.renderColorControls(editor);
 
     this.map.renderMapColorControls(editor, this.attributes, (color) => {
       this.attributes.mapStyles[0].stylers[0].color = color;
@@ -208,7 +214,7 @@ class ChloroplethMap extends Visual {
     editor.createSelectBox('columnSelect', 'Select a column to color by',
     options, current, (event) => {
       this.attributes.colorBy = event.currentTarget.value;
-      this.drawChloropleth();
+      this.drawChoropleth();
     });
   }
 
@@ -221,6 +227,23 @@ class ChloroplethMap extends Visual {
       });
     });
   }
+
+  renderColorControls(editor) {
+    editor.createSpacer();
+    editor.createSubHeader('Polygon Color Range');
+
+    editor.createColorField('color-min', 'Minimum Color', this.attributes.minColor, (e) => {
+      const value = $(e.currentTarget).val();
+      this.attributes.minColor = value;
+      this.drawChoropleth();
+    });
+
+    editor.createColorField('color-max', 'Maximum Color', this.attributes.maxColor, (e) => {
+      const value = $(e.currentTarget).val();
+      this.attributes.maxColor = value;
+      this.drawChoropleth();
+    });
+  }
 }
 
-export default ChloroplethMap;
+export default ChoroplethMap;

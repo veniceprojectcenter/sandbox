@@ -131,6 +131,31 @@ class BoundarySelector {
     this.clearSelection();
     this.callback = callback;
   }
+
+  static getCentroid(boundary) {
+    let minX = boundary[0].lat;
+    let minY = boundary[0].lng;
+    let maxX = boundary[0].lat;
+    let maxY = boundary[0].lng;
+    for (let i = 0; i < boundary.length; i += 1) {
+      const point = boundary[i];
+      if (point.lat < minX) {
+        minX = point.lat;
+      }
+      if (point.lat > maxX) {
+        maxX = point.lat;
+      }
+      if (point.lng < minY) {
+        minY = point.lng;
+      }
+      if (point.lng > maxY) {
+        maxY = point.lng;
+      }
+    }
+    const x = (minX + maxX) / 2;
+    const y = (minY + maxY) / 2;
+    return { lat: x, lng: y };
+  }
 }
 
 export default BoundarySelector;
