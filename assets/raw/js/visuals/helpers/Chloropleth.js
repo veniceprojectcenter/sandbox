@@ -86,15 +86,12 @@ class Chloropleth {
       .domain([minMax.min, minMax.max])
       .range([this.minColor, this.maxColor]);
 
-    console.log(`${this.minColor} | ${this.maxColor}`);
-
     const newBoundaryObjects = [];
     for (let i = 0; i < boundaryObjects.length; i += 1) {
       const boundaryObject = boundaryObjects[i];
       const value = boundaryObject.average;
       if (value !== null) {
         boundaryObject.color = getColor(boundaryObject.average);
-        console.log(boundaryObject.color);
       } else {
         boundaryObject.color = null;
       }

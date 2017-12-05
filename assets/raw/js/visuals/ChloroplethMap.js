@@ -172,6 +172,8 @@ class ChloroplethMap extends Visual {
     this.createHideBoundsBox(editor);
     this.createColumnSelector(editor);
 
+    this.renderColorControls(editor);
+
     this.map.renderMapColorControls(editor, this.attributes, (color) => {
       this.attributes.mapStyles[0].stylers[0].color = color;
     }, (color) => {
@@ -211,6 +213,23 @@ class ChloroplethMap extends Visual {
         this.drawAndAddBoundary(points);
         this.addPointsWithinBoundary(this.data, points);
       });
+    });
+  }
+
+  renderColorControls(editor) {
+    editor.createSpacer();
+    editor.createSubHeader('Polygon Color Range');
+
+    editor.createColorField('color-min', 'Minimum Color', this.attributes.minColor, (e) => {
+      const value = $(e.currentTarget).val();
+      this.attributes.minColor = value;
+      this.drawChloropleth();
+    });
+
+    editor.createColorField('color-max', 'Maximum Color', this.attributes.maxColor, (e) => {
+      const value = $(e.currentTarget).val();
+      this.attributes.maxColor = value;
+      this.drawChloropleth();
     });
   }
 }
