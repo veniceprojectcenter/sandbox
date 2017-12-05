@@ -103,7 +103,8 @@ class FilterMap extends Visual {
     Object.keys(this.attributes.sliders).forEach((outerElem, outerIndex) => {
       Object.keys(this.attributes.sliders[outerElem].attributes).forEach((innerElem, innerIndex) => {
         editor.createNumberSlider(`slider-${outerIndex}-${innerIndex}`,
-          `${this.attributes.sliders[outerElem].name} ${innerElem}`, this.attributes.sliders[outerElem].attributes[innerElem].value,
+          `${this.attributes.sliders[outerElem].name} ${innerElem}`,
+          this.attributes.sliders[outerElem].attributes[innerElem].value,
           this.attributes.sliders[outerElem].attributes[innerElem].lowerBound,
           this.attributes.sliders[outerElem].attributes[innerElem].upperBound,
           this.attributes.sliders[outerElem].attributes[innerElem].stepSize,
@@ -178,9 +179,6 @@ class FilterMap extends Visual {
   filterMapHeader(headEditor, index) {
     const shapes = [{ value: 'circle', text: 'Circle' }, { value: 'triangle', text: 'Triangle' }, { value: 'custom', text: 'Custom Image' }];
     headEditor.createSelectBox(`dataSet${index}`, 'Data Set', this.allSets, 'na', (e) => { this.replaceFilter(e.currentTarget); });
-    $(`ul#collapseUl li div.collapsible-header div#dataSet${index}`).change((evt) => {
-      $(evt.target).closest('li').find('div[id$=numFilterList] div.row')[0].dispatchEvent(this.filter.newNumericFilterEvent);
-    });
     headEditor.createSelectBox(`shape${index}`, 'Shape', shapes, 'na', (e) => {
       e.currentTarget.parentNode.parentNode.parentNode.children[2].remove();
       if (e.currentTarget.parentNode.parentNode.parentNode.children[2]) {
@@ -249,6 +247,7 @@ class FilterMap extends Visual {
       this.filter.renderFilter(tempDiv, e);
       this.dataSets[$(target).val()] = e;
       this.map.render(this.renderID, this.attributes.mapStyles);
+      $(tempDiv).find('div[id$=numFilterList] div.row')[0].dispatchEvent(this.filter.newNumericFilterEvent);
     });
   }
 
