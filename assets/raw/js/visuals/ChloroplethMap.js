@@ -4,6 +4,7 @@ import EditorGenerator from './helpers/EditorGenerator';
 import BoundarySelector from './helpers/BoundarySelector';
 import DefaultMapStyle from './helpers/DefaultMapStyle';
 import VeniceOutline from './helpers/VeniceOutline';
+import Chloropleth from './helpers/Chloropleth';
 
 /* This file is to be used as a default starting point for new map visualizations
  * that feature adding divs
@@ -17,6 +18,9 @@ class ChloroplethMap extends Visual {
     this.boundarySelector = new BoundarySelector(this.map);
 
     this.BOUNDARY_COLOR = '#ff3333';
+
+    this.shouldRenderCache = true; // Should localStorage polylines and
+    // data markers be rendered up front?
   }
 
   static removeBoundaryWithPoint(point) {
@@ -73,8 +77,18 @@ class ChloroplethMap extends Visual {
     Visual.empty(this.renderID);
 
     this.map.render(this.renderID, this.attributes.mapStyles);
+    this.renderCache();
+  }
+
+  renderCache() {
     this.renderLocalPolyLines();
     this.addDataMarkers();
+
+    if (!this.shouldRendercache) {
+      this.setBoundariesMap(null);
+    }
+
+    this.drawChloropleth();
   }
 
   renderLocalPolyLines() {
@@ -128,38 +142,15 @@ class ChloroplethMap extends Visual {
     });
   }
 
-  drawPolygonsByColor() {
+  drawChloropleth() {
+    console.log(`Drawing polygons by field: ${this.attributes.colorBy}`);
     if (localStorage.boundaries === undefined) {
       localStorage.boundaries = JSON.stringify([]);
     }
     const boundaries = JSON.parse(localStorage.boundaries);
-    let boundaryInfoObjects = [];
-    boundaries.forEach((boundary) => {
-      const info = this.getBoundaryInfo(boundary);
-      boundaryInfoObjects = boundaryInfoObjects.concat(info);
-    });
-    console.log(boundaryInfoObjects);
-  }
 
-  // Returns an array with an object with the average of a given category
-  // And the given boundary as attributes.
-  getBoundaryInfo(boundary) {
-    if (boundary === null) {
-      return [];
-    }
-
-    const info = { boundary };
-    const selector = new BoundarySelector(null);
-    const pointsWithinBoundary = selector.getPointsInBoundary(this.data, boundary);
-
-    const average = this.constructor.getAverageOfField(pointsWithinBoundary,
-        this.attributes.colorBy);
-    info.average = average;
-    return [info];
-  }
-
-  static getAverageOfField(points, field) {
-    return 5;
+    const chloropleth = new Chloropleth(this.attributes.colorBy, boundaries, this.data);
+    // chloropleth.draw(this.map);
   }
 
   renderControls() {
@@ -187,7 +178,7 @@ class ChloroplethMap extends Visual {
 
   createHideBoundsBox(editor) {
     const id = 'hideBoundsBox';
-    editor.createCheckBox(id, 'Toggle Showing Selections', true, () => {
+    editor.createCheckBox(id, 'Toggle Showing Selections', false, () => {
       const checked = document.getElementById(`${id}-checkbox`).checked;
       if (!checked) {
         this.setBoundariesMap(null);
@@ -206,7 +197,7 @@ class ChloroplethMap extends Visual {
     editor.createSelectBox('columnSelect', 'Select a column to color by',
     options, current, (event) => {
       this.attributes.colorBy = event.currentTarget.value;
-      this.drawPolygonsByColor();
+      this.drawChloropleth();
     });
   }
 
