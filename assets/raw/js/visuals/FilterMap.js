@@ -58,7 +58,14 @@ class FilterMap extends Visual {
   // render the map
   render() {
     this.map = new Map();
-    this.map.render(this.renderID, this.attributes.mapStyles);
+    const mapContainer = document.createElement('div');
+    mapContainer.id = 'map-container';
+    mapContainer.className = 'map-container';
+
+    const visual = document.getElementById(this.renderID);
+    visual.appendChild(mapContainer);
+
+    this.map.render(mapContainer.id, this.attributes.mapStyles);
     this.applyFilters();
     this.createVisualSliderControls();
     this.renderBasics();
