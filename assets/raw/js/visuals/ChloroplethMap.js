@@ -133,16 +133,33 @@ class ChloroplethMap extends Visual {
       localStorage.boundaries = JSON.stringify([]);
     }
     const boundaries = JSON.parse(localStorage.boundaries);
-    const boundaryInfoObjects = [];
+    let boundaryInfoObjects = [];
     boundaries.forEach((boundary) => {
-      boundaryInfoObjects.concat(this.getBoundaryInfo(boundary));
+      const info = this.getBoundaryInfo(boundary);
+      boundaryInfoObjects = boundaryInfoObjects.concat(info);
     });
+    console.log(boundaryInfoObjects);
   }
 
   // Returns an array with an object with the average of a given category
   // And the given boundary as attributes.
   getBoundaryInfo(boundary) {
+    if (boundary === null) {
+      return [];
+    }
 
+    const info = { boundary };
+    const selector = new BoundarySelector(null);
+    const pointsWithinBoundary = selector.getPointsInBoundary(this.data, boundary);
+
+    const average = this.constructor.getAverageOfField(pointsWithinBoundary,
+        this.attributes.colorBy);
+    info.average = average;
+    return [info];
+  }
+
+  static getAverageOfField(points, field) {
+    return 5;
   }
 
   renderControls() {
