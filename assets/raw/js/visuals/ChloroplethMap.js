@@ -17,6 +17,8 @@ class ChloroplethMap extends Visual {
     this.boundarySelector = new BoundarySelector(this.map);
 
     this.BOUNDARY_COLOR = '#ff3333';
+
+    this.shouldRenderCache = true; // Should localStorage polylines and data markers be rendered up front?
   }
 
   static removeBoundaryWithPoint(point) {
@@ -73,8 +75,16 @@ class ChloroplethMap extends Visual {
     Visual.empty(this.renderID);
 
     this.map.render(this.renderID, this.attributes.mapStyles);
+    this.renderCache();
+  }
+
+  renderCache() {
     this.renderLocalPolyLines();
     this.addDataMarkers();
+
+    if (!this.shouldRendercache) {
+      this.setBoundariesMap(null);
+    }
   }
 
   renderLocalPolyLines() {
@@ -241,7 +251,7 @@ class ChloroplethMap extends Visual {
 
   createHideBoundsBox(editor) {
     const id = 'hideBoundsBox';
-    editor.createCheckBox(id, 'Toggle Showing Selections', true, () => {
+    editor.createCheckBox(id, 'Toggle Showing Selections', false, () => {
       const checked = document.getElementById(`${id}-checkbox`).checked;
       if (!checked) {
         this.setBoundariesMap(null);
