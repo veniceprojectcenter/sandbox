@@ -86,10 +86,11 @@ class BubbleMapChart extends Visual {
 
     const visual = document.getElementById(this.renderID);
     visual.appendChild(mapContainer);
-    this.renderBasics();
 
     this.map.render(mapContainer.id, this.attributes.mapStyles);
     this.drawMarkers();
+
+    this.renderBasics();
   }
 
   renderControls() {

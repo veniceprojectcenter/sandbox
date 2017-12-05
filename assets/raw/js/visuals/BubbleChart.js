@@ -32,6 +32,7 @@ class BubbleChart extends Visual {
       group_by: defaultCat,
       font_color: '#000000',
       title: '',
+      description: '',
       color: {
         mode: 'single',
         colors: [],
@@ -59,10 +60,7 @@ class BubbleChart extends Visual {
 
     editor.createHeader('Configure Bubble Chart');
 
-    editor.createTextField('bubble-title', 'Chart Title', (e) => {
-      this.attributes.title = $(e.currentTarget).val();
-      this.render();
-    });
+    this.renderBasicControls(editor);
 
     const cats = [];
     const catsRaw = Object.keys(this.getCategoricalData()[0]);
@@ -166,12 +164,6 @@ class BubbleChart extends Visual {
     const bubble = d3.pack()
         .size([diameter, diameter])
         .padding(1.5);
-
-    if (this.attributes.title !== '') {
-      const title = d3.select(`#${this.renderID}`).append('h3')
-            .attr('class', 'visual-title');
-      title.html(this.attributes.title);
-    }
 
     const svg = d3.select(`#${this.renderID}`).append('svg')
         .attr('class', 'bubble-chart')
@@ -285,6 +277,8 @@ class BubbleChart extends Visual {
         this.renderControls();
       });
     }
+
+    this.renderBasics();
   }
 }
 export default BubbleChart;

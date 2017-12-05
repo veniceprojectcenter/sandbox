@@ -35,6 +35,7 @@ class Bar extends Visual {
       group_by_main: defaultCat1,
       group_by_stack: defaultCat2,
       title: '',
+      description: '',
     });
   }
 
@@ -50,10 +51,7 @@ class Bar extends Visual {
 
     editor.createHeader('Configure Bar Chart');
 
-    editor.createTextField('bar-title', 'Bar Title', (e) => {
-      this.attributes.title = $(e.currentTarget).val();
-      this.render();
-    });
+    this.renderBasicControls(editor);
 
     const cats = [];
     const catsRaw = Object.keys(this.categoricalData[0]);
@@ -124,12 +122,6 @@ class Bar extends Visual {
     if (this.isNumeric(this.attributes.group_by_main)) {
       renderData = this.makeBin(this.attributes.group_by_main, Number(this.attributes.binSize),
       Number(this.attributes.binStart));
-    }
-
-    if (this.attributes.title !== '') {
-      const title = d3.select(`#${this.renderID}`).append('h3')
-        .attr('class', 'visual-title');
-      title.html(this.attributes.title);
     }
 
     const svg = d3.select(`#${this.renderID}`).append('svg')
@@ -271,6 +263,8 @@ class Bar extends Visual {
     const viewBoxWidth = gbox.width + fontOffset + gbox.x + margin.left + margin.right;
     const viewBoxHeight = gbox.height + gbox.y + margin.top + margin.bottom;
     svg.attr('viewBox', `0 0 ${viewBoxWidth} ${viewBoxHeight}`);
+
+    this.renderBasics();
   }
 }
 
