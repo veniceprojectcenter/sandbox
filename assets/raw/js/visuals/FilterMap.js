@@ -119,9 +119,11 @@ class FilterMap extends Visual {
               <input type="range" id="${id}-field" min="${min}" max="${max}" step="${step}" value="${current}"/>
             </p>
           </form>
+          <span id="${id}-display">${current}</span>
         `;
         $(div).find(`#${id}-field`).on('input', (t) => {
           const value = $(t.currentTarget).val();
+          t.currentTarget.parentNode.parentNode.nextElementSibling.innerText = `${value}`;
           this.attributes.sliders[outerElem].attributes[innerElem].value = `${value}`;
           this.map.clearCircles();
           this.applyFilters();
