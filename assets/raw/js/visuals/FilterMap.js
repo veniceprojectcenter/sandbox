@@ -26,6 +26,10 @@ class FilterMap extends Visual {
     this.applyDefaultAttributes({
       title: '',
       mapStyles: DefaultMapStyle,
+      colors: [],
+      shapes: [],
+      images: [],
+      areaSelections: [],
     });
   }
 
@@ -54,16 +58,17 @@ class FilterMap extends Visual {
   // render the map
   render() {
     this.map = new Map();
-    this.map.render(this.renderID, this.attributes.mapStyles);
     this.applyFiltersAndRender();
     this.createVisualSliderControls();
+    this.renderBasics();
   }
 
   applyFiltersAndRender() {
-    this.map.render(this.renderID);
-    document.getElementById(this.renderID).firstChild.style.height = '85%';
-    document.getElementById(this.renderID).firstChild.style.overflow = 'hidden';
+    this.map.render(this.renderID, this.attributes.mapStyles);
+    // document.getElementById(this.renderID).firstChild.style.height = '85%';
+    // document.getElementById(this.renderID).firstChild.style.overflow = 'hidden';
     this.applyFilters();
+    this.renderBasics();
   }
 
   applyFilters() {
@@ -73,17 +78,17 @@ class FilterMap extends Visual {
     for (let i = 0; i < filters.length; i += 1) {
       const filter = filters[i];
       if (filter !== undefined && filter.categorical !== undefined
-        && filter.numeric !== undefined) {
+          && filter.numeric !== undefined && filter.dataSet !== null) {
         dataSets[i] = Data.fetchData(filter.dataSet,
           (dataSet) => {
-            Object.keys(this.attributes.sliders[i].attributes).forEach((e) => {
-              const filterToChange = filter.numeric.findIndex((a) => {
-                return e === a.column;
+            if (this.attributes.sliders[i] !== undefined) {
+              Object.keys(this.attributes.sliders[i].attributes).forEach((e) => {
+                const filterToChange = filter.numeric.findIndex(a => e === a.column);
+                if (filterToChange >= 0) {
+                  filter.numeric[filterToChange].value = this.attributes.sliders[i].attributes[e].value;
+                }
               });
-              if (filterToChange >= 0) {
-                filter.numeric[filterToChange].value = this.attributes.sliders[i].attributes[e].value;
-              }
-            });
+            }
             this.filter.getFilteredDatum(i, filter, dataSet);
             this.renderPoints(this.renderData[i],
               this.attributes.colors[i], this.attributes.shapes[i],
@@ -95,15 +100,15 @@ class FilterMap extends Visual {
 
   createVisualSliderControls() {
     const div = document.createElement('div');
-    const visual = document.getElementById('visual');
-    visual.insertBefore(div, null);
-    div.style = 'position: relative; height: 12%; top: 85%; z-index: 2';
-
+    const visual = document.getElementById(this.renderID);
+    let thereAreSliders = false;
     const editor = new EditorGenerator(div);
     Object.keys(this.attributes.sliders).forEach((outerElem, outerIndex) => {
       Object.keys(this.attributes.sliders[outerElem].attributes).forEach((innerElem, innerIndex) => {
+        thereAreSliders = true;
         editor.createNumberSlider(`slider-${outerIndex}-${innerIndex}`,
-          `${this.attributes.sliders[outerElem].name} ${innerElem}`, this.attributes.sliders[outerElem].attributes[innerElem].value,
+          `${this.attributes.sliders[outerElem].name} ${innerElem}`,
+          this.attributes.sliders[outerElem].attributes[innerElem].value,
           this.attributes.sliders[outerElem].attributes[innerElem].lowerBound,
           this.attributes.sliders[outerElem].attributes[innerElem].upperBound,
           this.attributes.sliders[outerElem].attributes[innerElem].stepSize,
@@ -112,22 +117,25 @@ class FilterMap extends Visual {
             this.attributes.sliders[outerElem].attributes[innerElem].value = `${value}`;
             this.map.clearCircles();
             this.applyFilters();
-            document.getElementById(this.renderID).firstChild.style.height = '85%';
-            document.getElementById(this.renderID).firstChild.style.overflow = 'hidden';
           });
       });
     });
+
+    if (thereAreSliders) {
+      document.getElementById(this.renderID).firstChild.style.height = '85%';
+      document.getElementById(this.renderID).firstChild.style.overflow = 'hidden';
+      div.style = 'position: relative; height: 12%; top: 85%; z-index: 2';
+      visual.insertBefore(div, null);
+    }
   }
 
   renderControls() {
-    this.attributes.colors = [];
-    this.attributes.shapes = [];
-    this.attributes.images = [];
-    this.attributes.areaSelections = [];
     this.renderControlsDiv = document.getElementById(this.renderControlsID);
 
     const editor = new EditorGenerator(this.renderControlsDiv);
     editor.createHeader('Controls');
+
+    this.renderBasicControls(editor);
 
     this.renderControlsDiv.addEventListener('newNumericFilter', (e) => {
       this.addCheckboxToFilterRow(e.target);
@@ -135,23 +143,28 @@ class FilterMap extends Visual {
 
     this.renderControlsDiv.addEventListener('generateMap', () => {
       const sliders = {};
+
       $(this.filter.ul).children('li').each(function (datasetIndex) {
-        const dataset = $(this).find('div.collapsible-header div[id^=dataSet]').find('li.selected span')[0].innerText;
-        sliders[datasetIndex] = {
-          name: dataset,
-          attributes: {},
-        };
-        $(this).find('div[id$=numFilterList] div.row').each(function () {
-          const column = $(this).find('div[id$=1]').find('li.selected span')[0].innerText;
-          if ($(this).find('div[id$=6] :checkbox:checked').length !== 0) {
-            sliders[datasetIndex].attributes[column] = {
-              value: $(this).find('div[id$=3]')[0].children[0].value,
-              lowerBound: $(this).find('div[id$=3]')[0].children[0].value,
-              stepSize: $(this).find('div[id$=4]')[0].children[0].value,
-              upperBound: $(this).find('div[id$=5]')[0].children[0].value,
-            };
-          }
-        });
+        const datasetSelect = $(this).find('div.collapsible-header div[id^=dataSet]').find('li.selected span')[0];
+        if (datasetSelect !== undefined) {
+          sliders[datasetIndex] = {
+            name: datasetSelect.innerText,
+            attributes: {},
+          };
+          $(this).find('div[id$=numFilterList] div.row').each(function () {
+            const columnSelect = $(this).find('div[id$=1]').find('li.selected span')[0];
+            if (columnSelect !== undefined) {
+              if ($(this).find('div[id$=5] :checkbox:checked').length !== 0) {
+                sliders[datasetIndex].attributes[columnSelect.innerText] = {
+                  value: $(this).find('div[id$=6]')[0].children[0].value,
+                  lowerBound: $(this).find('div[id$=6]')[0].children[0].value,
+                  stepSize: $(this).find('div[id$=7]')[0].children[0].value,
+                  upperBound: $(this).find('div[id$=8]')[0].children[0].value,
+                };
+              }
+            }
+          });
+        }
       });
       this.attributes.sliders = sliders;
     }, false);
@@ -173,10 +186,10 @@ class FilterMap extends Visual {
 
   filterMapHeader(headEditor, index) {
     const shapes = [{ value: 'circle', text: 'Circle' }, { value: 'triangle', text: 'Triangle' }, { value: 'custom', text: 'Custom Image' }];
+
     headEditor.createSelectBox(`dataSet${index}`, 'Data Set', this.allSets, 'na', (e) => { this.replaceFilter(e.currentTarget); });
-    $(`ul#collapseUl li div.collapsible-header div#dataSet${index}`).change((evt) => {
-      $(evt.target).closest('li').find('div[id$=numFilterList] div.row')[0].dispatchEvent(this.filter.newNumericFilterEvent);
-    });
+    $('#dataSet0-select').val(this.dataSet);
+    $('#dataSet0-select').material_select();
     headEditor.createSelectBox(`shape${index}`, 'Shape', shapes, 'na', (e) => {
       e.currentTarget.parentNode.parentNode.parentNode.children[2].remove();
       if (e.currentTarget.parentNode.parentNode.parentNode.children[2]) {
@@ -245,73 +258,64 @@ class FilterMap extends Visual {
       this.filter.renderFilter(tempDiv, e);
       this.dataSets[$(target).val()] = e;
       this.map.render(this.renderID, this.attributes.mapStyles);
+      $(tempDiv).find('div[id$=numFilterList] div.row')[0].dispatchEvent(this.filter.newNumericFilterEvent);
     });
   }
 
   addCheckboxToFilterRow(filterRow) {
-    const valueCol = filterRow.querySelector('div[id$="3"]');
-    valueCol.classList.replace('col-md-5', 'col-md-4');
-
-    const closeButn = filterRow.querySelector('div[id$="4"]');
+    const closeButn = filterRow.children[3];
     const closeButnId = closeButn.getAttribute('id');
     const groupId = closeButnId.split('-').slice(0, 2);
     const seriesNum = groupId[0];
     const filterNum = groupId[1];
-    closeButn.id = `${seriesNum}-${filterNum}-7`;
 
     const checkboxNode = document.createElement('div');
-    checkboxNode.classList.add('col-md-1');
-    checkboxNode.id = `${seriesNum}-${filterNum}-6`;
+    checkboxNode.classList.add('col-md-3');
+    checkboxNode.id = `${seriesNum}-${filterNum}-5`;
     const groupIdJoin = groupId.join('-');
     checkboxNode.innerHTML = `
       <input type="checkbox" id="${groupIdJoin}-toVisual" />
-      <label for="${groupIdJoin}-toVisual" style="margin-top:25px"/>
+      <label for="${groupIdJoin}-toVisual" style="margin-top:25px">Slider</label>
     `;
-    filterRow.insertBefore(checkboxNode, valueCol.nextSibling);
+    filterRow.insertBefore(checkboxNode, null);
 
     checkboxNode.onchange = (evt) => {
       if (evt.target.checked) {
-        filterRow.querySelector('[id$="1"]').classList.replace('col-md-4', 'col-md-3');
-        filterRow.querySelector('[id$="2"]').classList.replace('col-md-2', 'col-md-1');
-        filterRow.removeChild(filterRow.querySelector('[id$="3"]'));
-        const upperBoundNode = document.createElement('div');
-        upperBoundNode.classList.add('input-field', 'col-md-2');
-        upperBoundNode.id = `${seriesNum}-${filterNum}-5`;
-        upperBoundNode.innerHTML = `
-          <input type="number" id="numFilter${seriesNum}-${filterNum}-bound2">
-          <label for="numFilter${seriesNum}-${filterNum}-upperBound">Upper Bound</label>
-        `;
-        filterRow.insertBefore(upperBoundNode, checkboxNode);
-        const stepSizeNode = document.createElement('div');
-        stepSizeNode.classList.add('input-field', 'col-md-2');
-        stepSizeNode.id = `${seriesNum}-${filterNum}-4`;
-        stepSizeNode.innerHTML = `
-          <input type="number" id="numFilter${seriesNum}-${filterNum}-step">
-          <label for="numFilter${seriesNum}-${filterNum}-stepSize">Step Size</label>
-        `;
-        filterRow.insertBefore(stepSizeNode, upperBoundNode);
+        const valueCol = filterRow.querySelector('[id$="3"]');
+        valueCol.innerHTML = '';
         const lowerBoundNode = document.createElement('div');
-        lowerBoundNode.classList.add('input-field', 'col-md-2');
-        lowerBoundNode.id = `${seriesNum}-${filterNum}-3`;
+        lowerBoundNode.classList.add('input-field', 'col-md-3');
+        lowerBoundNode.id = `${seriesNum}-${filterNum}-6`;
         lowerBoundNode.innerHTML = `
           <input type="number" id="${seriesNum}-${filterNum}-bound1">
           <label for="${seriesNum}-${filterNum}-lowerBound">Lower Bound</label>
         `;
-        filterRow.insertBefore(lowerBoundNode, stepSizeNode);
-      } else {
-        filterRow.querySelector('[id$="1"]').classList.replace('col-md-3', 'col-md-4');
-        filterRow.querySelector('[id$="2"]').classList.replace('col-md-1', 'col-md-2');
-        filterRow.removeChild(filterRow.querySelector('[id$="3"]'));
-        filterRow.removeChild(filterRow.querySelector('[id$="4"]'));
-        filterRow.removeChild(filterRow.querySelector('[id$="5"]'));
-        const valueBoxNode = document.createElement('div');
-        valueBoxNode.classList.add('input-field', 'col-md-4');
-        valueBoxNode.id = `${seriesNum}-${filterNum}-3`;
-        valueBoxNode.innerHTML = `
-          <input type="number" id="${seriesNum}-${filterNum}-field">
-          <label for="${seriesNum}-${filterNum}-number">Value</label>
+        filterRow.insertBefore(lowerBoundNode, null);
+        const stepSizeNode = document.createElement('div');
+        stepSizeNode.classList.add('input-field', 'col-md-3');
+        stepSizeNode.id = `${seriesNum}-${filterNum}-7`;
+        stepSizeNode.innerHTML = `
+          <input type="number" id="numFilter${seriesNum}-${filterNum}-step">
+          <label for="numFilter${seriesNum}-${filterNum}-stepSize">Step Size</label>
         `;
-        filterRow.insertBefore(valueBoxNode, checkboxNode);
+        filterRow.insertBefore(stepSizeNode, null);
+        const upperBoundNode = document.createElement('div');
+        upperBoundNode.classList.add('input-field', 'col-md-3');
+        upperBoundNode.id = `${seriesNum}-${filterNum}-8`;
+        upperBoundNode.innerHTML = `
+          <input type="number" id="numFilter${seriesNum}-${filterNum}-bound2">
+          <label for="numFilter${seriesNum}-${filterNum}-upperBound">Upper Bound</label>
+        `;
+        filterRow.insertBefore(upperBoundNode, null);
+      } else {
+        const valueCol = filterRow.querySelector('[id$="3"]');
+        valueCol.innerHTML = `
+          <input type="number" id="numFilter${seriesNum}-${filterNum}-field">
+          <label for="numFilter${seriesNum}-${filterNum}-number">Value</label>
+        `;
+        filterRow.removeChild($(filterRow).children('[id$="6"]')[0]);
+        filterRow.removeChild($(filterRow).children('[id$="7"]')[0]);
+        filterRow.removeChild($(filterRow).children('[id$="8"]')[0]);
       }
     };
   }

@@ -34,6 +34,7 @@ class Donut extends Visual {
       label_mode: 'hover',
       group_by: defaultCat,
       title: '',
+      description: '',
     });
   }
 
@@ -56,14 +57,11 @@ class Donut extends Visual {
     const editor = new EditorGenerator(controlsContainer);
 
     editor.createHeader('Configure Donut Chart');
-    editor.createTextField('donut-title', 'Donut Title', (e) => {
-      this.attributes.title = $(e.currentTarget).val();
-      this.render();
-    });
+    this.renderBasicControls(editor);
 
     const cats = [];
-    let catsRaw = Object.keys(this.getCategoricalData()[0]);
-    catsRaw = catsRaw.concat(Object.keys(this.getNumericData()[0]));
+    let catsRaw = Object.keys(this.getCategoricalData(30)[0]);
+    catsRaw = catsRaw.concat(Object.keys(this.getNumericData(2)[0]));
     for (let i = 0; i < catsRaw.length; i += 1) {
       cats.push({ value: catsRaw[i], text: catsRaw[i] });
     }
@@ -210,12 +208,6 @@ class Donut extends Visual {
       .sort(null)
       .value(d => d.value);
 
-    if (this.attributes.title !== '') {
-      const title = d3.select(`#${this.renderID}`).append('h3')
-        .attr('class', 'visual-title');
-      title.html(this.attributes.title);
-    }
-
     let extraHeight = (data.length * 22) + 10;
     if (this.attributes.show_legend === false) { extraHeight = 0; }
 
@@ -361,6 +353,8 @@ class Donut extends Visual {
         .attr('stroke', 'black');
       }
     }
+
+    this.renderBasics();
   }
 }
 export default Donut;

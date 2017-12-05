@@ -13,6 +13,16 @@
 <!-- Custom Styles -->
 <link rel="stylesheet" type="text/css" href="/assets/prod/css/style.css">
 
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-110656741-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-110656741-1');
+</script>
+
 
 <header>
   <h1><a href="/">Sandbox</a></h1>
@@ -35,7 +45,7 @@ Venice Project Center · <a href="https://creativecommons.org/licenses/by-sa/4.0
 <script id="select-entry" type="text/x-handlebars-template">
   <div class="input-field" id="{{id}}">
     <select id="{{id}}-select">
-      <option value="" disabled>Choose your option</option>
+      <option value='{{defaultValue}}' disabled>{{defaultText}}</option>
       {{#each options}}
       <option value="{{value}}">{{text}}</option>
       {{/each}}

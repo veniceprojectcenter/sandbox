@@ -4,8 +4,6 @@ import EditorGenerator from './EditorGenerator';
 class Filter {
   constructor(avisual) {
     this.visual = avisual;
-    this.newNumericFilterEvent = document.createEvent('Event');
-    this.newNumericFilterEvent.initEvent('newNumericFilter', true, true);
   }
   /**
   *Returns array of data where each represents the data for a single series.
@@ -18,7 +16,7 @@ class Filter {
     }
     return this.visual.renderData;
   }
-
+  // filters by a single filter
   getFilteredDatum(i, filter, dataSet = null) {
     if (filter !== undefined && filter.categorical !== undefined
     && filter.numeric !== undefined) {
@@ -48,6 +46,8 @@ class Filter {
 */
   makeFilterSeries(makeHeader, onButton, buttonText = 'Generate Map', myDiv = this.visual.renderControlsDiv) {
     const editor = new EditorGenerator(myDiv);
+    this.newNumericFilterEvent = document.createEvent('Event');
+    this.newNumericFilterEvent.initEvent('newNumericFilter', true, true);
     myDiv.innerHTML += '<ul id=\'collapseUl\'class="collapsible" data-collapsible="accordion">';
     this.ul = document.getElementById('collapseUl');
     const li = document.createElement('li');
@@ -65,6 +65,9 @@ class Filter {
 
     this.addSeriesButton(editor, makeHeader);
     this.addSubmitButton(editor, buttonText, onButton);
+    $('.collapsible').collapsible({
+      accordion: true,
+    });
   }
 /** Renders individual filter series
 *
@@ -88,7 +91,7 @@ class Filter {
 
     const ccats = [];
     const ncats = [];
-    const catData = Object.keys(this.visual.getCategoricalData(25, data)[0]);
+    const catData = Object.keys(this.visual.getCategoricalData(100, data)[0]);
     const numData = Object.keys(this.visual.getNumericData(2, data)[0]);
 
     for (let i = 0; i < catData.length; i += 1) {
@@ -106,7 +109,7 @@ class Filter {
     myDiv.appendChild(catFilterDiv);
     editor.createButton(`addCat-${newSeriesNum}`, 'Add Categorical Filter', () => {
       const filterNum = $(myDiv).find('[id$=catFilterList]')[0].children.length;
-      catEditor.createDataFilter(`Filter${newSeriesNum}-${filterNum}`, ccats, `series${seriesNum} catFilterRow`, (e) => {
+      catEditor.createDataFilter(`Filter${newSeriesNum}-${filterNum}`, ccats, `series${newSeriesNum} catFilterRow`, (e) => {
         const column = $(e.currentTarget).val();
         const categories = this.visual.getGroupedList(column, data);
         const catSelect = e.currentTarget.parentNode.parentNode.nextSibling.nextSibling
@@ -177,7 +180,7 @@ class Filter {
       });
     });
   }
-
+  // Creates the add a Series button
   addSeriesButton(editor, makeHeader) {
     editor.createButton('addSeries', 'Add a Data Series', () => {
       const li = document.createElement('li');
@@ -196,7 +199,7 @@ class Filter {
       filterDiv.querySelector('div[id$=numFilterList] div.row').dispatchEvent(this.newNumericFilterEvent);
     });
   }
-
+// Creates the submit button, such as  'Generate Map' or 'Create Table'
   addSubmitButton(editor, buttonText, onButton) {
     editor.createButton('submit', buttonText, () => {
       for (let k = 0; k <= this.ul.childNodes.length; k += 1) {
@@ -256,7 +259,7 @@ class Filter {
       this.visual.render();
     });
   }
-
+  // Creates a categorical Filter
   createCategoryFilter(catEditor, ccats, data) {
     const seriesNum = this.ul.childNodes.length - 1;
     catEditor.createDataFilter(`Filter${seriesNum}-0`, ccats, `series${seriesNum} catFilterRow`, (e) => {
@@ -279,11 +282,11 @@ class Filter {
       $(catSelect).material_select();
     }, (e) => { this.removeFilter(e.currentTarget); });
   }
-
+// Remove a single Series from controls called by little x button at top of each drop down
   removeSeries(target) {
     target.parentNode.parentNode.remove();
   }
-
+// Removes an individual numeric or categorical filter
   removeFilter(buttonID) {
     buttonID.parentNode.parentNode.remove();
   }

@@ -10,6 +10,7 @@ class Map {
     this.map = null;
     this.circles = [];
     this.polylines = [];
+    this.polygons = [];
     this.customs = [];
     this.n = 0; // Number of custom icons
     this.styles = [];
@@ -157,6 +158,21 @@ class Map {
     polyline.setMap(this.map);
     this.polylines.push(polyline);
     return polyline;
+  }
+
+  addPolygon(points, color, opacity = 1) {
+    const polygon = new google.maps.Polygon({
+      path: points,
+      strokeColor: color,
+      strokeOpacity: opacity,
+      strokeWeight: 2,
+      fillColor: color,
+      fillOpacity: opacity,
+    });
+
+    polygon.setMap(this.map);
+    this.polygons.push(polygon);
+    return polygon;
   }
 
   clear() {

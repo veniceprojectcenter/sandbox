@@ -4,18 +4,18 @@ import Visual from './helpers/Visual';
 import Filter from './helpers/Filter';
 
 
-class Counter extends Visual {
+class ScaledUpNumber extends Visual {
   constructor(config, renderID, renderControlsID) {
     super(config, renderID, renderControlsID);
     this.renderData = [];
     this.filter = new Filter(this);
     this.num = 0;
     this.applyDefaultAttributes({
-      width: 500,
-      height: 500,
-      font_size: '2em',
-      colors: [],
-      category_order: '',
+      filters: [],
+      columnOptions: null,
+      color: '#000000',
+      fontSize: 32,
+      aggs: {},
     });
   }
   /** ************************************************************************
@@ -25,14 +25,6 @@ class Counter extends Visual {
   *
   */
   renderControls() {
-    this.attributes.filters = [];
-    this.attributes.aggs = [];
-    this.attributes.columnOptions = null;
-    this.attributes.displayColumns = [];
-    this.attributes.dataFilters = [];
-    this.attributes.numericFilters = [];
-    this.attributes.fontSize = 32;
-    this.attributes.color = '#000000';
     this.renderData = JSON.parse(JSON.stringify(this.data));
     this.attributes.columnOptions = Object.keys(this.data[0]);
     this.renderControlsDiv = document.getElementById(this.renderControlsID);
@@ -45,7 +37,7 @@ class Counter extends Visual {
     const editor = new EditorGenerator(this.renderControlsDiv);
     const aggDiv = document.createElement('div');
     this.renderControlsDiv.appendChild(aggDiv);
-    Counter.createAggregationRow(aggDiv, this.cats);
+    ScaledUpNumber.createAggregationRow(aggDiv, this.cats);
     const br = document.createElement('br');
     this.renderControlsDiv.appendChild(br);
     br.style.margin = '10px';
@@ -59,7 +51,8 @@ class Counter extends Visual {
     });
     const myDiv = document.createElement('div');
     this.renderControlsDiv.appendChild(myDiv);
-    this.filter.makeFilterSeries((a, b) => { this.counterHeader(a, b); }, () => { this.updateRender(); }, 'Generate Numbers', myDiv);
+    this.filter.makeFilterSeries((a, b) => { this.ScaledUpNumberHeader(a, b); }, () => { this.updateRender(); }, 'Generate Number', myDiv);
+    document.getElementById('addSeries').remove();
   }
 
   /** Renders the App section
@@ -121,15 +114,15 @@ class Counter extends Visual {
         }
       }
       if (agg.operation === 'Sum') {
-        text = Counter.createTSpan(svg);
+        text = ScaledUpNumber.createTSpan(svg);
         text.innerHTML += (`${agg.title} ${Math.round(sum * 100) / 100}`);
       }
       if (agg.operation === 'Average') {
-        text = Counter.createTSpan(svg);
+        text = ScaledUpNumber.createTSpan(svg);
         text.innerHTML += (`${agg.title} ${Math.round((sum / count) * 100) / 100}`);
       }
       if (agg.operation === 'Count') {
-        text = Counter.createTSpan(svg);
+        text = ScaledUpNumber.createTSpan(svg);
         text.innerHTML += `${agg.title} ${count}`;
       }
     }
@@ -140,10 +133,8 @@ class Counter extends Visual {
   }
 
 
-  counterHeader(headEditor, index) {
-    headEditor.createRemoveButton(`remove${index}`, (e2) => {
-      this.filter.removeSeries(e2.currentTarget);
-    });
+  ScaledUpNumberHeader(headEditor, index) {
+    headEditor.createHeader('Filters');
   }
 
   static createAggregationRow(myDiv, cats) {
@@ -173,4 +164,4 @@ class Counter extends Visual {
     return text;
   }
 }
-export default Counter;
+export default ScaledUpNumber;

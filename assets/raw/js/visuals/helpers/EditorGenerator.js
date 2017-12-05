@@ -35,8 +35,8 @@ class EditorGenerator {
     $(`#${id}-right`).click(onRightClicked);
   }
 
-  createSelectBox(id, title, options, current, onOptionChanged) {
-    const context = { id, title, options };
+  createSelectBox(id, title, options, current, onOptionChanged, defaultValue = '', defaultText = 'Select a Property') {
+    const context = { id, title, options, defaultValue, defaultText };
     this.handlebarsWithContext('select-entry', context);
     $(`#${id}-select`).val(current).material_select();
     $(`#${id}-select`).change(onOptionChanged);
@@ -80,7 +80,9 @@ class EditorGenerator {
   createNumberSlider(id, title, current, min, max, step, onValueChanged, inputEvent = 'input') {
     const context = { id, title, min, max, step, current };
     this.handlebarsWithContext('range-entry', context);
-    $(`#${id}-field`).on(inputEvent, onValueChanged);
+    $(document).ready(() => {
+      $(`#${id}-field`).on(inputEvent, onValueChanged);
+    });
   }
 
   createFileUpload(id, title, onChange) {

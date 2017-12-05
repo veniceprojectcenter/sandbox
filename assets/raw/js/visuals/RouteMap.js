@@ -19,6 +19,7 @@ class PathFinding extends Visual {
     this.applyDefaultAttributes({
       aggregationColumn: Object.keys(this.data[0])[107],
       title: '',
+      description: '',
       mapStyles: DefaultMapStyle,
     });
   }
@@ -43,6 +44,8 @@ class PathFinding extends Visual {
     this.map.registerClickAction((event) => {
       this.clickAction(event);
     });
+
+    this.renderBasics();
   }
 
   addDataMarkers() {
@@ -248,6 +251,8 @@ class PathFinding extends Visual {
     const editor = new EditorGenerator(controlsContainer);
 
     editor.createHeader('Controls');
+
+    this.renderBasicControls(editor);
 
     const columnSelectionID = 'columnSelection';
     const columns = Object.keys(this.data[0]);

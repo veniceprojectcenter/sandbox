@@ -3,6 +3,8 @@ import Map from './helpers/Map';
 import EditorGenerator from './helpers/EditorGenerator';
 import BoundarySelector from './helpers/BoundarySelector';
 import DefaultMapStyle from './helpers/DefaultMapStyle';
+import VeniceOutline from './helpers/VeniceOutline';
+import Chloropleth from './helpers/Chloropleth';
 
 /* This file is to be used as a default starting point for new map visualizations
  * that feature adding divs
@@ -16,6 +18,9 @@ class ChloroplethMap extends Visual {
     this.boundarySelector = new BoundarySelector(this.map);
 
     this.BOUNDARY_COLOR = '#ff3333';
+
+    this.shouldRenderCache = true; // Should localStorage polylines and
+    // data markers be rendered up front?
   }
 
   static removeBoundaryWithPoint(point) {
@@ -37,8 +42,29 @@ class ChloroplethMap extends Visual {
   onLoadData() {
     this.applyDefaultAttributes({
       title: '',
+      description: '',
       mapStyles: DefaultMapStyle,
+      colorBy: Object.keys(this.data[0])[0],
     });
+
+    if (this.constructor.localStorageIsEmptyOrNulls()) {
+      console.log('Local storage is empty, overwriting with venice data');
+      localStorage.boundaries = JSON.stringify(VeniceOutline);
+    }
+  }
+
+  static localStorageIsEmptyOrNulls() {
+    let result = true;
+    if ((localStorage.boundaries === '') || (localStorage.boundaries === undefined)) {
+      return true;
+    }
+    const storage = JSON.parse(localStorage.boundaries);
+    storage.forEach((path) => {
+      if ((path !== null) && (path !== undefined)) {
+        result = false;
+      }
+    });
+    return result;
   }
 
   addDataMarkers() {
@@ -52,12 +78,22 @@ class ChloroplethMap extends Visual {
     Visual.empty(this.renderID);
 
     this.map.render(this.renderID, this.attributes.mapStyles);
+    this.renderCache();
+    this.renderBasics();
+  }
+
+  renderCache() {
     this.renderLocalPolyLines();
     this.addDataMarkers();
+
+    if (!this.shouldRendercache) {
+      this.setBoundariesMap(null);
+    }
+
+    this.drawChloropleth();
   }
 
   renderLocalPolyLines() {
-    console.log(localStorage.boundaries);
     if (localStorage.boundaries === undefined) {
       localStorage.boundaries = JSON.stringify([]);
     }
@@ -108,6 +144,17 @@ class ChloroplethMap extends Visual {
     });
   }
 
+  drawChloropleth() {
+    console.log(`Drawing polygons by field: ${this.attributes.colorBy}`);
+    if (localStorage.boundaries === undefined) {
+      localStorage.boundaries = JSON.stringify([]);
+    }
+    const boundaries = JSON.parse(localStorage.boundaries);
+
+    const chloropleth = new Chloropleth(this.attributes.colorBy, boundaries, this.data);
+    // chloropleth.draw(this.map);
+  }
+
   renderControls() {
     if (this.data.length === 0) {
       alert('Dataset is empty!');
@@ -120,9 +167,12 @@ class ChloroplethMap extends Visual {
     const editor = new EditorGenerator(controlsContainer);
 
     editor.createHeader('Editor');
+
+    this.renderBasicControls(editor);
     this.createSelectButton(editor);
-    // this.createColumnSelector(editor);
     this.createHideBoundsBox(editor);
+    this.createColumnSelector(editor);
+
     this.map.renderMapColorControls(editor, this.attributes, (color) => {
       this.attributes.mapStyles[0].stylers[0].color = color;
     }, (color) => {
@@ -132,7 +182,7 @@ class ChloroplethMap extends Visual {
 
   createHideBoundsBox(editor) {
     const id = 'hideBoundsBox';
-    editor.createCheckBox(id, 'Toggle Showing Selections', true, () => {
+    editor.createCheckBox(id, 'Toggle Showing Selections', false, () => {
       const checked = document.getElementById(`${id}-checkbox`).checked;
       if (!checked) {
         this.setBoundariesMap(null);
@@ -142,10 +192,18 @@ class ChloroplethMap extends Visual {
     });
   }
 
-  /* createColumnSelector(editor) {
+  createColumnSelector(editor) {
+    const options = [];
+    Object.keys(this.data[0]).forEach((option) => {
+      options.push({ text: option, value: option });
+    });
+    const current = this.attributes.colorBy;
     editor.createSelectBox('columnSelect', 'Select a column to color by',
-    options, current, onOptionChanged);
-  } */
+    options, current, (event) => {
+      this.attributes.colorBy = event.currentTarget.value;
+      this.drawChloropleth();
+    });
+  }
 
   createSelectButton(editor) {
     editor.createButton('selectArea', 'Select Area', () => {
