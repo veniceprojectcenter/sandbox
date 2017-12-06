@@ -60,8 +60,6 @@ class BubbleMapChart extends Visual {
 
   drawMarkers() {
     const numData = this.getNumericData();
-    const groups = Visual.groupBy(this.attributes.size_by, numData);
-    const values = Object.keys(groups);
     const svalues = this.constructor.getVals(numData, this.attributes.size_by);
     const cvalues = this.constructor.getVals(numData, this.attributes.color_by);
     const sMin = Math.min(...svalues);
@@ -75,31 +73,21 @@ class BubbleMapChart extends Visual {
       .range([crange[0], crange[1], crange[2]]);
     const srange = this.attributes.bubble_size.range;
     const getR = d3.scaleLinear().domain([sMin, sMax]).range([srange[0], srange[1]]);
-    for (let i = 0; i < values.length; i += 1) {
-      const sval = values[i];
-      const radius = getR(sval);
-      const group = groups[sval];
-      group.forEach((point) => {
-        const cval = point[this.attributes.color_by];
+    for (let i = 0; i < numData.length; i += 1) {
+      const sval = numData[i][this.attributes.size_by];
+      if (!isNaN(sval) && sval !== '') {
+        const radius = getR(sval);
+        const cval = numData[i][this.attributes.color_by];
         const color = getC(cval);
-        const lat = parseFloat(point.lat);
-        const lng = parseFloat(point.lng);
-        // const selected = this.attributes.infoCols;
-        // let content = '<div id="content">';
-        // for (let j = 0; j < selected.length; j += 1) {
-        //   const ivalues = this.constructor.getVals(numData, selected);
-        //   const ival = ivalues[j];
-        //   content += `<p>${selected[j]}: ${ival}</p>`;
-        // }
-        // content += '</div>';
-        // console.log(content);
-        const content = `${'<div id="content">' +
-              '<p>'}${this.attributes.size_by}: ${sval}</p>` +
-              `<p>${this.attributes.color_by}: ${cval}</p>` +
-              '</div>';
+        const lat = parseFloat(numData[i].lat);
+        const lng = parseFloat(numData[i].lng);
+        // const content = `${'<div id="content">' +
+        //               '<p>'}${this.attributes.size_by}: ${sval}</p>` +
+        //               `<p>${this.attributes.color_by}: ${cval}</p>` +
+        //               '</div>';
         const circle = this.map.addCircle({ lat, lng }, color, 0.5, parseFloat(radius));
-        this.map.addInfoBox(content, circle, { lat, lng });
-      });
+        // this.map.addInfoBox(content, circle, { lat, lng });
+      }
     }
   }
 
