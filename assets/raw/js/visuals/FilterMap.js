@@ -109,7 +109,7 @@ class FilterMap extends Visual {
       Object.keys(this.attributes.sliders[outerElem].attributes).forEach((innerElem, innerIndex) => {
         thereAreSliders = true;
         const id = `slider-${outerIndex}-${innerIndex}`;
-        const title = `${this.attributes.sliders[outerElem].name} ${innerElem}`;
+        const title = this.attributes.sliders[outerElem].attributes[innerElem].label;
         const min = this.attributes.sliders[outerElem].attributes[innerElem].lowerBound;
         const max = this.attributes.sliders[outerElem].attributes[innerElem].upperBound;
         const step = this.attributes.sliders[outerElem].attributes[innerElem].stepSize;
@@ -173,6 +173,7 @@ class FilterMap extends Visual {
                   lowerBound: $(this).find('div[id$=6]')[0].children[0].value,
                   stepSize: $(this).find('div[id$=7]')[0].children[0].value,
                   upperBound: $(this).find('div[id$=8]')[0].children[0].value,
+                  label: $(this).find('div[id$=9]')[0].children[0].value,
                 };
               }
             }
@@ -320,6 +321,14 @@ class FilterMap extends Visual {
           <label for="numFilter${seriesNum}-${filterNum}-upperBound">Upper Bound</label>
         `;
         filterRow.insertBefore(upperBoundNode, null);
+        const label = document.createElement('div');
+        label.classList.add('input-field', 'col-md-3');
+        label.id = `${seriesNum}-${filterNum}-9`;
+        label.innerHTML = `
+          <input type="text" id="numFilter${seriesNum}-${filterNum}-label">
+          <label for="numFilter${seriesNum}-${filterNum}-upperBound">Slider Label</label>
+        `;
+        filterRow.insertBefore(label, null);
       } else {
         const valueCol = filterRow.querySelector('[id$="3"]');
         valueCol.innerHTML = `
@@ -329,6 +338,7 @@ class FilterMap extends Visual {
         filterRow.removeChild($(filterRow).children('[id$="6"]')[0]);
         filterRow.removeChild($(filterRow).children('[id$="7"]')[0]);
         filterRow.removeChild($(filterRow).children('[id$="8"]')[0]);
+        filterRow.removeChild($(filterRow).children('[id$="9"]')[0]);
       }
     };
   }
