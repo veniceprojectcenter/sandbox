@@ -1,8 +1,9 @@
 import BoundarySelector from './BoundarySelector';
 
 class Choropleth {
-  constructor(colorBy, boundaries, dataPoints, minColor, maxColor) {
+  constructor(colorBy, colorByCategory, boundaries, dataPoints, minColor, maxColor) {
     this.colorBy = colorBy;
+    this.colorByCategory = colorByCategory;
     this.boundaries = boundaries;
     this.dataPoints = dataPoints;
     this.minColor = minColor;
@@ -27,10 +28,15 @@ class Choropleth {
   }
 
   addPolygonHoverListener(map, polygon, info) {
-    const average = info.average;
+    let average = info.average;
     const boundary = info.boundary;
 
-    const contentString = `${this.colorBy}: ${average}`;
+    let contentString = `${this.colorBy}: ${average}`;
+    if (this.colorByCategory !== null) {
+      average *= 100;
+      average = (`${average}`).slice(0, 4);
+      contentString = `Percentage with ${this.colorBy} as ${this.colorByCategory}: ${average}%`;
+    }
     const position = BoundarySelector.getCentroid(boundary);
     position.lat += 0.001;
 
@@ -75,11 +81,41 @@ class Choropleth {
     const pointsWithinBoundary = selector.getPointsInBoundary(this.dataPoints, boundary);
     info.points = pointsWithinBoundary;
 
-    const result = this.constructor.getAverageOfField(pointsWithinBoundary,
+    let result = {};
+    if (this.colorByCategory === null) {
+      result = this.constructor.getAverageOfField(pointsWithinBoundary,
         this.colorBy);
+    } else {
+      result = this.constructor.getCategoryPercentage(pointsWithinBoundary,
+        this.colorBy, this.colorByCategory);
+    }
+
     info.average = result.average;
     info.values = result.values;
     return [info];
+  }
+
+  static getCategoryPercentage(points, field, category) {
+    let numInCategory = 0;
+    let total = 0;
+    const values = [];
+    points.forEach((point) => {
+      const value = point[field];
+      if (value === category) {
+        numInCategory += 1;
+      }
+      if (value !== undefined && value !== null) {
+        total += 1;
+        values.push(value);
+      }
+    });
+
+    if (total === 0) {
+      return { average: null, values };
+    }
+
+    const percent = numInCategory / total;
+    return { average: percent, values };
   }
 
   static getAverageOfField(points, field) {
