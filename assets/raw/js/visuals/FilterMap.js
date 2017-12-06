@@ -33,7 +33,7 @@ class FilterMap extends Visual {
     });
   }
 
-  addMarker(lat, lng, color = 'blue', shapeType = 'triangle', image, opacity = 0.5, r = 15) {
+  addMarker(lat, lng, color = 'blue', shapeType = 'triangle', image, opacity = 0.5, r = 25) {
     if (shapeType === 'circle') {
       this.map.addCircle({ lat: parseFloat(lat), lng: parseFloat(lng) }, color, opacity, r);
     } else if (shapeType === 'triangle') {
@@ -101,6 +101,8 @@ class FilterMap extends Visual {
 
   createVisualSliderControls() {
     const div = document.createElement('div');
+    div.class = 'sliderDiv';
+    div.innerHTML = '';
     const visual = document.getElementById(this.renderID);
     let thereAreSliders = false;
     Object.keys(this.attributes.sliders).forEach((outerElem, outerIndex) => {
@@ -112,7 +114,7 @@ class FilterMap extends Visual {
         const max = this.attributes.sliders[outerElem].attributes[innerElem].upperBound;
         const step = this.attributes.sliders[outerElem].attributes[innerElem].stepSize;
         const current = this.attributes.sliders[outerElem].attributes[innerElem].value;
-        div.innerHTML = `
+        div.innerHTML += `
           <label for="${id}-field">${title}</label>
           <form action="#" id="${id}" class="slider">
             <p class="range-field">
