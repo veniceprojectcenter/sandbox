@@ -48,6 +48,7 @@ class ChoroplethMap extends Visual {
       colorByCategory: null,
       minColor: '#f9fff9',
       maxColor: '#00ca00',
+      nullPolygonColor: 'black',
     });
 
     if (this.constructor.localStorageIsEmptyOrNulls()) {
@@ -164,7 +165,8 @@ class ChoroplethMap extends Visual {
     Map.clear(this.map.polygons);
     const choropleth = new Choropleth(this.attributes.colorBy,
       this.attributes.colorByCategory, boundaries,
-      this.data, this.attributes.minColor, this.attributes.maxColor);
+      this.data, this.attributes.minColor, this.attributes.maxColor,
+      this.attributes.nullPolygonColor);
     choropleth.draw(this.map);
   }
 
@@ -321,6 +323,13 @@ class ChoroplethMap extends Visual {
       this.attributes.maxColor = value;
       this.drawChoropleth();
     });
+
+    editor.createColorField('color-null', 'Color of Polygons without data',
+      this.attributes.nullPolygonColor, (e) => {
+        const value = $(e.currentTarget).val();
+        this.attributes.nullPolygonColor = value;
+        this.drawChoropleth();
+      });
   }
 }
 

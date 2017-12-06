@@ -1,13 +1,14 @@
 import BoundarySelector from './BoundarySelector';
 
 class Choropleth {
-  constructor(colorBy, colorByCategory, boundaries, dataPoints, minColor, maxColor) {
+  constructor(colorBy, colorByCategory, boundaries, dataPoints, minColor, maxColor, nullPolygonColor) {
     this.colorBy = colorBy;
     this.colorByCategory = colorByCategory;
     this.boundaries = boundaries;
     this.dataPoints = dataPoints;
     this.minColor = minColor;
     this.maxColor = maxColor;
+    this.nullPolygonColor = nullPolygonColor;
 
     this.boundaryObjects = this.computeChoroplethColors();
     this.polygons = [];
@@ -19,7 +20,7 @@ class Choropleth {
       let color = boundary.color;
       let opacity = 1;
       color = (color === null) ?
-        (() => { opacity = 0.1; return this.minColor; })() : color;
+        (() => { opacity = 0.375; return this.nullPolygonColor; })() : color;
 
       const polygon = map.addPolygon(points, color, opacity);
       this.addPolygonHoverListener(map, polygon, boundary);
