@@ -28,13 +28,33 @@ class CategoryMap extends Visual {
     return color;
   }
 
+  getNthColor(n, label) {
+    if (n === 0) {
+      return 'hsl(360, 100%, 50%)';
+    } else if (n === 1) {
+      return 'hsl(235, 100%, 50%)';
+    }
+    const colors = [];
+
+    for (let i = 1; i < n; i += 1) {
+      const d = 2 ** i;
+      for (let j = 1; j < d; j += 2) {
+        const hue = (j / d) * 360;
+        colors.push(hue);
+      }
+    }
+
+    const value = colors[n - 2];
+    return `hsl(${value}, 100%, 50%)`;
+  }
+
   drawMarkers() {
     const groups = Visual.groupBy(this.attributes.color_by, this.data);
     const labels = Object.keys(groups);
     for (let i = 0; i < labels.length; i += 1) {
       const label = labels[i];
       const group = groups[label];
-      const color = this.constructor.getRandomColor();
+      const color = this.getNthColor(i, label);
       group.forEach((point) => {
         const lat = parseFloat(point.lat);
         const lng = parseFloat(point.lng);

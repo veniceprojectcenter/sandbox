@@ -33,7 +33,7 @@ class FilterMap extends Visual {
     });
   }
 
-  addMarker(lat, lng, color = 'blue', shapeType = 'triangle', image, opacity = 0.5, r = 15) {
+  addMarker(lat, lng, color = 'blue', shapeType = 'triangle', image, opacity = 0.5, r = 25) {
     if (shapeType === 'circle') {
       this.map.addCircle({ lat: parseFloat(lat), lng: parseFloat(lng) }, color, opacity, r);
     } else if (shapeType === 'triangle') {

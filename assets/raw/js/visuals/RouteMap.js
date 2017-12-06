@@ -195,7 +195,8 @@ class PathFinding extends Visual {
   displayPointAggregation() {
     const points = this.points;
     const number = points.length;
-    let infoText = `On this path, you will encounter ${number} artifacts.`;
+    const datasetName = null;
+    let infoText = `On this path, you will encounter ${number} ${datasetName}.`;
     const fieldToAggregate = this.attributes.aggregationColumn;
 
     let sum = 0;
