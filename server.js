@@ -29,6 +29,8 @@ const server = http.createServer((req, res) => {
       mime = 'image/jpeg';
     } else if (path.includes('.png')) {
       mime = 'image/png';
+    } else if (path.includes('.svg')) {
+      mime = 'image/svg+xml';
     }
     sendFile(res, path, mime);
   } else if (uri.pathname.includes('csv')) {
