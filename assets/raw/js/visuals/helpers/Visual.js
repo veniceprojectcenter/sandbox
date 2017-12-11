@@ -203,7 +203,7 @@ class Visual {
 
     const downloadContainer = document.getElementById(id);
     downloadContainer.appendChild(publishButton);
-    downloadContainer.appendChild(downloadButton);
+    // downloadContainer.appendChild(downloadButton);
     downloadContainer.appendChild(saveSVGButton);
     downloadContainer.appendChild(modal);
 
