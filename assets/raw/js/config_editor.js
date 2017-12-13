@@ -14,11 +14,11 @@ function renderList(configs) {
 
     const title = document.createElement('p');
     title.className = 'title';
-    title.innerText = 'A title';
+    title.innerText = config.attributes.title;
 
     const dataSet = document.createElement('p');
     dataSet.className = 'data-set';
-    dataSet.innerText = config.dataSet;
+    dataSet.innerText = config.dataSetName;
 
     const type = document.createElement('p');
     type.className = 'type';
@@ -31,9 +31,9 @@ function renderList(configs) {
       deleteConfig(index);
     });
 
+    row.appendChild(title);
     row.appendChild(dataSet);
     row.appendChild(type);
-    row.appendChild(title);
     row.appendChild(removeButton);
 
     list.appendChild(row);
@@ -53,6 +53,16 @@ function deleteConfig(index) {
       });
     });
   }
+}
+
+function getDataSetName(dataSets, id) {
+  for (let i = 0; i < dataSets.length; i += 1) {
+    if (dataSets[i].id === id) {
+      return dataSets[i].name;
+    }
+  }
+
+  return '';
 }
 
 function renderConfigEditor() {
@@ -79,8 +89,13 @@ function renderConfigEditor() {
 
   Data.fetchConfigs((configs) => {
     configsList = configs.reverse();
-    loader.remove();
-    renderList(configsList);
+    Data.fetchDataSets((dataSets) => {
+      for (let i = 0; i < configsList.length; i += 1) {
+        configsList[i].dataSetName = getDataSetName(dataSets, configsList[i].dataSet);
+      }
+      loader.remove();
+      renderList(configsList);
+    });
   });
 }
 

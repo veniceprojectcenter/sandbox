@@ -107,6 +107,7 @@ class Data {
   static async fetchConfigs(callback) {
     const configs = [];
     const db = firebase.database();
+    const promises = [];
     await db.ref('/viz/info').once('value').then((querySnapshot) => {
       querySnapshot.forEach((doc) => {
         const entry = {};
@@ -115,9 +116,15 @@ class Data {
         entry.dataSet = value.dataSet;
         entry.type = value.type;
         entry.id = value.id;
-        configs.push(entry);
+        promises.push(db.ref(`/viz/configs/${entry.dataSet}/${entry.id}`).once('value').then((result) => {
+          const config = result.val();
+          entry.attributes = JSON.parse(config.attributes);
+          configs.push(entry);
+        }));
       });
     });
+
+    await Promise.all(promises);
 
     if (callback) {
       callback(configs);
