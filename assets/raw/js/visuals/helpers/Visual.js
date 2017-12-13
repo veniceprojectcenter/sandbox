@@ -1,7 +1,7 @@
 /* eslint class-methods-use-this: ["error", { "exceptMethods": ["render", "renderControls"] }] */
-import Firebase from '../../Firebase';
 import Loader from './Loader';
 import Data from './Data';
+import LoginModal from './LoginModal';
 
 
 class Visual {
@@ -43,110 +43,16 @@ class Visual {
   }
 
   generateConfigButton(id = 'download') {
-    const modal = document.createElement('div');
-    modal.className = 'modal modal-fixed-footer';
-    modal.id = 'login-modal';
-
-    const modalContent = document.createElement('div');
-    modalContent.className = 'modal-content';
-
-    const headerRow = document.createElement('div');
-    headerRow.className = 'row';
-    const headerContainer = document.createElement('div');
-    headerContainer.className = 'col';
-    const modalHeader = document.createElement('h4');
-    modalHeader.innerText = 'Log In';
-
-    const emailRow = document.createElement('div');
-    emailRow.className = 'row';
-    const emailContainer = document.createElement('div');
-    emailContainer.className = 'input-field col';
-    const emailInput = document.createElement('input');
-    emailInput.type = 'email';
-    emailInput.className = 'validate';
-    emailInput.id = 'email';
-    const emailLabel = document.createElement('label');
-    emailLabel.setAttribute('for', 'email');
-    emailLabel.innerText = 'Email';
-
-    const passwordRow = document.createElement('div');
-    passwordRow.className = 'row';
-    const passwordContainer = document.createElement('div');
-    passwordContainer.className = 'input-field col';
-    const passwordInput = document.createElement('input');
-    passwordInput.type = 'password';
-    passwordInput.className = 'validate';
-    passwordInput.id = 'password';
-    const passwordLabel = document.createElement('label');
-    passwordLabel.setAttribute('for', 'password');
-    passwordLabel.innerText = 'Password';
-
-    const modalFooter = document.createElement('div');
-    modalFooter.className = 'modal-footer';
-
-    const loginButton = document.createElement('button');
-    loginButton.className = 'waves-effect btn-flat';
-    loginButton.innerText = 'Login And Publish';
-    loginButton.addEventListener('click', async () => {
-      loginButton.classList.add('disabled');
-      const email = emailInput.value;
-      const password = passwordInput.value;
-      Firebase.login(email, password, () => {
-        $('#login-modal').modal('close');
-      }, () => {
-        loginButton.classList.remove('disabled');
-      });
-    });
-
-    const cancelButton = document.createElement('button');
-    cancelButton.className = 'modal-action modal-close waves-effect btn-flat';
-    cancelButton.innerText = 'Cancel';
-
-
-    headerRow.appendChild(headerContainer);
-    headerContainer.appendChild(modalHeader);
-
-    emailContainer.appendChild(emailInput);
-    emailContainer.appendChild(emailLabel);
-    emailRow.appendChild(emailContainer);
-
-    passwordContainer.appendChild(passwordInput);
-    passwordContainer.appendChild(passwordLabel);
-    passwordRow.appendChild(passwordContainer);
-
-    modalContent.appendChild(headerRow);
-    modalContent.appendChild(emailRow);
-    modalContent.appendChild(passwordRow);
-    modal.appendChild(modalContent);
-
-    modalFooter.appendChild(cancelButton);
-    modalFooter.appendChild(loginButton);
-    modal.appendChild(modalFooter);
-
-
+    const loginModal = new LoginModal();
     const publishButton = document.createElement('button');
     publishButton.className = 'btn waves-effectr';
     publishButton.innerText = 'Publish Visual';
     publishButton.id = 'publish-button';
-    let isStateChangeRegistered = false;
-    let isAuthenticated = false;
     publishButton.addEventListener('click', async () => {
       if (this.attributes.title) {
-        if (!isStateChangeRegistered) {
-          isStateChangeRegistered = true;
-          firebase.auth().onAuthStateChanged((user) => {
-            if (user) {
-              isAuthenticated = true;
-              this.publishConfig();
-            } else {
-              $('#login-modal').modal('open');
-            }
-          });
-        } else if (isAuthenticated) {
+        loginModal.authenticate('Login and Publish').then(() => {
           this.publishConfig();
-        } else {
-          $('#login-modal').modal('open');
-        }
+        });
       } else {
         Materialize.toast('A title is required to publish a visual', 3000);
       }
@@ -205,9 +111,8 @@ class Visual {
     downloadContainer.appendChild(publishButton);
     // downloadContainer.appendChild(downloadButton);
     downloadContainer.appendChild(saveSVGButton);
-    downloadContainer.appendChild(modal);
-
-    $('.modal').modal();
+    downloadContainer.appendChild(loginModal.generate());
+    loginModal.bind();
   }
 
   async publishConfig() {
