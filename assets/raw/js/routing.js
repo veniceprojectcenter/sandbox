@@ -3,6 +3,7 @@ import updateBreadcrumbs from './breadcrumbs';
 import renderDatasetList from './dataset_list';
 import renderVisualsList from './visuals_list';
 import renderEditor from './editor';
+import renderConfigEditor from './config_editor';
 import Firebase from './Firebase';
 
 
@@ -16,18 +17,21 @@ function routing() {
       route.push(split[i]);
     }
   }
+  if (route.length > 0 && route[0] === 'config-editor') {
+    renderConfigEditor();
+  } else {
+    updateBreadcrumbs(route);
 
-  updateBreadcrumbs(route);
-
-  switch (route.length) {
-    case 0:
-      renderDatasetList(route);
-      break;
-    case 1:
-      renderVisualsList(route);
-      break;
-    default:
-      renderEditor(route);
+    switch (route.length) {
+      case 0:
+        renderDatasetList(route);
+        break;
+      case 1:
+        renderVisualsList(route);
+        break;
+      default:
+        renderEditor(route);
+    }
   }
 }
 

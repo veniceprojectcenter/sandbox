@@ -103,6 +103,36 @@ class Data {
       });
     }
   }
+
+  static async fetchConfigs(callback) {
+    const configs = [];
+    const db = firebase.database();
+    await db.ref('/viz/info').once('value').then((querySnapshot) => {
+      querySnapshot.forEach((doc) => {
+        const entry = {};
+        const value = doc.val();
+        entry.key = doc.key;
+        entry.dataSet = value.dataSet;
+        entry.type = value.type;
+        entry.id = value.id;
+        configs.push(entry);
+      });
+    });
+
+    if (callback) {
+      callback(configs);
+    }
+  }
+
+  static async removeConfig(config, callback) {
+    const db = firebase.database();
+    await db.ref(`/viz/info/${config.key}`).remove();
+    await db.ref(`/viz/configs/${config.dataSet}/${config.id}`).remove();
+
+    if (callback) {
+      callback();
+    }
+  }
 }
 
 export default Data;
