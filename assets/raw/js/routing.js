@@ -6,6 +6,9 @@ import renderEditor from './editor';
 import renderConfigEditor from './config_editor';
 import Firebase from './Firebase';
 
+/**
+ * Uses the URL to determine which page to render
+ */
 function routing() {
   const path = window.location.pathname;
   const split = path.split('/');
@@ -20,7 +23,6 @@ function routing() {
     renderConfigEditor();
   } else {
     updateBreadcrumbs(route);
-
     switch (route.length) {
       case 0:
         renderDatasetList(route);
@@ -28,7 +30,7 @@ function routing() {
       case 1:
         renderVisualsList(route);
         break;
-      default:
+      default: // TODO this uses url to determine graph type which we are no longer doing
         renderEditor(route);
     }
   }

@@ -178,6 +178,7 @@ class Donut extends Visual {
       });
   }
 
+  // TODO: this does not use the object attributes, just const values like width and height
   render() {
     // Empty the container, then place the SVG in there
     Visual.empty(this.renderID);
