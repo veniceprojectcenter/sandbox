@@ -11,7 +11,6 @@ import BubbleMapChart from './visuals/BubbleMapChart';
 import RouteMap from './visuals/RouteMap';
 import FilterMap from './visuals/FilterMap';
 import DataView from './visuals/DataView';
-import ChoroplethMap from './visuals/ChoroplethMap';
 
 function renderVisualFromConfig(defaultConfig, containerID) {
   let config = defaultConfig;
@@ -49,9 +48,6 @@ function renderVisualFromConfig(defaultConfig, containerID) {
       break;
     case 'Route-Map':
       visual = new RouteMap(config, containerID);
-      break;
-    case 'Choropleth-Map':
-      visual = new ChoroplethMap(config, containerID);
       break;
     default:
       document.getElementById(containerID).innerHTML = `<p>Error: could not find visualization: ${config.type}.`;
