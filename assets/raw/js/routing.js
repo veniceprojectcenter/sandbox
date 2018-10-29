@@ -6,7 +6,6 @@ import renderEditor from './editor';
 import renderConfigEditor from './config_editor';
 import Firebase from './Firebase';
 
-
 function routing() {
   const path = window.location.pathname;
   const split = path.split('/');
