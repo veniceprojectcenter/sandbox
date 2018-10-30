@@ -1,5 +1,4 @@
 import base from './base';
-import updateBreadcrumbs from './breadcrumbs';
 import renderDatasetList from './dataset_list';
 import renderVisualsList from './visuals_list';
 import renderEditor from './editor';
@@ -22,7 +21,6 @@ function routing() {
   if (route.length > 0 && route[0] === 'config-editor') {
     renderConfigEditor();
   } else {
-    updateBreadcrumbs(route);
     switch (route.length) {
       case 0:
         renderDatasetList(route);
