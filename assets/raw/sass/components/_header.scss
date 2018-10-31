@@ -1,7 +1,7 @@
 header {
-  background: $primary;;
+  background: $primary;
   display: flex;
-  height: 70px;
+  height: 60px;
   left: 0;
   top: 0;
   position: fixed;
@@ -27,5 +27,5 @@ header {
 .color-label
 {
   display: block;
-  margin-bottom: 0px;
+  margin-bottom: 0;
 }
