@@ -1,4 +1,4 @@
-$loader-bg: rgba(255, 255, 255, .5);
+$loader-bg: #FFFFFF;
 $loader-fg: $primary;
 
 .loader-container {
@@ -12,11 +12,8 @@ $loader-fg: $primary;
 
 .loader {
   animation: load 1.1s infinite linear;
-  border-bottom: 1.1em solid $loader-bg;
-  border-left: 1.1em solid $loader-fg;
+  border: 1.1em solid $loader-bg;
   border-radius: 50%;
-  border-right: 1.1em solid $loader-bg;
-  border-top: 1.1em solid $loader-bg;
   font-size: 10px;
   height: 10em;
   margin: 60px auto;

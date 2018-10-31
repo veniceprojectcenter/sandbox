@@ -1,13 +1,11 @@
-import Visual from './visuals/helpers/Visual';
-
-let XMLHttpRequest = require('xmlhttprequest').XMLHttpRequest;
+const XMLHttpRequest = require('xmlhttprequest').XMLHttpRequest;
 
 /**
  * File to put all functions for querying the CK Database
 */
 class ckData {
   static fetchData(dataset, callback) {
-      page.innerHTML = '<p> good shit boi';
+    page.innerHTML = '<p> good shit boi';
 
     const http = new XMLHttpRequest();
     const url = 'http://ckdata2.herokuapp.com/api/v1/dataset.json?group_name=Accolades';
