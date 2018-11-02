@@ -1,15 +1,15 @@
 svg.donut {
   width: 100%;
   max-height: 100%;
-  
+
   .arc text{
     text-anchor: middle;
   }
-  
+
   .arc path {
     // stroke: $white;
   }
-  
+
   text.hovertext
   {
     text-shadow: 0px 0px 15px white, 0px 0px 15px white;
@@ -20,4 +20,8 @@ svg.donut {
 .visual-title {
   word-wrap: break-word;
   text-align: center;
+}
+
+.row{
+  margin: 0;
 }

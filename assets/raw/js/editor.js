@@ -24,8 +24,8 @@ function renderEditor(route) {
   page.classList.remove('container');
   page.classList.add('container-fluid');
 
-  rowContainer.appendChild(visualContainer);
   rowContainer.appendChild(controlsContainer);
+  rowContainer.appendChild(visualContainer);
   page.appendChild(rowContainer);
   page.appendChild(downloadContainer);
 

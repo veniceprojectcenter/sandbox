@@ -1,5 +1,4 @@
 .body {
-  margin-top: 100px;
   padding-bottom: 25px;
   padding-top: 25px;
 }
@@ -10,5 +9,5 @@ body {
 
 .controls {
   max-height: calc(100vh - 125px);
-  overflow-y: scroll;
+  overflow-y: visible;
 }

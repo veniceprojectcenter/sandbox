@@ -13,6 +13,7 @@ $loader-fg: $primary;
 .loader {
   animation: load 1.1s infinite linear;
   border: 1.1em solid $loader-bg;
+  border-left: 1.1em solid $loader-fg;
   border-radius: 50%;
   font-size: 10px;
   height: 10em;
