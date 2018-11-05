@@ -5,7 +5,7 @@ class ckData {
   static fetchData(dataset, callback) {
     page.innerHTML = '<p> good shit boi';
 
-    fetch('http://ckdata2.herokuapp.com/api/v1/data.json?ck_id=01775c93-aaf5-d6bc-85d4-3d3568cfe4d3',
+    fetch('http://ckdata2.herokuapp.com/api/v1/dataset.json?group_name=Accolades',
       { method: 'GET',
         mode: 'cors',
       })
@@ -13,8 +13,13 @@ class ckData {
       console.log(response);
       return response.json();
     })
-    .catch(() => {
-      console.log('error');
+    .then((response) => {
+      console.log(response); // One element
+      console.log(response[2].ck_id); //takes the ck_id of the 3rd list element
+      return response;
+    })
+    .catch((error) => {
+      console.log(error);
     });
   }
 }
