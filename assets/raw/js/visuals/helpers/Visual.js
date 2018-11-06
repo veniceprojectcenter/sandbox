@@ -224,6 +224,14 @@ class Visual {
     return cols;
   }
 
+  /**
+   * Groups the input data based on the given column name
+   *
+   * @param {string} columnName name of column to check
+   * @param {Object[]} inputData Full list of data
+   * @returns {Array} Array of Objects that each contain 'key', which is the value in the designated
+   *                  column, and 'value', which is an Object[] that contains all data with that key
+   */
   getGroupedList(columnName, inputData = this.data) {
     const results = [];
     for (let i = 0; i < inputData.length; i += 1) {
@@ -242,10 +250,17 @@ class Visual {
         results.push({ key: categoryVal, value: [this.data[i]] });
       }
     }
-
     return results;
   }
 
+  /**
+   * Counts the input data based on the given column name
+   *
+   * @param {string} columnName name of column to check
+   * @param {Object[]} inputData Full list of data
+   * @returns {Array} Array of Objects that contain a key (which is the value in the designated
+   *                  column, and a value, which is an number of data that fit the category
+   */
   getGroupedListCounts(columnName, inputData = this.data) {
     const data = this.getGroupedList(columnName, inputData);
     const results = [];

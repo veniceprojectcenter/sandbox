@@ -187,6 +187,7 @@ class Donut extends Visual {
     const radius = Math.min(width, height) / 2;
     let data = null;
     this.renderData = JSON.parse(JSON.stringify(this.data));
+    // TODO: grouping things is causing issues with ck database formatting
     if (this.isNumeric(this.attributes.group_by)) {
       this.renderData = this.makeBin(this.attributes.group_by, Number(this.attributes.binSize),
       Number(this.attributes.binStart));
@@ -227,7 +228,8 @@ class Donut extends Visual {
     }
 
     if (this.attributes.hide_empty) {
-      data = data.filter(d => d.key !== undefined &&
+      data = data.filter(d => d.key !== null &&
+        d.key !== undefined &&
         d.key !== '' &&
         d.key.toLowerCase() !== 'null' &&
         d.key.toLowerCase() !== 'undefined');
