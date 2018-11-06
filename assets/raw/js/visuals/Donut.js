@@ -231,17 +231,27 @@ class Donut extends Visual {
       data = data.filter(d => d.key !== null &&
         d.key !== undefined &&
         d.key !== '' &&
-        d.key.toLowerCase() !== 'null' &&
-        d.key.toLowerCase() !== 'undefined');
+        (!String(d.key) ||
+          (String(d.key).toLowerCase() !== 'null' &&
+            String(d.key).toLowerCase() !== 'undefined')));
     }
 
-    data = data.sort((a, b) => {
-      if (this.attributes.items[b.key] !== undefined &&
-      this.attributes.items[a.key] !== undefined) {
-        return this.attributes.items[a.key].weight - this.attributes.items[b.key].weight;
-      }
-      return 0;
-    });
+    if (Object.keys(this.attributes.items).length > 0) {
+      data = data.sort((a, b) => { // TODO fix this trash sort function
+        if (this.attributes.items[b.key] !== undefined &&
+          this.attributes.items[a.key] !== undefined) {
+          return this.attributes.items[a.key].weight - this.attributes.items[b.key].weight;
+        }
+        return 0;
+      });
+    } else {
+      data = data.sort((a, b) => {
+        if (a.key < b.key) {
+          return -1;
+        }
+        return 1;
+      });
+    }
 
     const g = svg.selectAll('.arc')
       .data(pie(data))
