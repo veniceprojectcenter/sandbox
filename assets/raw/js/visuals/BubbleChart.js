@@ -282,3 +282,4 @@ class BubbleChart extends Visual {
   }
 }
 export default BubbleChart;
+

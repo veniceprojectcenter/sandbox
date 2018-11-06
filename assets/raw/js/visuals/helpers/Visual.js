@@ -224,15 +224,16 @@ class Visual {
     return cols;
   }
 
+
   getGroupedList(columnName, inputData = this.data) {
     const results = [];
     for (let i = 0; i < inputData.length; i += 1) {
       const categoryVal = inputData[i][columnName];
 
       let found = false;
-      for (let p = 0; p < results.length; p += 1) {
-        if (results[p].key === categoryVal) {
-          results[p].value.push(inputData[i]);
+      for (let j = 0; j < results.length; j += 1) {
+        if (results[j].key === categoryVal) {
+          results[j].value.push(inputData[i]);
           found = true;
           break;
         }
