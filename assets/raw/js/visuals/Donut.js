@@ -231,12 +231,7 @@ class Donut extends Visual {
     }
 
     if (this.attributes.hide_empty) {
-      data = data.filter(d => d.key !== null &&
-        d.key !== undefined &&
-        d.key !== '' &&
-        (!String(d.key) ||
-          (String(d.key).toLowerCase() !== 'null' &&
-            String(d.key).toLowerCase() !== 'undefined')));
+      data = this.hideEmpty(data);
     }
 
     if (Object.keys(this.attributes.items).length > 0) {

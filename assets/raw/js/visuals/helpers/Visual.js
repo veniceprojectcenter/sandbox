@@ -24,6 +24,11 @@ class Visual {
     this.useTransitions = true;
   }
 
+  /**
+   * Sets the Visual's data using the given data, then calls onLoadData()
+   *
+   * @param data
+   */
   loadStaticData(data) {
     this.data = data;
     this.onLoadData();
@@ -219,6 +224,11 @@ class Visual {
     }
   }
 
+  /**
+   * Fetches data, then calls render(), renderControls(), and generateConfigButton()
+   *
+   * @returns {Promise<void>}
+   */
   async fetchAndRenderWithControls() {
     await this.fetchData();
 
@@ -227,13 +237,37 @@ class Visual {
     this.generateConfigButton();
   }
 
+  /**
+   * Fetches data, then calls render()
+   *
+   * @returns {Promise<void>}
+   */
   async fetchAndRender() {
     await this.fetchData();
 
     this.render();
   }
 
-  onLoadData() {} //eslint-disable-line
+  /**
+   * Filters data with null, undefined, and blank key attributes
+   *
+   * @param data Data to filter
+   */
+  hideEmpty(data) {
+    return data.filter(d => d.key !== null &&
+      d.key !== undefined &&
+      d.key !== '' &&
+      (!String(d.key) ||
+        (String(d.key).toLowerCase() !== 'null' &&
+          String(d.key).toLowerCase() !== 'undefined')));
+  }
+
+  /**
+   * Abstract method
+   */
+  onLoadData() {
+    throw new Error('You must implement this method');
+  }
 
   /**
    * Abstract method for rendering controls for the desired visual
