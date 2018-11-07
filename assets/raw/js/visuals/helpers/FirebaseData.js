@@ -1,3 +1,6 @@
+/**
+ * Helper class that retrieves data from the Firebase
+ */
 class FirebaseData {
   /**
    * Retrieves a single data set from Firebase
@@ -53,46 +56,37 @@ class FirebaseData {
     return data;
   }
 
-  static async fetchDataSets(callback) {
-    if (localStorage.dataSets && localStorage.dataSetsDate &&
-      Math.floor(new Date() - Date.parse(localStorage.dataSetsDate)) < (1000 * 60 * 60 * 24)) {
-      const dataSets = JSON.parse(localStorage.dataSets);
-      if (callback) {
-        callback(dataSets);
-      }
-    } else {
-      const dataSets = [];
-      const db = firebase.database();
-      await db.ref('/groups').once('value').then((querySnapshot) => {
-        querySnapshot.forEach((doc) => {
-          const entry = {};
-          const value = doc.val();
-          entry.id = doc.key.replace(/[ ]+/g, '-');
-          entry.name = value.name || doc.key;
-          entry.description = value.description || `A data set containing information on ${entry.name}`;
-          dataSets.push(entry);
-        });
-
-        localStorage.dataSetsDate = new Date().toString();
-        try {
-          localStorage.dataSets = JSON.stringify(dataSets);
-        } catch (e) {
-          console.error(e, 'Clearing local storage and trying again');
-          localStorage.clear(); // Really should find a better solution
-          localStorage.dataSets = JSON.stringify(dataSets);
-        }
-
-        if (callback) {
-          callback(dataSets);
-        }
-      })
-      .catch((error) => {
-        console.error(error);
+  /**
+   * Returns the names of all data sets in Firebase
+   *
+   * @returns {Promise<Array>} Array of all data sets
+   */
+  static async fetchDataSets() {
+    const dataSets = [];
+    const db = firebase.database();
+    await db.ref('/groups').once('value').then((querySnapshot) => {
+      querySnapshot.forEach((doc) => {
+        const entry = {};
+        const value = doc.val();
+        entry.id = doc.key.replace(/[ ]+/g, '-');
+        entry.name = value.name || doc.key;
+        entry.description = value.description || `A data set containing information on ${entry.name}`;
+        dataSets.push(entry);
       });
-    }
+    })
+    .catch((error) => {
+      console.error(error);
+    });
+
+    return dataSets;
   }
 
-  static async fetchConfigs(callback) {
+  /**
+   * Gets all configs from the Firebase
+   *
+   * @returns {Promise<Array>} All configs
+   */
+  static async fetchConfigs() {
     const configs = [];
     const db = firebase.database();
     const promises = [];
@@ -113,20 +107,19 @@ class FirebaseData {
     });
 
     await Promise.all(promises);
-
-    if (callback) {
-      callback(configs);
-    }
+    return configs;
   }
 
-  static async removeConfig(config, callback) {
+  /**
+   * Deletes chosen config
+   *
+   * @param {Object} config Config to delete
+   * @returns {Promise<void>}
+   */
+  static async removeConfig(config) {
     const db = firebase.database();
     await db.ref(`/viz/info/${config.key}`).remove();
     await db.ref(`/viz/configs/${config.dataSet}/${config.id}`).remove();
-
-    if (callback) {
-      callback();
-    }
   }
 }
 

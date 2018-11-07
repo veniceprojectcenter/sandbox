@@ -1,3 +1,6 @@
+/**
+ * Helper class that retrieves data from the CK Database
+ */
 class CKData {
   /**
    * Retrieves a single data set from the ckDatabase
@@ -20,6 +23,15 @@ class CKData {
     });
 
     return data;
+  }
+
+  /**
+   * Returns the names of all usable data sets in the CK Database
+   *
+   * @returns {Promise<Array>} Array of all data sets
+   */
+  static async fetchDataSets() {
+    return []; // TODO: actually write this
   }
 }
 

@@ -1,7 +1,7 @@
 import FirebaseData from './FirebaseData';
 import CKData from './CKData';
 
-const useFirebase = false; // Uses either the ckDatabase or Firebase based on this variable
+const useFirebase = true; // Uses either the ckDatabase or Firebase based on this variable
 
 /**
  * Class for retrieving information from the databases
@@ -16,8 +16,7 @@ class Data {
    * @returns {Promise<void>}
    */
   static async fetchData(dataSet, callback) {
-    // TODO : put caching back in
-    if (false && localStorage[dataSet] && localStorage[`${dataSet}-date`] &&
+    if (localStorage[dataSet] && localStorage[`${dataSet}-date`] &&
       Math.floor(new Date() - Date.parse(localStorage[`${dataSet}-date`])) < (1000 * 60 * 60 * 24)) {
       const data = JSON.parse(localStorage[dataSet]);
       callback(data);
@@ -51,6 +50,13 @@ class Data {
     }
   }
 
+  /**
+   * Retrieves the names of all data sets from the chosen database and uses them to call callback
+   *
+   * @param {function} callback Function that takes one argument, Object[], and will be called with
+   *                            the retrieved data set list
+   * @returns {Promise<void>}
+   */
   static async fetchDataSets(callback) {
     if (localStorage.dataSets && localStorage.dataSetsDate &&
       Math.floor(new Date() - Date.parse(localStorage.dataSetsDate)) < (1000 * 60 * 60 * 24)) {
@@ -59,68 +65,68 @@ class Data {
         callback(dataSets);
       }
     } else {
-      const dataSets = [];
-      const db = firebase.database();
-      await db.ref('/groups').once('value').then((querySnapshot) => {
-        querySnapshot.forEach((doc) => {
-          const entry = {};
-          const value = doc.val();
-          entry.id = doc.key.replace(/[ ]+/g, '-');
-          entry.name = value.name || doc.key;
-          entry.description = value.description || `A data set containing information on ${entry.name}`;
-          dataSets.push(entry);
+      let dataSets = [];
+      if (useFirebase) {
+        await FirebaseData.fetchDataSets().then((response) => {
+          dataSets = response;
         });
+      } else {
+        await FirebaseData.fetchDataSets().then((response) => {
+          dataSets = response;
+        }); // TODO: replace this with CKData
+      }
 
-        localStorage.dataSetsDate = new Date().toString();
-        try {
-          localStorage.dataSets = JSON.stringify(dataSets);
-        } catch (e) {
-          console.error(e, 'Clearing local storage and trying again');
-          localStorage.clear(); // Really should find a better solution
-          localStorage.dataSets = JSON.stringify(dataSets);
-        }
 
-        if (callback) {
-          callback(dataSets);
-        }
-      })
-      .catch((error) => {
-        console.error(error);
-      });
+      localStorage.dataSetsDate = new Date().toString();
+      try {
+        localStorage.dataSets = JSON.stringify(dataSets);
+      } catch (e) {
+        console.error(e, 'Clearing local storage and trying again');
+        localStorage.clear(); // Really should find a better solution
+        localStorage.dataSets = JSON.stringify(dataSets);
+      }
+
+      if (callback) {
+        callback(dataSets);
+      }
     }
   }
 
+  /**
+   * Retrieves all configs in the chosen database
+   *
+   * @param {function} callback Function that takes Object[] and uses the found configs to call it
+   * @returns {Promise<void>}
+   */
   static async fetchConfigs(callback) {
-    const configs = [];
-    const db = firebase.database();
-    const promises = [];
-    await db.ref('/viz/info').once('value').then((querySnapshot) => {
-      querySnapshot.forEach((doc) => {
-        const entry = {};
-        const value = doc.val();
-        entry.key = doc.key;
-        entry.dataSet = value.dataSet;
-        entry.type = value.type;
-        entry.id = value.id;
-        promises.push(db.ref(`/viz/configs/${entry.dataSet}/${entry.id}`).once('value').then((result) => {
-          const config = result.val();
-          entry.attributes = JSON.parse(config.attributes);
-          configs.push(entry);
-        }));
+    let configs = [];
+    if (useFirebase) {
+      await FirebaseData.fetchConfigs().then((response) => {
+        configs = response;
       });
-    });
-
-    await Promise.all(promises);
+    } else {
+      // TODO: configs for CK?
+    }
 
     if (callback) {
       callback(configs);
     }
   }
 
+  /**
+   * Deletes selected config from the chosen database
+   *
+   * @param {Object} config Config to delete
+   * @param callback Function that takes no parameters and is called after the config is deleted
+   * @returns {Promise<void>}
+   */
   static async removeConfig(config, callback) {
-    const db = firebase.database();
-    await db.ref(`/viz/info/${config.key}`).remove();
-    await db.ref(`/viz/configs/${config.dataSet}/${config.id}`).remove();
+    if (useFirebase) {
+      await FirebaseData.removeConfig(config);
+    } else {
+      // TODO: configs for CK?
+    }
+
 
     if (callback) {
       callback();
