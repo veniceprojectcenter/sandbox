@@ -9,6 +9,10 @@ import LoginModal from './LoginModal';
 class Visual {
   constructor(config, renderID = Visual.DEFAULT_RENDER_ID,
     renderControlsID = Visual.DEFAULT_RENDER_CONTROLS_ID) {
+    if (new.target === Visual) { // Ensures that this class is Abstract
+      throw new TypeError('Cannot construct Visual instances directly');
+    }
+
     this.renderID = renderID;
     this.renderControlsID = renderControlsID;
     this.dataSet = config.dataSet;
@@ -25,6 +29,12 @@ class Visual {
     this.onLoadData();
   }
 
+  /**
+   * Loads data set indicated by this.dataSet, displays Loader while waiting in the container
+   * specified by this.renderID
+   *
+   * @returns {Promise<void>}
+   */
   async fetchData() {
     let loader = null;
     let container = null;
@@ -44,6 +54,11 @@ class Visual {
     });
   }
 
+  /**
+   * Renders the publish and export buttons in the container specified
+   *
+   * @param {String} id ID of container to use
+   */
   generateConfigButton(id = 'download') {
     const loginModal = new LoginModal();
     const publishButton = document.createElement('button');
@@ -117,6 +132,11 @@ class Visual {
     loginModal.bind();
   }
 
+  /**
+   * Function that is called when the publish button is pressed]
+   *
+   * @returns {Promise<void>}
+   */
   async publishConfig() {
     const publishButton = document.getElementById('publish-button');
     publishButton.classList.add('disabled');
@@ -154,6 +174,9 @@ class Visual {
     });
   }
 
+  /**
+   * Function is called when the download button is pressed
+   */
   downloadConfig() {
     const config = {
       type: this.type,
@@ -169,10 +192,18 @@ class Visual {
     downloadButton.click();
   }
 
+  /**
+   * Sets useTransitions attribute to false
+   */
   disableTransitions() {
     this.useTransitions = false;
   }
 
+  /**
+   * Empties the indicated page element
+   *
+   * @param id ID of the container to clear
+   */
   static empty(id) {
     document.getElementById(id).innerHTML = '';
   }
@@ -204,10 +235,16 @@ class Visual {
 
   onLoadData() {} //eslint-disable-line
 
+  /**
+   * Abstract method for rendering controls for the desired visual
+   */
   renderControls() {
     throw new Error('You must implement this method');
   }
 
+  /**
+   * Abstract method for rendering the desired visual
+   */
   render() {
     throw new Error('You must implement this method');
   }
