@@ -7,6 +7,11 @@ let configsList = null;
 let loader = null;
 let modal = null;
 
+/**
+ * Renders the list of configs within the editor page
+ *
+ * @param {Object[]} configs Array of all configs to render
+ */
 function renderList(configs) {
   configs.forEach((config, index) => {
     const row = document.createElement('div');
@@ -40,6 +45,11 @@ function renderList(configs) {
   });
 }
 
+/**
+ * Deletes the chosen config based on its list position in configsList
+ *
+ * @param {int} index Index of the chosen config
+ */
 function deleteConfig(index) {
   const shouldRemove = confirm('Are you sure you want to delete this config?\nIt cannot be recovered.');
   if (shouldRemove) {
@@ -55,6 +65,13 @@ function deleteConfig(index) {
   }
 }
 
+/**
+ * Returns the name of a data set based on its id
+ *
+ * @param dataSets List of all data sets
+ * @param id ID of selected data set
+ * @returns {string} Name of selected data set
+ */
 function getDataSetName(dataSets, id) {
   for (let i = 0; i < dataSets.length; i += 1) {
     if (dataSets[i].id === id) {
@@ -65,6 +82,9 @@ function getDataSetName(dataSets, id) {
   return '';
 }
 
+/**
+ * Renders the config editor page and fetches data
+ */
 function renderConfigEditor() {
   const page = document.getElementById('page');
   page.classList.remove('container-fluid');

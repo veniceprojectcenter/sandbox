@@ -1,7 +1,13 @@
 import Loader from './visuals/helpers/Loader';
 import Data from './visuals/helpers/Data';
 
+/**
+ * Renders the dataset list page using the data set Objects
+ *
+ * @param {Object[]} dataSets Array of Objects that correspond to available data sets
+ */
 function render(dataSets) {
+  console.log(dataSets);
   const page = document.getElementById('page');
   page.classList.remove('container-fluid');
   page.classList.add('container');
@@ -45,6 +51,9 @@ function render(dataSets) {
   page.appendChild(visualBlocks);
 }
 
+/**
+ * Fetches the list of data sets and renders it
+ */
 async function renderDatasetList() {
   const loader = new Loader('page');
   loader.render();

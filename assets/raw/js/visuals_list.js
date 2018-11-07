@@ -6,6 +6,12 @@ const visuals = [
   { name: 'Bubble Chart', image: 'http://datavizproject.com/wp-content/uploads/2016/06/DVP_1_100-67.png', link: 'Bubble-Chart' },
 ];
 
+/**
+ * Fetches data based on the URL
+ *
+ * @param {String[]} route Array of URL Extensions
+ * @returns {Promise<void>}
+ */
 async function prefetchData(route) {
   await Data.fetchData(route[0], () => {
     console.log(`The ${route[0]} data set was prefetched!`);
@@ -13,6 +19,11 @@ async function prefetchData(route) {
 }
 
 
+/**
+ * Renders the chart selection page using the information given in the URL
+ *
+ * @param {String[]} route Array of URL extensions
+ */
 function renderVisualsList(route) {
   prefetchData(route);
 

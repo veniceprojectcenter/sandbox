@@ -3,7 +3,9 @@ import Loader from './Loader';
 import Data from './Data';
 import LoginModal from './LoginModal';
 
-
+/**
+ * Abstract class that all other Charts will inherit from
+ */
 class Visual {
   constructor(config, renderID = Visual.DEFAULT_RENDER_ID,
     renderControlsID = Visual.DEFAULT_RENDER_CONTROLS_ID) {

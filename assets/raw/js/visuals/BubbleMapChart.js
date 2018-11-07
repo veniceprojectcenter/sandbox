@@ -4,6 +4,9 @@ import Map from './helpers/Map';
 import DefaultMapStyle from './helpers/DefaultMapStyle';
 // import DivOverlay from './helpers/DivOverlay';
 
+/**
+ * Class that is used for creating Bubble Map Charts
+ */
 class BubbleMapChart extends Visual {
   constructor(config, renderID, renderControlsID) {
     super(config, renderID, renderControlsID);

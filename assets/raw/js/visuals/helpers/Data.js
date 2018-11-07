@@ -51,7 +51,8 @@ class Data {
   }
 
   /**
-   * Retrieves the names of all data sets from the chosen database and uses them to call callback
+   * Retrieves the names of all data sets from the chosen database and uses them to call callback.
+   * Each dataSet object has name, id, and description (Strings)
    *
    * @param {function} callback Function that takes one argument, Object[], and will be called with
    *                            the retrieved data set list

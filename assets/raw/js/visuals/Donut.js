@@ -2,6 +2,9 @@ import Visual from './helpers/Visual';
 import EditorGenerator from './helpers/EditorGenerator';
 import ColorHelper from './helpers/ColorHelper';
 
+/**
+ * Class that is used for creating Donut charts
+ */
 class Donut extends Visual {
   constructor(config, renderID, renderControlsID) {
     super(config, renderID, renderControlsID);
@@ -187,7 +190,7 @@ class Donut extends Visual {
     const radius = Math.min(width, height) / 2;
     let data = null;
     this.renderData = JSON.parse(JSON.stringify(this.data));
-    // TODO: grouping things is causing issues with ck database formatting
+
     if (this.isNumeric(this.attributes.group_by)) {
       this.renderData = this.makeBin(this.attributes.group_by, Number(this.attributes.binSize),
       Number(this.attributes.binStart));
@@ -237,7 +240,7 @@ class Donut extends Visual {
     }
 
     if (Object.keys(this.attributes.items).length > 0) {
-      data = data.sort((a, b) => { // TODO fix this trash sort function
+      data = data.sort((a, b) => {
         if (this.attributes.items[b.key] !== undefined &&
           this.attributes.items[a.key] !== undefined) {
           return this.attributes.items[a.key].weight - this.attributes.items[b.key].weight;

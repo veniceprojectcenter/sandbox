@@ -3,7 +3,11 @@ import Donut from './visuals/Donut';
 import BubbleChart from './visuals/BubbleChart';
 import BubbleMapChart from './visuals/BubbleMapChart';
 
-
+/**
+ * Renders the editor page using the information given in the URL
+ *
+ * @param {String[]} route Array of URL extensions
+ */
 function renderEditor(route) {
   const rowContainer = document.createElement('div');
   rowContainer.className = 'row';
