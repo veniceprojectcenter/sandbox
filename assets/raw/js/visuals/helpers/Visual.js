@@ -253,7 +253,7 @@ class Visual {
    *
    * @param data Data to filter
    */
-  hideEmpty(data) {
+  static hideEmpty(data) {
     return data.filter(d => d.key !== null &&
       d.key !== undefined &&
       d.key !== '' &&
@@ -285,16 +285,16 @@ class Visual {
 
   // DATA HELPER FUNCTIONS
 
+  /**
+   * Checks the columns of this.data and returns them in an array
+   *
+   * @returns {String[]} Array of all keys, or empty array if there is no data
+   */
   getColumns() {
-    const cols = [];
     if (this.data.length > 0) {
-      const keys = Object.keys(this.data[0]);
-      for (let i = 0; i < keys.length; i += 1) {
-        cols.push(keys[i]);
-      }
+      return Object.keys(this.data[0]);
     }
-
-    return cols;
+    return [];
   }
 
   /**

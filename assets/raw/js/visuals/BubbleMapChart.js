@@ -14,6 +14,9 @@ class BubbleMapChart extends Visual {
     this.map = new Map();
   }
 
+  /**
+   * Sets default attributes after data is loaded
+   */
   onLoadData() {
     let defaultCat;
     if (this.data.length > 0) {
@@ -94,6 +97,9 @@ class BubbleMapChart extends Visual {
     }
   }
 
+  /**
+   * Renders visuals for BubbleMapChart chart
+   */
   render() {
     const mapContainer = document.createElement('div');
     mapContainer.id = `map-container${this.renderID}`;
@@ -108,6 +114,9 @@ class BubbleMapChart extends Visual {
     this.renderBasics();
   }
 
+  /**
+   * Creates menu options
+   */
   renderControls() {
     if (this.data.length === 0) {
       alert('Dataset is empty!');

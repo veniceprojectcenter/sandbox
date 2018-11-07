@@ -14,6 +14,9 @@ class BubbleChart extends Visual {
     this.useTransitions = true;
   }
 
+  /**
+   * Sets default attributes after data is loaded
+   */
   onLoadData() {
     let defaultCat;
     // Try to set a default selected column
@@ -44,6 +47,9 @@ class BubbleChart extends Visual {
     });
   }
 
+  /**
+   * Creates menu options
+   */
   renderControls() {
     if (this.data.length === 0) {
       alert('Dataset is empty!');
@@ -72,8 +78,7 @@ class BubbleChart extends Visual {
     }
     editor.createSelectBox('bubble-column', 'Select column to group by', cats, this.attributes.group_by,
       (e) => {
-        const value = $(e.currentTarget).val();
-        this.attributes.group_by = value;
+        this.attributes.group_by = $(e.currentTarget).val();
         this.render();
       });
 
@@ -83,8 +88,7 @@ class BubbleChart extends Visual {
         { value: 'hidden', text: 'Hidden' }];
     editor.createSelectBox('bubble-labelmode', 'Label Display', displayModes, this.attributes.label_mode,
         (e) => {
-          const value = $(e.currentTarget).val();
-          this.attributes.label_mode = value;
+          this.attributes.label_mode = $(e.currentTarget).val();
           this.render();
         });
     editor.createNumberSlider('bubble-labelsize', 'Label Size', this.attributes.font_size, 1, 60, 1,
@@ -111,8 +115,7 @@ class BubbleChart extends Visual {
     ];
     editor.createSelectBox('bubble-colormode', 'Bubble Color Mode', colorModes, this.attributes.color.mode,
       (e) => {
-        const value = $(e.currentTarget).val();
-        this.attributes.color.mode = value;
+        this.attributes.color.mode = $(e.currentTarget).val();
         this.renderControls();
         this.render();
       });
@@ -157,6 +160,9 @@ class BubbleChart extends Visual {
     }
   }
 
+  /**
+   * Renders visuals for Bubble chart
+   */
   render() {
     Visual.empty(this.renderID);
 
@@ -175,7 +181,7 @@ class BubbleChart extends Visual {
 
     let counts = this.getGroupedListCounts(this.attributes.group_by);
     if (this.attributes.hide_empty) {
-      counts = this.hideEmpty(counts);
+      counts = Visual.hideEmpty(counts);
     }
     const root = d3.hierarchy({ children: counts })
           .sum(d => d.value)

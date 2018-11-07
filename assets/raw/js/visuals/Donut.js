@@ -12,6 +12,9 @@ class Donut extends Visual {
     this.useTransitions = true;
   }
 
+  /**
+   * Sets default attributes after data is loaded
+   */
   onLoadData() {
     let defaultCat = '';
     if (this.data.length > 0) {
@@ -41,6 +44,9 @@ class Donut extends Visual {
     });
   }
 
+  /**
+   * Creates menu options
+   */
   renderControls() {
     if (this.data.length === 0) {
       alert('Dataset is empty!');
@@ -113,8 +119,7 @@ class Donut extends Visual {
       editor.createColorField('donut-piececolor',
        `${this.currentEditKey} Color`,
        this.attributes.items[this.currentEditKey].color, (e) => {
-         const value = $(e.currentTarget).val();
-         this.attributes.items[this.currentEditKey].color = value;
+         this.attributes.items[this.currentEditKey].color = $(e.currentTarget).val();
          this.render();
        },
       );
@@ -175,13 +180,15 @@ class Donut extends Visual {
       { value: 'hidden', text: 'Hidden' }];
     editor.createSelectBox('donut-labelmode', 'Label Display', displayModes, this.attributes.label_mode,
       (e) => {
-        const value = $(e.currentTarget).val();
-        this.attributes.label_mode = value;
+        this.attributes.label_mode = $(e.currentTarget).val();
         this.render();
       });
   }
 
   // TODO: this does not use the object attributes, just const values like width and height
+  /**
+   * Renders visuals for Donut chart
+   */
   render() {
     // Empty the container, then place the SVG in there
     Visual.empty(this.renderID);
@@ -231,7 +238,7 @@ class Donut extends Visual {
     }
 
     if (this.attributes.hide_empty) {
-      data = this.hideEmpty(data);
+      data = Visual.hideEmpty(data);
     }
 
     if (Object.keys(this.attributes.items).length > 0) {
@@ -256,9 +263,9 @@ class Donut extends Visual {
       .enter().append('g')
       .attr('class', 'arc ');
 
-    const tweenPie = function (b) {
+    const tweenPie = (b) => {
       const i = d3.interpolate({ startAngle: 0, endAngle: 0 }, b);
-      return function (t) { return arc(i(t)); };
+      return t => arc(i(t));
     };
     const path = g.append('path')
       .style('fill', (d, i) => {
@@ -282,11 +289,10 @@ class Donut extends Visual {
       path.attr('d', arc);
     }
 
-    if (this.attributes.label_mode == 'hover') {
+    if (this.attributes.label_mode === 'hover') {
       const donut = this;
-      const handleMouseOver = function (d, i) {
-        let coordinates = [0, 0];
-        coordinates = d3.mouse(this);
+      const handleMouseOver = function (d) {
+        const coordinates = d3.mouse(this);
 
         d3.select('#donut-tooltip').remove();
 
@@ -307,7 +313,7 @@ class Donut extends Visual {
         }
       };
 
-      const handleMouseOut = function (d, i) {
+      const handleMouseOut = function () {
         d3.select(this)
           .attr('fill-opacity', 1);
         d3.select('#donut-tooltip').remove();
@@ -315,7 +321,7 @@ class Donut extends Visual {
 
       path.on('mousemove', handleMouseOver)
           .on('mouseout', handleMouseOut);
-    } else if (this.attributes.label_mode == 'always') {
+    } else if (this.attributes.label_mode === 'always') {
       g.append('text')
         .attr('transform', d => `translate(${arc.centroid(d)})`)
         .attr('dy', '.35em')
