@@ -178,7 +178,7 @@ class Donut extends Visual {
       });
   }
 
-  // TODO: this does not use the object attributes, just const values like width and height
+  // TODO: this does not use the object attributes, just const values like width and height - yea and it fucking sucks
   render() {
     // Empty the container, then place the SVG in there
     Visual.empty(this.renderID);
@@ -318,7 +318,7 @@ class Donut extends Visual {
       const legend = d3.select(`#${this.renderID} > svg`).append('g')
         .attr('font-family', 'sans-serif')
         .attr('font-size', 10)
-        .attr('text-anchor', 'end')
+        .style('fill', '#FFFFFF')
         .selectAll('g')
         .data(pie(data))
         .enter()
