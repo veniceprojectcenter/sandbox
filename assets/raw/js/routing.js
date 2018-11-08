@@ -20,20 +20,11 @@ function routing() {
     }
   }
   if (route.length > 0 && route[0] === 'config-editor') {
-    renderConfigEditor();
-  } else if (route.length > 0 && route[0] === 'test') {
-    CKData.fetchData('Accolades');
+    renderConfigEditor(); // TODO: do we still need this?
+  } else if (route.length > 0) {
+    page.innerHTML = '<p> Invalid URL';
   } else {
-    switch (route.length) {
-      case 0:
-        renderDatasetList(route);
-        break;
-      case 1:
-        renderVisualsList(route);
-        break;
-      default: // TODO this uses url to determine graph type which we are no longer doing
-        renderEditor(route);
-    }
+    renderEditor();
   }
 }
 
