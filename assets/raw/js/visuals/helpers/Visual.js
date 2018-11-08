@@ -64,8 +64,49 @@ class Visual {
    *
    * @param {String} id ID of container to use
    */
-  generateConfigButton(id = 'download') {
+  generateDownloadButtons(id = 'download') {
     const loginModal = new LoginModal();
+    const publishButton = this.createPublishButton(loginModal);
+    const downloadButton = this.createDownloadConfig();
+    const saveSVGButton = this.createSVGButton();
+
+    /* TODO: file upload
+    const uploadButton = document.createElement('button');
+    const importButton = document.createElement('button');
+    importButton.onclick = () => {
+      const files = document.getElementById('selectFiles').files;
+      if (files.length <= 0) {
+        return;
+      }
+
+      const fr = new FileReader();
+
+      fr.onload = (e) => {
+        const result = JSON.parse(e.target.result);
+        document.getElementById('result').value = JSON.stringify(result, null, 2);
+      };
+
+      fr.readAsText(files.item(0));
+    };
+    */
+
+    const downloadContainer = document.getElementById(id);
+    downloadContainer.innerHTML = '';
+    downloadContainer.appendChild(publishButton);
+    downloadContainer.appendChild(downloadButton);
+    downloadContainer.appendChild(saveSVGButton);
+    downloadContainer.appendChild(loginModal.generate());
+    loginModal.bind();
+  }
+
+  /**
+   * Creates the publish button, which publishes the active graph
+   *
+   * @param {LoginModal} loginModal Used for authentication and publishing
+   *
+   * @returns {HTMLButtonElement}
+   */
+  createPublishButton(loginModal) {
     const publishButton = document.createElement('button');
     publishButton.className = 'btn waves-effectr';
     publishButton.innerText = 'Publish Visual';
@@ -80,65 +121,11 @@ class Visual {
       }
     });
 
-    const downloadButton = document.createElement('button');
-    downloadButton.className = 'btn waves-effect';
-    downloadButton.innerText = 'Download Config';
-    downloadButton.addEventListener('click', () => this.downloadConfig());
-
-    const saveSVGButton = document.createElement('button');
-    saveSVGButton.className = 'btn waves-effect';
-    saveSVGButton.innerText = 'Export for Illustrator';
-    saveSVGButton.addEventListener('click', async () => {
-      let svgData = '';
-      const svg = $(`#${this.renderID} svg`);
-      const map = document.querySelector(`#${this.renderID} .map`) || document.querySelector(`#${this.renderID}.map`);
-      if (svg.length === 1) {
-        this.editmode = false;
-        this.render();
-        svg.attr('version', '1.1')
-           .attr('xmlns:xlink', 'http://www.w3.org/1999/xlink')
-           .attr('xmlns', 'http://www.w3.org/2000/svg')
-           .attr('xml:space', 'preserve');
-
-        svgData = svg[0].outerHTML;
-      } else if (map) {
-        if (this.map) {
-          svgData = await this.map.export();
-        } else {
-          Materialize.toast('Error exporting map', 3000);
-        }
-      } else {
-        Materialize.toast('This chart type is not supported for Illustrator!', 3000);
-      }
-
-      if (svgData) {
-        const svgBlob = new Blob([svgData], { type: 'image/svg+xml;charset=utf-8' });
-        const svgUrl = URL.createObjectURL(svgBlob);
-        const downloadLink = document.createElement('a');
-        downloadLink.href = svgUrl;
-        if (this.attributes.title && this.attributes.title !== '') {
-          downloadLink.download = `${this.attributes.title}.svg`;
-        } else {
-          downloadLink.download = `${this.dataSet}-${this.type}.svg`;
-        }
-        downloadLink.click();
-      }
-      if (svg.length === 1 && !this.editmode) {
-        this.editmode = true;
-        this.render();
-      }
-    });
-
-    const downloadContainer = document.getElementById(id);
-    downloadContainer.appendChild(publishButton);
-    // downloadContainer.appendChild(downloadButton);
-    downloadContainer.appendChild(saveSVGButton);
-    downloadContainer.appendChild(loginModal.generate());
-    loginModal.bind();
+    return publishButton;
   }
 
   /**
-   * Function that is called when the publish button is pressed]
+   * Publishes the state of the current graph to Firebase for later use
    *
    * @returns {Promise<void>}
    */
@@ -180,21 +167,79 @@ class Visual {
   }
 
   /**
-   * Function is called when the download button is pressed
+   * Creates the saveSVG button, which downloads an SVG of the current graph
+   *
+   * @returns {HTMLButtonElement}
    */
-  downloadConfig() {
-    const config = {
-      type: this.type,
-      dataSet: this.dataSet,
-      attributes: this.attributes,
-    };
+  createSVGButton() {
+    const saveSVGButton = document.createElement('button');
+    saveSVGButton.className = 'btn waves-effect';
+    saveSVGButton.innerText = 'Export for Illustrator';
+    saveSVGButton.addEventListener('click', async () => {
+      let svgData = '';
+      const svg = $(`#${this.renderID} svg`);
+      const map = document.querySelector(`#${this.renderID} .map`) || document.querySelector(`#${this.renderID}.map`);
+      if (svg.length === 1) {
+        this.editmode = false;
+        this.render();
+        svg.attr('version', '1.1')
+        .attr('xmlns:xlink', 'http://www.w3.org/1999/xlink')
+        .attr('xmlns', 'http://www.w3.org/2000/svg')
+        .attr('xml:space', 'preserve');
 
-    const downloadButton = document.createElement('a');
-    downloadButton.className = 'button';
+        svgData = svg[0].outerHTML;
+      } else if (map) {
+        if (this.map) {
+          svgData = await this.map.export();
+        } else {
+          Materialize.toast('Error exporting map', 3000);
+        }
+      } else {
+        Materialize.toast('This chart type is not supported for Illustrator!', 3000);
+      }
+
+      if (svgData) {
+        const svgBlob = new Blob([svgData], { type: 'image/svg+xml;charset=utf-8' });
+        const svgUrl = URL.createObjectURL(svgBlob);
+        const downloadLink = document.createElement('a');
+        downloadLink.href = svgUrl;
+        if (this.attributes.title && this.attributes.title !== '') {
+          downloadLink.download = `${this.attributes.title}.svg`;
+        } else {
+          downloadLink.download = `${this.dataSet}-${this.type}.svg`;
+        }
+        downloadLink.click();
+      }
+      if (svg.length === 1 && !this.editmode) {
+        this.editmode = true;
+        this.render();
+      }
+    });
+
+    return saveSVGButton;
+  }
+
+  /**
+   * Creates the download button, which downloads a json of the active dataSet when pressed
+   *
+   * @returns {HTMLButtonElement}
+   */
+  createDownloadConfig() {
+    const downloadButton = document.createElement('button');
+    downloadButton.className = 'btn waves-effect';
     downloadButton.innerText = 'Download Config';
-    downloadButton.href = `data:text/json;charset=utf-8,${JSON.stringify(config)}`;
-    downloadButton.download = `${this.dataSet}-${this.type}-config.json`;
-    downloadButton.click();
+    downloadButton.addEventListener('click', () => {
+      const config = {
+        type: this.type,
+        dataSet: this.dataSet,
+        attributes: this.attributes,
+      };
+
+      downloadButton.href = `data:text/json;charset=utf-8,${JSON.stringify(config)}`;
+      downloadButton.download = `${this.dataSet}-${this.type}-config.json`;
+    });
+
+    return downloadButton;
   }
 
   /**
@@ -225,7 +270,7 @@ class Visual {
   }
 
   /**
-   * Fetches data, then calls render(), renderControls(), and generateConfigButton()
+   * Fetches data, then calls render(), renderControls(), and generateDownloadButtons()
    *
    * @returns {Promise<void>}
    */
@@ -234,7 +279,7 @@ class Visual {
 
     this.render();
     this.renderControls();
-    this.generateConfigButton();
+    this.generateDownloadButtons();
   }
 
   /**
