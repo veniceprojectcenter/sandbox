@@ -3,7 +3,9 @@ import Loader from './Loader';
 import Data from './Data';
 import LoginModal from './LoginModal';
 
-
+/**
+ * Abstract class that all other Charts will inherit from
+ */
 class Visual {
   constructor(config, renderID = Visual.DEFAULT_RENDER_ID,
     renderControlsID = Visual.DEFAULT_RENDER_CONTROLS_ID) {
@@ -224,16 +226,23 @@ class Visual {
     return cols;
   }
 
-
+  /**
+   * Groups the input data based on the given column name
+   *
+   * @param {string} columnName name of column to check
+   * @param {Object[]} inputData Full list of data
+   * @returns {Array} Array of Objects that each contain 'key', which is the value in the designated
+   *                  column, and 'value', which is an Object[] that contains all data with that key
+   */
   getGroupedList(columnName, inputData = this.data) {
     const results = [];
     for (let i = 0; i < inputData.length; i += 1) {
       const categoryVal = inputData[i][columnName];
 
       let found = false;
-      for (let j = 0; j < results.length; j += 1) {
-        if (results[j].key === categoryVal) {
-          results[j].value.push(inputData[i]);
+      for (let p = 0; p < results.length; p += 1) {
+        if (results[p].key === categoryVal) {
+          results[p].value.push(inputData[i]);
           found = true;
           break;
         }
@@ -243,10 +252,17 @@ class Visual {
         results.push({ key: categoryVal, value: [this.data[i]] });
       }
     }
-
     return results;
   }
 
+  /**
+   * Counts the input data based on the given column name
+   *
+   * @param {string} columnName name of column to check
+   * @param {Object[]} inputData Full list of data
+   * @returns {Array} Array of Objects that contain a key (which is the value in the designated
+   *                  column, and a value, which is an number of data that fit the category
+   */
   getGroupedListCounts(columnName, inputData = this.data) {
     const data = this.getGroupedList(columnName, inputData);
     const results = [];

@@ -2,6 +2,9 @@ import Visual from './helpers/Visual';
 import EditorGenerator from './helpers/EditorGenerator';
 import ColorHelper from './helpers/ColorHelper';
 
+/**
+ * Class that is used for creating Bubble Charts
+ */
 class BubbleChart extends Visual {
 
   constructor(config, renderID, renderControlsID) {

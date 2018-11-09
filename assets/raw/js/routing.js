@@ -4,7 +4,7 @@ import renderVisualsList from './visuals_list';
 import renderEditor from './editor';
 import renderConfigEditor from './config_editor';
 import Firebase from './Firebase';
-import ckData from './cKInterface';
+import CKData from './visuals/helpers/CKData';
 
 /**
  * Uses the URL to determine which page to render
@@ -22,7 +22,7 @@ function routing() {
   if (route.length > 0 && route[0] === 'config-editor') {
     renderConfigEditor();
   } else if (route.length > 0 && route[0] === 'test') {
-    ckData.fetchData();
+    CKData.fetchData('Accolades');
   } else {
     switch (route.length) {
       case 0:

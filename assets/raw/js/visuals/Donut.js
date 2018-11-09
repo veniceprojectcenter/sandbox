@@ -2,6 +2,9 @@ import Visual from './helpers/Visual';
 import EditorGenerator from './helpers/EditorGenerator';
 import ColorHelper from './helpers/ColorHelper';
 
+/**
+ * Class that is used for creating Donut charts
+ */
 class Donut extends Visual {
   constructor(config, renderID, renderControlsID) {
     super(config, renderID, renderControlsID);
@@ -187,6 +190,7 @@ class Donut extends Visual {
     const radius = Math.min(width, height) / 2;
     let data = null;
     this.renderData = JSON.parse(JSON.stringify(this.data));
+
     if (this.isNumeric(this.attributes.group_by)) {
       this.renderData = this.makeBin(this.attributes.group_by, Number(this.attributes.binSize),
       Number(this.attributes.binStart));
@@ -227,19 +231,30 @@ class Donut extends Visual {
     }
 
     if (this.attributes.hide_empty) {
-      data = data.filter(d => d.key !== undefined &&
+      data = data.filter(d => d.key !== null &&
+        d.key !== undefined &&
         d.key !== '' &&
-        d.key.toLowerCase() !== 'null' &&
-        d.key.toLowerCase() !== 'undefined');
+        (!String(d.key) ||
+          (String(d.key).toLowerCase() !== 'null' &&
+            String(d.key).toLowerCase() !== 'undefined')));
     }
 
-    data = data.sort((a, b) => {
-      if (this.attributes.items[b.key] !== undefined &&
-      this.attributes.items[a.key] !== undefined) {
-        return this.attributes.items[a.key].weight - this.attributes.items[b.key].weight;
-      }
-      return 0;
-    });
+    if (Object.keys(this.attributes.items).length > 0) {
+      data = data.sort((a, b) => {
+        if (this.attributes.items[b.key] !== undefined &&
+          this.attributes.items[a.key] !== undefined) {
+          return this.attributes.items[a.key].weight - this.attributes.items[b.key].weight;
+        }
+        return 0;
+      });
+    } else {
+      data = data.sort((a, b) => {
+        if (a.key < b.key) {
+          return -1;
+        }
+        return 1;
+      });
+    }
 
     const g = svg.selectAll('.arc')
       .data(pie(data))
