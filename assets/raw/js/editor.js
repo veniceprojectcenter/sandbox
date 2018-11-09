@@ -5,7 +5,7 @@ import BubbleMapChart from './visuals/BubbleMapChart';
 import EditorGenerator from './visuals/helpers/EditorGenerator';
 import Data from './visuals/helpers/Data';
 
-
+// List of all graph types that are available for use
 const graphsAvailable = ['Donut-Chart', 'Bubble-Chart', 'Bubble-Map-Chart'];
 
 /**
@@ -19,8 +19,6 @@ function createGraphic(dataSet, graphType) {
     graphType === null || graphType === undefined) {
     return;
   }
-
-  console.log(`rendering ${dataSet} data using a ${graphType}`);
 
   const config = {
     dataSet,
@@ -99,13 +97,9 @@ function renderEditor() {
   Data.fetchDataSets((sets) => {
     dataSets = sets;
   });
-  const dsCats = dataSets.map((x) => {
-    return { value: x.id, text: x.name };
-  });
+  const dsCats = dataSets.map(x => ({ value: x.id, text: x.name }));
   // Prep list of Graph types
-  const graphCats = graphsAvailable.map((graph) => {
-    return { value: graph, text: graph };
-  });
+  const graphCats = graphsAvailable.map(graph => ({ value: graph, text: graph }));
 
   let currDataSet = dataSets[0];
   let currGraphType;
