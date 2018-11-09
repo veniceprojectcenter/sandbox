@@ -56,29 +56,44 @@ function createGraphic(dataSet, graphType) {
 function renderEditor() {
   const rowContainer = document.createElement('div');
   rowContainer.className = 'row';
+  const columnContainer = document.createElement('div');
+  columnContainer.className = 'column';
 
+  // Used to render the Graph
   const visualContainer = document.createElement('div');
   visualContainer.className = 'visual col-md-7';
   visualContainer.id = Visual.DEFAULT_RENDER_ID;
 
+  // Used to hold the permanent selections for graph type and data set
+  const majorSelectContainer = document.createElement('div');
+  majorSelectContainer.className = 'majorSelect col';
+  majorSelectContainer.id = 'majorSelect';
+
+  // Used to render the graph options
   const controlsContainer = document.createElement('div');
-  controlsContainer.className = 'controls col-md-5';
+  controlsContainer.className = 'controls col';
   controlsContainer.id = Visual.DEFAULT_RENDER_CONTROLS_ID;
 
+  // Used to render the other buttons like downloads and exports
   const downloadContainer = document.createElement('div');
   downloadContainer.className = 'download';
   downloadContainer.id = 'download';
 
+  // Page holds everything
   const page = document.getElementById('page');
   page.classList.remove('container');
   page.classList.add('container-fluid');
 
-  rowContainer.appendChild(controlsContainer);
+  rowContainer.appendChild(columnContainer);
   rowContainer.appendChild(visualContainer);
+
+  columnContainer.appendChild(majorSelectContainer);
+  columnContainer.appendChild(controlsContainer);
+
   page.appendChild(rowContainer);
   page.appendChild(downloadContainer);
 
-  const controlsEditor = new EditorGenerator(controlsContainer);
+  const controlsEditor = new EditorGenerator(majorSelectContainer);
   // Prep list of Data Sets
   let dataSets = [];
   Data.fetchDataSets((sets) => {
@@ -95,7 +110,7 @@ function renderEditor() {
   let currDataSet = dataSets[0];
   let currGraphType;
 
-  // Select Dataset
+  // Select Data Set
   controlsEditor.createSelectBox('dataSelector', 'Data Set', dsCats, 'Select a Data Set',
     (e) => {
       currDataSet = $(e.currentTarget).val();
