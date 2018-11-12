@@ -185,8 +185,8 @@ class Donut extends Visual {
   render() {
     // Empty the container, then place the SVG in there
     Visual.empty(this.renderID);
-    const width = 500;
-    const height = 500;
+    const width = document.getElementById('visual').clientWidth;
+    const height = document.getElementById('visual').clientHeight;
     const radius = Math.min(width, height) / 2;
     let data = null;
     this.renderData = JSON.parse(JSON.stringify(this.data));
@@ -207,7 +207,7 @@ class Donut extends Visual {
 
     const arc = d3.arc()
       .outerRadius(radius - 10)
-      .innerRadius(100);
+      .innerRadius((radius - 10) * 0.6);
 
     const pie = d3.pie()
       .sort(null)
@@ -287,7 +287,7 @@ class Donut extends Visual {
       path.attr('d', arc);
     }
 
-    if (this.attributes.label_mode == 'hover') {
+    if (this.attributes.label_mode === 'hover') {
       const donut = this;
       const handleMouseOver = function (d, i) {
         let coordinates = [0, 0];
@@ -305,7 +305,7 @@ class Donut extends Visual {
           .text(d.data.key);
         if (coordinates[0] > 0) {
           text.attr('transform', `translate(${coordinates[0] - 5} ${coordinates[1]})`)
-          .attr('text-anchor', 'end');
+            .attr('text-anchor', 'end');
         } else {
           text.attr('transform', `translate(${coordinates[0] + 5} ${coordinates[1]})`)
           .attr('text-anchor', 'start');
@@ -320,8 +320,9 @@ class Donut extends Visual {
 
       path.on('mousemove', handleMouseOver)
           .on('mouseout', handleMouseOut);
-    } else if (this.attributes.label_mode == 'always') {
+    } else if (this.attributes.label_mode === 'always') {
       g.append('text')
+        .attr('class', 'alwaystext')
         .attr('transform', d => `translate(${arc.centroid(d)})`)
         .attr('dy', '.35em')
         .attr('style', `font-size:${this.attributes.font_size}pt`)
@@ -330,7 +331,10 @@ class Donut extends Visual {
     }
 
     if (this.attributes.show_legend) {
-      const legend = d3.select(`#${this.renderID} > svg`).append('g')
+      const keySVG = d3.select('#key').append('svg')
+        .attr('class', 'keySVG')
+        .attr('viewBox', '0 0 900 300');
+      const legend = d3.select('#key > svg').append('g')
         .attr('font-family', 'sans-serif')
         .attr('font-size', 10)
         .style('fill', '#FFFFFF')

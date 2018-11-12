@@ -12,19 +12,19 @@ svg.donut {
 
   text.hovertext
   {
-    font-size: 12px;
-    font-family: Ariel, serif;
     fill: #FFFFFF;
     color: #FFFFFF;
     stroke: #000000;
     stroke-width: 1px;
     stroke-linejoin: round;
-    /*
+  }
+  text.alwaystext
+  {
     fill: #FFFFFF;
-    //text-shadow: 0px 0px 5px #000;
-    pointer-events: none;
-    -webkit-text-stroke: 15px black;
-    */
+    color: #FFFFFF;
+    stroke: #000000;
+    stroke-width: 1px;
+    stroke-linejoin: round;
   }
 }
 

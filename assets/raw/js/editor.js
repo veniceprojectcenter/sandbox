@@ -24,12 +24,17 @@ function renderEditor(route) {
   downloadContainer.className = 'download';
   downloadContainer.id = 'download';
 
+  const keyContainer = document.createElement('div');
+  keyContainer.className = 'key col-md-9';
+  keyContainer.id = 'key';
+
   const page = document.getElementById('page');
   page.classList.remove('container');
   page.classList.add('container-fluid');
 
   rowContainer.appendChild(controlsContainer);
   rowContainer.appendChild(visualContainer);
+  rowContainer.appendChild(keyContainer);
   page.appendChild(rowContainer);
   page.appendChild(downloadContainer);
 
@@ -57,6 +62,9 @@ function renderEditor(route) {
 
     if (visual !== null) {
       visual.fetchAndRenderWithControls();
+      window.addEventListener('resize', () => {
+        visual.render();
+      });
     }
   } else {
     visualContainer.innerHTML = '<p>An error occured.';
