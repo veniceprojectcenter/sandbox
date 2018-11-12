@@ -21,7 +21,6 @@ class CKData {
       page.innerHTML = '<p> An error occurred when fetching the data.';
       console.error(error);
     });
-
     return data;
   }
 
@@ -31,7 +30,7 @@ class CKData {
    * @returns {Promise<Array>} Array of all data sets
    */
   static async fetchDataSets() {
-    let usableSets = [{ name: 'Bridges', id: 'Merge Ponti' },
+    let usableSets = [{ name: 'Bridges', id: 'MERGE Ponti' },
       { name: 'Bells', id: 'Bell Data' },
       { name: 'Stores', id: 'store locations' }];
 
