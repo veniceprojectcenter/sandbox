@@ -1,0 +1,8 @@
+* text = auto
+
+*.scss text
+
+*.js text eol=lf
+
+*.png binary
+*.svg binary
