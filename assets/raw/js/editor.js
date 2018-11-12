@@ -64,6 +64,14 @@ function renderEditor() {
   visualContainer.className = 'visual col-md-7';
   visualContainer.id = Visual.DEFAULT_RENDER_ID;
 
+  // Intro blurb which will be overwritten when the graphs are rendered
+  visualContainer.innerHTML = '<p class="intro"> Welcome to the Venice Project Center Sandbox ' +
+    'Application! This site is designed so anyone can make useful visualizations from the vast ' +
+    'expanse of data that the VPC has collected since its founding in 1988. Select a data set ' +
+    'and graph type to begin! ' +
+    '<p class="intro">Created by the Knowing Venice and Open teams in 2017, and further ' +
+    'improved by the 30th Anniversary Team in 2018.';
+
   // Used to hold the permanent selections for graph type and data set
   const majorSelectContainer = document.createElement('div');
   majorSelectContainer.className = 'majorSelect col';
@@ -79,7 +87,14 @@ function renderEditor() {
   downloadContainer.className = 'download';
   downloadContainer.id = 'download';
 
-  // Page holds everything
+  // Create Page Structure
+  rowContainer.appendChild(columnContainer);
+  rowContainer.appendChild(visualContainer);
+
+  columnContainer.appendChild(majorSelectContainer);
+  columnContainer.appendChild(controlsContainer);
+
+  // Setup page to render later
   const page = document.getElementById('page');
   page.classList.remove('container');
   page.classList.add('container-fluid');
@@ -105,13 +120,6 @@ function renderEditor() {
     if (container) {
       loader.remove();
     }
-
-    // Create Page Structure
-    rowContainer.appendChild(columnContainer);
-    rowContainer.appendChild(visualContainer);
-
-    columnContainer.appendChild(majorSelectContainer);
-    columnContainer.appendChild(controlsContainer);
 
     page.appendChild(rowContainer);
     page.appendChild(downloadContainer);
