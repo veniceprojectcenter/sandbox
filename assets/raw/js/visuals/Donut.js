@@ -329,11 +329,15 @@ class Donut extends Visual {
         .attr('id', d => `label-${d.data.key}`)
         .text(d => d.data.key);
     }
-
+    document.getElementById('key').innerHTML = '';
     if (this.attributes.show_legend) {
-      const keySVG = d3.select('#key').append('svg')
+      this.renderKey(pie(data));
+    }
+     /* d3.select('#key').append('svg')
         .attr('class', 'keySVG')
-        .attr('viewBox', '0 0 900 300');
+        .attr('id', 'keySVG')
+        .attr('width', `${document.getElementById('key').clientWidth}`)
+        .attr('height', `${document.getElementById('key').clientHeight}`);
       const legend = d3.select('#key > svg').append('g')
         .attr('font-family', 'sans-serif')
         .attr('font-size', 10)
@@ -341,22 +345,21 @@ class Donut extends Visual {
         .selectAll('g')
         .data(pie(data))
         .enter()
-        .append('g')
-          .attr('transform', (d, i) => `translate(0,${(i * 22) + 500})`);
+        .append('g');
 
       legend.append('rect')
-        .attr('x', width - 19)
+        .attr('x', 20)
         .attr('width', 19)
         .attr('height', 19)
         .attr('fill', d => this.attributes.items[d.data.key].color);
 
       legend.append('text')
-        .attr('x', width - 24)
+        .attr('x', 100)
         .attr('y', 9.5)
         .attr('dy', '0.32em')
         .style('font-size', '18px')
         .text(d => (d === '' ? 'NULL' : d.data.key));
-    }
+    }*/
 
     if (this.editmode) {
       path.on('click', (d) => {

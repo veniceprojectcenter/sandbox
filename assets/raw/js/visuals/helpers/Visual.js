@@ -520,6 +520,34 @@ class Visual {
       visual.removeChild(description);
     }
   }
+  renderKey(data) {
+    d3.select('#key').append('svg')
+      .attr('class', 'keySVG')
+      .attr('id', 'keySVG')
+      .attr('width', `${document.getElementById('key').clientWidth}`)
+      .attr('height', `${document.getElementById('key').clientHeight}`);
+    const legend = d3.select('#key > svg').append('g')
+      .attr('font-family', 'sans-serif')
+      .attr('font-size', 10)
+      .style('fill', '#FFFFFF')
+      .selectAll('g')
+      .data(data)
+      .enter()
+      .append('g');
+
+    legend.append('rect')
+      .attr('x', 20)
+      .attr('width', 19)
+      .attr('height', 19)
+      .attr('fill', d => this.attributes.items[d.data.key].color);
+
+    legend.append('text')
+      .attr('x', 100)
+      .attr('y', 9.5)
+      .attr('dy', '0.32em')
+      .style('font-size', '18px')
+      .text(d => (d === '' ? 'NULL' : d.data.key));
+  }
 }
 
 Visual.DEFAULT_RENDER_ID = 'visual';
