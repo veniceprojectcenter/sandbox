@@ -4,6 +4,7 @@ import BubbleChart from './visuals/BubbleChart';
 import BubbleMapChart from './visuals/BubbleMapChart';
 import EditorGenerator from './visuals/helpers/EditorGenerator';
 import Data from './visuals/helpers/Data';
+import Loader from './visuals/helpers/Loader';
 
 // List of all graph types that are available for use
 const graphsAvailable = ['Donut-Chart', 'Bubble-Chart', 'Bubble-Map-Chart'];
@@ -48,10 +49,9 @@ function createGraphic(dataSet, graphType) {
 
 /**
  * Renders the editor page using the information given in the URL
- *
- * @param {String[]} route Array of URL extensions
  */
 function renderEditor() {
+  // Basic page setup prep
   const rowContainer = document.createElement('div');
   rowContainer.className = 'row';
   const columnContainer = document.createElement('div');
@@ -82,40 +82,51 @@ function renderEditor() {
   page.classList.remove('container');
   page.classList.add('container-fluid');
 
-  rowContainer.appendChild(columnContainer);
-  rowContainer.appendChild(visualContainer);
-
-  columnContainer.appendChild(majorSelectContainer);
-  columnContainer.appendChild(controlsContainer);
-
-  page.appendChild(rowContainer);
-  page.appendChild(downloadContainer);
-
   const controlsEditor = new EditorGenerator(majorSelectContainer);
-  // Prep list of Data Sets
+  // Prep list of Data Sets and Graphs
   let dataSets = [];
+  const loader = new Loader('page');
+  const container = document.getElementById('page');
+  if (container) {
+    loader.render();
+  }
+
   Data.fetchDataSets((sets) => {
     dataSets = sets;
+    const dsCats = dataSets.map(x => ({ value: x.id, text: x.name }));
+    // Prep list of Graph types
+    const graphCats = graphsAvailable.map(graph => ({ value: graph, text: graph }));
+
+    let currDataSet = dataSets[0];
+    let currGraphType;
+
+    if (container) {
+      loader.remove();
+    }
+
+    // Create Page Structure
+    rowContainer.appendChild(columnContainer);
+    rowContainer.appendChild(visualContainer);
+
+    columnContainer.appendChild(majorSelectContainer);
+    columnContainer.appendChild(controlsContainer);
+
+    page.appendChild(rowContainer);
+    page.appendChild(downloadContainer);
+
+    // Select Data Set
+    controlsEditor.createSelectBox('dataSelector', 'Data Set', dsCats, 'Select a Data Set',
+      (e) => {
+        currDataSet = $(e.currentTarget).val();
+        createGraphic(currDataSet, currGraphType);
+      });
+    // Select GraphType
+    controlsEditor.createSelectBox('graphSelector', 'Select GraphType', graphCats, null,
+      (e) => {
+        currGraphType = $(e.currentTarget).val();
+        createGraphic(currDataSet, currGraphType);
+      });
   });
-  const dsCats = dataSets.map(x => ({ value: x.id, text: x.name }));
-  // Prep list of Graph types
-  const graphCats = graphsAvailable.map(graph => ({ value: graph, text: graph }));
-
-  let currDataSet = dataSets[0];
-  let currGraphType;
-
-  // Select Data Set
-  controlsEditor.createSelectBox('dataSelector', 'Data Set', dsCats, 'Select a Data Set',
-    (e) => {
-      currDataSet = $(e.currentTarget).val();
-      createGraphic(currDataSet, currGraphType);
-    });
-  // Select GraphType
-  controlsEditor.createSelectBox('graphSelector', 'Select GraphType', graphCats, null,
-    (e) => {
-      currGraphType = $(e.currentTarget).val();
-      createGraphic(currDataSet, currGraphType);
-    });
 }
 
 export default renderEditor;
