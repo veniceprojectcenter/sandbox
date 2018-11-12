@@ -1,7 +1,7 @@
 import FirebaseData from './FirebaseData';
 import CKData from './CKData';
 
-const useFirebase = true; // Uses either the ckDatabase or Firebase based on this variable
+const useFirebase = false; // Uses either the ckDatabase or Firebase based on this variable
 
 /**
  * Class for retrieving information from the databases
@@ -72,11 +72,10 @@ class Data {
           dataSets = response;
         });
       } else {
-        await FirebaseData.fetchDataSets().then((response) => {
+        await CKData.fetchDataSets().then((response) => {
           dataSets = response;
-        }); // TODO: replace this with CKData
+        });
       }
-
 
       localStorage.dataSetsDate = new Date().toString();
       try {
