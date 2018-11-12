@@ -15,7 +15,7 @@ class CKData {
     .then(response => response.json())
     .then((response) => {
       // JSON data is retrieved HERE, where response is an array of elements of the dataset
-      data = response;
+      data = response.map(item => item.content);
     })
     .catch((error) => {
       page.innerHTML = '<p> An error occurred when fetching the data.';
