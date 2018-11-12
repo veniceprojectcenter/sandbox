@@ -19,7 +19,9 @@ class Data {
     if (localStorage[dataSet] && localStorage[`${dataSet}-date`] &&
       Math.floor(new Date() - Date.parse(localStorage[`${dataSet}-date`])) < (1000 * 60 * 60 * 24)) {
       const data = JSON.parse(localStorage[dataSet]);
-      callback(data);
+      if (callback) {
+        callback(data);
+      }
     } else {
       let data = [];
 

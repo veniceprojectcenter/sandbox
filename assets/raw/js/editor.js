@@ -16,8 +16,10 @@ const graphsAvailable = ['Donut-Chart', 'Bubble-Chart', 'Bubble-Map-Chart'];
  * @param graphType Name of the graph type to use
  */
 function createGraphic(dataSet, graphType) {
-  if (dataSet === null || dataSet === undefined ||
-    graphType === null || graphType === undefined) {
+  if (dataSet === null || dataSet === undefined) {
+    return;
+  } else if (graphType === null || graphType === undefined) {
+    Data.fetchData(dataSet, null);
     return;
   }
 
