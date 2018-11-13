@@ -521,6 +521,10 @@ class Visual {
     }
   }
   renderKey(data) {
+    const fiveArray = [0, 0, 0, 0, 0];
+    const longBoi = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+    let yInt = 0;
+    let colNum = 0;
     d3.select('#key').append('svg')
       .attr('class', 'keySVG')
       .attr('id', 'keySVG')
@@ -533,17 +537,41 @@ class Visual {
       .selectAll('g')
       .data(data)
       .enter()
-      .append('g');
+      .append('g')
+        .attr('transform', (d) => {
+          const y = (yInt * 25);
+          const x = (longBoi.reduce((a, b) => a + b) * 30);
+          fiveArray[yInt] = d.data.key;
+          console.log(fiveArray[yInt].length);
+          //console.log(yInt);
+          if (yInt === 4) {
+            console.log(longBoi);
+            for (let j = 0; j < 5; j += 1) {
+              if (fiveArray[j].length >= longBoi[colNum]) {
+                longBoi[colNum] = fiveArray[j].length;
+              }
+              fiveArray[j] = 0;
+            }
+            colNum += 1;
+          }
+          yInt += 1;
+          if (yInt === 5) {
+            yInt = 0;
+          }
+          console.log(colNum);
+          return `translate(${x},${y})`;
+        });
 
     legend.append('rect')
       .attr('x', 20)
+      .attr('y', 15)
       .attr('width', 19)
       .attr('height', 19)
       .attr('fill', d => this.attributes.items[d.data.key].color);
 
     legend.append('text')
-      .attr('x', 100)
-      .attr('y', 9.5)
+      .attr('x', 50)
+      .attr('y', 25)
       .attr('dy', '0.32em')
       .style('font-size', '18px')
       .text(d => (d === '' ? 'NULL' : d.data.key));
