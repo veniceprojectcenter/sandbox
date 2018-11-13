@@ -1,0 +1,11 @@
+input[type=checkbox] {
+
+  & + label {
+    color: $subtletext;
+  }
+
+  &:checked + label:before {
+    border-bottom-color: $primary !important;
+    border-right-color: $primary !important;
+  }
+}

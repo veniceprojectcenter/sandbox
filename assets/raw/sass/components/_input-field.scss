@@ -1,6 +1,6 @@
 .input-field {
-  .label, label {
-    color: #BBBBBB; // Slightly lighter text for MATERIAL DESIGN
+  label {
+    color: $subtletext;
   }
 
   // Dropdown Selectors
@@ -19,7 +19,7 @@
     }
 
     li.disabled > span {
-      color: #373737;
+      color: #444444;
     }
   }
 

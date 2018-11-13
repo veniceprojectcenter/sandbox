@@ -114,7 +114,7 @@ function renderEditor() {
     // Prep list of Graph types
     const graphCats = graphsAvailable.map(graph => ({ value: graph, text: graph }));
 
-    let currDataSet = dataSets[0];
+    let currDataSet;
     let currGraphType;
 
     if (container) {
