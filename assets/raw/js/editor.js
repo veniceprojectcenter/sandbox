@@ -46,6 +46,9 @@ function createGraphic(dataSet, graphType) {
 
   if (visual !== null) {
     visual.fetchAndRenderWithControls();
+    window.addEventListener('resize', () => {
+      visual.render();
+    });
   }
 }
 
@@ -61,7 +64,7 @@ function renderEditor() {
 
   // Used to render the Graph
   const visualContainer = document.createElement('div');
-  visualContainer.className = 'visual col-md-7';
+  visualContainer.className = 'visual col-md-9';
   visualContainer.id = Visual.DEFAULT_RENDER_ID;
 
   // Intro blurb which will be overwritten when the graphs are rendered
@@ -79,13 +82,17 @@ function renderEditor() {
 
   // Used to render the graph options
   const controlsContainer = document.createElement('div');
-  controlsContainer.className = 'controls col';
+  controlsContainer.className = 'controls col-md-3';
   controlsContainer.id = Visual.DEFAULT_RENDER_CONTROLS_ID;
 
   // Used to render the other buttons like downloads and exports
   const downloadContainer = document.createElement('div');
   downloadContainer.className = 'download';
   downloadContainer.id = 'download';
+
+  const keyContainer = document.createElement('div');
+  keyContainer.className = 'key col-md-9';
+  keyContainer.id = 'key';
 
   // Create Page Structure
   rowContainer.appendChild(columnContainer);
@@ -98,6 +105,10 @@ function renderEditor() {
   const page = document.getElementById('page');
   page.classList.remove('container');
   page.classList.add('container-fluid');
+
+  rowContainer.appendChild(controlsContainer);
+  rowContainer.appendChild(visualContainer);
+  rowContainer.appendChild(keyContainer);
 
   const controlsEditor = new EditorGenerator(majorSelectContainer);
   // Prep list of Data Sets and Graphs
