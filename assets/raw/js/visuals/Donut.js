@@ -65,7 +65,6 @@ class Donut extends Visual {
 
     const editor = new EditorGenerator(controlsContainer);
 
-    editor.createHeader('Configure Donut Chart');
     this.renderBasicControls(editor);
 
     const cats = [];

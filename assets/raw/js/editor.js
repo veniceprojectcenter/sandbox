@@ -125,17 +125,19 @@ function renderEditor() {
     page.appendChild(downloadContainer);
 
     // Select Data Set
-    controlsEditor.createSelectBox('dataSelector', 'Data Set', dsCats, 'Select a Data Set',
+    controlsEditor.createSelectBox('dataSelector', 'Data Set', dsCats, null,
       (e) => {
         currDataSet = $(e.currentTarget).val();
         createGraphic(currDataSet, currGraphType);
-      });
+      },
+      null, 'Select a Data Set');
     // Select GraphType
-    controlsEditor.createSelectBox('graphSelector', 'Select GraphType', graphCats, null,
+    controlsEditor.createSelectBox('graphSelector', 'Graph Type', graphCats, null,
       (e) => {
         currGraphType = $(e.currentTarget).val();
         createGraphic(currDataSet, currGraphType);
-      });
+      },
+      null, 'Select a Graph Type');
   });
 }
 

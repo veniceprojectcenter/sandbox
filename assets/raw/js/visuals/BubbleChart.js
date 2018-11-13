@@ -67,8 +67,6 @@ class BubbleChart extends Visual {
 
     const editor = new EditorGenerator(controlsContainer);
 
-    editor.createHeader('Configure Bubble Chart');
-
     this.renderBasicControls(editor);
 
     const cats = [];

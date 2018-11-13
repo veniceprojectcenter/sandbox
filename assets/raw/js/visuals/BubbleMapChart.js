@@ -128,8 +128,6 @@ class BubbleMapChart extends Visual {
 
     const editor = new EditorGenerator(controlsContainer);
 
-    editor.createHeader('Configure Map');
-
     this.renderBasicControls(editor);
 
     const columns = (Object.keys(this.getNumericData()[0]));

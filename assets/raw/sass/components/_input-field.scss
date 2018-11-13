@@ -1,0 +1,40 @@
+.input-field {
+  .label, label {
+    color: #BBBBBB; // Slightly lighter text for MATERIAL DESIGN
+  }
+
+  // Dropdown Selectors
+  .select-dropdown {
+    color: $text;
+    background: #FFFFFF;
+  }
+
+  span.caret{
+    color: $text;
+  }
+
+  .dropdown-content {
+    li > span {
+      color: #000000;
+    }
+
+    li.disabled > span {
+      color: #373737;
+    }
+  }
+
+  // Text input
+  input[type=text] {
+    color: $text;
+
+    &:focus {
+      border-color: $primary !important;
+      box-shadow: 0 0 !important;
+    }
+
+    &:focus + label {
+      color: $primary !important;
+      border: $primary;
+    }
+  }
+}
