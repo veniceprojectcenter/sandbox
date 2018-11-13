@@ -311,21 +311,27 @@ class Visual {
    * Abstract method
    */
   onLoadData() {
-    throw new Error('You must implement this method');
+    if (this.constructor === Visual) {
+      throw new Error('Visual is an abstract class and cannot be instantiated');
+    }
   }
 
   /**
    * Abstract method for rendering controls for the desired visual
    */
   renderControls() {
-    throw new Error('You must implement this method');
+    if (this.constructor === Visual) {
+      throw new Error('Visual is an abstract class and cannot be instantiated');
+    }
   }
 
   /**
    * Abstract method for rendering the desired visual
    */
   render() {
-    throw new Error('You must implement this method');
+    if (this.constructor === Visual) {
+      throw new Error('Visual is an abstract class and cannot be instantiated');
+    }
   }
 
   // DATA HELPER FUNCTIONS
