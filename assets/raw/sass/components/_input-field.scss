@@ -23,8 +23,8 @@
     }
   }
 
-  // Text input
-  input[type=text] {
+  // Typed Input
+  input[type=text], input[type=number] {
     color: $text;
 
     &:focus {

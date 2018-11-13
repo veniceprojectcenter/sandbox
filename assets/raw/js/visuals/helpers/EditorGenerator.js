@@ -12,6 +12,14 @@ class EditorGenerator {
     });
   }
 
+  createNumberField(id, title, onNumberChanged) {
+    const context = { id, title };
+    this.handlebarsWithContext('number-field-entry', context);
+    $(document).ready(() => {
+      $(`#${id} > input`).on('input', onNumberChanged);
+    });
+  }
+
   createColorField(id, title, color, onColorChanged) {
     const context = { id, title, color };
     this.handlebarsWithContext('colorpicker', context);

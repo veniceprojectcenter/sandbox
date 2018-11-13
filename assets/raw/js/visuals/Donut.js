@@ -163,12 +163,16 @@ class Donut extends Visual {
       this.render();
     });
 
-    editor.createNumberSlider('donut-font-size',
-     'Label Font Size',
-      this.attributes.font_size,
-       1, 60, 1,
+    editor.createNumberField('donut-font-size', 'Label Font Size',
      (e) => {
-       const value = $(e.currentTarget).val();
+       let value = $(e.currentTarget).val();
+       if (value === '') {
+         value = 10;
+       } else if (Number(value) < 1) {
+         e.currentTarget.value = '1';
+       } else if (Number(value) > 100) {
+         e.currentTarget.value = '100';
+       }
        this.attributes.font_size = `${value}`;
        this.render();
      });
