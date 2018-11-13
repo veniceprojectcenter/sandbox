@@ -36,5 +36,12 @@
       color: $primary !important;
       border: $primary;
     }
+
+    // Remove up/down arrows for numerical selection
+    &::-webkit-inner-spin-button,
+    &::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
   }
 }

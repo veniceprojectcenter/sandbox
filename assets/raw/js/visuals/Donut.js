@@ -170,8 +170,10 @@ class Donut extends Visual {
          value = 10;
        } else if (Number(value) < 1) {
          e.currentTarget.value = '1';
+         value = 1;
        } else if (Number(value) > 100) {
          e.currentTarget.value = '100';
+         value = 100;
        }
        this.attributes.font_size = `${value}`;
        this.render();
