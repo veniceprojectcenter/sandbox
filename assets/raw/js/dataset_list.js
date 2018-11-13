@@ -37,6 +37,7 @@ function render(dataSets) {
     const name = document.createElement('div');
     name.className = 'name';
     name.innerHTML = dataSets[i].name;
+    //console.log(dataSets[i].name);
     const image = document.createElement('object');
     image.data = `/assets/prod/images/datasets/${dataSets[i].id}.svg`;
     image.type = 'image/svg+xml';
