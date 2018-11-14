@@ -642,32 +642,35 @@ class Visual {
       visual.removeChild(description);
     }
   }
-  renderKey(data) {
-    const fiveArray = [0, 0, 0, 0, 0];
-    const longBoi = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-    let yInt = 0;
-    let colNum = 0;
-    d3.select('#key').append('svg')
-      .attr('class', 'keySVG')
-      .attr('id', 'keySVG')
-      .attr('width', `${document.getElementById('key').clientWidth}`)
-      .attr('height', `${document.getElementById('key').clientHeight}`);
-    const legend = d3.select('#key > svg').append('g')
-      .attr('font-family', 'sans-serif')
-      .attr('font-size', 10)
-      .style('fill', '#FFFFFF')
-      .selectAll('g')
-      .data(data)
-      .enter()
-      .append('g')
+  renderKey(data, on) {
+    if (on === 1) {
+      const fiveArray = [0, 0, 0, 0, 0];
+      const longBoi = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+      let yInt = 0;
+      let colNum = 0;
+
+      d3.select('#key')
+        .append('svg')
+        .attr('class', 'keySVG')
+        .attr('id', 'keySVG')
+        .attr('width', `${document.getElementById('key').clientWidth}`)
+        .attr('height', `${document.getElementById('key').clientHeight}`);
+
+      const legend = d3.select('#key > svg')
+        .append('g')
+        .attr('font-family', 'sans-serif')
+        .attr('font-size', 10)
+        .style('fill', '#FFFFFF')
+        .selectAll('g')
+        .data(data)
+        .enter()
+        .append('g')
         .attr('transform', (d) => {
           const y = (yInt * 25);
           const x = (longBoi.reduce((a, b) => a + b) * 30);
           fiveArray[yInt] = d.data.key;
-          console.log(fiveArray[yInt].length);
-          //console.log(yInt);
+
           if (yInt === 4) {
-            console.log(longBoi);
             for (let j = 0; j < 5; j += 1) {
               if (fiveArray[j].length >= longBoi[colNum]) {
                 longBoi[colNum] = fiveArray[j].length;
@@ -680,23 +683,28 @@ class Visual {
           if (yInt === 5) {
             yInt = 0;
           }
-          console.log(colNum);
+
           return `translate(${x},${y})`;
         });
 
-    legend.append('rect')
-      .attr('x', 20)
-      .attr('y', 15)
-      .attr('width', 19)
-      .attr('height', 19)
-      .attr('fill', d => this.attributes.items[d.data.key].color);
+      legend.append('rect')
+        .attr('x', 20)
+        .attr('y', 15)
+        .attr('width', 19)
+        .attr('height', 19)
+        .attr('fill', d => this.attributes.items[d.data.key].color);
 
-    legend.append('text')
-      .attr('x', 50)
-      .attr('y', 25)
-      .attr('dy', '0.32em')
-      .style('font-size', '18px')
-      .text(d => (d === '' ? 'NULL' : d.data.key));
+      legend.append('text')
+        .attr('x', 50)
+        .attr('y', 25)
+        .attr('dy', '0.32em')
+        .style('font-size', '18px')
+        .text(d => (d === '' ? 'NULL' : d.data.key));
+
+      document.getElementById('key').style.outline = '4px solid #FFFFFF';
+    } else {
+      document.getElementById('key').style.outline = '';
+    }
   }
 }
 
