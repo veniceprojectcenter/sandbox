@@ -4,7 +4,6 @@ import renderVisualsList from './visuals_list';
 import renderEditor from './editor';
 import renderConfigEditor from './config_editor';
 import Firebase from './Firebase';
-import CKData from './visuals/helpers/CKData';
 
 /**
  * Uses the URL to determine which page to render

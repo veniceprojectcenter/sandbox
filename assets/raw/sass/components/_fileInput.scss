@@ -1,0 +1,15 @@
+input[type=file] {
+  width: 0.1px;
+  height: 0.1px;
+  opacity: 0;
+  overflow: hidden;
+  position: absolute;
+  z-index: -1;
+}
+
+.fileInputLabel {
+  text-decoration: none;
+  background-color: $primary;
+  color: $text;
+  padding: 6px 12px 6px 12px; // TODO: make this button look better
+}
