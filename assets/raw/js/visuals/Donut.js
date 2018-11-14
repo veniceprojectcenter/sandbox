@@ -197,8 +197,8 @@ class Donut extends Visual {
   render() {
     // Empty the container, then place the SVG in there
     Visual.empty(this.renderID);
-    const width = 500;
-    const height = 500;
+    const width = document.getElementById('visual').clientWidth;
+    const height = document.getElementById('visual').clientHeight;
     const radius = Math.min(width, height) / 2;
     let data = null;
     this.renderData = JSON.parse(JSON.stringify(this.data));
@@ -219,7 +219,7 @@ class Donut extends Visual {
 
     const arc = d3.arc()
       .outerRadius(radius - 10)
-      .innerRadius(100);
+      .innerRadius((radius - 10) * 0.6);
 
     const pie = d3.pie()
       .sort(null)
@@ -328,36 +328,16 @@ class Donut extends Visual {
           .on('mouseout', handleMouseOut);
     } else if (this.attributes.label_mode === 'always') {
       g.append('text')
+        .attr('class', 'alwaystext')
         .attr('transform', d => `translate(${arc.centroid(d)})`)
         .attr('dy', '.35em')
         .attr('style', `font-size:${this.attributes.font_size}pt`)
         .attr('id', d => `label-${d.data.key}`)
         .text(d => d.data.key);
     }
-
+    document.getElementById('key').innerHTML = '';
     if (this.attributes.show_legend) {
-      const legend = d3.select(`#${this.renderID} > svg`).append('g')
-        .attr('font-family', 'sans-serif')
-        .attr('font-size', 10)
-        .attr('text-anchor', 'end')
-        .selectAll('g')
-        .data(pie(data))
-        .enter()
-        .append('g')
-          .attr('transform', (d, i) => `translate(0,${(i * 22) + 500})`);
-
-      legend.append('rect')
-        .attr('x', width - 19)
-        .attr('width', 19)
-        .attr('height', 19)
-        .attr('fill', d => this.attributes.items[d.data.key].color);
-
-      legend.append('text')
-        .attr('x', width - 24)
-        .attr('y', 9.5)
-        .attr('dy', '0.32em')
-        .style('font-size', '18px')
-        .text(d => (d === '' ? 'NULL' : d.data.key));
+      this.renderKey(pie(data));
     }
 
     if (this.editmode) {

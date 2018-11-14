@@ -1,8 +1,9 @@
 .visual {
   min-height: calc(100vh - 150px);
+  max-height: 90%;
   overflow: hidden;
   position: relative;
-  width: 100%;
+  //width: 100%;
 
   .intro {
     text-align: center;

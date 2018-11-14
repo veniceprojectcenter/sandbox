@@ -46,6 +46,9 @@ function createGraphic(dataSet, graphType) {
 
   if (visual !== null) {
     visual.fetchAndRenderWithControls();
+    window.addEventListener('resize', () => {
+      visual.render();
+    });
   }
 }
 
@@ -61,7 +64,7 @@ function renderEditor() {
 
   // Used to render the Graph
   const visualContainer = document.createElement('div');
-  visualContainer.className = 'visual col-md-7';
+  visualContainer.className = 'visual col-md-9';
   visualContainer.id = Visual.DEFAULT_RENDER_ID;
 
   // Intro blurb which will be overwritten when the graphs are rendered
@@ -87,9 +90,14 @@ function renderEditor() {
   downloadContainer.className = 'download';
   downloadContainer.id = 'download';
 
+  const keyContainer = document.createElement('div');
+  keyContainer.className = 'key col-md-9';
+  keyContainer.id = 'key';
+
   // Create Page Structure
   rowContainer.appendChild(columnContainer);
   rowContainer.appendChild(visualContainer);
+  rowContainer.appendChild(keyContainer);
 
   columnContainer.appendChild(majorSelectContainer);
   columnContainer.appendChild(controlsContainer);
