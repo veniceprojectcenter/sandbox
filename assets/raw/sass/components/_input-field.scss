@@ -1,6 +1,6 @@
 .input-field {
-  .label, label {
-    color: #BBBBBB; // Slightly lighter text for MATERIAL DESIGN
+  label {
+    color: $subtletext;
   }
 
   // Dropdown Selectors
@@ -19,12 +19,12 @@
     }
 
     li.disabled > span {
-      color: #373737;
+      color: #444444;
     }
   }
 
-  // Text input
-  input[type=text] {
+  // Typed Input
+  input[type=text], input[type=number] {
     color: $text;
 
     &:focus {
@@ -35,6 +35,13 @@
     &:focus + label {
       color: $primary !important;
       border: $primary;
+    }
+
+    // Remove up/down arrows for numerical selection
+    &::-webkit-inner-spin-button,
+    &::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
     }
   }
 }

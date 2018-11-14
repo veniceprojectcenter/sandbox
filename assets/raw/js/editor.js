@@ -60,9 +60,11 @@ function renderEditor() {
   const rowContainer = document.createElement('div');
   rowContainer.className = 'row';
   rowContainer.id = 'row';
+
   const column1Container = document.createElement('div');
   column1Container.className = 'column1';
   column1Container.id = 'column1';
+
   const column2Container = document.createElement('div');
   column2Container.className = 'column2';
   column2Container.id = 'column2';
@@ -76,7 +78,7 @@ function renderEditor() {
   visualContainer.innerHTML = '<p class="intro"> Welcome to the Venice Project Center Sandbox ' +
     'Application! This site is designed so anyone can make useful visualizations from the vast ' +
     'expanse of data that the VPC has collected since its founding in 1988. Select a data set ' +
-    'and graph type to begin! <br>' +
+    'and graph type to begin! <br> <br>' +
     'Created by the Knowing Venice and Open teams in 2017, and further ' +
     'improved by the 30th Anniversary Team in 2018.';
 
@@ -128,7 +130,7 @@ function renderEditor() {
     // Prep list of Graph types
     const graphCats = graphsAvailable.map(graph => ({ value: graph, text: graph }));
 
-    let currDataSet = dataSets[0];
+    let currDataSet;
     let currGraphType;
 
     if (container) {
