@@ -642,19 +642,34 @@ class Visual {
       visual.removeChild(description);
     }
   }
-  renderKey(data, on) {
-    if (on === 1) {
-      const fiveArray = [0, 0, 0, 0, 0];
-      const longBoi = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-      let yInt = 0;
-      let colNum = 0;
 
-      d3.select('#key')
+  lengthinPX(string) {
+    const ruler = document.createElement('span');
+    ruler.style.display = 'inline-block';
+    ruler.style.whiteSpace = 'nowrap';
+    ruler.innerHTML = `<p style = 'display: flex; font-size: 18px'>${string}</p>`;
+    document.getElementById('key').appendChild(ruler);
+    const final = ruler.clientWidth;
+    //document.getElementById('key').removeChild(ruler);
+    return final;
+  }
+
+  renderKey(data, on) {
+    let colNum = 0;
+    let rowNum = 0;
+    let rowTotal = 0;
+    /*
+    const bigArray = [];
+    const longBoi = [];
+    let yInt = 0;
+    let colNum = 0;
+    */
+    if (on === 1) {
+      const svgBox = d3.select('#key')
         .append('svg')
         .attr('class', 'keySVG')
         .attr('id', 'keySVG')
-        .attr('width', `${document.getElementById('key').clientWidth}`)
-        .attr('height', `${document.getElementById('key').clientHeight}`);
+        .attr('width', `${document.getElementById('key').clientWidth}`);
 
       const legend = d3.select('#key > svg')
         .append('g')
@@ -666,26 +681,25 @@ class Visual {
         .enter()
         .append('g')
         .attr('transform', (d) => {
-          const y = (yInt * 25);
-          const x = (longBoi.reduce((a, b) => a + b) * 30);
-          fiveArray[yInt] = d.data.key;
-
-          if (yInt === 4) {
-            for (let j = 0; j < 5; j += 1) {
-              if (fiveArray[j].length >= longBoi[colNum]) {
-                longBoi[colNum] = fiveArray[j].length;
-              }
-              fiveArray[j] = 0;
+          if (((rowTotal + this.lengthinPX(d.data.key) + 50) + 10) > document.getElementById('key').clientWidth) {
+            if (rowNum === 0) {
+              console.log('longest boi known to man');
             }
             colNum += 1;
+            rowNum = 0;
+            rowTotal = 0;
           }
-          yInt += 1;
-          if (yInt === 5) {
-            yInt = 0;
-          }
-
+          const y = (colNum * 25);
+          const x = rowTotal;
+          rowNum += 1;
+          rowTotal += this.lengthinPX(d.data.key) + 50;
+          console.log(d.data.key);
+          console.log(this.lengthinPX(d.data.key));
+          console.log(document.getElementById('key').clientWidth);
           return `translate(${x},${y})`;
         });
+
+      svgBox.attr('height', `${(colNum * 25) + 50}`);
 
       legend.append('rect')
         .attr('x', 20)
