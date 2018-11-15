@@ -22,6 +22,11 @@
     margin-bottom: 0;
     color: $text;
     width: 50%;
+
+    &:focus {
+      border-color: $primary !important;
+      box-shadow: 0 0 !important;
+    }
   }
 
   > input[type='color'] {
