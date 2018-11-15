@@ -1,3 +1,5 @@
+@import 'button';
+
 input[type=file] {
   width: 0.1px;
   height: 0.1px;
@@ -8,8 +10,5 @@ input[type=file] {
 }
 
 .fileInputLabel {
-  text-decoration: none;
-  background-color: $primary;
-  color: $text;
-  padding: 6px 12px 6px 12px; // TODO: make this button look better
+  @extend %button;
 }

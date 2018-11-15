@@ -9,7 +9,22 @@
 .color-wrapper {
   margin-bottom: 10px;
 
+  > label {
+    color: $subtletext;
+  }
+
+  .buffer {
+    height: 3rem;
+    font-size: 1em;
+  }
+
   > input[type='text'] {
     margin-bottom: 0;
+    color: $text;
+    width: 50%;
+  }
+
+  > input[type='color'] {
+    margin-right: 15px;
   }
 }

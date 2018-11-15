@@ -33,15 +33,21 @@ class EditorGenerator {
   }
 
   createColorField(id, title, color, onColorChanged) {
-    const context = { id, title, color };
+    const context = { id, title, color: color.substring(1, color.length) };
     this.handlebarsWithContext('colorpicker', context);
     $(`#${id}-field`).on('change', (e) => {
-      $(e.currentTarget).siblings('input[type="text"]').val($(e.currentTarget).val());
+      let val = $(e.currentTarget).val();
+      val = val.substring(1, val.length);
+      $(e.currentTarget).siblings('input[type="text"]').val(val);
       onColorChanged(e);
     });
     $(`#${id}-mirror`).on('change', (e) => {
-      $(e.currentTarget).siblings('input[type="color"]').val($(e.currentTarget).val());
+      const ogval = $(e.currentTarget).val();
+      const val = `#${ogval}`;
+      $(e.currentTarget).val(val);
+      $(e.currentTarget).siblings('input[type="color"]').val(val);
       onColorChanged(e);
+      $(e.currentTarget).val(ogval);
     });
   }
   createRemoveButton(id, onPress) {

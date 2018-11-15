@@ -63,7 +63,6 @@ async function publishConfig() {
  */
 function createPublishButton(loginModal) {
   const publishButton = document.createElement('button');
-  publishButton.className = 'btn waves-effectr';
   publishButton.innerText = 'Publish Visual';
   publishButton.id = 'publish-button';
   publishButton.addEventListener('click', async () => {
@@ -86,7 +85,6 @@ function createPublishButton(loginModal) {
  */
 function createSVGButton() {
   const saveSVGButton = document.createElement('button');
-  saveSVGButton.className = 'btn waves-effect';
   saveSVGButton.innerText = 'Export for Illustrator';
   saveSVGButton.addEventListener('click', async () => {
     let svgData = '';
@@ -139,7 +137,6 @@ function createSVGButton() {
  */
 function createDownloadConfig() {
   const downloadButton = document.createElement('button');
-  downloadButton.className = 'btn waves-effect';
   downloadButton.innerText = 'Create Save File';
   downloadButton.addEventListener('click', () => {
     const config = {
