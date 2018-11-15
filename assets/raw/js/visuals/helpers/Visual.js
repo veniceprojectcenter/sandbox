@@ -74,11 +74,28 @@ class Visual {
     document.getElementById(id).innerHTML = '';
   }
 
+  /**
+   * Adds all items from defaults to this.attributes, unless a value is already there. It also
+   * checks for sub-objects and their keys as well
+   *
+   * @param {Object} defaults Contains default attributes
+   */
   applyDefaultAttributes(defaults) {
     const keys = Object.keys(defaults);
     for (let i = 0; i < keys.length; i += 1) {
       if (Object.prototype.hasOwnProperty.call(defaults, keys[i])) {
-        if (!Object.prototype.hasOwnProperty.call(this.attributes, keys[i])) {
+        if (defaults[keys[i]] === Object(defaults[keys[i]])) {
+          const subKeys = Object.keys(defaults[keys[i]]);
+          if (!this.attributes[keys[i]]) {
+            this.attributes[keys[i]] = defaults[keys[i]];
+          } else {
+            for (let j = 0; j < subKeys.length; j += 1) {
+              if (!Object.prototype.hasOwnProperty.call(this.attributes[keys[i]], subKeys[j])) {
+                this.attributes[keys[i]][subKeys[j]] = defaults[keys[i]][subKeys[j]];
+              }
+            }
+          }
+        } else if (!Object.prototype.hasOwnProperty.call(this.attributes, keys[i])) {
           this.attributes[keys[i]] = defaults[keys[i]];
         }
       }

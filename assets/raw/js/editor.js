@@ -204,16 +204,24 @@ function generateDownloadButtons(id = 'download') {
 /**
  * Calls the render function of the appropriate graph
  *
- * @param dataSet Name of the data set to render
- * @param graphType Name of the graph type to use
- * @param attributes Attributes to use for graph construction
+ * @param {String} dataSet Name of the data set to render
+ * @param {String} graphType Name of the graph type to use
+ * @param {Object} attr = null Attributes to use for graph construction
  */
-function createGraphic(dataSet, graphType, attributes = {}) {
+function createGraphic(dataSet, graphType, attr = null) {
   if (dataSet === null || dataSet === undefined) {
     return;
   } else if (graphType === null || graphType === undefined) {
     Data.fetchData(dataSet, null);
     return;
+  }
+  let attributes = attr;
+  if (attributes === null) {
+    if (activeVisual && activeVisual.attributes) {
+      attributes = activeVisual.attributes;
+    } else {
+      attributes = {};
+    }
   }
 
   const config = {
