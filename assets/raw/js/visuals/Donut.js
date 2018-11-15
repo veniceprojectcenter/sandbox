@@ -31,7 +31,7 @@ class Donut extends Visual {
       dontDefineDimensions: true,
       font_size: 20,
       hide_empty: true,
-      show_legend: true,
+      show_legend: false,
       color: {
         mode: 'manual',
       },
