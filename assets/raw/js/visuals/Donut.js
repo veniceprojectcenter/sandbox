@@ -337,7 +337,9 @@ class Donut extends Visual {
     }
     document.getElementById('key').innerHTML = '';
     if (this.attributes.show_legend) {
-      this.renderKey(pie(data));
+      this.renderKey(pie(data), 1);
+    } else {
+      this.renderKey(pie(data), 0);
     }
 
     if (this.editmode) {

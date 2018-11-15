@@ -7,18 +7,52 @@ body {
   background-color: $background;
 }
 
+.controls, .visual, .intro, .key, .majorSelect {
+  position: relative;
+  min-height: 1px;
+}
+
+.row {
+  display: flex;
+  flex-wrap: wrap;
+}
+
 .controls {
   max-height: 100%; //calc(100vh - 125px);
   overflow-y: visible;
 }
 
-.key {
-  display: flex;
-  float: right;
-  //justify-content: center;
-  margin-left:auto;
+.visual {
+  min-height: 70vh;
+  max-height: 75%;
+  width: 100%;
+  padding-bottom: 5%;
+  //overflow: hidden;
 }
 
-.column {
-  max-width: 25%;
+.intro {
+  text-align: right;
+}
+
+.key {
+  float: right;
+  width: 100%;
+}
+
+.column1 {
+  flex: 0 0 23.5%;
+  max-width: 23.5%;
+  padding-left: 1.5%;
+  padding-right: 1.5%;
+}
+.column2 {
+  flex: 0 0 73.5%;
+  max-width: 73.5%;
+  padding-left: 1.5%;
+  padding-right: 1.5%;
+  /*
+  position: sticky;
+  position: -webkit-sticky;
+  top: 1px;
+  */
 }

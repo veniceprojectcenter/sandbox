@@ -260,30 +260,37 @@ function renderEditor(defaultDS = null, defaultGT = null) {
   // Basic page setup prep
   const rowContainer = document.createElement('div');
   rowContainer.className = 'row';
-  const columnContainer = document.createElement('div');
-  columnContainer.className = 'column';
+  rowContainer.id = 'row';
+
+  const column1Container = document.createElement('div');
+  column1Container.className = 'column1';
+  column1Container.id = 'column1';
+
+  const column2Container = document.createElement('div');
+  column2Container.className = 'column2';
+  column2Container.id = 'column2';
 
   // Used to render the Graph
   const visualContainer = document.createElement('div');
-  visualContainer.className = 'visual col-md-9';
+  visualContainer.className = 'visual';
   visualContainer.id = Visual.DEFAULT_RENDER_ID;
 
   // Intro blurb which will be overwritten when the graphs are rendered
   visualContainer.innerHTML = '<p class="intro"> Welcome to the Venice Project Center Sandbox ' +
     'Application! This site is designed so anyone can make useful visualizations from the vast ' +
     'expanse of data that the VPC has collected since its founding in 1988. Select a data set ' +
-    'and graph type to begin! ' +
-    '<p class="intro">Created by the Knowing Venice and Open teams in 2017, and further ' +
+    'and graph type to begin! <br> <br>' +
+    'Created by the Knowing Venice and Open teams in 2017, and further ' +
     'improved by the 30th Anniversary Team in 2018.';
 
   // Used to hold the permanent selections for graph type and data set
   const majorSelectContainer = document.createElement('div');
-  majorSelectContainer.className = 'majorSelect col';
+  majorSelectContainer.className = 'majorSelect';
   majorSelectContainer.id = 'majorSelect';
 
   // Used to render the graph options
   const controlsContainer = document.createElement('div');
-  controlsContainer.className = 'controls col';
+  controlsContainer.className = 'controls';
   controlsContainer.id = Visual.DEFAULT_RENDER_CONTROLS_ID;
 
   // Used to render the other buttons like downloads and exports
@@ -292,16 +299,17 @@ function renderEditor(defaultDS = null, defaultGT = null) {
   downloadContainer.id = 'download';
 
   const keyContainer = document.createElement('div');
-  keyContainer.className = 'key col-md-9';
+  keyContainer.className = 'key';
   keyContainer.id = 'key';
 
   // Create Page Structure
-  rowContainer.appendChild(columnContainer);
-  rowContainer.appendChild(visualContainer);
-  rowContainer.appendChild(keyContainer);
+  rowContainer.appendChild(column1Container);
+  rowContainer.appendChild(column2Container);
 
-  columnContainer.appendChild(majorSelectContainer);
-  columnContainer.appendChild(controlsContainer);
+  column1Container.appendChild(majorSelectContainer);
+  column1Container.appendChild(controlsContainer);
+  column2Container.appendChild(visualContainer);
+  column2Container.appendChild(keyContainer);
 
   // Setup page to render later
   const page = document.getElementById('page');
