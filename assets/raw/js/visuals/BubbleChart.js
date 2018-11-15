@@ -89,12 +89,21 @@ class BubbleChart extends Visual {
           this.attributes.label_mode = $(e.currentTarget).val();
           this.render();
         });
-    editor.createNumberSlider('bubble-labelsize', 'Label Size', this.attributes.font_size, 1, 60, 1,
-    (e) => {
-      const value = $(e.currentTarget).val();
-      this.attributes.font_size = `${value}`;
-      this.render();
-    });
+    editor.createNumberField('bubble-font-size', 'Label Font Size',
+      (e) => {
+        let value = $(e.currentTarget).val();
+        if (value === '') {
+          value = 10;
+        } else if (Number(value) < 1) {
+          e.currentTarget.value = '1';
+          value = 1;
+        } else if (Number(value) > 100) {
+          e.currentTarget.value = '100';
+          value = 100;
+        }
+        this.attributes.font_size = `${value}`;
+        this.render();
+      }, this.attributes.font_size);
     editor.createCheckBox('bubble-hideempty', 'Hide Empty Category', this.attributes.hide_empty, (e) => {
       this.attributes.hide_empty = e.currentTarget.checked;
       this.render();
