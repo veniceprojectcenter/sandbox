@@ -643,14 +643,14 @@ class Visual {
     }
   }
 
-  lengthinPX(string) {
+  static lengthinPX(string) {
     const ruler = document.createElement('span');
     ruler.style.display = 'inline-block';
     ruler.style.whiteSpace = 'nowrap';
-    ruler.innerHTML = `<p style = 'display: flex; font-size: 18px'>${string}</p>`;
+    ruler.innerHTML = `<text style = 'display: block; font-size: 18px'>${string}</text>`;
     document.getElementById('key').appendChild(ruler);
     const final = ruler.clientWidth;
-    //document.getElementById('key').removeChild(ruler);
+    document.getElementById('key').removeChild(ruler);
     return final;
   }
 
@@ -673,7 +673,6 @@ class Visual {
 
       const legend = d3.select('#key > svg')
         .append('g')
-        .attr('font-family', 'sans-serif')
         .attr('font-size', 10)
         .style('fill', '#FFFFFF')
         .selectAll('g')
@@ -681,7 +680,8 @@ class Visual {
         .enter()
         .append('g')
         .attr('transform', (d) => {
-          if (((rowTotal + this.lengthinPX(d.data.key) + 50) + 10) > document.getElementById('key').clientWidth) {
+          const length = this.lengthinPX(d.data.key);
+          if (((rowTotal + length + 50) + 10) > document.getElementById('key').clientWidth) {
             if (rowNum === 0) {
               console.log('longest boi known to man');
             }
@@ -692,9 +692,9 @@ class Visual {
           const y = (colNum * 25);
           const x = rowTotal;
           rowNum += 1;
-          rowTotal += this.lengthinPX(d.data.key) + 50;
+          rowTotal += length + 50;
           console.log(d.data.key);
-          console.log(this.lengthinPX(d.data.key));
+          console.log(length);
           console.log(document.getElementById('key').clientWidth);
           return `translate(${x},${y})`;
         });
