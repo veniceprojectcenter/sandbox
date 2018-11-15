@@ -422,22 +422,12 @@ class Visual {
     editor.createTextField('title-input', 'Title', (e) => {
       this.attributes.title = e.currentTarget.value;
       this.renderBasics();
-    });
-    if (this.attributes.title) {
-      const title = document.getElementById('title-input');
-      title.getElementsByTagName('input')[0].value = this.attributes.title;
-      title.getElementsByTagName('label')[0].setAttribute('class', 'active');
-    }
+    }, this.attributes.title);
 
     editor.createTextField('description-input', 'Description', (e) => {
       this.attributes.description = e.currentTarget.value;
       this.renderBasics();
-    });
-    if (this.attributes.description) {
-      const description = document.getElementById('title-input');
-      description.getElementsByTagName('input')[0].value = this.attributes.description;
-      description.getElementsByTagName('label')[0].setAttribute('class', 'active');
-    }
+    }, this.attributes.description);
   }
 
   renderBasics() {

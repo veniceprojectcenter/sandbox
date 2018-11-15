@@ -4,20 +4,32 @@ class EditorGenerator {
     this.container = container;
   }
 
-  createTextField(id, title, onTextChanged) {
+  createTextField(id, title, onTextChanged, defaultText = null) {
     const context = { id, title };
     this.handlebarsWithContext('text-field-entry', context);
     $(document).ready(() => {
       $(`#${id} > input`).on('input', onTextChanged);
     });
+
+    if (defaultText && defaultText !== '') {
+      const def = document.getElementById(id);
+      def.getElementsByTagName('input')[0].value = defaultText;
+      def.getElementsByTagName('label')[0].setAttribute('class', 'active');
+    }
   }
 
-  createNumberField(id, title, onNumberChanged) {
+  createNumberField(id, title, onNumberChanged, defaultText = null) {
     const context = { id, title };
     this.handlebarsWithContext('number-field-entry', context);
     $(document).ready(() => {
       $(`#${id} > input`).on('input', onNumberChanged);
     });
+
+    if (defaultText) {
+      const def = document.getElementById(id);
+      def.getElementsByTagName('input')[0].value = defaultText;
+      def.getElementsByTagName('label')[0].setAttribute('class', 'active');
+    }
   }
 
   createColorField(id, title, color, onColorChanged) {

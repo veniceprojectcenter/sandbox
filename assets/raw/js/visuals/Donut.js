@@ -177,12 +177,7 @@ class Donut extends Visual {
        }
        this.attributes.font_size = `${value}`;
        this.render();
-     });
-    if (this.attributes.font_size) {
-      const title = document.getElementById('donut-font-size');
-      title.getElementsByTagName('input')[0].value = this.attributes.font_size;
-      title.getElementsByTagName('label')[0].setAttribute('class', 'active');
-    }
+     }, this.attributes.font_size);
 
     const displayModes = [
       { value: 'hover', text: 'On Hover' },

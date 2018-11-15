@@ -17,7 +17,7 @@ let activeVisual;
  *
  * @returns {Promise<void>}
  */
-async function publishConfig() { // TODO REMOVE ALL THIS OBJS
+async function publishConfig() {
   const publishButton = document.getElementById('publish-button');
   publishButton.classList.add('disabled');
   const config = {
@@ -183,33 +183,7 @@ function generateDownloadButtons(id = 'download') {
     fr.onload = (e) => {
       const result = JSON.parse(e.target.result);
 
-      // TODO: reset the majorSelectors to show new values (currently very not working)
-      const ds = document.getElementById('dataSelector');
-      const list = ds.getElementsByTagName('select')[0].getElementsByTagName('option');
-      let index = -1;
-      for (let i = 0; i < list.length; i += 1) {
-        const element = list[i];
-        if (element.value === result.dataSet) {
-          index = i;
-          break;
-        }
-      }
-
-      console.log(index);
-      if (index > 0) {
-        const list2 = ds.getElementsByTagName('ul')[0].getElementsByTagName('li');
-        console.log(list2);
-        for (let i = 0; i < list2.length; i += 1) {
-          if (index === i) {
-            list2[i].setAttribute('class', 'active selected');
-          } else if (list2[i].getAttribute('class') === 'active selected') {
-            list2[i].setAttribute('class', '');
-          }
-        }
-      }
-      // ds.getElementsByTagName('input')[0].value = this.attributes.title;
-      // title.getElementsByTagName('label')[0].setAttribute('class', 'active');
-
+      renderEditor(result.dataSet, result.type);
       createGraphic(result.dataSet, result.type, result.attributes);
     };
     fr.readAsText(file);
@@ -278,8 +252,11 @@ function createGraphic(dataSet, graphType, attributes = {}) {
 
 /**
  * Renders the editor page using the information given in the URL
+ *
+ * @param {String} defaultDS Name of the default dataSet to use
+ * @param {String} defaultGT Name of the default graphType to use
  */
-function renderEditor() {
+function renderEditor(defaultDS = null, defaultGT = null) {
   // Basic page setup prep
   const rowContainer = document.createElement('div');
   rowContainer.className = 'row';
@@ -330,6 +307,8 @@ function renderEditor() {
   const page = document.getElementById('page');
   page.classList.remove('container');
   page.classList.add('container-fluid');
+  page.innerHTML = ''; // Clear the page
+
 
   const controlsEditor = new EditorGenerator(majorSelectContainer);
   // Prep list of Data Sets and Graphs
@@ -343,11 +322,19 @@ function renderEditor() {
   Data.fetchDataSets((sets) => {
     dataSets = sets;
     const dsCats = dataSets.map(x => ({ value: x.id, text: x.name }));
+    let defaultDSName = defaultDS;
+    if (defaultDSName !== null) {
+      dsCats.forEach((element) => {
+        if (element.id === defaultDS) {
+          defaultDSName = element.name;
+        }
+      });
+    }
     // Prep list of Graph types
     const graphCats = graphsAvailable.map(graph => ({ value: graph, text: graph }));
 
-    let currDataSet;
-    let currGraphType;
+    let currDataSet = defaultDS;
+    let currGraphType = defaultGT;
 
     if (container) {
       loader.remove();
@@ -357,14 +344,14 @@ function renderEditor() {
     page.appendChild(downloadContainer);
 
     // Select Data Set
-    controlsEditor.createSelectBox('dataSelector', 'Data Set', dsCats, null,
+    controlsEditor.createSelectBox('dataSelector', 'Data Set', dsCats, defaultDSName,
       (e) => {
         currDataSet = $(e.currentTarget).val();
         createGraphic(currDataSet, currGraphType);
       },
       null, 'Select a Data Set');
     // Select GraphType
-    controlsEditor.createSelectBox('graphSelector', 'Graph Type', graphCats, null,
+    controlsEditor.createSelectBox('graphSelector', 'Graph Type', graphCats, defaultGT,
       (e) => {
         currGraphType = $(e.currentTarget).val();
         createGraphic(currDataSet, currGraphType);
