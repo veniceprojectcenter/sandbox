@@ -18,18 +18,9 @@ class BubbleMapChart extends Visual {
    * Sets default attributes after data is loaded
    */
   onLoadData() {
-    let defaultCat;
-    if (this.data.length > 0) {
-      const cats = Object.keys(this.getNumericData()[0]);
-      if (cats.length > 1) {
-        defaultCat = cats[1];
-      }
-    }
     this.applyDefaultAttributes({
       title: '',
       infoCols: [], // selected columns for infowindow
-      size_by: defaultCat,
-      color_by: defaultCat,
       bubble_size: {
         range: [1, 100],
       },
