@@ -59,6 +59,7 @@ class BubbleChart extends Visual {
 
     this.renderBasicControls(editor);
 
+    /*
     const cats = [];
     const catsRaw = Object.keys(this.getCategoricalData()[0]);
     for (let i = 0; i < catsRaw.length; i += 1) {
@@ -69,6 +70,7 @@ class BubbleChart extends Visual {
         this.attributes.group_by = $(e.currentTarget).val();
         this.render();
       });
+      */
 
     const displayModes = [
         { value: 'always', text: 'Always Visible' },

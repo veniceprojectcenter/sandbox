@@ -59,14 +59,15 @@ class Donut extends Visual {
 
     this.renderBasicControls(editor);
 
+    /*
     const cats = [];
-    let catsRaw = Object.keys(this.getCategoricalData(30)[0]);
+    let catsRaw = Object.keys(this.getCategoricalData(50)[0]);
     catsRaw = catsRaw.concat(Object.keys(this.getNumericData(2)[0]));
     for (let i = 0; i < catsRaw.length; i += 1) {
       cats.push({ value: catsRaw[i], text: catsRaw[i] });
     }
-    editor.createSelectBox('donut-column', 'Select column to display', cats, this.attributes.group_by,
-     (e) => {
+    editor.createSelectBox('donut-column', 'Select column to display', cats,
+     this.attributes.group_by, (e) => {
        const value = $(e.currentTarget).val();
        this.attributes.group_by = value;
        this.attributes.items = {};
@@ -89,6 +90,7 @@ class Donut extends Visual {
        this.render();
        this.changedBins = false;
      });
+     */
     editor.createTextField('bin-start', 'Start Value of first Group', (e) => {
       this.attributes.binStart = $(e.currentTarget).val();
       this.changedBins = true;
@@ -106,7 +108,7 @@ class Donut extends Visual {
     start.style.display = 'none';
     size.style.display = 'none';
 
-    if (this.currentEditKey != null) {
+    if (this.currentEditKey !== null) {
       editor.createColorField('donut-piececolor',
        `${this.currentEditKey} Color`,
        this.attributes.items[this.currentEditKey].color, (e) => {

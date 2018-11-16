@@ -445,6 +445,37 @@ class Visual {
       this.attributes.description = e.currentTarget.value;
       this.renderBasics();
     }, this.attributes.description);
+
+    const cats = [];
+    let catsRaw = Object.keys(this.data[0]); // TODO: better filtering??????????????????????????
+    for (let i = 0; i < catsRaw.length; i += 1) {
+      cats.push({ value: catsRaw[i], text: catsRaw[i] });
+    }
+    editor.createSelectBox('column-select', 'Select column to group by', cats, this.attributes.group_by,
+      (e) => {
+        this.attributes.group_by = $(e.currentTarget).val();
+        this.render();
+      });
+
+    // Font Options
+    editor.createColorField('font-color', 'Font Color', this.attributes.font_color,
+      (e) => {
+        this.attributes.font_color = $(e.currentTarget).val();
+        this.render();
+      });
+
+    // Gradient Color Option
+    editor.createColorField('grad-start', 'Palette Color Start', this.attributes.start_color,
+      (e) => {
+        this.attributes.start_color = $(e.currentTarget).val();
+        this.render();
+      });
+
+    editor.createColorField('grad-end', 'Palette Color End', this.attributes.end_color,
+      (e) => {
+        this.attributes.end_color = $(e.currentTarget).val();
+        this.render();
+      });
   }
 
   renderBasics() {

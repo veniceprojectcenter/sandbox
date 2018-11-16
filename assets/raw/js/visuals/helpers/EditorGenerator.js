@@ -33,7 +33,12 @@ class EditorGenerator {
   }
 
   createColorField(id, title, color, onColorChanged) {
-    const context = { id, title, color: color.substring(1, color.length) };
+    let context;
+    if (color) {
+      context = { id, title, color: color.substring(1, color.length) };
+    } else {
+      context = { id, title, color: '000000' };
+    }
     this.handlebarsWithContext('colorpicker', context);
     $(`#${id}-field`).on('change', (e) => {
       let val = $(e.currentTarget).val();
