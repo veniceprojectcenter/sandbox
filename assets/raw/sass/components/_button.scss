@@ -5,12 +5,16 @@
   margin-bottom: 12.5px;
   margin-top: 12.5px;
   padding: 10px 28px;
-  font: 14px Arial;
+  font-size: 14px;
 
-  &:hover {
-    color: $text;
+  &:hover{
     text-decoration: none;
     background-color: $secondary;
+    transition: background 0.8s;
+  }
+
+  &:focus {
+    background-color: $primary;
     transition: background 0.8s;
   }
 }
