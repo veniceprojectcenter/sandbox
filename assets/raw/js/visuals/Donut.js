@@ -16,13 +16,6 @@ class Donut extends Visual {
    * Sets default attributes after data is loaded
    */
   onLoadData() {
-    let defaultCat = '';
-    if (this.data.length > 0) {
-      const cats = Object.keys(this.data[0]);
-      if (cats.length > 1) {
-        defaultCat = cats[1];
-      }
-    }
     this.orderedGroups = null;
     this.changedBins = false;
     this.applyDefaultAttributes({
@@ -38,7 +31,6 @@ class Donut extends Visual {
       items: {}, // Contains objects that specify: key: {weight, color} where
                  // a weight of 0 means first on the donut chart
       label_mode: 'hover',
-      group_by: defaultCat,
       title: '',
       description: '',
     });
@@ -195,6 +187,9 @@ class Donut extends Visual {
    * Renders visuals for Donut chart
    */
   render() {
+    if (!this.attributes.group_by) {
+      return;
+    }
     // Empty the container, then place the SVG in there
     Visual.empty(this.renderID);
     const width = document.getElementById('visual').clientWidth;

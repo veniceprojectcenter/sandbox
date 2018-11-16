@@ -42,8 +42,14 @@ class EditorGenerator {
       onColorChanged(e);
     });
     $(`#${id}-mirror`).on('change', (e) => {
-      const ogval = $(e.currentTarget).val();
-      const val = `#${ogval}`;
+      let ogval = $(e.currentTarget).val();
+      let val;
+      if (ogval.length > 0 && ogval.substring(0, 1) === '#') {
+        val = ogval;
+        ogval = ogval.substring(1, ogval.length);
+      } else {
+        val = `#${ogval}`;
+      }
       $(e.currentTarget).val(val);
       $(e.currentTarget).siblings('input[type="color"]').val(val);
       onColorChanged(e);

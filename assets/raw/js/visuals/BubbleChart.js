@@ -18,15 +18,6 @@ class BubbleChart extends Visual {
    * Sets default attributes after data is loaded
    */
   onLoadData() {
-    let defaultCat;
-    // Try to set a default selected column
-    if (this.data.length > 0) {
-      const cats = Object.keys(this.getCategoricalData()[0]);
-      if (cats.length > 1) {
-        defaultCat = cats[1];
-      }
-    }
-
     this.applyDefaultAttributes({
       width: 500,
       height: 500,
@@ -35,7 +26,6 @@ class BubbleChart extends Visual {
       label_mode: 'always',
       hide_empty: true,
       category_order: '',
-      group_by: defaultCat,
       font_color: '#000000',
       title: '',
       description: '',
@@ -171,6 +161,10 @@ class BubbleChart extends Visual {
    * Renders visuals for Bubble chart
    */
   render() {
+    if (!this.attributes.group_by) {
+      return;
+    }
+
     Visual.empty(this.renderID);
 
     const svgWidth = 500;
