@@ -256,12 +256,11 @@ class Donut extends Visual {
     };
     const path = g.append('path')
       .style('fill', (d, i) => {
-        if (this.attributes.items[d.data.key] === undefined) {
-          const hue = d.index / data.length;
-          const color = d3.hsl(hue * 360.0, 1, 0.6);
+        if (this.attributes.color.mode === 'palette' || this.attributes.items[d.data.key] === undefined) {
           this.attributes.items[d.data.key] = {
             weight: i,
-            color: ColorHelper.rgbToHex(color.toString()),
+            color: ColorHelper.gradientValue(d.index / (data.length - 1),
+              this.attributes.color.start_color, this.attributes.color.end_color),
           };
         }
         return this.attributes.items[d.data.key].color;
