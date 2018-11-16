@@ -122,24 +122,6 @@ class BubbleChart extends Visual {
           this.render();
         });
       }
-    } else {
-      let colorSelectHandle = null;
-      if (this.attributes.color.mode === 'palette') {
-        colorSelectHandle = (e) => {
-          this.attributes.color.single_color = $(e.currentTarget).val();
-          this.render();
-        };
-      } else if (this.attributes.color.mode === 'single') {
-        colorSelectHandle = (e) => {
-          this.attributes.color.single_color = $(e.currentTarget).val();
-          this.render();
-        };
-      }
-
-      editor.createColorField('bubble-staticcolorpicker',
-       'Bubble Color',
-        this.attributes.color.single_color,
-        colorSelectHandle);
     }
   }
 

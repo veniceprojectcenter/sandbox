@@ -470,12 +470,12 @@ class Visual {
       this.renderBasics();
     }, this.attributes.description);
 
-    const cats = [];
-    let catsRaw = Object.keys(this.data[0]); // TODO: better filtering??????????????????????????
-    for (let i = 0; i < catsRaw.length; i += 1) {
-      cats.push({ value: catsRaw[i], text: catsRaw[i] });
+    const dataCats = [];
+    let dataCatsRaw = Object.keys(this.data[0]); // TODO: better filtering??????????????????????????
+    for (let i = 0; i < dataCatsRaw.length; i += 1) {
+      dataCats.push({ value: dataCatsRaw[i], text: dataCatsRaw[i] });
     }
-    editor.createSelectBox('column-select', 'Select column to group by', cats, this.attributes.group_by,
+    editor.createSelectBox('column-select', 'Select column to group by', dataCats, this.attributes.group_by,
       (e) => {
         this.attributes.group_by = $(e.currentTarget).val();
         this.render();
@@ -488,18 +488,50 @@ class Visual {
         this.render();
       });
 
-    // Gradient Color Option
-    editor.createColorField('grad-start', 'Palette Color Start', this.attributes.color.start_color,
+    // Coloring Options
+    const colorCats = [];
+    colorCats.push({ value: 'palette', text: 'Palette Mode' });
+    colorCats.push({ value: 'manual', text: 'Manual Mode' });
+    switch (this.type) {
+      case 'Donut-Chart':
+        // Only uses all-purpose ones
+        break;
+      case 'Bubble-Chart':
+        colorCats.push({ value: 'single', text: 'Single Color' });
+        break;
+      default:
+        break;
+    }
+
+    editor.createSelectBox('color-select', 'Select Coloring Mode', colorCats, this.attributes.color.mode,
       (e) => {
-        this.attributes.color.start_color = $(e.currentTarget).val();
+        this.attributes.color.mode = $(e.currentTarget).val();
+        this.renderControls();
         this.render();
       });
 
-    editor.createColorField('grad-end', 'Palette Color End', this.attributes.color.end_color,
-      (e) => {
-        this.attributes.color.end_color = $(e.currentTarget).val();
-        this.render();
-      });
+    if (this.attributes.color.mode === 'palette') {
+      editor.createColorField('grad-start', 'Select Palette Start', this.attributes.color.start_color,
+        (e) => {
+          this.attributes.color.start_color = $(e.currentTarget)
+          .val();
+          this.render();
+        });
+
+      editor.createColorField('grad-end', 'Select Palette End', this.attributes.color.end_color,
+        (e) => {
+          this.attributes.color.end_color = $(e.currentTarget)
+          .val();
+          this.render();
+        });
+    } else if (this.attributes.color.mode === 'single') {
+      editor.createColorField('single-color-picker', 'Select Color',
+        this.attributes.color.single_color, (e) => {
+          this.attributes.color.single_color = $(e.currentTarget)
+          .val();
+          this.render();
+        });
+    }
   }
 
   renderBasics() {
