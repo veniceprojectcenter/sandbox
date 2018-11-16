@@ -146,6 +146,28 @@ class Visual {
     if (this.constructor === Visual) {
       throw new Error('Visual is an abstract class and cannot be instantiated');
     }
+    this.applyDefaultAttributes({
+      width: 500,
+      height: 500,
+      dontDefineDimensions: true,
+      font_size: 20,
+      hide_empty: true,
+      show_legend: false,
+      color: {
+        mode: 'palette',
+        colors: [],
+        single_color: '#808080',
+        start_color: '#FF0000',
+        end_color: '#0000FF',
+      },
+      items: {}, // Contains objects that specify: key: {weight, color} where
+                 // a weight of 0 means first on the donut chart
+      label_mode: 'hover',
+      title: '',
+      description: '',
+      category_order: '',
+      font_color: '#FFFFFF',
+    });
   }
 
   /**
@@ -436,6 +458,8 @@ class Visual {
   }
 
   renderBasicControls(editor) {
+    $(editor.container).append('<h3> Graph Settings');
+
     editor.createTextField('title-input', 'Title', (e) => {
       this.attributes.title = e.currentTarget.value;
       this.renderBasics();
@@ -465,15 +489,15 @@ class Visual {
       });
 
     // Gradient Color Option
-    editor.createColorField('grad-start', 'Palette Color Start', this.attributes.start_color,
+    editor.createColorField('grad-start', 'Palette Color Start', this.attributes.color.start_color,
       (e) => {
-        this.attributes.start_color = $(e.currentTarget).val();
+        this.attributes.color.start_color = $(e.currentTarget).val();
         this.render();
       });
 
-    editor.createColorField('grad-end', 'Palette Color End', this.attributes.end_color,
+    editor.createColorField('grad-end', 'Palette Color End', this.attributes.color.end_color,
       (e) => {
-        this.attributes.end_color = $(e.currentTarget).val();
+        this.attributes.color.end_color = $(e.currentTarget).val();
         this.render();
       });
   }

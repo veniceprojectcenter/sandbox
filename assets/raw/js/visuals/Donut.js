@@ -18,22 +18,7 @@ class Donut extends Visual {
   onLoadData() {
     this.orderedGroups = null;
     this.changedBins = false;
-    this.applyDefaultAttributes({
-      width: 500,
-      height: 500,
-      dontDefineDimensions: true,
-      font_size: 20,
-      hide_empty: true,
-      show_legend: false,
-      color: {
-        mode: 'manual',
-      },
-      items: {}, // Contains objects that specify: key: {weight, color} where
-                 // a weight of 0 means first on the donut chart
-      label_mode: 'hover',
-      title: '',
-      description: '',
-    });
+    super.onLoadData();
   }
 
   /**

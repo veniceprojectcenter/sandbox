@@ -18,23 +18,7 @@ class BubbleChart extends Visual {
    * Sets default attributes after data is loaded
    */
   onLoadData() {
-    this.applyDefaultAttributes({
-      width: 500,
-      height: 500,
-      dontDefineDimensions: false,
-      font_size: 20,
-      label_mode: 'always',
-      hide_empty: true,
-      category_order: '',
-      font_color: '#000000',
-      title: '',
-      description: '',
-      color: {
-        mode: 'single',
-        colors: [],
-        single_color: '#808080',
-      },
-    });
+    super.onLoadData();
   }
 
   /**
