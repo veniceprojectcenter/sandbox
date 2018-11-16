@@ -213,10 +213,9 @@ class BubbleChart extends Visual {
         } else if (this.attributes.color.mode === 'single') {
           return this.attributes.color.single_color;
         } else if (this.attributes.color.mode === 'palette') {
-          const lightVals = [0, 0.15, 0.3];
-          const index = (i % 3);
-          return ColorHelper.shadeBlendConvert(lightVals[index],
-             this.attributes.color.single_color);
+          return ColorHelper.gradientValue(i / (d.parent.children.length),
+            this.attributes.color.single_color, '#FFFFFF');
+          // TODO: make this gradient not go to white?
         }
         return 'gray';
       });
