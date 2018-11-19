@@ -643,27 +643,67 @@ class Visual {
     }
   }
 
-  lengthinPX(string) {
+  // this doesnt deserve a comment because its the shittiest goddamned code ive written in my life
+  static lengthinPX(string) {
     const ruler = document.createElement('span');
     ruler.style.display = 'inline-block';
     ruler.style.whiteSpace = 'nowrap';
     ruler.innerHTML = `<p style = 'display: flex; font-size: 18px'>${string}</p>`;
     document.getElementById('key').appendChild(ruler);
     const final = ruler.clientWidth;
-    //document.getElementById('key').removeChild(ruler);
+    document.getElementById('key').removeChild(ruler);
     return final;
   }
 
+  /** helps the key convert the data into an array
+   *
+   * @param data the data
+   * @returns {Array}
+   */
+  static keyDataHelper(data) {
+    const textArray = [];
+    for (let i = 0; i < data.length; i += 1) {
+      if (((Visual.lengthinPX(data[i].data.key) + 50) + 10) >= document.getElementById('key').clientWidth) {
+        const tempString = data[i].data.key.split(' ');
+        let tempString2ElectricBoogaloo = `${tempString[0]} `;
+        const tempString3ReturnoftheArray = [];
+        for (let j = 1; j < tempString.length; j += 1) {
+          if ((((Visual.lengthinPX(tempString2ElectricBoogaloo) + 50) + 10)
+            + Visual.lengthinPX(tempString[j]))
+            >= document.getElementById('key').clientWidth) {
+            tempString3ReturnoftheArray.push(tempString2ElectricBoogaloo);
+            tempString2ElectricBoogaloo = `${tempString[j]} `;
+          } else {
+            tempString2ElectricBoogaloo += `${tempString[j]} `;
+          }
+        }
+        if (tempString3ReturnoftheArray[tempString3ReturnoftheArray.length - 1]
+          !== tempString2ElectricBoogaloo) {
+          tempString3ReturnoftheArray.push(tempString2ElectricBoogaloo);
+        }
+        for (let j = 0; j < tempString3ReturnoftheArray.length; j += 1) {
+          textArray.push(tempString3ReturnoftheArray[j]);
+        }
+      } else {
+        textArray.push(data[i].data.key);
+      }
+    }
+    return textArray;
+  }
+
+  /** renders the key
+   *
+   * @param data the data
+   * @param on //TODO posiiton
+   */
   renderKey(data, on) {
+    const textArray = Visual.keyDataHelper(data);
     let colNum = 0;
-    let rowNum = 0;
     let rowTotal = 0;
-    /*
-    const bigArray = [];
-    const longBoi = [];
-    let yInt = 0;
-    let colNum = 0;
-    */
+    let textIterator = -1;
+    let colorIter1 = 0;
+    let colorIter2 = 0;
+
     if (on === 1) {
       const svgBox = d3.select('#key')
         .append('svg')
@@ -673,32 +713,28 @@ class Visual {
 
       const legend = d3.select('#key > svg')
         .append('g')
-        .attr('font-family', 'sans-serif')
-        .attr('font-size', 10)
-        .style('fill', '#FFFFFF')
         .selectAll('g')
-        .data(data)
+        .data(textArray)
         .enter()
         .append('g')
-        .attr('transform', (d) => {
-          if (((rowTotal + this.lengthinPX(d.data.key) + 50) + 10) > document.getElementById('key').clientWidth) {
-            if (rowNum === 0) {
-              console.log('longest boi known to man');
-            }
+        .attr('transform', () => {
+          let x = 0;
+          let y = 0;
+          textIterator += 1;
+          if (((rowTotal + Visual.lengthinPX(textArray[textIterator]) + 50) + 10) >= document.getElementById('key').clientWidth) {
             colNum += 1;
-            rowNum = 0;
-            rowTotal = 0;
+            y = (colNum * 25);
+            x = 0;
+            rowTotal = Visual.lengthinPX(textArray[textIterator]) + 50;
+          } else {
+            y = (colNum * 25);
+            x = rowTotal;
+            rowTotal += Visual.lengthinPX(textArray[textIterator]) + 50;
           }
-          const y = (colNum * 25);
-          const x = rowTotal;
-          rowNum += 1;
-          rowTotal += this.lengthinPX(d.data.key) + 50;
-          console.log(d.data.key);
-          console.log(this.lengthinPX(d.data.key));
-          console.log(document.getElementById('key').clientWidth);
           return `translate(${x},${y})`;
         });
 
+      textIterator = -1;
       svgBox.attr('height', `${(colNum * 25) + 50}`);
 
       legend.append('rect')
@@ -706,18 +742,45 @@ class Visual {
         .attr('y', 15)
         .attr('width', 19)
         .attr('height', 19)
-        .attr('fill', d => this.attributes.items[d.data.key].color);
+        .attr('fill', () => {
+          let tempString = '';
+          textIterator += 1;
+          if (textArray.length !== data.length) {
+            if (textArray[colorIter1] !== data[colorIter2].data.key) {
+              if (((data[colorIter2].data.key.replace(/^\s+|\s+$/g, '')).startsWith((textArray[colorIter1]).replace(/^\s+|\s+$/g, '')))
+                || data[colorIter2].data.key === textArray[colorIter1]) {
+                colorIter1 += 1;
+                colorIter2 += 1;
+                return this.attributes.items[data[colorIter2].data.key].color;
+              }
+              colorIter1 += 1;
+              return '#000000';
+            }
+            tempString = textArray[colorIter1];
+            colorIter1 += 1;
+            colorIter2 += 1;
+            return this.attributes.items[tempString].color;
+          }
+          return this.attributes.items[textArray[textIterator]].color;
+        });
+
+      textIterator = -1;
 
       legend.append('text')
         .attr('x', 50)
         .attr('y', 25)
         .attr('dy', '0.32em')
         .style('font-size', '18px')
-        .text(d => (d === '' ? 'NULL' : d.data.key));
+        .style('fill', '#FFFFFF')
+        .text(() => {
+          textIterator += 1;
+          return textArray[textIterator];
+        });
 
       document.getElementById('key').style.outline = '4px solid #FFFFFF';
     } else {
       document.getElementById('key').style.outline = '';
+      document.getElementById('key').innerHTML = '';
     }
   }
 }
