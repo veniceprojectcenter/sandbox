@@ -1,6 +1,7 @@
 /* eslint class-methods-use-this: ["error", { "exceptMethods": ["render", "renderControls"] }] */
 import Loader from './Loader';
 import Data from './Data';
+import EditorGenerator from './EditorGenerator';
 
 /**
  * Abstract class that all other Charts will inherit from
@@ -171,12 +172,83 @@ class Visual {
   }
 
   /**
-   * Abstract method for rendering controls for the desired visual
+   * Abstract method for rendering controls for the desired visuals, used to render the accordion
    */
   renderControls() {
     if (this.constructor === Visual) {
       throw new Error('Visual is an abstract class and cannot be instantiated');
     }
+
+    if (document.getElementById('general-accordion-button')) {
+      Visual.empty('general-accordion-body');
+      Visual.empty('color-accordion-body');
+      Visual.empty('misc-accordion-body');
+      return; // Will not recreate this objs, just rerender the interiors
+    }
+
+    const controlsContainer = document.getElementById(Visual.DEFAULT_RENDER_CONTROLS_ID);
+
+    const accordion1 = document.createElement('button');
+    accordion1.className = 'accordion-button';
+    accordion1.textContent = 'General Settings';
+    accordion1.id = 'general-accordion-button';
+    accordion1.addEventListener('click', () => {
+      const body = document.getElementById('general-accordion-body');
+      if (body.style.display === 'block') {
+        body.style.display = 'none';
+      } else {
+        body.style.display = 'block';
+      }
+    });
+
+    const accordionBody1 = document.createElement('div');
+    accordionBody1.className = 'accordion-body';
+    accordionBody1.id = 'general-accordion-body';
+    accordionBody1.style.display = 'block';
+
+    const accordion2 = document.createElement('button');
+    accordion2.className = 'accordion-button';
+    accordion2.textContent = 'Color Settings';
+    accordion2.id = 'color-accordion-button';
+    accordion2.addEventListener('click', () => {
+      const body = document.getElementById('color-accordion-body');
+      if (body.style.display === 'block') {
+        body.style.display = 'none';
+      } else {
+        body.style.display = 'block';
+      }
+    });
+
+    const accordionBody2 = document.createElement('div');
+    accordionBody2.className = 'accordion-body';
+    accordionBody2.id = 'color-accordion-body';
+    accordionBody2.style.display = 'none';
+
+    const accordion3 = document.createElement('button');
+    accordion3.className = 'accordion-button';
+    accordion3.textContent = 'Graph-Specific Settings';
+    accordion3.id = 'misc-accordion-button';
+    accordion3.addEventListener('click', () => {
+      const body = document.getElementById('misc-accordion-body');
+      if (body.style.display === 'block') {
+        body.style.display = 'none';
+      } else {
+        body.style.display = 'block';
+      }
+    });
+
+    const accordionBody3 = document.createElement('div');
+    accordionBody3.className = 'accordion-body';
+    accordionBody3.id = 'misc-accordion-body';
+    accordionBody3.style.display = 'none';
+
+    controlsContainer.innerHTML = '<h3> Graph Settings';
+    controlsContainer.appendChild(accordion1);
+    controlsContainer.appendChild(accordionBody1);
+    controlsContainer.appendChild(accordion2);
+    controlsContainer.appendChild(accordionBody2);
+    controlsContainer.appendChild(accordion3);
+    controlsContainer.appendChild(accordionBody3);
   }
 
   /**
@@ -457,15 +529,17 @@ class Visual {
     return groups;
   }
 
-  renderBasicControls(editor) {
-    $(editor.container).append('<h3> Graph Settings');
+  renderBasicControls() {
+    const generalEditor = new EditorGenerator(document.getElementById('general-accordion-body'));
+    const colorEditor = new EditorGenerator(document.getElementById('color-accordion-body'));
 
-    editor.createTextField('title-input', 'Title', (e) => {
+    // Populate General Settings
+    generalEditor.createTextField('title-input', 'Title', (e) => {
       this.attributes.title = e.currentTarget.value;
       this.renderBasics();
     }, this.attributes.title);
 
-    editor.createTextField('description-input', 'Description', (e) => {
+    generalEditor.createTextField('description-input', 'Description', (e) => {
       this.attributes.description = e.currentTarget.value;
       this.renderBasics();
     }, this.attributes.description);
@@ -475,20 +549,35 @@ class Visual {
     for (let i = 0; i < dataCatsRaw.length; i += 1) {
       dataCats.push({ value: dataCatsRaw[i], text: dataCatsRaw[i] });
     }
-    editor.createSelectBox('column-select', 'Select column to group by', dataCats, this.attributes.group_by,
+    generalEditor.createSelectBox('column-select', 'Select column to group by', dataCats, this.attributes.group_by,
       (e) => {
         this.attributes.group_by = $(e.currentTarget).val();
         this.render();
       });
 
-    // Font Options
-    editor.createColorField('font-color', 'Font Color', this.attributes.font_color,
+    generalEditor.createNumberField('font-size', 'Font Size',
+      (e) => {
+        let value = $(e.currentTarget).val();
+        if (value === '') {
+          value = 10;
+        } else if (Number(value) < 1) {
+          e.currentTarget.value = '1';
+          value = 1;
+        } else if (Number(value) > 100) {
+          e.currentTarget.value = '100';
+          value = 100;
+        }
+        this.attributes.font_size = `${value}`;
+        this.render();
+      }, this.attributes.font_size);
+
+    // Populate Color Settings
+    colorEditor.createColorField('font-color', 'Font Color', this.attributes.font_color,
       (e) => {
         this.attributes.font_color = $(e.currentTarget).val();
         this.render();
       });
 
-    // Coloring Options
     const colorCats = [];
     colorCats.push({ value: 'palette', text: 'Palette Mode' });
     colorCats.push({ value: 'manual', text: 'Manual Mode' });
@@ -503,7 +592,7 @@ class Visual {
         break;
     }
 
-    editor.createSelectBox('color-select', 'Select Coloring Mode', colorCats, this.attributes.color.mode,
+    colorEditor.createSelectBox('color-select', 'Select Coloring Mode', colorCats, this.attributes.color.mode,
       (e) => {
         this.attributes.color.mode = $(e.currentTarget).val();
         this.renderControls();
@@ -511,21 +600,21 @@ class Visual {
       });
 
     if (this.attributes.color.mode === 'palette') {
-      editor.createColorField('grad-start', 'Select Palette Start', this.attributes.color.start_color,
+      colorEditor.createColorField('grad-start', 'Select Palette Start', this.attributes.color.start_color,
         (e) => {
           this.attributes.color.start_color = $(e.currentTarget)
           .val();
           this.render();
         });
 
-      editor.createColorField('grad-end', 'Select Palette End', this.attributes.color.end_color,
+      colorEditor.createColorField('grad-end', 'Select Palette End', this.attributes.color.end_color,
         (e) => {
           this.attributes.color.end_color = $(e.currentTarget)
           .val();
           this.render();
         });
     } else if (this.attributes.color.mode === 'single') {
-      editor.createColorField('single-color-picker', 'Select Color',
+      colorEditor.createColorField('single-color-picker', 'Select Color',
         this.attributes.color.single_color, (e) => {
           this.attributes.color.single_color = $(e.currentTarget)
           .val();
@@ -534,6 +623,9 @@ class Visual {
     }
   }
 
+  /**
+   * Renders the title and description
+   */
   renderBasics() {
     const visual = document.getElementById(this.renderID);
 

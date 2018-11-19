@@ -25,6 +25,8 @@ class BubbleChart extends Visual {
    * Creates menu options
    */
   renderControls() {
+    super.renderControls();
+
     if (this.data.length === 0) {
       alert('Dataset is empty!');
       return;
@@ -36,12 +38,11 @@ class BubbleChart extends Visual {
 
     this.disableTransitions();
 
-    Visual.empty(this.renderControlsID);
-    const controlsContainer = document.getElementById(this.renderControlsID);
+    const generalEditor = new EditorGenerator(document.getElementById('general-accordion-body'));
+    const colorEditor = new EditorGenerator(document.getElementById('color-accordion-body'));
+    const miscEditor = new EditorGenerator(document.getElementById('misc-accordion-body'));
 
-    const editor = new EditorGenerator(controlsContainer);
-
-    this.renderBasicControls(editor);
+    this.renderBasicControls();
 
     /*
     const cats = [];
@@ -60,59 +61,26 @@ class BubbleChart extends Visual {
         { value: 'always', text: 'Always Visible' },
         { value: 'hover', text: 'On Hover' },
         { value: 'hidden', text: 'Hidden' }];
-    editor.createSelectBox('bubble-labelmode', 'Label Display', displayModes, this.attributes.label_mode,
+    generalEditor.createSelectBox('bubble-labelmode', 'Label Display', displayModes, this.attributes.label_mode,
         (e) => {
           this.attributes.label_mode = $(e.currentTarget).val();
           this.render();
         });
-    editor.createNumberField('bubble-font-size', 'Label Font Size',
-      (e) => {
-        let value = $(e.currentTarget).val();
-        if (value === '') {
-          value = 10;
-        } else if (Number(value) < 1) {
-          e.currentTarget.value = '1';
-          value = 1;
-        } else if (Number(value) > 100) {
-          e.currentTarget.value = '100';
-          value = 100;
-        }
-        this.attributes.font_size = `${value}`;
-        this.render();
-      }, this.attributes.font_size);
-    editor.createCheckBox('bubble-hideempty', 'Hide Empty Category', this.attributes.hide_empty, (e) => {
+
+    generalEditor.createCheckBox('bubble-hideempty', 'Hide Empty Category', this.attributes.hide_empty, (e) => {
       this.attributes.hide_empty = e.currentTarget.checked;
       this.render();
     });
 
-    editor.createColorField('bubble-fontcolor', 'Font Color', this.attributes.font_color,
-      (e) => {
-        this.attributes.font_color = $(e.currentTarget).val();
-        this.render();
-      });
-
-    const colorModes = [
-      { value: 'single', text: 'Single Color' },
-      { value: 'manual', text: 'Manual Assignment (Click bubble to assign)' },
-      { value: 'palette', text: 'Single Color (with light variance)' },
-    ];
-    editor.createSelectBox('bubble-colormode', 'Bubble Color Mode', colorModes, this.attributes.color.mode,
-      (e) => {
-        this.attributes.color.mode = $(e.currentTarget).val();
-        this.renderControls();
-        this.render();
-      });
-
-
     if (this.attributes.color.mode === 'manual') {
       if (this.currentEditKey != null) {
-        editor.createSubHeader(`Edit Color for: ${this.currentEditKey}`);
+        colorEditor.createSubHeader(`Edit Color for: ${this.currentEditKey}`);
         let currentColor = '#808080';
         const temp = this.attributes.color.colors.filter(c => c.key === this.currentEditKey);
         if (temp.length === 1) {
           currentColor = temp[0].value;
         }
-        editor.createColorField('bubble-colorpicker', 'Bubble Color', currentColor,
+        colorEditor.createColorField('bubble-colorpicker', 'Bubble Color', currentColor,
         (e) => {
           this.attributes.color.mode = 'manual';
           this.attributes.color.colors[this.currentEditKey] = {

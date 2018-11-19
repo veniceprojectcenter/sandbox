@@ -25,6 +25,8 @@ class Donut extends Visual {
    * Creates menu options
    */
   renderControls() {
+    super.renderControls();
+
     if (this.data.length === 0) {
       alert('Dataset is empty!');
       return;
@@ -37,12 +39,11 @@ class Donut extends Visual {
 
     this.disableTransitions();
 
-    Visual.empty(this.renderControlsID);
-    const controlsContainer = document.getElementById(this.renderControlsID);
+    const generalEditor = new EditorGenerator(document.getElementById('general-accordion-body'));
+    const colorEditor = new EditorGenerator(document.getElementById('color-accordion-body'));
+    const miscEditor = new EditorGenerator(document.getElementById('misc-accordion-body'));
 
-    const editor = new EditorGenerator(controlsContainer);
-
-    this.renderBasicControls(editor);
+    this.renderBasicControls();
 
     /*
     const cats = [];
@@ -76,13 +77,14 @@ class Donut extends Visual {
        this.changedBins = false;
      });
      */
-    editor.createTextField('bin-start', 'Start Value of first Group', (e) => {
+
+    miscEditor.createTextField('bin-start', 'Start Value of first Group', (e) => {
       this.attributes.binStart = $(e.currentTarget).val();
       this.changedBins = true;
       this.render();
       this.changedBins = false;
     });
-    editor.createTextField('bin-size', 'Group Size', (e) => {
+    miscEditor.createTextField('bin-size', 'Group Size', (e) => {
       this.attributes.binSize = $(e.currentTarget).val();
       this.changedBins = true;
       this.render();
@@ -94,14 +96,14 @@ class Donut extends Visual {
     size.style.display = 'none';
 
     if (this.currentEditKey !== null && this.attributes.color.mode === 'manual') { // TODO: make pieces movable in non-manual mode
-      editor.createColorField('donut-piececolor',
+      miscEditor.createColorField('donut-piececolor',
        `${this.currentEditKey} Color`,
        this.attributes.items[this.currentEditKey].color, (e) => {
          this.attributes.items[this.currentEditKey].color = $(e.currentTarget).val();
          this.render();
        },
       );
-      editor.createLeftRightButtons('donut-order', 'Change Piece Position',
+      miscEditor.createLeftRightButtons('donut-order', 'Change Piece Position',
         (e) => {
           const currentWeight = this.attributes.items[this.currentEditKey].weight;
           const keys = Object.keys(this.attributes.items);
@@ -132,41 +134,25 @@ class Donut extends Visual {
         });
     }
 
-    editor.createCheckBox('bubble-hideempty', 'Hide Empty Category', this.attributes.hide_empty, (e) => {
-      this.attributes.hide_empty = e.currentTarget.checked;
-      this.render();
-    });
-
-    editor.createCheckBox('bubble-showlegend', 'Show Legend', this.attributes.show_legend, (e) => {
-      this.attributes.show_legend = e.currentTarget.checked;
-      this.render();
-    });
-
-    editor.createNumberField('donut-font-size', 'Label Font Size',
-     (e) => {
-       let value = $(e.currentTarget).val();
-       if (value === '') {
-         value = 10;
-       } else if (Number(value) < 1) {
-         e.currentTarget.value = '1';
-         value = 1;
-       } else if (Number(value) > 100) {
-         e.currentTarget.value = '100';
-         value = 100;
-       }
-       this.attributes.font_size = `${value}`;
-       this.render();
-     }, this.attributes.font_size);
-
     const displayModes = [
       { value: 'hover', text: 'On Hover' },
       { value: 'always', text: 'Always Visible' },
       { value: 'hidden', text: 'Hidden' }];
-    editor.createSelectBox('donut-labelmode', 'Label Display', displayModes, this.attributes.label_mode,
+    generalEditor.createSelectBox('donut-labelmode', 'Label Display', displayModes, this.attributes.label_mode,
       (e) => {
         this.attributes.label_mode = $(e.currentTarget).val();
         this.render();
       });
+
+    generalEditor.createCheckBox('bubble-hideempty', 'Hide Empty Category', this.attributes.hide_empty, (e) => {
+      this.attributes.hide_empty = e.currentTarget.checked;
+      this.render();
+    });
+
+    generalEditor.createCheckBox('bubble-showlegend', 'Show Legend', this.attributes.show_legend, (e) => {
+      this.attributes.show_legend = e.currentTarget.checked;
+      this.render();
+    });
   }
 
   // TODO: this does not use the object attributes, just const values like width and height
