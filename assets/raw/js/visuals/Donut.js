@@ -93,7 +93,7 @@ class Donut extends Visual {
     start.style.display = 'none';
     size.style.display = 'none';
 
-    if (this.currentEditKey !== null) {
+    if (this.currentEditKey !== null && this.attributes.color.mode === 'manual') { // TODO: make pieces movable in non-manual mode
       editor.createColorField('donut-piececolor',
        `${this.currentEditKey} Color`,
        this.attributes.items[this.currentEditKey].color, (e) => {
