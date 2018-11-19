@@ -2,13 +2,14 @@ import Visual from './visuals/helpers/Visual';
 import Donut from './visuals/Donut';
 import BubbleChart from './visuals/BubbleChart';
 import BubbleMapChart from './visuals/BubbleMapChart';
+import BarChart from './visuals/Bar';
 import EditorGenerator from './visuals/helpers/EditorGenerator';
 import Data from './visuals/helpers/Data';
 import Loader from './visuals/helpers/Loader';
 import LoginModal from './visuals/helpers/LoginModal';
 
 // List of all graph types that are available for use
-const graphsAvailable = ['Donut-Chart', 'Bubble-Chart', 'Bubble-Map-Chart'];
+const graphsAvailable = ['Donut-Chart', 'Bubble-Chart', 'Bubble-Map-Chart', 'Bar-Chart'];
 
 let activeVisual;
 
@@ -240,6 +241,9 @@ function createGraphic(dataSet, graphType, attr = null) {
       break;
     case 'Bubble-Map-Chart':
       visual = new BubbleMapChart(config);
+      break;
+    case 'Bar-Chart':
+      visual = new BarChart(config);
       break;
     default:
       console.error('Error when selecting graph type');

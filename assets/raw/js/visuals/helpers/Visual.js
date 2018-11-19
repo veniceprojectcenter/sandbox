@@ -621,14 +621,18 @@ class Visual {
       });
 
     const colorCats = [];
-    colorCats.push({ value: 'palette', text: 'Palette Mode' });
-    colorCats.push({ value: 'manual', text: 'Manual Mode' });
     switch (this.type) {
       case 'Donut-Chart':
-        // Only uses all-purpose ones
+        colorCats.push({ value: 'palette', text: 'Palette Mode' });
+        colorCats.push({ value: 'manual', text: 'Manual Mode' });
         break;
       case 'Bubble-Chart':
+        colorCats.push({ value: 'palette', text: 'Palette Mode' });
+        colorCats.push({ value: 'manual', text: 'Manual Mode' });
         colorCats.push({ value: 'single', text: 'Single Color' });
+        break;
+      case 'Bar-Chart':
+        colorCats.push({ value: 'palette', text: 'Palette Mode' });
         break;
       default:
         break;

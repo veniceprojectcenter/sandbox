@@ -11,6 +11,9 @@ class ColorHelper {
    * @return {String} Hexcode color of current step
    */
   static gradientValue(pos, from = '#FFFFFF', to = '#000000') {
+    if (!pos) {
+      return from;
+    }
     const start = [parseInt(from.substring(1, 3), 16), parseInt(from.substring(3, 5), 16),
       parseInt(from.substring(5, 7), 16)];
     const end = [parseInt(to.substring(1, 3), 16), parseInt(to.substring(3, 5), 16),
