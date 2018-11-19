@@ -192,14 +192,28 @@ class Visual {
     accordion1.className = 'accordion-button';
     accordion1.textContent = 'General Settings';
     accordion1.id = 'general-accordion-button';
-    accordion1.addEventListener('click', () => {
+    accordion1.addEventListener('click', (e) => {
+      const target = $(e.currentTarget)[0];
+      target.removeChild(target.getElementsByTagName('span')[0]);
       const body = document.getElementById('general-accordion-body');
       if (body.style.display === 'block') {
+        const caret = document.createElement('span');
+        caret.className = 'up-caret';
+        caret.innerText = '▼';
+        target.appendChild(caret);
         body.style.display = 'none';
       } else {
+        const caret = document.createElement('span');
+        caret.className = 'up-caret';
+        caret.innerText = '▲';
+        target.appendChild(caret);
         body.style.display = 'block';
       }
     });
+    const caret1 = document.createElement('span');
+    caret1.className = 'up-caret';
+    caret1.innerText = '▲';
+    accordion1.appendChild(caret1);
 
     const accordionBody1 = document.createElement('div');
     accordionBody1.className = 'accordion-body';
@@ -210,14 +224,28 @@ class Visual {
     accordion2.className = 'accordion-button';
     accordion2.textContent = 'Color Settings';
     accordion2.id = 'color-accordion-button';
-    accordion2.addEventListener('click', () => {
+    accordion2.addEventListener('click', (e) => {
+      const target = $(e.currentTarget)[0];
+      target.removeChild(target.getElementsByTagName('span')[0]);
       const body = document.getElementById('color-accordion-body');
       if (body.style.display === 'block') {
+        const caret = document.createElement('span');
+        caret.className = 'up-caret';
+        caret.innerText = '▼';
+        target.appendChild(caret);
         body.style.display = 'none';
       } else {
+        const caret = document.createElement('span');
+        caret.className = 'up-caret';
+        caret.innerText = '▲';
+        target.appendChild(caret);
         body.style.display = 'block';
       }
     });
+    const caret2 = document.createElement('span');
+    caret2.className = 'down-caret';
+    caret2.innerText = '▼';
+    accordion2.appendChild(caret2);
 
     const accordionBody2 = document.createElement('div');
     accordionBody2.className = 'accordion-body';
@@ -226,16 +254,30 @@ class Visual {
 
     const accordion3 = document.createElement('button');
     accordion3.className = 'accordion-button';
-    accordion3.textContent = 'Graph-Specific Settings';
+    accordion3.textContent = 'Other Settings';
     accordion3.id = 'misc-accordion-button';
-    accordion3.addEventListener('click', () => {
+    accordion3.addEventListener('click', (e) => {
+      const target = $(e.currentTarget)[0];
+      target.removeChild(target.getElementsByTagName('span')[0]);
       const body = document.getElementById('misc-accordion-body');
       if (body.style.display === 'block') {
+        const caret = document.createElement('span');
+        caret.className = 'up-caret';
+        caret.innerText = '▼';
+        target.appendChild(caret);
         body.style.display = 'none';
       } else {
+        const caret = document.createElement('span');
+        caret.className = 'up-caret';
+        caret.innerText = '▲';
+        target.appendChild(caret);
         body.style.display = 'block';
       }
     });
+    const caret3 = document.createElement('span');
+    caret3.className = 'down-caret';
+    caret3.innerText = '▼';
+    accordion3.appendChild(caret3);
 
     const accordionBody3 = document.createElement('div');
     accordionBody3.className = 'accordion-body';

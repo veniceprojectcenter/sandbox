@@ -110,6 +110,8 @@ class BubbleMapChart extends Visual {
    * Creates menu options
    */
   renderControls() {
+    super.renderControls();
+
     if (this.data.length === 0) {
       alert('Dataset is empty!');
       return;

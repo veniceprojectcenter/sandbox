@@ -1,16 +1,24 @@
 %button {
   background: $primary;
   border: 0;
-  color: $text !important;
+  color: $text;
   margin-bottom: 12.5px;
   margin-top: 12.5px;
   padding: 10px 28px;
   font-size: 14px;
 
+  // Makes text on buttons non-interactive
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+
   &:hover{
     text-decoration: none;
     background-color: $secondary;
     transition: background 0.8s;
+    color: $text;
   }
 
   &:focus {
@@ -19,7 +27,7 @@
   }
 }
 
-button {
+button, .left-button, .right-button {
   @extend %button;
 }
 
