@@ -209,7 +209,9 @@ class Donut extends Visual {
       .style('width', '100%')
       .style('height', '100%');
 
-    if (Object.keys(this.attributes.items).length > 0) {
+
+    console.log(this.attributes);
+    if (Object.keys(this.attributes.items).length > 0) { // Already in order
       data = data.sort((a, b) => {
         if (this.attributes.items[b.key] !== undefined &&
           this.attributes.items[a.key] !== undefined) {
@@ -217,13 +219,14 @@ class Donut extends Visual {
         }
         return 0;
       });
-    } else {
+    } else { // Fresh sort
       data = data.sort((a, b) => {
         if (a.key < b.key) {
           return -1;
         }
         return 1;
       });
+      console.log(data);
     }
 
     const pie = d3.pie()
