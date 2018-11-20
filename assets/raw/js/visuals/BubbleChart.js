@@ -97,11 +97,9 @@ class BubbleChart extends Visual {
    * Renders visuals for Bubble chart
    */
   render() {
-    if (!this.attributes.group_by) {
+    if (!super.render()) {
       return;
     }
-
-    Visual.empty(this.renderID);
 
     const svgWidth = 500;
     const svgHeight = 500;
