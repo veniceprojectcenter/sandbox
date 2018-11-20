@@ -694,9 +694,35 @@ class Visual {
   /** renders the key
    *
    * @param data the data
-   * @param on //TODO posiiton
+   * @param position //TODO posiiton
    */
-  renderKey(data, on) {
+  renderKey(data, position) {
+    if (position === 'Below') {
+      document.getElementById('visual').style.width = '100%';
+
+      document.getElementById('key').style.width = '100%';
+      document.getElementById('key').style.display = '';
+    } else if (position === 'Above') {
+      document.getElementById('visual').style.width = '100%';
+
+      document.getElementById('key').style.width = '100%';
+      document.getElementById('key').style.display = 'table-header-group';
+    } else if (position === 'Left') {
+      document.getElementById('visual').style.width = '70%';
+
+      document.getElementById('key').style.width = '30%';
+      document.getElementById('key').style.display = 'table-header-group';
+    } else if (position === 'Right') {
+      document.getElementById('visual').style.width = '70%';
+
+      document.getElementById('key').style.width = '30%';
+      document.getElementById('key').style.display = '';
+    } else {
+      document.getElementById('key').style.outline = '';
+      document.getElementById('key').innerHTML = '';
+      return;
+    }
+
     const textArray = Visual.keyDataHelper(data);
     let colNum = 0;
     let rowTotal = 0;
@@ -704,14 +730,13 @@ class Visual {
     let colorIter1 = 0;
     let colorIter2 = 0;
 
-    if (on === 1) {
-      const svgBox = d3.select('#key')
+    const svgBox = d3.select('#key')
         .append('svg')
         .attr('class', 'keySVG')
         .attr('id', 'keySVG')
         .attr('width', `${document.getElementById('key').clientWidth}`);
 
-      const legend = d3.select('#key > svg')
+    const legend = d3.select('#key > svg')
         .append('g')
         .selectAll('g')
         .data(textArray)
@@ -734,10 +759,10 @@ class Visual {
           return `translate(${x},${y})`;
         });
 
-      textIterator = -1;
-      svgBox.attr('height', `${(colNum * 25) + 50}`);
+    textIterator = -1;
+    svgBox.attr('height', `${(colNum * 25) + 50}`);
 
-      legend.append('rect')
+    legend.append('rect')
         .attr('x', 20)
         .attr('y', 15)
         .attr('width', 19)
@@ -764,9 +789,9 @@ class Visual {
           return this.attributes.items[textArray[textIterator]].color;
         });
 
-      textIterator = -1;
+    textIterator = -1;
 
-      legend.append('text')
+    legend.append('text')
         .attr('x', 50)
         .attr('y', 25)
         .attr('dy', '0.32em')
@@ -777,11 +802,7 @@ class Visual {
           return textArray[textIterator];
         });
 
-      document.getElementById('key').style.outline = '4px solid #FFFFFF';
-    } else {
-      document.getElementById('key').style.outline = '';
-      document.getElementById('key').innerHTML = '';
-    }
+    document.getElementById('key').style.outline = '4px solid #FFFFFF';
   }
 }
 

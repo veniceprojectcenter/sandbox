@@ -23,11 +23,9 @@ body {
 }
 
 .visual {
-  min-height: 70vh;
-  max-height: 75%;
   width: 100%;
   padding-bottom: 5%;
-  //overflow: hidden;
+  padding-top: 5%;
 }
 
 .intro {
@@ -35,7 +33,6 @@ body {
 }
 
 .key {
-  float: right;
   width: 100%;
 }
 
@@ -46,6 +43,7 @@ body {
   padding-right: 1.5%;
 }
 .column2 {
+  display: table;
   flex: 0 0 73.5%;
   max-width: 73.5%;
   padding-left: 1.5%;

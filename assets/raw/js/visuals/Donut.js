@@ -31,7 +31,7 @@ class Donut extends Visual {
       dontDefineDimensions: true,
       font_size: 20,
       hide_empty: true,
-      show_legend: true,
+      show_legend: 'Below',
       color: {
         mode: 'manual',
       },
@@ -158,8 +158,9 @@ class Donut extends Visual {
       this.render();
     });
 
-    editor.createCheckBox('bubble-showlegend', 'Show Legend', this.attributes.show_legend, (e) => {
-      this.attributes.show_legend = e.currentTarget.checked;
+    const dogs = ['Above', 'Below', 'Left', 'Right', 'None'];
+    editor.createSelectBox('drop-showlegend', 'Show Legend', dogs, this.attributes.show_legend, (e) => {
+      this.attributes.show_legend = $(e.currentTarget).val();
       this.render();
     });
 
@@ -197,9 +198,8 @@ class Donut extends Visual {
   render() {
     // Empty the container, then place the SVG in there
     Visual.empty(this.renderID);
-    const width = document.getElementById('visual').clientWidth;
-    const height = document.getElementById('visual').clientHeight;
-    const radius = Math.min(width, height) / 2;
+    document.getElementById('visual').style.height = `${document.getElementById('visual').clientWidth}`;
+
     let data = null;
     this.renderData = JSON.parse(JSON.stringify(this.data));
 
@@ -216,31 +216,27 @@ class Donut extends Visual {
         data.push({ key: this.orderedGroups[i].key, value: this.orderedGroups[i].value.length });
       }
     }
+    const pie = d3.pie()
+      .sort(null)
+      .value(d => d.value);
+
+    this.renderKey(pie(data), this.attributes.show_legend);
+
+    const width = document.getElementById('visual').clientWidth;
+    const height = document.getElementById('visual').clientWidth;
+    const radius = width / 2;
 
     const arc = d3.arc()
       .outerRadius(radius - 10)
       .innerRadius((radius - 10) * 0.6);
 
-    const pie = d3.pie()
-      .sort(null)
-      .value(d => d.value);
-
-    let extraHeight = (data.length * 22) + 10;
-    if (this.attributes.show_legend === false) { extraHeight = 0; }
-
     const svg = d3.select(`#${this.renderID}`).append('svg')
       .attr('class', 'donut')
-      .attr('viewBox', `0 0 ${width} ${height + extraHeight}`)
+      .attr('viewBox', `0 0 ${width} ${height}`)
       .append('g')
       .attr('transform', `translate(${width / 2},${height / 2})`)
-      .style('max-width', '100%')
-      .style('max-height', '100%');
-
-    if (!this.attributes.dontDefineDimensions) {
-      d3.select(`#${this.renderID} > svg`)
-        .style('width', this.attributes.width)
-        .style('height', this.attributes.height);
-    }
+      .style('width', '100%')
+      .style('height', '100%');
 
     if (this.attributes.hide_empty) {
       data = Visual.hideEmpty(data);
@@ -334,12 +330,6 @@ class Donut extends Visual {
         .attr('style', `font-size:${this.attributes.font_size}pt`)
         .attr('id', d => `label-${d.data.key}`)
         .text(d => d.data.key);
-    }
-    document.getElementById('key').innerHTML = '';
-    if (this.attributes.show_legend) {
-      this.renderKey(pie(data), 1);
-    } else {
-      this.renderKey(pie(data), 0);
     }
 
     if (this.editmode) {
