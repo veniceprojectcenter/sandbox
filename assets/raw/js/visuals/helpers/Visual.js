@@ -606,6 +606,7 @@ class Visual {
     generalEditor.createSelectBox('column-select', 'Select column to group by', dataCats, this.attributes.group_by,
       (e) => {
         this.attributes.group_by = $(e.currentTarget).val();
+        this.attributes.items = {};
         this.render();
       });
 
