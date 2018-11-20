@@ -12,7 +12,7 @@ const jsDirectory = './assets/raw/js/';
 // General
 gulp.task('default', ['build']);
 
-gulp.task('build', ['sass', 'js', 'images']);
+gulp.task('build', ['sass', 'js', 'images', 'font']);
 
 gulp.task('watch', ['build'], () => {
   gulp.watch(`${sassDirectory}**/*.scss`, ['sass']);
@@ -72,6 +72,9 @@ gulp.task('js:external', () => browserify(`${jsDirectory}external.js`)
 gulp.task('images', ['clean:images'], () => gulp.src('./assets/raw/images/**/*')
         .pipe(gulp.dest('./assets/prod/images/')));
 
+gulp.task('font', ['clean:font'], () => gulp.src('./assets/raw/font/**/*')
+.pipe(gulp.dest('./assets/prod/font/')));
+
 // Cleaning
 gulp.task('clean', ['clean:sass', 'clean:js']);
 
@@ -83,3 +86,6 @@ gulp.task('clean:js', () => gulp.src('./assets/prod/js', { read: false })
 
 gulp.task('clean:images', () => gulp.src('./assets/prod/images', { read: false })
     .pipe(clean()));
+
+gulp.task('clean:font', () => gulp.src('./assets/prod/font', { read: false })
+.pipe(clean()));
