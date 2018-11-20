@@ -92,7 +92,10 @@ class BubbleMapChart extends Visual {
    * Renders visuals for BubbleMapChart chart
    */
   render() {
-    console.log(this.attributes);
+    if (!super.render()) {
+      return;
+    }
+
     const mapContainer = document.createElement('div');
     mapContainer.id = `map-container${this.renderID}`;
     mapContainer.className = 'map-container';

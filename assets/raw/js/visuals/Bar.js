@@ -3,6 +3,9 @@ import EditorGenerator from './helpers/EditorGenerator';
 import ColorHelper from './helpers/ColorHelper';
 
 class Bar extends Visual {
+  /**
+   * Sets default attributes after data is loaded
+   */
   onLoadData() {
     super.onLoadData();
     this.categoricalData = this.getCategoricalData(50);
@@ -41,6 +44,9 @@ class Bar extends Visual {
     });
   }
 
+  /**
+   * Creates menu options
+   */
   renderControls() {
     super.renderControls();
 
@@ -90,9 +96,13 @@ class Bar extends Visual {
       });
   }
 
+  /**
+   * Renders visuals for Bar chart
+   */
   render() {
-    // Empty the container, then place the SVG in there
-    Visual.empty(this.renderID);
+    if (!super.render()) {
+      return;
+    }
 
     let renderData = JSON.parse(JSON.stringify(this.categoricalData));
 

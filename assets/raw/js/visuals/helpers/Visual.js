@@ -295,12 +295,24 @@ class Visual {
   }
 
   /**
-   * Abstract method for rendering the desired visual
+   * Abstract method for rendering the desired visual, returns false if there is nothing to render
+   *
+   * @return {boolean} False if there is no data to render, true otherwise
    */
   render() {
     if (this.constructor === Visual) {
       throw new Error('Visual is an abstract class and cannot be instantiated');
     }
+
+    if (!this.attributes.group_by || !this.data ||
+      !Object.keys(this.data[0]).includes(this.attributes.group_by)) {
+      this.attributes.group_by = null;
+      return false;
+    }
+
+    Visual.empty(this.renderID);
+
+    return true;
   }
 
   // DATA HELPER FUNCTIONS
