@@ -149,8 +149,14 @@ class Donut extends Visual {
       this.render();
     });
 
-    generalEditor.createCheckBox('bubble-showlegend', 'Show Legend', this.attributes.show_legend, (e) => {
-      this.attributes.show_legend = e.currentTarget.checked;
+    const dogs = [
+      { value: 'below', text: 'Below' },
+      { value: 'above', text: 'Above' },
+      { value: 'left', text: 'Left' },
+      { value: 'right', text: 'Right' },
+      { value: 'none', text: 'None' }];
+    generalEditor.createSelectBox('drop-showlegend', 'Show Legend', dogs, this.attributes.show_legend, (e) => {
+      this.attributes.show_legend = $(e.currentTarget).val();
       this.render();
     });
   }
@@ -183,12 +189,10 @@ class Donut extends Visual {
         data.push({ key: this.orderedGroups[i].key, value: this.orderedGroups[i].value.length });
       }
     }
-    const pie = d3.pie()
-      .sort(null)
-      .value(d => d.value);
 
-    this.renderKey(pie(data), this.attributes.show_legend);
-
+    if (this.attributes.hide_empty) {
+      data = Visual.hideEmpty(data);
+    }
     const width = document.getElementById('visual').clientWidth;
     const height = document.getElementById('visual').clientWidth;
     const radius = width / 2;
@@ -204,10 +208,6 @@ class Donut extends Visual {
       .attr('transform', `translate(${width / 2},${height / 2})`)
       .style('width', '100%')
       .style('height', '100%');
-
-    if (this.attributes.hide_empty) {
-      data = Visual.hideEmpty(data);
-    }
 
     if (Object.keys(this.attributes.items).length > 0) {
       data = data.sort((a, b) => {
@@ -226,15 +226,20 @@ class Donut extends Visual {
       });
     }
 
-    const g = svg.selectAll('.arc')
-      .data(pie(data))
-      .enter().append('g')
-      .attr('class', 'arc ');
+    const pie = d3.pie()
+      .sort(null)
+      .value(d => d.value);
 
     const tweenPie = (b) => {
       const i = d3.interpolate({ startAngle: 0, endAngle: 0 }, b);
       return t => arc(i(t));
     };
+
+    const g = svg.selectAll('.arc')
+      .data(pie(data))
+      .enter().append('g')
+      .attr('class', 'arc ');
+
     const path = g.append('path')
       .style('fill', (d, i) => {
         if (this.attributes.color.mode === 'palette' || this.attributes.items[d.data.key] === undefined) {
@@ -255,6 +260,8 @@ class Donut extends Visual {
     } else {
       path.attr('d', arc);
     }
+
+    this.renderKey(pie(data), this.attributes.show_legend);
 
     if (this.attributes.label_mode === 'hover') {
       const donut = this;

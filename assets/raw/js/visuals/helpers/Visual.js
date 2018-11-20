@@ -153,7 +153,7 @@ class Visual {
       dontDefineDimensions: true,
       font_size: 20,
       hide_empty: true,
-      show_legend: false,
+      show_legend: 'none',
       color: {
         mode: 'palette',
         colors: [],
@@ -587,7 +587,7 @@ class Visual {
     }, this.attributes.description);
 
     const dataCats = [];
-    let dataCatsRaw = Object.keys(this.data[0]); // TODO: better filtering??????????????????????????
+    const dataCatsRaw = Object.keys(this.data[0]); // TODO: better filtering??????????????????????????
     for (let i = 0; i < dataCatsRaw.length; i += 1) {
       dataCats.push({ value: dataCatsRaw[i], text: dataCatsRaw[i] });
     }
@@ -701,13 +701,13 @@ class Visual {
   }
 
   // this doesnt deserve a comment because its the shittiest goddamned code ive written in my life
-  static lengthinPX(string) {
+  lengthinPX(string) {
     const ruler = document.createElement('span');
     ruler.style.display = 'inline-block';
     ruler.style.whiteSpace = 'nowrap';
-    ruler.innerHTML = `<p style = 'display: flex; font-size: 18px'>${string}</p>`;
+    ruler.innerHTML = `<p style = 'display: flex; margin: 0 0 0 0; font-size: ${this.attributes.font_size}'>${string}</p>`;
     document.getElementById('key').appendChild(ruler);
-    const final = ruler.clientWidth;
+    const final = [ruler.clientWidth, ruler.clientHeight];
     document.getElementById('key').removeChild(ruler);
     return final;
   }
@@ -717,16 +717,16 @@ class Visual {
    * @param data the data
    * @returns {Array}
    */
-  static keyDataHelper(data) {
+  keyDataHelper(data) {
     const textArray = [];
     for (let i = 0; i < data.length; i += 1) {
-      if (((Visual.lengthinPX(data[i].data.key) + 50) + 10) >= document.getElementById('key').clientWidth) {
+      if (((this.lengthinPX(data[i].data.key)[0] + 50) + 10) >= document.getElementById('key').clientWidth) {
         const tempString = data[i].data.key.split(' ');
         let tempString2ElectricBoogaloo = `${tempString[0]} `;
         const tempString3ReturnoftheArray = [];
         for (let j = 1; j < tempString.length; j += 1) {
-          if ((((Visual.lengthinPX(tempString2ElectricBoogaloo) + 50) + 10)
-            + Visual.lengthinPX(tempString[j]))
+          if ((((this.lengthinPX(tempString2ElectricBoogaloo)[0] + 50) + 10)
+            + this.lengthinPX(tempString[j])[0])
             >= document.getElementById('key').clientWidth) {
             tempString3ReturnoftheArray.push(tempString2ElectricBoogaloo);
             tempString2ElectricBoogaloo = `${tempString[j]} `;
@@ -754,22 +754,30 @@ class Visual {
    * @param position //TODO posiiton
    */
   renderKey(data, position) {
-    if (position === 'Below') {
-      document.getElementById('visual').style.width = '100%';
+    if (position === 'below') {
+      document.getElementById('key').innerHTML = '';
+
+      document.getElementById('visual').style.margin = 'margin: 2% 2% 5% 2%;';
 
       document.getElementById('key').style.width = '100%';
       document.getElementById('key').style.display = '';
-    } else if (position === 'Above') {
-      document.getElementById('visual').style.width = '100%';
+    } else if (position === 'above') {
+      document.getElementById('key').innerHTML = '';
+
+      document.getElementById('visual').style.margin = 'margin: 5% 2% 2% 2%;';
 
       document.getElementById('key').style.width = '100%';
       document.getElementById('key').style.display = 'table-header-group';
-    } else if (position === 'Left') {
+    } else if (position === 'left') {
+      document.getElementById('key').innerHTML = '';
+
       document.getElementById('visual').style.width = '70%';
 
       document.getElementById('key').style.width = '30%';
       document.getElementById('key').style.display = 'table-header-group';
-    } else if (position === 'Right') {
+    } else if (position === 'right') {
+      document.getElementById('key').innerHTML = '';
+
       document.getElementById('visual').style.width = '70%';
 
       document.getElementById('key').style.width = '30%';
@@ -780,7 +788,8 @@ class Visual {
       return;
     }
 
-    const textArray = Visual.keyDataHelper(data);
+    const textArray = this.keyDataHelper(data);
+    const heightofTXT = this.lengthinPX('W')[1];
     let colNum = 0;
     let rowTotal = 0;
     let textIterator = -1;
@@ -803,37 +812,41 @@ class Visual {
           let x = 0;
           let y = 0;
           textIterator += 1;
-          if (((rowTotal + Visual.lengthinPX(textArray[textIterator]) + 50) + 10) >= document.getElementById('key').clientWidth) {
+          if (((rowTotal + this.lengthinPX(textArray[textIterator])[0] + (heightofTXT * 1.35)) + 10) >= document.getElementById('key').clientWidth) {
             colNum += 1;
-            y = (colNum * 25);
+            y = (colNum * (heightofTXT + 7));
             x = 0;
-            rowTotal = Visual.lengthinPX(textArray[textIterator]) + 50;
+            rowTotal = this.lengthinPX(textArray[textIterator])[0] + (heightofTXT * 1.35);
           } else {
-            y = (colNum * 25);
+            y = (colNum * (heightofTXT + 7));
             x = rowTotal;
-            rowTotal += Visual.lengthinPX(textArray[textIterator]) + 50;
+            rowTotal += this.lengthinPX(textArray[textIterator])[0] + (heightofTXT * 1.35);
           }
           return `translate(${x},${y})`;
         });
 
     textIterator = -1;
-    svgBox.attr('height', `${(colNum * 25) + 50}`);
+    svgBox.attr('height', `${((colNum + 1) * (heightofTXT + 7)) + (heightofTXT * 0.3)}`);
 
     legend.append('rect')
-        .attr('x', 20)
-        .attr('y', 15)
-        .attr('width', 19)
-        .attr('height', 19)
+        .attr('x', (heightofTXT / 2))
+        .attr('y', (heightofTXT / 2))
+        .attr('width', (heightofTXT / 1.6))
+        .attr('height', (heightofTXT / 1.6))
         .attr('fill', () => {
           let tempString = '';
           textIterator += 1;
           if (textArray.length !== data.length) {
+            if (data[colorIter2] === undefined) {
+              colorIter1 += 1;
+              return '#000000';
+            }
             if (textArray[colorIter1] !== data[colorIter2].data.key) {
-              if (((data[colorIter2].data.key.replace(/^\s+|\s+$/g, '')).startsWith((textArray[colorIter1]).replace(/^\s+|\s+$/g, '')))
-                || data[colorIter2].data.key === textArray[colorIter1]) {
+              if ((data[colorIter2].data.key.replace(/^\s+|\s+$/g, '')).startsWith((textArray[colorIter1]).replace(/^\s+|\s+$/g, ''))) {
+                tempString = data[colorIter2].data.key;
                 colorIter1 += 1;
                 colorIter2 += 1;
-                return this.attributes.items[data[colorIter2].data.key].color;
+                return this.attributes.items[tempString].color;
               }
               colorIter1 += 1;
               return '#000000';
@@ -849,10 +862,10 @@ class Visual {
     textIterator = -1;
 
     legend.append('text')
-        .attr('x', 50)
-        .attr('y', 25)
+        .attr('x', (heightofTXT * 1.32))
+        .attr('y', (heightofTXT * 0.85))
         .attr('dy', '0.32em')
-        .style('font-size', '18px')
+        .style('font-size', `${this.attributes.font_size}`)
         .style('fill', '#FFFFFF')
         .text(() => {
           textIterator += 1;

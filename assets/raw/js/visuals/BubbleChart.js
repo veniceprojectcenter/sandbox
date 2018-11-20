@@ -103,9 +103,9 @@ class BubbleChart extends Visual {
 
     Visual.empty(this.renderID);
 
-    const svgWidth = 500;
-    const svgHeight = 500;
-    const diameter = 500;
+    const svgWidth = document.getElementById('visual').clientWidth;
+    const svgHeight = document.getElementById('visual').clientWidth;
+    const diameter = document.getElementById('visual').clientWidth;
 
     const bubble = d3.pack()
         .size([diameter, diameter])
