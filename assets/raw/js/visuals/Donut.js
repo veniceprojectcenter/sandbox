@@ -257,11 +257,18 @@ class Donut extends Visual {
     if (this.attributes.label_mode === 'hover') {
       this.hoverTextDisplay(data, svg, section);
     } else if (this.attributes.label_mode === 'always') {
+      let outline = '#FFFFFF';
+      if (ColorHelper.isLight(this.attributes.font_color)) {
+        outline = '#000000';
+      }
+
       g.append('text')
         .attr('class', 'alwaystext')
         .attr('transform', d => `translate(${arc.centroid(d)})`)
         .attr('dy', '.35em')
-        .attr('style', `font-size:${this.attributes.font_size}pt`)
+        .style('font-size', `${this.attributes.font_size}pt`)
+        .attr('fill', `${this.attributes.font_color}`)
+        .style('text-shadow', `${outline} 0px 0px 5px`)
         .attr('id', d => `label-${d.data.key}`)
         .text(d => d.data.key);
     }
