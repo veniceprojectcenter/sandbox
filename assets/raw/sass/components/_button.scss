@@ -1,25 +1,36 @@
 %button {
-  background: $white;
+  background: $primary;
   border: 0;
-  border-radius: 5px;
   color: $text;
   margin-bottom: 12.5px;
   margin-top: 12.5px;
-  padding: 10px 15px;
-  text-decoration: none;
+  padding: 10px 28px;
+  font-size: 14px;
 
-  &:hover,
-  &:focus {
-    background: $secondary;
-    color: $text;
+  // Makes text on buttons non-interactive
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+
+  &:hover{
     text-decoration: none;
+    background-color: $secondary;
+    transition: background 0.8s;
+    color: $text;
+  }
+
+  &:focus {
+    background-color: $primary;
+    transition: background 0.8s;
   }
 }
 
-.button {
+button, .left-button, .right-button {
   @extend %button;
 }
 
-button {
+.button {
   // @extend %button;
 }

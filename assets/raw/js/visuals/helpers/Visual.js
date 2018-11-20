@@ -1,7 +1,7 @@
 /* eslint class-methods-use-this: ["error", { "exceptMethods": ["render", "renderControls"] }] */
 import Loader from './Loader';
 import Data from './Data';
-import LoginModal from './LoginModal';
+import EditorGenerator from './EditorGenerator';
 
 /**
  * Abstract class that all other Charts will inherit from
@@ -60,189 +60,6 @@ class Visual {
   }
 
   /**
-   * Renders the publish and export buttons in the container specified
-   *
-   * @param {String} id ID of container to use
-   */
-  generateDownloadButtons(id = 'download') {
-    const loginModal = new LoginModal();
-    const publishButton = this.createPublishButton(loginModal);
-    const downloadButton = this.createDownloadConfig();
-    const saveSVGButton = this.createSVGButton();
-
-    /* TODO: file upload
-    const uploadButton = document.createElement('button');
-    const importButton = document.createElement('button');
-    importButton.onclick = () => {
-      const files = document.getElementById('selectFiles').files;
-      if (files.length <= 0) {
-        return;
-      }
-
-      const fr = new FileReader();
-
-      fr.onload = (e) => {
-        const result = JSON.parse(e.target.result);
-        document.getElementById('result').value = JSON.stringify(result, null, 2);
-      };
-
-      fr.readAsText(files.item(0));
-    };
-    */
-
-    const downloadContainer = document.getElementById(id);
-    downloadContainer.innerHTML = '';
-    downloadContainer.appendChild(publishButton);
-    downloadContainer.appendChild(downloadButton);
-    downloadContainer.appendChild(saveSVGButton);
-    downloadContainer.appendChild(loginModal.generate());
-    loginModal.bind();
-  }
-
-  /**
-   * Creates the publish button, which publishes the active graph
-   *
-   * @param {LoginModal} loginModal Used for authentication and publishing
-   *
-   * @returns {HTMLButtonElement}
-   */
-  createPublishButton(loginModal) {
-    const publishButton = document.createElement('button');
-    publishButton.className = 'btn waves-effectr';
-    publishButton.innerText = 'Publish Visual';
-    publishButton.id = 'publish-button';
-    publishButton.addEventListener('click', async () => {
-      if (this.attributes.title) {
-        loginModal.authenticate('Login and Publish').then(() => {
-          this.publishConfig();
-        });
-      } else {
-        Materialize.toast('A title is required to publish a visual', 3000);
-      }
-    });
-
-    return publishButton;
-  }
-
-  /**
-   * Publishes the state of the current graph to Firebase for later use
-   *
-   * @returns {Promise<void>}
-   */
-  async publishConfig() {
-    const publishButton = document.getElementById('publish-button');
-    publishButton.classList.add('disabled');
-    const config = {
-      type: this.type,
-      dataSet: this.dataSet,
-      attributes: this.attributes,
-    };
-
-    const db = firebase.database();
-    await db.ref(`/viz/configs/${config.dataSet}`).push({
-      type: config.type,
-      dataSet: config.dataSet,
-      attributes: JSON.stringify(config.attributes),
-    }).then(async (snapshot) => {
-      await db.ref('/viz/info').push({
-        type: config.type,
-        id: snapshot.key,
-        dataSet: config.dataSet,
-      })
-      .then(() => {
-        Materialize.toast('Visual Published', 3000);
-        publishButton.classList.remove('disabled');
-      })
-      .catch((error) => {
-        Materialize.toast('Error Publishing Visual', 3000);
-        publishButton.classList.remove('disabled');
-        console.error(error);
-      });
-    })
-    .catch((error) => {
-      Materialize.toast('Error Publishing Visual', 3000);
-      publishButton.classList.remove('disabled');
-      console.error(error);
-    });
-  }
-
-  /**
-   * Creates the saveSVG button, which downloads an SVG of the current graph
-   *
-   * @returns {HTMLButtonElement}
-   */
-  createSVGButton() {
-    const saveSVGButton = document.createElement('button');
-    saveSVGButton.className = 'btn waves-effect';
-    saveSVGButton.innerText = 'Export for Illustrator';
-    saveSVGButton.addEventListener('click', async () => {
-      let svgData = '';
-      const svg = $(`#${this.renderID} svg`);
-      const map = document.querySelector(`#${this.renderID} .map`) || document.querySelector(`#${this.renderID}.map`);
-      if (svg.length === 1) {
-        this.editmode = false;
-        this.render();
-        svg.attr('version', '1.1')
-        .attr('xmlns:xlink', 'http://www.w3.org/1999/xlink')
-        .attr('xmlns', 'http://www.w3.org/2000/svg')
-        .attr('xml:space', 'preserve');
-
-        svgData = svg[0].outerHTML;
-      } else if (map) {
-        if (this.map) {
-          svgData = await this.map.export();
-        } else {
-          Materialize.toast('Error exporting map', 3000);
-        }
-      } else {
-        Materialize.toast('This chart type is not supported for Illustrator!', 3000);
-      }
-
-      if (svgData) {
-        const svgBlob = new Blob([svgData], { type: 'image/svg+xml;charset=utf-8' });
-        const svgUrl = URL.createObjectURL(svgBlob);
-        const downloadLink = document.createElement('a');
-        downloadLink.href = svgUrl;
-        if (this.attributes.title && this.attributes.title !== '') {
-          downloadLink.download = `${this.attributes.title}.svg`;
-        } else {
-          downloadLink.download = `${this.dataSet}-${this.type}.svg`;
-        }
-        downloadLink.click();
-      }
-      if (svg.length === 1 && !this.editmode) {
-        this.editmode = true;
-        this.render();
-      }
-    });
-
-    return saveSVGButton;
-  }
-
-  /**
-   * Creates the download button, which downloads a json of the active dataSet when pressed
-   *
-   * @returns {HTMLButtonElement}
-   */
-  createDownloadConfig() {
-    const downloadButton = document.createElement('button');
-    downloadButton.className = 'btn waves-effect';
-    downloadButton.innerText = 'Download Config';
-    downloadButton.addEventListener('click', () => {
-      const config = {
-        type: this.type,
-        dataSet: this.dataSet,
-        attributes: this.attributes,
-      };
-
-      downloadButton.href = `data:text/json;charset=utf-8,${JSON.stringify(config)}`;
-      downloadButton.download = `${this.dataSet}-${this.type}-config.json`;
-    });
-
-    return downloadButton;
-  }
-
-  /**
    * Sets useTransitions attribute to false
    */
   disableTransitions() {
@@ -258,11 +75,28 @@ class Visual {
     document.getElementById(id).innerHTML = '';
   }
 
+  /**
+   * Adds all items from defaults to this.attributes, unless a value is already there. It also
+   * checks for sub-objects and their keys as well
+   *
+   * @param {Object} defaults Contains default attributes
+   */
   applyDefaultAttributes(defaults) {
     const keys = Object.keys(defaults);
     for (let i = 0; i < keys.length; i += 1) {
       if (Object.prototype.hasOwnProperty.call(defaults, keys[i])) {
-        if (!Object.prototype.hasOwnProperty.call(this.attributes, keys[i])) {
+        if (defaults[keys[i]] === Object(defaults[keys[i]])) {
+          const subKeys = Object.keys(defaults[keys[i]]);
+          if (!this.attributes[keys[i]]) {
+            this.attributes[keys[i]] = defaults[keys[i]];
+          } else {
+            for (let j = 0; j < subKeys.length; j += 1) {
+              if (!Object.prototype.hasOwnProperty.call(this.attributes[keys[i]], subKeys[j])) {
+                this.attributes[keys[i]][subKeys[j]] = defaults[keys[i]][subKeys[j]];
+              }
+            }
+          }
+        } else if (!Object.prototype.hasOwnProperty.call(this.attributes, keys[i])) {
           this.attributes[keys[i]] = defaults[keys[i]];
         }
       }
@@ -270,7 +104,7 @@ class Visual {
   }
 
   /**
-   * Fetches data, then calls render(), renderControls(), and generateDownloadButtons()
+   * Fetches data, then calls render() and renderControls()
    *
    * @returns {Promise<void>}
    */
@@ -279,7 +113,6 @@ class Visual {
 
     this.render();
     this.renderControls();
-    this.generateDownloadButtons();
   }
 
   /**
@@ -314,15 +147,150 @@ class Visual {
     if (this.constructor === Visual) {
       throw new Error('Visual is an abstract class and cannot be instantiated');
     }
+    this.applyDefaultAttributes({
+      width: 500,
+      height: 500,
+      dontDefineDimensions: true,
+      font_size: 20,
+      hide_empty: true,
+      show_legend: false,
+      color: {
+        mode: 'palette',
+        colors: [],
+        single_color: '#808080',
+        start_color: '#FF0000',
+        end_color: '#0000FF',
+      },
+      items: {}, // Contains objects that specify: key: {weight, color} where
+                 // a weight of 0 means first on the donut chart
+      label_mode: 'hover',
+      title: '',
+      description: '',
+      category_order: '',
+      font_color: '#FFFFFF',
+    });
   }
 
   /**
-   * Abstract method for rendering controls for the desired visual
+   * Abstract method for rendering controls for the desired visuals, used to render the accordion
    */
   renderControls() {
     if (this.constructor === Visual) {
       throw new Error('Visual is an abstract class and cannot be instantiated');
     }
+
+    if (document.getElementById('general-accordion-button')) {
+      Visual.empty('general-accordion-body');
+      Visual.empty('color-accordion-body');
+      Visual.empty('misc-accordion-body');
+      return; // Will not recreate this objs, just rerender the interiors
+    }
+
+    const controlsContainer = document.getElementById(Visual.DEFAULT_RENDER_CONTROLS_ID);
+
+    const accordion1 = document.createElement('button');
+    accordion1.className = 'accordion-button';
+    accordion1.textContent = 'General Settings';
+    accordion1.id = 'general-accordion-button';
+    accordion1.addEventListener('click', (e) => {
+      const target = $(e.currentTarget)[0];
+      target.removeChild(target.getElementsByTagName('span')[0]);
+      const body = document.getElementById('general-accordion-body');
+      if (body.style.display === 'block') {
+        const caret = document.createElement('span');
+        caret.className = 'up-caret';
+        caret.innerText = '▼';
+        target.appendChild(caret);
+        body.style.display = 'none';
+      } else {
+        const caret = document.createElement('span');
+        caret.className = 'up-caret';
+        caret.innerText = '▲';
+        target.appendChild(caret);
+        body.style.display = 'block';
+      }
+    });
+    const caret1 = document.createElement('span');
+    caret1.className = 'up-caret';
+    caret1.innerText = '▲';
+    accordion1.appendChild(caret1);
+
+    const accordionBody1 = document.createElement('div');
+    accordionBody1.className = 'accordion-body';
+    accordionBody1.id = 'general-accordion-body';
+    accordionBody1.style.display = 'block';
+
+    const accordion2 = document.createElement('button');
+    accordion2.className = 'accordion-button';
+    accordion2.textContent = 'Color Settings';
+    accordion2.id = 'color-accordion-button';
+    accordion2.addEventListener('click', (e) => {
+      const target = $(e.currentTarget)[0];
+      target.removeChild(target.getElementsByTagName('span')[0]);
+      const body = document.getElementById('color-accordion-body');
+      if (body.style.display === 'block') {
+        const caret = document.createElement('span');
+        caret.className = 'up-caret';
+        caret.innerText = '▼';
+        target.appendChild(caret);
+        body.style.display = 'none';
+      } else {
+        const caret = document.createElement('span');
+        caret.className = 'up-caret';
+        caret.innerText = '▲';
+        target.appendChild(caret);
+        body.style.display = 'block';
+      }
+    });
+    const caret2 = document.createElement('span');
+    caret2.className = 'down-caret';
+    caret2.innerText = '▼';
+    accordion2.appendChild(caret2);
+
+    const accordionBody2 = document.createElement('div');
+    accordionBody2.className = 'accordion-body';
+    accordionBody2.id = 'color-accordion-body';
+    accordionBody2.style.display = 'none';
+
+    const accordion3 = document.createElement('button');
+    accordion3.className = 'accordion-button';
+    accordion3.textContent = 'Other Settings';
+    accordion3.id = 'misc-accordion-button';
+    accordion3.addEventListener('click', (e) => {
+      const target = $(e.currentTarget)[0];
+      target.removeChild(target.getElementsByTagName('span')[0]);
+      const body = document.getElementById('misc-accordion-body');
+      if (body.style.display === 'block') {
+        const caret = document.createElement('span');
+        caret.className = 'up-caret';
+        caret.innerText = '▼';
+        target.appendChild(caret);
+        body.style.display = 'none';
+      } else {
+        const caret = document.createElement('span');
+        caret.className = 'up-caret';
+        caret.innerText = '▲';
+        target.appendChild(caret);
+        body.style.display = 'block';
+      }
+    });
+    const caret3 = document.createElement('span');
+    caret3.className = 'down-caret';
+    caret3.innerText = '▼';
+    accordion3.appendChild(caret3);
+
+    const accordionBody3 = document.createElement('div');
+    accordionBody3.className = 'accordion-body';
+    accordionBody3.id = 'misc-accordion-body';
+    accordionBody3.style.display = 'none';
+
+    controlsContainer.innerHTML = '<h3> Graph Settings';
+    controlsContainer.appendChild(accordion1);
+    controlsContainer.appendChild(accordionBody1);
+    controlsContainer.appendChild(accordion2);
+    controlsContainer.appendChild(accordionBody2);
+    controlsContainer.appendChild(accordion3);
+    controlsContainer.appendChild(accordionBody3);
   }
 
   /**
@@ -603,18 +571,107 @@ class Visual {
     return groups;
   }
 
-  renderBasicControls(editor) {
-    editor.createTextField('title-input', 'Title', (e) => {
+  renderBasicControls() {
+    const generalEditor = new EditorGenerator(document.getElementById('general-accordion-body'));
+    const colorEditor = new EditorGenerator(document.getElementById('color-accordion-body'));
+
+    // Populate General Settings
+    generalEditor.createTextField('title-input', 'Title', (e) => {
       this.attributes.title = e.currentTarget.value;
       this.renderBasics();
-    });
+    }, this.attributes.title);
 
-    editor.createTextField('description-input', 'Description', (e) => {
+    generalEditor.createTextField('description-input', 'Description', (e) => {
       this.attributes.description = e.currentTarget.value;
       this.renderBasics();
-    });
+    }, this.attributes.description);
+
+    const dataCats = [];
+    let dataCatsRaw = Object.keys(this.data[0]); // TODO: better filtering??????????????????????????
+    for (let i = 0; i < dataCatsRaw.length; i += 1) {
+      dataCats.push({ value: dataCatsRaw[i], text: dataCatsRaw[i] });
+    }
+    generalEditor.createSelectBox('column-select', 'Select column to group by', dataCats, this.attributes.group_by,
+      (e) => {
+        this.attributes.group_by = $(e.currentTarget).val();
+        this.render();
+      });
+
+    generalEditor.createNumberField('font-size', 'Font Size',
+      (e) => {
+        let value = $(e.currentTarget).val();
+        if (value === '') {
+          value = 10;
+        } else if (Number(value) < 1) {
+          e.currentTarget.value = '1';
+          value = 1;
+        } else if (Number(value) > 100) {
+          e.currentTarget.value = '100';
+          value = 100;
+        }
+        this.attributes.font_size = `${value}`;
+        this.render();
+      }, this.attributes.font_size);
+
+    // Populate Color Settings
+    colorEditor.createColorField('font-color', 'Font Color', this.attributes.font_color,
+      (e) => {
+        this.attributes.font_color = $(e.currentTarget).val();
+        this.render();
+      });
+
+    const colorCats = [];
+    switch (this.type) {
+      case 'Donut-Chart':
+        colorCats.push({ value: 'palette', text: 'Palette Mode' });
+        colorCats.push({ value: 'manual', text: 'Manual Mode' });
+        break;
+      case 'Bubble-Chart':
+        colorCats.push({ value: 'palette', text: 'Palette Mode' });
+        colorCats.push({ value: 'manual', text: 'Manual Mode' });
+        colorCats.push({ value: 'single', text: 'Single Color' });
+        break;
+      case 'Bar-Chart':
+        colorCats.push({ value: 'palette', text: 'Palette Mode' });
+        break;
+      default:
+        break;
+    }
+
+    colorEditor.createSelectBox('color-select', 'Select Coloring Mode', colorCats, this.attributes.color.mode,
+      (e) => {
+        this.attributes.color.mode = $(e.currentTarget).val();
+        this.renderControls();
+        this.render();
+      });
+
+    if (this.attributes.color.mode === 'palette') {
+      colorEditor.createColorField('grad-start', 'Select Palette Start', this.attributes.color.start_color,
+        (e) => {
+          this.attributes.color.start_color = $(e.currentTarget)
+          .val();
+          this.render();
+        });
+
+      colorEditor.createColorField('grad-end', 'Select Palette End', this.attributes.color.end_color,
+        (e) => {
+          this.attributes.color.end_color = $(e.currentTarget)
+          .val();
+          this.render();
+        });
+    } else if (this.attributes.color.mode === 'single') {
+      colorEditor.createColorField('single-color-picker', 'Select Color',
+        this.attributes.color.single_color, (e) => {
+          this.attributes.color.single_color = $(e.currentTarget)
+          .val();
+          this.render();
+        });
+    }
   }
 
+  /**
+   * Renders the title and description
+   */
   renderBasics() {
     const visual = document.getElementById(this.renderID);
 

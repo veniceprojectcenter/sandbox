@@ -1,5 +1,13 @@
 svg.bar {
   width: 100%;
   max-height: 100%;
-  
+  color: $text;
+
+  path {
+    stroke: $text;
+  }
+
+  text {
+    fill: $text;
+  }
 }

@@ -1,34 +1,38 @@
 footer {
-  margin-bottom: 25px;
+  margin: 0;
   text-align: center;
+  width: 100%;
   color: $text;
+  display: flex;
 
-  %button {
-    background: none;
-    border: 0;
-    display: inline-block;
+  .vpc{
+    height: 50px;
+    padding-right: 1.5%;
+  }
+
+  .wpi{
+    height: 50px;
+  }
+
+  .sponsorship {
+    text-align: left;
     margin: 0;
-    outline: none;
+    width: 30%;
+    padding-left: 1.5%;
+  }
+
+  .sandbox-parts {
+    text-align: center;
+    margin: 0;
+    width: 40%;
     padding: 0;
   }
 
-  button {
-    @extend %button;
-
-    color: $primary;
-
-    &:focus {
-      @extend %button;
-
-      color: $primary;
-    }
-
-    &:hover,
-    &:active {
-      @extend %button;
-
-      color: $secondary;
-    }
+  .credits {
+    text-align: right;
+    margin: 0;
+    width: 30%;
+    padding-right: 1.5%;
   }
 
   .cc {

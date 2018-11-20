@@ -25,28 +25,28 @@
 
 
 <header>
-  <ul class="flex-container">
-    <li class="flex-item">
-      <h1><a href="http://www.veniceprojectcenter.org/vpc">
-        <object class="vpc" data="/assets/prod/images/vpc-logo.png" type="image/png"></object>
-      </a></h1>
-    </li>
-    <li class="flex-item">
-      <h1><a href="/">Sandbox</a></h1>
-    </li>
-    <li class="flex-item">
-      <h1><a href="https://www.wpi.edu/">
-        <object class="wpi" data="/assets/prod/images/wpi-logo.png" type="image/png"></object>
-      </a></h1>
-    </li>
-  </ul>
+  <h1><a href="/">Sandbox</a></h1>
 </header>
 <div id="page" class="container body"></div>
 <footer>
+  <div class="sponsorship">
+    <a href="http://www.veniceprojectcenter.org/vpc">
+      <object class="vpc" data="/assets/prod/images/vpc-logo.png" type="image/png"></object>
+    </a>
+    <a href="https://www.wpi.edu/">
+      <object class="wpi" data="/assets/prod/images/wpi-logo.png" type="image/png"></object>
+    </a>
+  </div>
+  <div class="sandbox-parts">
   <a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank">
-    <object class="cc" data="/assets/prod/images/by-sa.svg" type="image/svg+xml"></object></a> -
-  <button onclick="window.location.href='/config-editor'">Manage Configs</button> -
+    <object class="cc" data="/assets/prod/images/by-sa.svg" type="image/svg+xml"></object></a>
+    <button onclick="window.location.href='/config-editor'">Manage Configs</button>
   <button id="clear-cache">Clear Cache</button>
+  </div>
+  <div class="credits">
+    <p> Created by the Knowing Venice and Open teams in 2017, and further improved by the 30th Anniversary Team in 2018.
+    </p>
+  </div>
 </footer>
 
 <!-- Templates -->
@@ -185,7 +185,8 @@
 <script id="colorpicker" type="text/x-handlebars-template">
   <div class="color-wrapper">
     <label class="color-label">{{title}}</label>
-    <input type="color" class="colorpicker-color" id="{{id}}-field" value="{{color}}" />
+    <input type="color" class="colorpicker-color" id="{{id}}-field" value="#{{color}}" />
+    <label class="buffer">#</label>
     <input type="text" class="colorpicker-input" id="{{id}}-mirror" value="{{color}}" />
   </div>
 </script>
@@ -197,8 +198,8 @@
 <script id="leftrightbuttons" type="text/x-handlebars-template">
   <div id="{{id}}" class="leftrightwrapper">
     <label>{{title}}</label>
-    <a id="{{id}}-left" class="waves-effect waves-light btn">Counter-Clockwise</a>
-    <a id="{{id}}-right" class="waves-effect waves-light btn">Clockwise</a>
+    <span id="{{id}}-left" class="left-button">Counter-Clockwise</span>
+    <span id="{{id}}-right" class="right-button">Clockwise</span>
   </div>
 </script>
 

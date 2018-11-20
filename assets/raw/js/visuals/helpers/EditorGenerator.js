@@ -4,32 +4,61 @@ class EditorGenerator {
     this.container = container;
   }
 
-  createTextField(id, title, onTextChanged) {
+  createTextField(id, title, onTextChanged, defaultText = null) {
     const context = { id, title };
     this.handlebarsWithContext('text-field-entry', context);
     $(document).ready(() => {
       $(`#${id} > input`).on('input', onTextChanged);
     });
+
+    if (defaultText && defaultText !== '') {
+      const def = document.getElementById(id);
+      def.getElementsByTagName('input')[0].value = defaultText;
+      def.getElementsByTagName('label')[0].setAttribute('class', 'active');
+    }
   }
 
-  createNumberField(id, title, onNumberChanged) {
+  createNumberField(id, title, onNumberChanged, defaultText = null) {
     const context = { id, title };
     this.handlebarsWithContext('number-field-entry', context);
     $(document).ready(() => {
       $(`#${id} > input`).on('input', onNumberChanged);
     });
+
+    if (defaultText) {
+      const def = document.getElementById(id);
+      def.getElementsByTagName('input')[0].value = defaultText;
+      def.getElementsByTagName('label')[0].setAttribute('class', 'active');
+    }
   }
 
   createColorField(id, title, color, onColorChanged) {
-    const context = { id, title, color };
+    let context;
+    if (color) {
+      context = { id, title, color: color.substring(1, color.length) };
+    } else {
+      context = { id, title, color: '000000' };
+    }
     this.handlebarsWithContext('colorpicker', context);
     $(`#${id}-field`).on('change', (e) => {
-      $(e.currentTarget).siblings('input[type="text"]').val($(e.currentTarget).val());
+      let val = $(e.currentTarget).val();
+      val = val.substring(1, val.length);
+      $(e.currentTarget).siblings('input[type="text"]').val(val);
       onColorChanged(e);
     });
     $(`#${id}-mirror`).on('change', (e) => {
-      $(e.currentTarget).siblings('input[type="color"]').val($(e.currentTarget).val());
+      let ogval = $(e.currentTarget).val();
+      let val;
+      if (ogval.length > 0 && ogval.substring(0, 1) === '#') {
+        val = ogval;
+        ogval = ogval.substring(1, ogval.length);
+      } else {
+        val = `#${ogval}`;
+      }
+      $(e.currentTarget).val(val);
+      $(e.currentTarget).siblings('input[type="color"]').val(val);
       onColorChanged(e);
+      $(e.currentTarget).val(ogval);
     });
   }
   createRemoveButton(id, onPress) {

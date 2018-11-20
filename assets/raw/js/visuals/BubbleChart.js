@@ -18,39 +18,15 @@ class BubbleChart extends Visual {
    * Sets default attributes after data is loaded
    */
   onLoadData() {
-    let defaultCat;
-    // Try to set a default selected column
-    if (this.data.length > 0) {
-      const cats = Object.keys(this.getCategoricalData()[0]);
-      if (cats.length > 1) {
-        defaultCat = cats[1];
-      }
-    }
-
-    this.applyDefaultAttributes({
-      width: 500,
-      height: 500,
-      dontDefineDimensions: false,
-      font_size: 20,
-      label_mode: 'always',
-      hide_empty: true,
-      category_order: '',
-      group_by: defaultCat,
-      font_color: '#000000',
-      title: '',
-      description: '',
-      color: {
-        mode: 'single',
-        colors: [],
-        single_color: '#808080',
-      },
-    });
+    super.onLoadData();
   }
 
   /**
    * Creates menu options
    */
   renderControls() {
+    super.renderControls();
+
     if (this.data.length === 0) {
       alert('Dataset is empty!');
       return;
@@ -62,13 +38,13 @@ class BubbleChart extends Visual {
 
     this.disableTransitions();
 
-    Visual.empty(this.renderControlsID);
-    const controlsContainer = document.getElementById(this.renderControlsID);
+    const generalEditor = new EditorGenerator(document.getElementById('general-accordion-body'));
+    const colorEditor = new EditorGenerator(document.getElementById('color-accordion-body'));
+    const miscEditor = new EditorGenerator(document.getElementById('misc-accordion-body'));
 
-    const editor = new EditorGenerator(controlsContainer);
+    this.renderBasicControls();
 
-    this.renderBasicControls(editor);
-
+    /*
     const cats = [];
     const catsRaw = Object.keys(this.getCategoricalData()[0]);
     for (let i = 0; i < catsRaw.length; i += 1) {
@@ -79,55 +55,32 @@ class BubbleChart extends Visual {
         this.attributes.group_by = $(e.currentTarget).val();
         this.render();
       });
+      */
 
     const displayModes = [
         { value: 'always', text: 'Always Visible' },
         { value: 'hover', text: 'On Hover' },
         { value: 'hidden', text: 'Hidden' }];
-    editor.createSelectBox('bubble-labelmode', 'Label Display', displayModes, this.attributes.label_mode,
+    generalEditor.createSelectBox('bubble-labelmode', 'Label Display', displayModes, this.attributes.label_mode,
         (e) => {
           this.attributes.label_mode = $(e.currentTarget).val();
           this.render();
         });
-    editor.createNumberSlider('bubble-labelsize', 'Label Size', this.attributes.font_size, 1, 60, 1,
-    (e) => {
-      const value = $(e.currentTarget).val();
-      this.attributes.font_size = `${value}`;
-      this.render();
-    });
-    editor.createCheckBox('bubble-hideempty', 'Hide Empty Category', this.attributes.hide_empty, (e) => {
+
+    generalEditor.createCheckBox('bubble-hideempty', 'Hide Empty Category', this.attributes.hide_empty, (e) => {
       this.attributes.hide_empty = e.currentTarget.checked;
       this.render();
     });
 
-    editor.createColorField('bubble-fontcolor', 'Font Color', this.attributes.font_color,
-      (e) => {
-        this.attributes.font_color = $(e.currentTarget).val();
-        this.render();
-      });
-
-    const colorModes = [
-      { value: 'single', text: 'Single Color' },
-      { value: 'manual', text: 'Manual Assignment (Click bubble to assign)' },
-      { value: 'palette', text: 'Single Color (with light variance)' },
-    ];
-    editor.createSelectBox('bubble-colormode', 'Bubble Color Mode', colorModes, this.attributes.color.mode,
-      (e) => {
-        this.attributes.color.mode = $(e.currentTarget).val();
-        this.renderControls();
-        this.render();
-      });
-
-
     if (this.attributes.color.mode === 'manual') {
       if (this.currentEditKey != null) {
-        editor.createSubHeader(`Edit Color for: ${this.currentEditKey}`);
+        colorEditor.createSubHeader(`Edit Color for: ${this.currentEditKey}`);
         let currentColor = '#808080';
         const temp = this.attributes.color.colors.filter(c => c.key === this.currentEditKey);
         if (temp.length === 1) {
           currentColor = temp[0].value;
         }
-        editor.createColorField('bubble-colorpicker', 'Bubble Color', currentColor,
+        colorEditor.createColorField('bubble-colorpicker', 'Bubble Color', currentColor,
         (e) => {
           this.attributes.color.mode = 'manual';
           this.attributes.color.colors[this.currentEditKey] = {
@@ -137,24 +90,6 @@ class BubbleChart extends Visual {
           this.render();
         });
       }
-    } else {
-      let colorSelectHandle = null;
-      if (this.attributes.color.mode === 'palette') {
-        colorSelectHandle = (e) => {
-          this.attributes.color.single_color = $(e.currentTarget).val();
-          this.render();
-        };
-      } else if (this.attributes.color.mode === 'single') {
-        colorSelectHandle = (e) => {
-          this.attributes.color.single_color = $(e.currentTarget).val();
-          this.render();
-        };
-      }
-
-      editor.createColorField('bubble-staticcolorpicker',
-       'Bubble Color',
-        this.attributes.color.single_color,
-        colorSelectHandle);
     }
   }
 
@@ -162,6 +97,10 @@ class BubbleChart extends Visual {
    * Renders visuals for Bubble chart
    */
   render() {
+    if (!this.attributes.group_by) {
+      return;
+    }
+
     Visual.empty(this.renderID);
 
     const svgWidth = 500;
@@ -210,10 +149,8 @@ class BubbleChart extends Visual {
         } else if (this.attributes.color.mode === 'single') {
           return this.attributes.color.single_color;
         } else if (this.attributes.color.mode === 'palette') {
-          const lightVals = [0, 0.15, 0.3];
-          const index = (i % 3);
-          return ColorHelper.shadeBlendConvert(lightVals[index],
-             this.attributes.color.single_color);
+          return ColorHelper.gradientValue(i / (d.parent.children.length),
+            this.attributes.color.start_color, this.attributes.color.end_color);
         }
         return 'gray';
       });

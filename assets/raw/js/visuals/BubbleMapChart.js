@@ -18,18 +18,9 @@ class BubbleMapChart extends Visual {
    * Sets default attributes after data is loaded
    */
   onLoadData() {
-    let defaultCat;
-    if (this.data.length > 0) {
-      const cats = Object.keys(this.getNumericData()[0]);
-      if (cats.length > 1) {
-        defaultCat = cats[1];
-      }
-    }
     this.applyDefaultAttributes({
       title: '',
       infoCols: [], // selected columns for infowindow
-      size_by: defaultCat,
-      color_by: defaultCat,
       bubble_size: {
         range: [1, 100],
       },
@@ -101,6 +92,7 @@ class BubbleMapChart extends Visual {
    * Renders visuals for BubbleMapChart chart
    */
   render() {
+    console.log(this.attributes);
     const mapContainer = document.createElement('div');
     mapContainer.id = `map-container${this.renderID}`;
     mapContainer.className = 'map-container';
@@ -118,17 +110,18 @@ class BubbleMapChart extends Visual {
    * Creates menu options
    */
   renderControls() {
+    super.renderControls();
+
     if (this.data.length === 0) {
       alert('Dataset is empty!');
       return;
     }
 
-    Visual.empty(this.renderControlsID);
-    const controlsContainer = document.getElementById(this.renderControlsID);
+    const generalEditor = new EditorGenerator(document.getElementById('general-accordion-body'));
+    const colorEditor = new EditorGenerator(document.getElementById('color-accordion-body'));
+    const miscEditor = new EditorGenerator(document.getElementById('misc-accordion-body'));
 
-    const editor = new EditorGenerator(controlsContainer);
-
-    this.renderBasicControls(editor);
+    this.renderBasicControls();
 
     const columns = (Object.keys(this.getNumericData()[0]));
     const categories = [];
@@ -139,7 +132,7 @@ class BubbleMapChart extends Visual {
       });
     }
 
-    editor.createSelectBox('bubble-size-col',
+    miscEditor.createSelectBox('bubble-size-col',
     'Select column to size by', categories, this.attributes.size_by,
      (event) => {
        const value = $(event.currentTarget).val();
@@ -148,7 +141,7 @@ class BubbleMapChart extends Visual {
        this.drawMarkers();
      });
 
-    editor.createNumberSlider('min-bubble-size',
+    miscEditor.createNumberSlider('min-bubble-size',
       'Minimum Bubble Size',
        this.attributes.bubble_size.range[0],
         1, 49, 1,
@@ -159,7 +152,7 @@ class BubbleMapChart extends Visual {
         this.drawMarkers();
       }, 'mouseup');
 
-    editor.createNumberSlider('max-bubble-size',
+    miscEditor.createNumberSlider('max-bubble-size',
        'Maximum Bubble Size',
          this.attributes.bubble_size.range[1],
          50, 100, 1,
@@ -170,7 +163,7 @@ class BubbleMapChart extends Visual {
          this.drawMarkers();
        }, 'mouseup');
 
-    editor.createSelectBox('bubble-color-col',
+    miscEditor.createSelectBox('bubble-color-col',
         'Select column to color bubbles by', categories, this.attributes.color_by,
          (event) => {
            const value = $(event.currentTarget).val();
@@ -179,21 +172,21 @@ class BubbleMapChart extends Visual {
            this.drawMarkers();
          });
 
-    editor.createColorField('bubble-color-start', 'Color Range Start', this.attributes.color.range[0],
+    colorEditor.createColorField('bubble-color-start', 'Color Range Start', this.attributes.color.range[0],
            (e) => {
              this.attributes.color.range[0] = $(e.currentTarget).val();
              this.map.clearCircles();
              this.drawMarkers();
            });
 
-    editor.createColorField('bubble-color-mid', 'Color Range Middle', this.attributes.color.range[1],
+    colorEditor.createColorField('bubble-color-mid', 'Color Range Middle', this.attributes.color.range[1],
           (e) => {
             this.attributes.color.range[1] = $(e.currentTarget).val();
             this.map.clearCircles();
             this.drawMarkers();
           });
 
-    editor.createColorField('bubble-color-end', 'Color Range End', this.attributes.color.range[2],
+    colorEditor.createColorField('bubble-color-end', 'Color Range End', this.attributes.color.range[2],
           (e) => {
             this.attributes.color.range[2] = $(e.currentTarget).val();
             this.map.clearCircles();
@@ -207,7 +200,7 @@ class BubbleMapChart extends Visual {
     //         this.drawMarkers();
     //       });
 
-    this.map.renderMapColorControls(editor, this.attributes, (color) => {
+    this.map.renderMapColorControls(miscEditor, this.attributes, (color) => {
       this.attributes.mapStyles[0].stylers[0].color = color;
     }, (color) => {
       this.attributes.mapStyles[1].stylers[0].color = color;
