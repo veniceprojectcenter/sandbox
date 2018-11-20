@@ -224,6 +224,10 @@ class Donut extends Visual {
       .enter().append('g')
       .attr('class', 'arc ');
 
+    const g2 = svg.selectAll('.arc2')
+      .data(pie(data))
+      .enter().append('g')
+      .attr('class', 'arc ');
     const section = g.append('path')
       .style('fill', (d, i) => this.colorHelper(data, d, i));
 
