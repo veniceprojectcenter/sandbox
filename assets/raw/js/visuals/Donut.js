@@ -273,10 +273,17 @@ class Donut extends Visual {
         d3.select(this)
           .attr('fill-opacity', '0.5');
 
+        let outline = '#FFFFFF';
+        if (ColorHelper.isLight(donut.attributes.font_color)) {
+          outline = '#000000';
+        }
+
         const text = svg.append('text')
           .attr('id', 'donut-tooltip')
           .attr('class', 'hovertext')
           .style('font-size', `${donut.attributes.font_size}pt`)
+          .attr('fill', `${donut.attributes.font_color}`)
+          .style('text-shadow', `${outline} 0px 0px 5px`)
           .text(d.data.key);
         if (coordinates[0] > 0) {
           text.attr('transform', `translate(${coordinates[0] - 5} ${coordinates[1]})`)
@@ -296,11 +303,18 @@ class Donut extends Visual {
       path.on('mousemove', handleMouseOver)
           .on('mouseout', handleMouseOut);
     } else if (this.attributes.label_mode === 'always') {
+      let outline = '#FFFFFF';
+      if (ColorHelper.isLight(this.attributes.font_color)) {
+        outline = '#000000';
+      }
+
       g.append('text')
         .attr('class', 'alwaystext')
         .attr('transform', d => `translate(${arc.centroid(d)})`)
         .attr('dy', '.35em')
-        .attr('style', `font-size:${this.attributes.font_size}pt`)
+        .style('font-size', `${this.attributes.font_size}pt`)
+        .attr('fill', `${this.attributes.font_color}`)
+        .style('text-shadow', `${outline} 0px 0px 5px`)
         .attr('id', d => `label-${d.data.key}`)
         .text(d => d.data.key);
     }

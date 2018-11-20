@@ -12,17 +12,12 @@ svg.donut {
 
   text.hovertext
   {
-    fill: #FFFFFF;
-    color: #FFFFFF;
-    stroke: #000000;
+    pointer-events: none;
     stroke-width: 1px;
     stroke-linejoin: round;
   }
   text.alwaystext
   {
-    fill: #FFFFFF;
-    color: #FFFFFF;
-    stroke: #000000;
     stroke-width: 1px;
     stroke-linejoin: round;
   }
