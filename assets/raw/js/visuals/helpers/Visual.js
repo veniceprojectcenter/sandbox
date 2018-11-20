@@ -756,32 +756,40 @@ class Visual {
   renderKey(data, position) {
     if (position === 'below') {
       document.getElementById('key').innerHTML = '';
+      document.getElementById('column2').style.flexDirection = 'column';
 
-      document.getElementById('visual').style.margin = 'margin: 2% 2% 5% 2%;';
+      document.getElementById('visual').style.margin = '2% 2% 5% 2%';
+      document.getElementById('visual').style.width = '96%';
+      document.getElementById('visual').style.height = `${document.getElementById('visual').clientWidth}`;
 
       document.getElementById('key').style.width = '100%';
-      document.getElementById('key').style.display = '';
     } else if (position === 'above') {
       document.getElementById('key').innerHTML = '';
+      document.getElementById('column2').style.flexDirection = 'column-reverse';
 
-      document.getElementById('visual').style.margin = 'margin: 5% 2% 2% 2%;';
+      document.getElementById('visual').style.margin = '5% 2% 2% 2%';
+      document.getElementById('visual').style.width = '96%';
+      document.getElementById('visual').style.height = `${document.getElementById('visual').clientWidth}`;
 
       document.getElementById('key').style.width = '100%';
-      document.getElementById('key').style.display = 'table-header-group';
     } else if (position === 'left') {
       document.getElementById('key').innerHTML = '';
+      document.getElementById('column2').style.flexDirection = 'row-reverse';
 
-      document.getElementById('visual').style.width = '70%';
+      document.getElementById('visual').style.margin = '2% 2% 5% 2%';
+      document.getElementById('visual').style.width = '66%';
+      document.getElementById('visual').style.height = `${document.getElementById('visual').clientWidth}`;
 
       document.getElementById('key').style.width = '30%';
-      document.getElementById('key').style.display = 'table-header-group';
     } else if (position === 'right') {
       document.getElementById('key').innerHTML = '';
+      document.getElementById('column2').style.flexDirection = 'row';
 
-      document.getElementById('visual').style.width = '70%';
+      document.getElementById('visual').style.margin = '2% 2% 5% 2%';
+      document.getElementById('visual').style.width = '66%';
+      document.getElementById('visual').style.height = `${document.getElementById('visual').clientWidth}`;
 
       document.getElementById('key').style.width = '30%';
-      document.getElementById('key').style.display = '';
     } else {
       document.getElementById('key').style.outline = '';
       document.getElementById('key').innerHTML = '';

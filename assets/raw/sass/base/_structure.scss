@@ -42,9 +42,11 @@ body {
   padding-right: 1.5%;
 }
 .column2 {
-  display: table;
+  display: flex;
+  flex-direction: column;
   flex: 0 0 73.5%;
   max-width: 73.5%;
+  min-height: 80%;
   padding-left: 1.5%;
   padding-right: 1.5%;
   /*
