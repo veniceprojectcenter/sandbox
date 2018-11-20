@@ -362,6 +362,9 @@ function renderEditor(defaultDS = null, defaultGT = null) {
     controlsEditor.createSelectBox('dataSelector', 'Data Set', dsCats, defaultDSName,
       (e) => {
         currDataSet = $(e.currentTarget).val();
+        if (activeVisual) {
+          activeVisual.dataSet = currGraphType;
+        }
         createGraphic(currDataSet, currGraphType);
       },
       null, 'Select a Data Set');
@@ -369,6 +372,9 @@ function renderEditor(defaultDS = null, defaultGT = null) {
     controlsEditor.createSelectBox('graphSelector', 'Graph Type', graphCats, defaultGT,
       (e) => {
         currGraphType = $(e.currentTarget).val();
+        if (activeVisual) {
+          activeVisual.type = currGraphType;
+        }
         createGraphic(currDataSet, currGraphType);
       },
       null, 'Select a Graph Type');

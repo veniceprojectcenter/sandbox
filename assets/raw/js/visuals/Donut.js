@@ -161,14 +161,14 @@ class Donut extends Visual {
     });
   }
 
-  // TODO: this does not use the object attributes, just const values like width and height
   /**
    * Renders visuals for Donut chart
    */
   render() {
-    if (!this.attributes.group_by) {
+    if (!super.render()) {
       return;
     }
+
     // Empty the container, then place the SVG in there
     Visual.empty(this.renderID);
     document.getElementById('visual').style.height = `${document.getElementById('visual').clientWidth}`;
