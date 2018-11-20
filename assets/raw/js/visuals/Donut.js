@@ -170,7 +170,6 @@ class Donut extends Visual {
     }
 
     // Empty the container, then place the SVG in there
-    Visual.empty(this.renderID);
     document.getElementById('visual').style.height = `${document.getElementById('visual').clientWidth}`;
 
     let data = null;
