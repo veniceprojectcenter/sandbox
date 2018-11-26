@@ -141,6 +141,34 @@ class Visual {
   }
 
   /**
+   * Sorts the data based on weight values if there are any, or ascending order otherwise
+   *
+   * @param {Object[]} data Sorts the data objects
+   * @returns {Object[]} Array of sorted data
+   */
+  sortData(data) {
+    let sortedData = data;
+    if (Object.keys(this.attributes.items).length > 0) { // Already in order
+      sortedData = data.sort((a, b) => {
+        if (this.attributes.items[b.key] === undefined) {
+          return 1;
+        } else if (this.attributes.items[a.key] === undefined) {
+          return -1;
+        }
+        return this.attributes.items[a.key].weight - this.attributes.items[b.key].weight;
+      });
+    } else { // Fresh sort
+      sortedData = data.sort((a, b) => {
+        if (a.key < b.key) {
+          return -1;
+        }
+        return 1;
+      });
+    }
+    return sortedData;
+  }
+
+  /**
    * Abstract method
    */
   onLoadData() {
