@@ -7,7 +7,6 @@ svg.donut {
   }
 
   .arc path {
-    // stroke: $white;
   }
 
   text.hovertext
@@ -20,6 +19,7 @@ svg.donut {
   {
     stroke-width: 1px;
     stroke-linejoin: round;
+    opacity: .99;
   }
 }
 
