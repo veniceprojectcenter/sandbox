@@ -246,7 +246,7 @@ class Donut extends Visual {
         outline = '#000000';
       }
 
-      g.append('text')
+      g2.append('text')
         .attr('class', 'alwaystext')
         .attr('transform', d => `translate(${arc.centroid(d)})`)
         .attr('dy', '.35em')
