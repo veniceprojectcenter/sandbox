@@ -194,7 +194,7 @@ class Donut extends Visual {
       data = Visual.hideEmpty(data);
     }
     const width = document.getElementById('visual').clientWidth;
-    const height = document.getElementById('visual').clientWidth;
+    const height = width;
     const radius = width / 2;
 
     const arc = d3.arc()
@@ -209,25 +209,7 @@ class Donut extends Visual {
       .style('width', '100%')
       .style('height', '100%');
 
-
-    console.log(this.attributes);
-    if (Object.keys(this.attributes.items).length > 0) { // Already in order
-      data = data.sort((a, b) => {
-        if (this.attributes.items[b.key] !== undefined &&
-          this.attributes.items[a.key] !== undefined) {
-          return this.attributes.items[a.key].weight - this.attributes.items[b.key].weight;
-        }
-        return 0;
-      });
-    } else { // Fresh sort
-      data = data.sort((a, b) => {
-        if (a.key < b.key) {
-          return -1;
-        }
-        return 1;
-      });
-      console.log(data);
-    }
+    data = this.sortData(data);
 
     const pie = d3.pie()
       .sort(null)
