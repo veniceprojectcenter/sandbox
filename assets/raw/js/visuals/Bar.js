@@ -183,14 +183,8 @@ class Bar extends Visual {
       legend.append('rect')
       .attr('width', `${this.attributes.font_size}`)
       .attr('height', `${this.attributes.font_size}`)
-      .attr('fill', (d, e) => {
-        console.log('d', d);
-        console.log('e', e);
-        console.log(ColorHelper.gradientValue(e / (keys.length - 1),
+      .attr('fill', (d, e) => ColorHelper.gradientValue(e / (keys.length - 1),
           this.attributes.color.start_color, this.attributes.color.end_color));
-        return ColorHelper.gradientValue(e / (keys.length - 1),
-          this.attributes.color.start_color, this.attributes.color.end_color);
-      });
 
       legend.append('text')
       .attr('y', '0.5em')

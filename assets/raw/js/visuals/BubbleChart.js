@@ -118,6 +118,7 @@ class BubbleChart extends Visual {
     if (this.attributes.hide_empty) {
       counts = Visual.hideEmpty(counts);
     }
+
     const root = d3.hierarchy({ children: counts })
           .sum(d => d.value)
           .sort((a, b) => b.value - a.value);
@@ -147,7 +148,7 @@ class BubbleChart extends Visual {
         } else if (this.attributes.color.mode === 'single') {
           return this.attributes.color.single_color;
         } else if (this.attributes.color.mode === 'palette') {
-          return ColorHelper.gradientValue(i / (d.parent.children.length),
+          return ColorHelper.gradientValue(i / (d.parent.children.length - 1),
             this.attributes.color.start_color, this.attributes.color.end_color);
         }
         return 'gray';
