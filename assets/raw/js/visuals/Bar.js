@@ -3,6 +3,10 @@ import EditorGenerator from './helpers/EditorGenerator';
 import ColorHelper from './helpers/ColorHelper';
 
 class Bar extends Visual {
+
+  /**
+   * Sets default attributes after data is loaded
+   */
   onLoadData() {
     super.onLoadData();
     this.categoricalData = this.getCategoricalData(50);
@@ -31,6 +35,9 @@ class Bar extends Visual {
     });
   }
 
+  /**
+   * Creates menu options
+   */
   renderControls() {
     super.renderControls();
 
@@ -81,6 +88,9 @@ class Bar extends Visual {
       });
   }
 
+  /**
+   * Renders visuals for Donut chart
+   */
   render() {
     if (!this.attributes.group_by) {
       return;
@@ -136,7 +146,9 @@ class Bar extends Visual {
         stackData.push(tempObj);
       });
 
-      x.domain(Object.keys(multiLevelData));
+      let k = Object.keys(multiLevelData);
+      k = k.sort((a, b) => d3.ascending(a, b));
+      x.domain(k);
       y.domain([0, d3.max(dataSizes)]);
     } else {
       const cats = this.attributes.group_by;
@@ -149,7 +161,9 @@ class Bar extends Visual {
         stackData.push({ key: k, value: data[k].length });
       });
 
-      x.domain(Object.keys(data)); //TODO d3.ascending????????????????
+      let k = Object.keys(data);
+      k = k.sort((a, b) => d3.ascending(a, b));
+      x.domain(k);
       y.domain([0, d3.max(dataSizes)]);
     }
 
