@@ -8,19 +8,6 @@ svg.donut {
 
   .arc path {
   }
-
-  text.hovertext
-  {
-    pointer-events: none;
-    stroke-width: 1px;
-    stroke-linejoin: round;
-  }
-  text.alwaystext
-  {
-    stroke-width: 1px;
-    stroke-linejoin: round;
-    opacity: .99;
-  }
 }
 
 .visual-title {

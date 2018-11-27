@@ -255,8 +255,11 @@ class Donut extends Visual {
         .attr('transform', d => `translate(${arc.centroid(d)})`)
         .attr('dy', '.35em')
         .style('font-size', `${this.attributes.font_size}pt`)
-        .attr('fill', `${this.attributes.font_color}`)
-        .style('text-shadow', `${outline} 0px 0px 5px`)
+        .style('fill', `${this.attributes.font_color}`)
+        .style('color', `${this.attributes.font_color}`)
+        .style('stroke', `${outline}`)
+        .style('stroke-width', '0.025em')
+        .style('stroke-linejoin', 'round')
         .attr('id', d => `label-${d.data.key}`)
         .text(d => d.data.key);
     }

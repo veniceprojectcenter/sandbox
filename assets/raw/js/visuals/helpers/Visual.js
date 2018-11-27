@@ -180,7 +180,7 @@ class Visual {
       width: 500,
       height: 500,
       dontDefineDimensions: true,
-      font_size: 20,
+      font_size: 25,
       hide_empty: true,
       show_legend: 'none',
       color: {
@@ -789,6 +789,11 @@ class Visual {
     const mouseOver = function (d) {
       const coords = d3.mouse(this);
 
+      let outline = '#FFFFFF';
+      if (ColorHelper.isLight(bigThis.attributes.font_color)) {
+        outline = '#000000';
+      }
+
       d3.select('#tooltip')
           .remove();
 
@@ -803,12 +808,22 @@ class Visual {
             const text = d3.select(this)
               .attr('dy', '0em')
               .style('font-size', `${bigThis.attributes.font_size}pt`)
+              .style('fill', `${bigThis.attributes.font_color}`)
+              .style('color', `${bigThis.attributes.font_color}`)
+              .style('stroke', `${outline}`)
+              .style('stroke-width', '0.025em')
+              .style('stroke-linejoin', 'round')
               .text(textArray[0]);
             for (let i = 1; i < textArray.length; i += 1) {
               text.append('tspan')
                 .attr('x', '0')
                 .attr('dy', '1em')
                 .style('font-size', `${bigThis.attributes.font_size}pt`)
+                .style('fill', `${bigThis.attributes.font_color}`)
+                .style('color', `${bigThis.attributes.font_color}`)
+                .style('stroke', `${outline}`)
+                .style('stroke-width', '0.025em')
+                .style('stroke-linejoin', 'round')
                 .text(textArray[i]);
             }
           });
