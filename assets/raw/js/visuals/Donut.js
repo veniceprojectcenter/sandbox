@@ -240,61 +240,22 @@ class Donut extends Visual {
       .enter().append('g')
       .attr('class', 'arc ');
 
-    const path = g.append('path')
-      .style('fill', (d, i) => {
-        if (this.attributes.color.mode === 'palette' || this.attributes.items[d.data.key] === undefined) {
-          this.attributes.items[d.data.key] = {
-            weight: i,
-            color: ColorHelper.gradientValue(d.index / (data.length - 1),
-              this.attributes.color.start_color, this.attributes.color.end_color),
-          };
-        }
-        return this.attributes.items[d.data.key].color;
-      });
+    const section = g.append('path')
+      .style('fill', (d, i) => this.colorHelper(data, d, i));
 
     if (this.useTransitions) {
-      path.transition()
+      section.transition()
         .delay(500)
         .duration(700)
         .attrTween('d', tweenPie);
     } else {
-      path.attr('d', arc);
+      section.attr('d', arc);
     }
 
     this.renderKey(pie(data), this.attributes.show_legend);
 
     if (this.attributes.label_mode === 'hover') {
-      const donut = this;
-      const handleMouseOver = function (d) {
-        const coordinates = d3.mouse(this);
-
-        d3.select('#donut-tooltip').remove();
-
-        d3.select(this)
-          .attr('fill-opacity', '0.5');
-
-        const text = svg.append('text')
-          .attr('id', 'donut-tooltip')
-          .attr('class', 'hovertext')
-          .style('font-size', `${donut.attributes.font_size}pt`)
-          .text(d.data.key);
-        if (coordinates[0] > 0) {
-          text.attr('transform', `translate(${coordinates[0] - 5} ${coordinates[1]})`)
-          .attr('text-anchor', 'end');
-        } else {
-          text.attr('transform', `translate(${coordinates[0] + 5} ${coordinates[1]})`)
-          .attr('text-anchor', 'start');
-        }
-      };
-
-      const handleMouseOut = function () {
-        d3.select(this)
-          .attr('fill-opacity', 1);
-        d3.select('#donut-tooltip').remove();
-      };
-
-      path.on('mousemove', handleMouseOver)
-          .on('mouseout', handleMouseOut);
+      this.hoverTextDisplay(data, svg, section);
     } else if (this.attributes.label_mode === 'always') {
       g.append('text')
         .attr('class', 'alwaystext')
@@ -306,14 +267,14 @@ class Donut extends Visual {
     }
 
     if (this.editmode) {
-      path.on('click', (d) => {
+      section.on('click', (d) => {
         this.currentEditKey = d.data.key;
         this.renderControls();
         this.render();
       });
       const editKey = this.currentEditKey;
       if (editKey !== null) {
-        path.attr('stroke-width', (d) => {
+        section.attr('stroke-width', (d) => {
           if (d.data.key === editKey) { return '1px'; }
           return '0';
         })

@@ -2,6 +2,7 @@
 import Loader from './Loader';
 import Data from './Data';
 import EditorGenerator from './EditorGenerator';
+import ColorHelper from './ColorHelper';
 
 /**
  * Abstract class that all other Charts will inherit from
@@ -700,7 +701,103 @@ class Visual {
     }
   }
 
-  // this doesnt deserve a comment because its the shittiest goddamned code ive written in my life
+  /**
+   * simple color helper, requires an arrow function with (d,i) to use
+   * @param data dataset
+   * @param d arrow function parameter
+   * @param i arrow function parameter
+   * @returns {*} color
+   */
+  colorHelper(data, d, i) {
+    if (this.attributes.color.mode === 'palette' || this.attributes.items[d.data.key] === undefined) {
+      this.attributes.items[d.data.key] = {
+        weight: i,
+        color: ColorHelper.gradientValue(d.index / (data.length - 1),
+          this.attributes.color.start_color, this.attributes.color.end_color),
+      };
+    }
+    return this.attributes.items[d.data.key].color;
+  }
+
+  hoverTextHelper(input) {
+    const tempString3ReturnoftheArray = [];
+    if (this.lengthinPX(input)[0] >= (document.getElementById('visual').clientWidth * 0.4)) {
+      const tempString = input.split(' ');
+      let tempString2ElectricBoogaloo = `${tempString[0]} `;
+      for (let j = 1; j < tempString.length; j += 1) {
+        if (((this.lengthinPX((tempString2ElectricBoogaloo + tempString[j]))[0]) + 10)
+            >= (document.getElementById('visual').clientWidth * 0.4)) {
+          tempString3ReturnoftheArray.push(tempString2ElectricBoogaloo);
+          tempString2ElectricBoogaloo = `${tempString[j]} `;
+        } else {
+          tempString2ElectricBoogaloo += `${tempString[j]} `;
+        }
+      }
+      if (tempString3ReturnoftheArray[tempString3ReturnoftheArray.length - 1]
+        !== tempString2ElectricBoogaloo) {
+        tempString3ReturnoftheArray.push(tempString2ElectricBoogaloo);
+      }
+    } else {
+      tempString3ReturnoftheArray[0] = input;
+    }
+    return tempString3ReturnoftheArray;
+  }
+
+  hoverTextDisplay(data, svg, section) {
+    const bigThis = this;
+    const mouseOver = function (d) {
+      const coords = d3.mouse(this);
+
+      d3.select('#tooltip')
+          .remove();
+
+      d3.select(this)
+          .attr('fill-opacity', '0.8');
+
+      const textBox = svg.append('text')
+          .attr('id', 'tooltip')
+          .attr('class', 'hovertext')
+          .each(function () {
+            const textArray = bigThis.hoverTextHelper(d.data.key);
+            const text = d3.select(this)
+              .attr('dy', '0em')
+              .style('font-size', `${bigThis.attributes.font_size}pt`)
+              .text(textArray[0]);
+            for (let i = 1; i < textArray.length; i += 1) {
+              text.append('tspan')
+                .attr('x', '0')
+                .attr('dy', '1em')
+                .style('font-size', `${bigThis.attributes.font_size}pt`)
+                .text(textArray[i]);
+            }
+          });
+
+      if (coords[0] > 0) {
+        textBox.attr('transform', `translate(${coords[0] - 5} ${coords[1]})`)
+            .attr('text-anchor', 'end');
+      } else {
+        textBox.attr('transform', `translate(${coords[0] + 5} ${coords[1]})`)
+            .attr('text-anchor', 'start');
+      }
+    };
+
+    const mouseOut = function () {
+      d3.select(this)
+          .attr('fill-opacity', 1);
+
+      d3.select('#tooltip')
+          .remove();
+    };
+
+    section.on('mousemove', mouseOver)
+        .on('mouseout', mouseOut);
+  }
+
+  /**
+   * gets the length of any string in pixels
+   * @param string inputed string
+   * @returns {number[]} length
+   */
   lengthinPX(string) {
     const ruler = document.createElement('span');
     ruler.style.display = 'inline-block';
@@ -719,15 +816,15 @@ class Visual {
    */
   keyDataHelper(data) {
     const textArray = [];
+    const heightofTXT = this.lengthinPX('W')[1];
     for (let i = 0; i < data.length; i += 1) {
-      if (((this.lengthinPX(data[i].data.key)[0] + 50) + 10) >= document.getElementById('key').clientWidth) {
+      if ((this.lengthinPX(data[i].data.key)[0] + (heightofTXT * 1.35)) >= document.getElementById('key').clientWidth) {
         const tempString = data[i].data.key.split(' ');
         let tempString2ElectricBoogaloo = `${tempString[0]} `;
         const tempString3ReturnoftheArray = [];
         for (let j = 1; j < tempString.length; j += 1) {
-          if ((((this.lengthinPX(tempString2ElectricBoogaloo)[0] + 50) + 10)
-            + this.lengthinPX(tempString[j])[0])
-            >= document.getElementById('key').clientWidth) {
+          if (((this.lengthinPX((tempString2ElectricBoogaloo + tempString[j]))[0])
+            + (heightofTXT * 1.35) + 10) >= document.getElementById('key').clientWidth) {
             tempString3ReturnoftheArray.push(tempString2ElectricBoogaloo);
             tempString2ElectricBoogaloo = `${tempString[j]} `;
           } else {
@@ -756,40 +853,44 @@ class Visual {
   renderKey(data, position) {
     if (position === 'below') {
       document.getElementById('key').innerHTML = '';
+      document.getElementById('key').style.minWidth = '100%';
+      document.getElementById('key').style.maxWidth = '100%';
       document.getElementById('column2').style.flexDirection = 'column';
 
       document.getElementById('visual').style.margin = '2% 2% 5% 2%';
-      document.getElementById('visual').style.width = '96%';
+      document.getElementById('visual').style.minWidth = '96%';
+      document.getElementById('visual').style.maxWidth = '96%';
       document.getElementById('visual').style.height = `${document.getElementById('visual').clientWidth}`;
-
-      document.getElementById('key').style.width = '100%';
     } else if (position === 'above') {
       document.getElementById('key').innerHTML = '';
+      document.getElementById('key').style.minWidth = '100%';
+      document.getElementById('key').style.maxWidth = '100%';
       document.getElementById('column2').style.flexDirection = 'column-reverse';
 
       document.getElementById('visual').style.margin = '5% 2% 2% 2%';
-      document.getElementById('visual').style.width = '96%';
+      document.getElementById('visual').style.minWidth = '96%';
+      document.getElementById('visual').style.maxWidth = '96%';
       document.getElementById('visual').style.height = `${document.getElementById('visual').clientWidth}`;
-
-      document.getElementById('key').style.width = '100%';
     } else if (position === 'left') {
       document.getElementById('key').innerHTML = '';
+      document.getElementById('key').style.minWidth = '33%';
+      document.getElementById('key').style.maxWidth = '33%';
       document.getElementById('column2').style.flexDirection = 'row-reverse';
 
       document.getElementById('visual').style.margin = '2% 2% 5% 2%';
-      document.getElementById('visual').style.width = '66%';
+      document.getElementById('visual').style.minWidth = '66%';
+      document.getElementById('visual').style.maxWidth = '66%';
       document.getElementById('visual').style.height = `${document.getElementById('visual').clientWidth}`;
-
-      document.getElementById('key').style.width = '30%';
     } else if (position === 'right') {
       document.getElementById('key').innerHTML = '';
+      document.getElementById('key').style.minWidth = '33%';
+      document.getElementById('key').style.maxWidth = '33%';
       document.getElementById('column2').style.flexDirection = 'row';
 
       document.getElementById('visual').style.margin = '2% 2% 5% 2%';
-      document.getElementById('visual').style.width = '66%';
+      document.getElementById('visual').style.minWidth = '66%';
+      document.getElementById('visual').style.maxWidth = '66%';
       document.getElementById('visual').style.height = `${document.getElementById('visual').clientWidth}`;
-
-      document.getElementById('key').style.width = '30%';
     } else {
       document.getElementById('key').style.outline = '';
       document.getElementById('key').innerHTML = '';
@@ -864,7 +965,7 @@ class Visual {
             colorIter2 += 1;
             return this.attributes.items[tempString].color;
           }
-          return this.attributes.items[textArray[textIterator]].color;
+          return this.attributes.items[(textArray[textIterator]).trim()].color;
         });
 
     textIterator = -1;
