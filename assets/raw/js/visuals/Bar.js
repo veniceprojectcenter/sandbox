@@ -3,6 +3,7 @@ import EditorGenerator from './helpers/EditorGenerator';
 import ColorHelper from './helpers/ColorHelper';
 
 class Bar extends Visual {
+
   /**
    * Sets default attributes after data is loaded
    */
@@ -142,7 +143,9 @@ class Bar extends Visual {
         stackData.push(tempObj);
       });
 
-      x.domain(Object.keys(multiLevelData));
+      let k = Object.keys(multiLevelData);
+      k = k.sort((a, b) => d3.ascending(a, b));
+      x.domain(k);
       y.domain([0, d3.max(dataSizes)]);
     } else {
       const cats = this.attributes.group_by;
@@ -155,7 +158,9 @@ class Bar extends Visual {
         stackData.push({ key: k, value: data[k].length });
       });
 
-      x.domain(Object.keys(data));
+      let k = Object.keys(data);
+      k = k.sort((a, b) => d3.ascending(a, b));
+      x.domain(k);
       y.domain([0, d3.max(dataSizes)]);
     }
 
