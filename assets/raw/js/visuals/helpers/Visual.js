@@ -186,8 +186,8 @@ class Visual {
         mode: 'palette',
         colors: [],
         single_color: '#808080',
-        start_color: '#FF0000',
-        end_color: '#0000FF',
+        start_color: '#CC6633',
+        end_color: '#333333',
       },
       items: {}, // Contains objects that specify: key: {weight, color} where
                  // a weight of 0 means first on the donut chart

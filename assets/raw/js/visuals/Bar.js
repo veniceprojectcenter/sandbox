@@ -6,16 +6,6 @@ class Bar extends Visual {
   onLoadData() {
     super.onLoadData();
     this.categoricalData = this.getCategoricalData(50);
-    let defaultCat1 = '';
-    let defaultCat2 = '';
-    if (this.data.length > 0) {
-      const cats = Object.keys(this.categoricalData[0]);
-      if (cats.length > 2) {
-        defaultCat1 = cats[1];
-        defaultCat2 = cats[2];
-        console.log(`Using ${defaultCat1} and ${defaultCat2}`);
-      }
-    }
     this.applyDefaultAttributes({
       aspect_ratio: 1.5,
       font_size: '8',
@@ -61,8 +51,9 @@ class Bar extends Visual {
       cats.push({ value: catsRaw[i], text: catsRaw[i] });
     }
     cats.unshift({ value: 'No Column', text: 'No Column' });
-    generalEditor.createSelectBox('bar-column-stack', 'Select stack column to display', cats, this.attributes.group_by_stack,
-      (e) => {
+
+    generalEditor.createSelectBox('bar-column-stack', 'Select stack column to display', cats,
+      this.attributes.group_by_stack, (e) => {
         this.attributes.group_by_stack = $(e.currentTarget).val();
         this.render();
       });
@@ -91,6 +82,10 @@ class Bar extends Visual {
   }
 
   render() {
+    if (!this.attributes.group_by) {
+      return;
+    }
+
     // Empty the container, then place the SVG in there
     Visual.empty(this.renderID);
 
@@ -154,7 +149,7 @@ class Bar extends Visual {
         stackData.push({ key: k, value: data[k].length });
       });
 
-      x.domain(Object.keys(data));
+      x.domain(Object.keys(data)); //TODO d3.ascending????????????????
       y.domain([0, d3.max(dataSizes)]);
     }
 
@@ -217,9 +212,11 @@ class Bar extends Visual {
       transform: `rotate(-${this.attributes.x_font_rotation}deg) translate(${this.attributes.x_font_x_offset}px,${this.attributes.x_font_y_offset}px)`,
     });
 
+    const stack = d3.stack().keys(keys)(stackData);
+
     g.append('g')
     .selectAll('g')
-    .data(d3.stack().keys(keys)(stackData))
+    .data(stack)
     .enter()
     .append('g')
     .attr('fill', (d, e) => ColorHelper.gradientValue(e / (keys.length - 1),
