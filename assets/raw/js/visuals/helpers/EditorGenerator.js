@@ -46,18 +46,29 @@ class EditorGenerator {
       $(e.currentTarget).siblings('input[type="text"]').val(val);
       onColorChanged(e);
     });
-    $(`#${id}-mirror`).on('change', (e) => {
+    $(`#${id}-mirror`).on('input', (e) => {
       let ogval = $(e.currentTarget).val();
-      let val;
-      if (ogval.length > 0 && ogval.substring(0, 1) === '#') {
-        val = ogval;
-        ogval = ogval.substring(1, ogval.length);
-      } else {
-        val = `#${ogval}`;
+      const valid = /[0-9A-Fa-f]/;
+      // Clear unwanted characters
+      for (let i = 0; i < ogval.length; i += 1) {
+        if (!valid.test(ogval.substring(i, i + 1))) {
+          ogval = ogval.substring(0, i) + ogval.substring(i + 1, ogval.length);
+          i -= 1;
+        }
       }
-      $(e.currentTarget).val(val);
-      $(e.currentTarget).siblings('input[type="color"]').val(val);
-      onColorChanged(e);
+
+      if (ogval.length > 6) {
+        ogval = ogval.substring(0, 6);
+      }
+
+      // Valid hexcode found, perform color update
+      if (ogval.length === 6) {
+        const val = `#${ogval}`;
+        $(e.currentTarget).val(val);
+        $(e.currentTarget).siblings('input[type="color"]').val(val);
+        onColorChanged(e);
+      }
+
       $(e.currentTarget).val(ogval);
     });
   }
