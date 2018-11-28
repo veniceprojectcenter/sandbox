@@ -42,8 +42,6 @@ class BubbleChart extends Visual {
     const colorEditor = new EditorGenerator(document.getElementById('color-accordion-body'));
     const miscEditor = new EditorGenerator(document.getElementById('misc-accordion-body'));
 
-    this.renderBasicControls();
-
     /*
     const cats = [];
     const catsRaw = Object.keys(this.getCategoricalData()[0]);
@@ -66,11 +64,6 @@ class BubbleChart extends Visual {
           this.attributes.label_mode = $(e.currentTarget).val();
           this.render();
         });
-
-    generalEditor.createCheckBox('bubble-hideempty', 'Hide Empty Category', this.attributes.hide_empty, (e) => {
-      this.attributes.hide_empty = e.currentTarget.checked;
-      this.render();
-    });
 
     if (this.attributes.color.mode === 'manual') {
       if (this.currentEditKey != null) {
