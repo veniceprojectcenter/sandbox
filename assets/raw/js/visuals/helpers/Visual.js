@@ -715,30 +715,48 @@ class Visual {
    * Renders the title and description
    */
   renderBasics() {
-    const visual = document.getElementById(this.renderID);
+    const column = document.getElementById('column2');
 
-    let title = document.querySelector(`#${this.renderID} .visual-title`);
-    if (title && this.attributes.title) {
-      title.innerText = this.attributes.title;
-    } else if (!title && this.attributes.title) {
-      title = document.createElement('h3');
-      title.className = 'visual-title';
-      title.innerText = this.attributes.title;
-      visual.insertBefore(title, visual.childNodes[0]);
-    } else if (title) {
-      visual.removeChild(title);
+    if (this.attributes.title) {
+      if (!(document.getElementById('visual-title'))) {
+        const title = document.createElement('p');
+        title.className = 'visual-title';
+        title.id = 'visual-title';
+        title.style.fontSize = `${(this.attributes.font_size * 2)}pt`;
+        title.style.fill = `${this.attributes.font_color}`;
+        title.style.color = `${this.attributes.font_color}`;
+        title.innerText = this.attributes.title;
+        column.insertBefore(title, column.childNodes[0]);
+      } else if (document.getElementById('visual-title')) {
+        const title = document.getElementById('visual-title');
+        title.style.fontSize = `${(this.attributes.font_size * 2)}pt`;
+        title.style.fill = `${this.attributes.font_color}`;
+        title.style.color = `${this.attributes.font_color}`;
+        title.innerText = this.attributes.title;
+      }
+    } else if (document.getElementById('visual-title')) {
+      column.removeChild(document.getElementById('visual-title'));
     }
 
-    let description = document.querySelector(`#${this.renderID} .visual-description`);
-    if (description && this.attributes.description) {
-      description.innerText = this.attributes.description;
-    } else if (!description && this.attributes.description) {
-      description = document.createElement('p');
-      description.className = 'visual-description';
-      description.innerText = this.attributes.description;
-      visual.appendChild(description);
-    } else if (description) {
-      visual.removeChild(description);
+    if (this.attributes.description) {
+      if (!(document.getElementById('visual-description'))) {
+        const description = document.createElement('p');
+        description.className = 'visual-description';
+        description.id = 'visual-description';
+        description.style.fontSize = `${this.attributes.font_size}pt`;
+        description.style.fill = `${this.attributes.font_color}`;
+        description.style.color = `${this.attributes.font_color}`;
+        description.innerText = this.attributes.description;
+        column.appendChild(description);
+      } else if (document.getElementById('visual-description')) {
+        const description = document.getElementById('visual-description');
+        description.style.fontSize = `${this.attributes.font_size}pt`;
+        description.style.fill = `${this.attributes.font_color}`;
+        description.style.color = `${this.attributes.font_color}`;
+        description.innerText = this.attributes.description;
+      }
+    } else if (document.getElementById('visual-description')) {
+      column.removeChild(document.getElementById('visual-description'));
     }
   }
 
@@ -858,7 +876,7 @@ class Visual {
     const ruler = document.createElement('span');
     ruler.style.display = 'inline-block';
     ruler.style.whiteSpace = 'nowrap';
-    ruler.innerHTML = `<p style = 'display: flex; margin: 0 0 0 0; font-size: ${this.attributes.font_size}'>${string}</p>`;
+    ruler.innerHTML = `<p style = 'display: flex; margin: 0 0 0 0; font-size: ${this.attributes.font_size}pt'>${string}</p>`;
     document.getElementById('key').appendChild(ruler);
     const final = [ruler.clientWidth, ruler.clientHeight];
     document.getElementById('key').removeChild(ruler);
@@ -911,9 +929,9 @@ class Visual {
       document.getElementById('key').innerHTML = '';
       document.getElementById('key').style.minWidth = '100%';
       document.getElementById('key').style.maxWidth = '100%';
-      document.getElementById('column2').style.flexDirection = 'column';
+      document.getElementById('visualColumn').style.flexDirection = 'column';
 
-      document.getElementById('visual').style.margin = '2% 2% 5% 2%';
+      document.getElementById('visual').style.margin = '1% 1% 5% 1%';
       document.getElementById('visual').style.minWidth = '96%';
       document.getElementById('visual').style.maxWidth = '96%';
       document.getElementById('visual').style.height = `${document.getElementById('visual').clientWidth}`;
@@ -921,9 +939,9 @@ class Visual {
       document.getElementById('key').innerHTML = '';
       document.getElementById('key').style.minWidth = '100%';
       document.getElementById('key').style.maxWidth = '100%';
-      document.getElementById('column2').style.flexDirection = 'column-reverse';
+      document.getElementById('visualColumn').style.flexDirection = 'column-reverse';
 
-      document.getElementById('visual').style.margin = '5% 2% 2% 2%';
+      document.getElementById('visual').style.margin = '5% 1% 1% 1%';
       document.getElementById('visual').style.minWidth = '96%';
       document.getElementById('visual').style.maxWidth = '96%';
       document.getElementById('visual').style.height = `${document.getElementById('visual').clientWidth}`;
@@ -931,9 +949,9 @@ class Visual {
       document.getElementById('key').innerHTML = '';
       document.getElementById('key').style.minWidth = '33%';
       document.getElementById('key').style.maxWidth = '33%';
-      document.getElementById('column2').style.flexDirection = 'row-reverse';
+      document.getElementById('visualColumn').style.flexDirection = 'row-reverse';
 
-      document.getElementById('visual').style.margin = '2% 2% 5% 2%';
+      document.getElementById('visual').style.margin = '1% 1% 5% 1%';
       document.getElementById('visual').style.minWidth = '66%';
       document.getElementById('visual').style.maxWidth = '66%';
       document.getElementById('visual').style.height = `${document.getElementById('visual').clientWidth}`;
@@ -941,9 +959,9 @@ class Visual {
       document.getElementById('key').innerHTML = '';
       document.getElementById('key').style.minWidth = '33%';
       document.getElementById('key').style.maxWidth = '33%';
-      document.getElementById('column2').style.flexDirection = 'row';
+      document.getElementById('visualColumn').style.flexDirection = 'row';
 
-      document.getElementById('visual').style.margin = '2% 2% 5% 2%';
+      document.getElementById('visual').style.margin = '1% 1% 5% 1%';
       document.getElementById('visual').style.minWidth = '66%';
       document.getElementById('visual').style.maxWidth = '66%';
       document.getElementById('visual').style.height = `${document.getElementById('visual').clientWidth}`;
@@ -1030,8 +1048,9 @@ class Visual {
         .attr('x', (heightofTXT * 1.32))
         .attr('y', (heightofTXT * 0.85))
         .attr('dy', '0.32em')
-        .style('font-size', `${this.attributes.font_size}`)
-        .style('fill', '#FFFFFF')
+        .style('font-size', `${this.attributes.font_size}pt`)
+        .style('fill', `${this.attributes.font_color}`)
+        .style('color', `${this.attributes.font_color}`)
         .text(() => {
           textIterator += 1;
           return textArray[textIterator];

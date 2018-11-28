@@ -279,6 +279,10 @@ function renderEditor(defaultDS = null, defaultGT = null) {
   column2Container.className = 'column2';
   column2Container.id = 'column2';
 
+  const visualColumn = document.createElement('div');
+  visualColumn.className = 'visualColumn';
+  visualColumn.id = 'visualColumn';
+
   // Used to render the Graph
   const visualContainer = document.createElement('div');
   visualContainer.className = 'visual';
@@ -315,8 +319,9 @@ function renderEditor(defaultDS = null, defaultGT = null) {
 
   column1Container.appendChild(majorSelectContainer);
   column1Container.appendChild(controlsContainer);
-  column2Container.appendChild(visualContainer);
-  column2Container.appendChild(keyContainer);
+  visualColumn.appendChild(visualContainer);
+  visualColumn.appendChild(keyContainer);
+  column2Container.appendChild(visualColumn);
 
   // Setup page to render later
   const page = document.getElementById('page');
