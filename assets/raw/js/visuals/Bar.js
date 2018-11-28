@@ -56,11 +56,11 @@ class Bar extends Visual {
     }
     cats.unshift({ value: 'No Column', text: 'No Column' });
 
-    generalEditor.createSelectBox('bar-column-stack', 'Select stack column to display', cats,
+    generalEditor.createSelectBox('bar-column-stack', 'Select stacked column', cats,
       this.attributes.group_by_stack, (e) => {
         this.attributes.group_by_stack = $(e.currentTarget).val();
         this.render();
-      });
+      }, '', 'Select a Property', 'column-select');
 
     miscEditor.createNumberSlider('bar-x-font-rotation',
       'X Axis Font Rotation', this.attributes.x_font_rotation, 0, 90, 1,

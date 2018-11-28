@@ -635,7 +635,7 @@ class Visual {
     for (let i = 0; i < dataCatsRaw.length; i += 1) {
       dataCats.push({ value: dataCatsRaw[i], text: dataCatsRaw[i] });
     }
-    generalEditor.createSelectBox('column-select', 'Select column to group by', dataCats, this.attributes.group_by,
+    generalEditor.createSelectBox('column-select', 'Select data to display', dataCats, this.attributes.group_by,
       (e) => {
         this.attributes.group_by = $(e.currentTarget).val();
         this.attributes.items = {};

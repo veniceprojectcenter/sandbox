@@ -85,9 +85,9 @@ class EditorGenerator {
     $(`#${id}-right`).click(onRightClicked);
   }
 
-  createSelectBox(id, title, options, current, onOptionChanged, defaultValue = '', defaultText = 'Select a Property') {
+  createSelectBox(id, title, options, current, onOptionChanged, defaultValue = '', defaultText = 'Select a Property', prevElement = null) {
     const context = { id, title, options, defaultValue, defaultText };
-    this.handlebarsWithContext('select-entry', context);
+    this.handlebarsWithContext('select-entry', context, prevElement);
     $(`#${id}-select`).val(current).material_select();
     $(`#${id}-select`).change(onOptionChanged);
   }
@@ -177,12 +177,17 @@ class EditorGenerator {
     this.handlebarsWithContext('spacer', context);
   }
 
-  handlebarsWithContext(handlebarId, context) {
+  handlebarsWithContext(handlebarId, context, prevElement = null) {
     const source = document.getElementById(handlebarId).innerHTML;
     const template = Handlebars.compile(source);
     const html = template(context);
 
-    $(this.container).append(html);
+    if (prevElement === null) {
+      $(this.container)
+      .append(html);
+    } else {
+      document.getElementById(prevElement).insertAdjacentHTML('afterend', html);
+    }
   }
 }
 
