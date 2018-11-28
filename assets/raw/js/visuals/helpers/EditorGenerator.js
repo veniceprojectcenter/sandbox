@@ -186,7 +186,7 @@ class EditorGenerator {
       $(this.container)
       .append(html);
     } else {
-      document.getElementById(prevElement).insertAdjacentHTML('afterend', html);
+      $(`#${prevElement}`).after(html);
     }
   }
 }

@@ -153,6 +153,7 @@ class Bar extends Visual {
         stackData.push({ key: k, value: data[k].length });
       });
 
+      // TODO: this does not account for filtering empty
       y.domain([0, d3.max(dataSizes)]);
     }
 
@@ -207,7 +208,10 @@ class Bar extends Visual {
     .call(d3.axisLeft(y).ticks(10))
     .selectAll('text')
     .attr('text-anchor', 'end')
-    .style('font-size', `${this.attributes.font_size}pt`);
+    .styles({
+      'font-size': `${this.attributes.font_size}pt`,
+      'font-family': 'Gilroy',
+    });
 
     const ybox = svg.select('.axis--y').node().getBBox();
 
@@ -222,6 +226,7 @@ class Bar extends Visual {
     .attr('text-anchor', 'end')
     .styles({
       'font-size': `${this.attributes.font_size}pt`,
+      'font-family': 'Gilroy',
       transform: `rotate(-${this.attributes.x_font_rotation}deg) translate(${this.attributes.x_font_x_offset}px,${this.attributes.x_font_y_offset}px)`,
     });
 
