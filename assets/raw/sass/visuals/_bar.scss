@@ -10,4 +10,8 @@ svg.bar {
   text {
     fill: $text;
   }
+
+  line {
+    stroke: $text;
+  }
 }

@@ -8,6 +8,10 @@ svg.donut {
 
   .arc path {
   }
+
+  text {
+    pointer-events: none;
+  }
 }
 
 .visual-title {

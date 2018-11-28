@@ -213,6 +213,7 @@ class Visual {
       Visual.empty('general-accordion-body');
       Visual.empty('color-accordion-body');
       Visual.empty('misc-accordion-body');
+      this.renderBasicControls();
       return; // Will not recreate this objs, just rerender the interiors
     }
 
