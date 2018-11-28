@@ -9,7 +9,6 @@ class Bar extends Visual {
    */
   onLoadData() {
     super.onLoadData();
-    this.categoricalData = this.getCategoricalData(50);
     this.applyDefaultAttributes({
       aspect_ratio: 1.5,
       font_size: '8',
@@ -50,10 +49,8 @@ class Bar extends Visual {
     const colorEditor = new EditorGenerator(document.getElementById('color-accordion-body'));
     const miscEditor = new EditorGenerator(document.getElementById('misc-accordion-body'));
 
-    this.renderBasicControls();
-
     const cats = [];
-    const catsRaw = Object.keys(this.categoricalData[0]);
+    const catsRaw = Object.keys(this.data[0]);
     for (let i = 0; i < catsRaw.length; i += 1) {
       cats.push({ value: catsRaw[i], text: catsRaw[i] });
     }
@@ -96,7 +93,7 @@ class Bar extends Visual {
       return;
     }
 
-    let renderData = JSON.parse(JSON.stringify(this.categoricalData));
+    let renderData = JSON.parse(JSON.stringify(this.data));
 
     if (this.isNumeric(this.attributes.group_by)) {
       renderData = this.makeBin(this.attributes.group_by, Number(this.attributes.binSize),
@@ -117,8 +114,9 @@ class Bar extends Visual {
     const x = d3.scaleBand();
     const y = d3.scaleLinear();
 
+    // Assemble appropriate data
     let keys = [];
-    const stackData = [];
+    let stackData = [];
     if (this.attributes.group_by_stack !== 'No Column') {
       const cats = [this.attributes.group_by, this.attributes.group_by_stack];
       const multiLevelData = Visual.groupByMultiple(cats, renderData);
@@ -143,9 +141,6 @@ class Bar extends Visual {
         stackData.push(tempObj);
       });
 
-      let k = Object.keys(multiLevelData);
-      k = k.sort((a, b) => d3.ascending(a, b));
-      x.domain(k);
       y.domain([0, d3.max(dataSizes)]);
     } else {
       const cats = this.attributes.group_by;
@@ -158,16 +153,23 @@ class Bar extends Visual {
         stackData.push({ key: k, value: data[k].length });
       });
 
-      let k = Object.keys(data);
-      k = k.sort((a, b) => d3.ascending(a, b));
-      x.domain(k);
       y.domain([0, d3.max(dataSizes)]);
     }
 
+    if (this.attributes.hide_empty) {
+      stackData = Visual.hideEmpty(stackData);
+      keys = Visual.hideEmpty(keys.map((a) => {
+        return { key: a };
+      })).map(a => a.key);
+    }
+
+    stackData = stackData.sort((a, b) => d3.ascending(a.key, b.key));
+    x.domain(stackData.map(a => a.key));
+
+    // Render the key
     let lbox = {};
     if (this.attributes.group_by_stack !== 'No Column') {
       const legend = g.append('g')
-      .attr('font-family', 'sans-serif')
       .attr('font-size', `${this.attributes.font_size}pt`)
       .attr('text-anchor', 'end')
       .selectAll('g')
@@ -223,7 +225,18 @@ class Bar extends Visual {
       transform: `rotate(-${this.attributes.x_font_rotation}deg) translate(${this.attributes.x_font_x_offset}px,${this.attributes.x_font_y_offset}px)`,
     });
 
+
     const stack = d3.stack().keys(keys)(stackData);
+
+    for (let i = 0; i < stack.length; i += 1) {
+      for (let j = 0; j < stack[0].length; j += 1) {
+        stack[i][j] = {
+          key: stack[i][j].data.key,
+          value: stack[i][j].data.value,
+          stack: { start: stack[i][j][0], end: stack[i][j][1] },
+        };
+      }
+    }
 
     g.append('g')
     .selectAll('g')
@@ -236,9 +249,9 @@ class Bar extends Visual {
     .data(d => d)
     .enter()
     .append('rect')
-    .attr('x', d => x(d.data.key))
-    .attr('y', d => y(d[1]))
-    .attr('height', d => y(d[0]) - y(d[1]))
+    .attr('x', d => x(d.key))
+    .attr('y', d => y(d.stack.end))
+    .attr('height', d => y(d.stack.start) - y(d.stack.end))
     .attr('width', x.bandwidth());
 
     const gbox = g.node().getBBox();

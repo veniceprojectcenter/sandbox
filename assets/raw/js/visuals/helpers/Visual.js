@@ -130,7 +130,8 @@ class Visual {
   /**
    * Filters data with null, undefined, and blank key attributes
    *
-   * @param data Data to filter
+   * @param {Object[]} data Data to filter
+   * @return {Object[]} Filtered data
    */
   static hideEmpty(data) {
     return data.filter(d => d.key !== null &&
@@ -320,6 +321,8 @@ class Visual {
     controlsContainer.appendChild(accordionBody2);
     controlsContainer.appendChild(accordion3);
     controlsContainer.appendChild(accordionBody3);
+
+    this.renderBasicControls();
   }
 
   /**
@@ -654,6 +657,12 @@ class Visual {
         this.attributes.font_size = `${value}`;
         this.render();
       }, this.attributes.font_size);
+
+    generalEditor.createCheckBox('hide-empty', 'Hide Empty Category', this.attributes.hide_empty,
+      (e) => {
+        this.attributes.hide_empty = e.currentTarget.checked;
+        this.render();
+      });
 
     // Populate Color Settings
     colorEditor.createColorField('font-color', 'Font Color', this.attributes.font_color,

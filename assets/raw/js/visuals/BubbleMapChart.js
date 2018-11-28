@@ -124,8 +124,6 @@ class BubbleMapChart extends Visual {
     const colorEditor = new EditorGenerator(document.getElementById('color-accordion-body'));
     const miscEditor = new EditorGenerator(document.getElementById('misc-accordion-body'));
 
-    this.renderBasicControls();
-
     const columns = (Object.keys(this.getNumericData()[0]));
     const categories = [];
     for (let i = 0; i < columns.length; i += 1) {

@@ -43,8 +43,6 @@ class Donut extends Visual {
     const colorEditor = new EditorGenerator(document.getElementById('color-accordion-body'));
     const miscEditor = new EditorGenerator(document.getElementById('misc-accordion-body'));
 
-    this.renderBasicControls();
-
     /*
     const cats = [];
     let catsRaw = Object.keys(this.getCategoricalData(50)[0]);
@@ -143,11 +141,6 @@ class Donut extends Visual {
         this.attributes.label_mode = $(e.currentTarget).val();
         this.render();
       });
-
-    generalEditor.createCheckBox('bubble-hideempty', 'Hide Empty Category', this.attributes.hide_empty, (e) => {
-      this.attributes.hide_empty = e.currentTarget.checked;
-      this.render();
-    });
 
     const dogs = [
       { value: 'below', text: 'Below' },
