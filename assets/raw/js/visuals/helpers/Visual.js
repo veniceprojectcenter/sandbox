@@ -208,26 +208,56 @@ class Visual {
 
     /***** Set items *****/
     // Group the data
-    let data = [];
+    this.structureData();
+
+  }
+
+
+  structureData() {
+    let dataRaw = {};
+    this.attributes.items = {};
     if (this.attributes.group_by) {
       if (!this.attributes.group_by_stack || this.attributes.group_by_stack === 'No Column') {
         // Single grouping
-        data = Visual.groupBy(this.attributes.group_by, this.data);
+        dataRaw = Visual.groupBy(this.attributes.group_by, this.data);
       } else {
         // Multiple grouping
-        data = Visual.groupByMultiple([this.attributes.group_by, this.attributes.group_by_stack],
+        dataRaw = Visual.groupByMultiple([this.attributes.group_by, this.attributes.group_by_stack],
           this.data);
       }
     }
-    console.log('newData', data);
-
-    // Organize the data into {item: {weight, size, color, subitems: {weight, color, size}}
+    // Organize the data into {item: {weight, value, color, subitems: {weight, color, value}}
     //New??
+    const cats = Object.keys(dataRaw);
+    if (this.attributes.group_by_stack !== 'No Column') {
+      let felines = [];
+      let pussy = 0;
+      for (let i = 0; i < cats.length; i += 1) {
+        felines = Object.keys(dataRaw[cats[i]]);
+        this.attributes.items[cats[i]].subitems = {};
+        for (let j = 0; j < felines.length; j += 1) {
+          pussy += dataRaw[cats[i]][felines[j]].length;
+          this.attributes.items[cats[i]].subitems[felines[j]] = dataRaw[cats[i]][felines[j]];
+        }
+        this.attributes.items[cats[i]] = {
+          key: cats[i],
+          value: pussy,
+        };
+      }
+    } else {
+      for (let i = 0; i < cats.length; i += 1) {
+        this.attributes.items[cats[i]] = {
+          key: cats[i],
+          value: dataRaw[cats[i]].length,
+          subitems: undefined,
+        };
+      }
+    }
+    console.log(this.attributes.items);
 
     // Basic filtering of the data
     //Sort of exists
   }
-
   /**
    * Abstract method for rendering controls for the desired visuals, used to render the accordion
    */
@@ -666,6 +696,7 @@ class Visual {
     generalEditor.createSelectBox('column-select', 'Select data to display', dataCats, this.attributes.group_by,
       (e) => {
         this.attributes.group_by = $(e.currentTarget).val();
+        this.structureData();
         this.attributes.items = {};
         this.render();
       });
