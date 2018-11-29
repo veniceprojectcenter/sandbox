@@ -208,14 +208,18 @@ class Visual {
 
     /***** Set items *****/
     // Group the data
-    let data = {};
-    if (!this.attributes.group_by_stack || this.attributes.group_by_stack === 'No Column') {
-      //Single grouping
-      //Basically Visual.groupBy()
-    } else {
-      //Multiple grouping
-      //Basically Visual.groupByMultiple
+    let data = [];
+    if (this.attributes.group_by) {
+      if (!this.attributes.group_by_stack || this.attributes.group_by_stack === 'No Column') {
+        // Single grouping
+        data = Visual.groupBy(this.attributes.group_by, this.data);
+      } else {
+        // Multiple grouping
+        data = Visual.groupByMultiple([this.attributes.group_by, this.attributes.group_by_stack],
+          this.data);
+      }
     }
+    console.log('newData', data);
 
     // Organize the data into {item: {weight, size, color, subitems: {weight, color, size}}
     //New??
