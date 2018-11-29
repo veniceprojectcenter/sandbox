@@ -178,8 +178,8 @@ class Visual {
       throw new Error('Visual is an abstract class and cannot be instantiated');
     }
     this.applyDefaultAttributes({
-      width: 500,
-      height: 500,
+      width: document.getElementById(Visual.DEFAULT_RENDER_ID).clientWidth,
+      height: document.getElementById(Visual.DEFAULT_RENDER_ID).clientWidth,
       dontDefineDimensions: true,
       font_size: 25,
       hide_empty: true,
@@ -209,7 +209,7 @@ class Visual {
     /***** Set items *****/
     // Group the data
     let data = {};
-    if (!group_by_stack || group_by_stack === 'No Column') {
+    if (!this.attributes.group_by_stack || this.attributes.group_by_stack === 'No Column') {
       //Single grouping
       //Basically Visual.groupBy()
     } else {
