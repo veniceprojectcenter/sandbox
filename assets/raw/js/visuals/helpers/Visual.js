@@ -222,7 +222,7 @@ class Visual {
 
   }
 
-
+// structures the data
   structureData() {
     let dataRaw = {};
     this.attributes.items = {};
