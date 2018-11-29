@@ -117,12 +117,12 @@ class Bar extends Visual {
     // Assemble appropriate data
     let keys = [];
     let stackData = [];
+    let dataSizes = [];
     if (this.attributes.group_by_stack !== 'No Column') {
       const cats = [this.attributes.group_by, this.attributes.group_by_stack];
       const multiLevelData = Visual.groupByMultiple(cats, renderData);
       const innerLevelData = Object.values(multiLevelData);
-      const dataMapFunction = d => Object.values(d).reduce((a, b) => a.concat(b)).length;
-      const dataSizes = innerLevelData.map(dataMapFunction);
+      dataSizes = innerLevelData.map(d => Object.values(d).reduce((a, b) => a.concat(b)).length);
 
       Object.keys(multiLevelData).forEach((k) => {
         keys = keys.concat(Object.keys(multiLevelData[k]));
@@ -140,13 +140,11 @@ class Bar extends Visual {
         tempObj.key = k;
         stackData.push(tempObj);
       });
-
-      y.domain([0, d3.max(dataSizes)]);
     } else {
       const cats = this.attributes.group_by;
       const data = Visual.groupBy(cats, renderData);
       const innerData = Object.values(data);
-      const dataSizes = innerData.map(d => d.length);
+      dataSizes = innerData.map(d => d.length);
 
       keys = ['value'];
       Object.keys(data).forEach((k) => {
@@ -154,7 +152,6 @@ class Bar extends Visual {
       });
 
       // TODO: this does not account for filtering empty
-      y.domain([0, d3.max(dataSizes)]);
     }
 
     if (this.attributes.hide_empty) {
@@ -166,6 +163,7 @@ class Bar extends Visual {
 
     stackData = stackData.sort((a, b) => d3.ascending(a.key, b.key));
     x.domain(stackData.map(a => a.key));
+    y.domain([0, d3.max(dataSizes)]);
 
     // Render the key
     let lbox = {};
@@ -201,6 +199,7 @@ class Bar extends Visual {
       };
     }
 
+    // Axes
     y.rangeRound([height, 0]);
 
     g.append('g')
