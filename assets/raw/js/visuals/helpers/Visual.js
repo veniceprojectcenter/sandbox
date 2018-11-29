@@ -902,8 +902,8 @@ class Visual {
     const textArray = [];
     const heightofTXT = this.lengthinPX('W')[1];
     for (let i = 0; i < data.length; i += 1) {
-      if ((this.lengthinPX(data[i].data.key)[0] + (heightofTXT * 1.35)) >= document.getElementById('key').clientWidth) {
-        const tempString = data[i].data.key.split(' ');
+      if ((this.lengthinPX(data[i])[0] + (heightofTXT * 1.35)) >= document.getElementById('key').clientWidth) {
+        const tempString = data[i].split(' ');
         let tempString2ElectricBoogaloo = `${tempString[0]} `;
         const tempString3ReturnoftheArray = [];
         for (let j = 1; j < tempString.length; j += 1) {
@@ -923,7 +923,7 @@ class Visual {
           textArray.push(tempString3ReturnoftheArray[j]);
         }
       } else {
-        textArray.push(data[i].data.key);
+        textArray.push(data[i]);
       }
     }
     return textArray;
@@ -1034,9 +1034,9 @@ class Visual {
               colorIter1 += 1;
               return '#000000';
             }
-            if (textArray[colorIter1] !== data[colorIter2].data.key) {
-              if ((data[colorIter2].data.key.replace(/^\s+|\s+$/g, '')).startsWith((textArray[colorIter1]).replace(/^\s+|\s+$/g, ''))) {
-                tempString = data[colorIter2].data.key;
+            if (textArray[colorIter1] !== data[colorIter2]) {
+              if ((data[colorIter2].replace(/^\s+|\s+$/g, '')).startsWith((textArray[colorIter1]).replace(/^\s+|\s+$/g, ''))) {
+                tempString = data[colorIter2];
                 colorIter1 += 1;
                 colorIter2 += 1;
                 return this.attributes.items[tempString].color;
@@ -1049,6 +1049,7 @@ class Visual {
             colorIter2 += 1;
             return this.attributes.items[tempString].color;
           }
+          console.log(textArray[textIterator]);
           return this.attributes.items[(textArray[textIterator]).trim()].color;
         });
 

@@ -177,6 +177,7 @@ class BubbleChart extends Visual {
       .attr('transform', d => `translate(${d.x},${d.y})scale(1)`);
     }
 
+    //this.renderKey(root.children.map(a => a.key), 'below');
 
     if (this.attributes.label_mode === 'hover') {
       text.style('display', 'none');

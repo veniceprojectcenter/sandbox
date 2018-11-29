@@ -234,7 +234,7 @@ class Donut extends Visual {
       section.attr('d', arc);
     }
 
-    this.renderKey(pie(data), this.attributes.show_legend);
+    this.renderKey(data.map(a => a.key), this.attributes.show_legend);
 
     if (this.attributes.label_mode === 'hover') {
       this.hoverTextDisplay(data, svg, section);
