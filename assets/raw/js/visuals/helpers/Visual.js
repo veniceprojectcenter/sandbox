@@ -198,7 +198,30 @@ class Visual {
       description: '',
       category_order: '',
       font_color: '#FFFFFF',
+      aspect_ratio: 1.5,
+      x_font_rotation: 45,
+      x_font_x_offset: 0,
+      x_font_y_offset: 0,
+      group_by: null,
+      group_by_stack: 'No Column',
     });
+
+    /***** Set items *****/
+    // Group the data
+    let data = {};
+    if (!group_by_stack || group_by_stack === 'No Column') {
+      //Single grouping
+      //Basically Visual.groupBy()
+    } else {
+      //Multiple grouping
+      //Basically Visual.groupByMultiple
+    }
+
+    // Organize the data into {item: {weight, size, color, subitems: {weight, color, size}}
+    //New??
+
+    // Basic filtering of the data
+    //Sort of exists
   }
 
   /**

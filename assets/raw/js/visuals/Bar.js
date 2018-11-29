@@ -9,29 +9,6 @@ class Bar extends Visual {
    */
   onLoadData() {
     super.onLoadData();
-    this.applyDefaultAttributes({
-      aspect_ratio: 1.5,
-      font_size: '8',
-      x_font_rotation: 45,
-      x_font_x_offset: 0,
-      x_font_y_offset: 0,
-      color: {
-        mode: 'list',
-        colorspace: 'hcl',
-        list: [
-          0, 45, 90, 135, 180, 225, 270, 315,
-          120, 165, 210, 255, 300, 345, 30, 75,
-          240, 285, 330, 15, 60, 105, 150, 195,
-        ],
-        range: [0, 359],
-      },
-      hide_empty: '',
-      category_order: '',
-      group_by: null,
-      group_by_stack: 'No Column',
-      title: '',
-      description: '',
-    });
   }
 
   /**
