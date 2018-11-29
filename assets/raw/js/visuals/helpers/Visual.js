@@ -220,7 +220,6 @@ class Visual {
     /***** Set items *****/
     // Group the data
     this.structureData();
-
   }
 
 // structures the data
@@ -247,6 +246,7 @@ class Visual {
       let count = 0;
       for (let i = 0; i < cats.length; i += 1) {
         this.attributes.items[cats[i]] = {};
+        this.attributes.items[cats[i]].subitems = {};
         innerCats = Object.keys(dataRaw[cats[i]]);
         for (let j = 0; j < innerCats.length; j += 1) {
           count += dataRaw[cats[i]][innerCats[j]].length;
@@ -254,7 +254,6 @@ class Visual {
             value: dataRaw[cats[i]][innerCats[j]].length,
           };
         }
-        this.attributes.items[cats[i]].key = cats[i];
         this.attributes.items[cats[i]].value = count;
       }
     } else {
@@ -267,9 +266,27 @@ class Visual {
     }
     console.log(this.attributes.items);
 
-    // Basic filtering of the data
-    //Sort of exists
+    // Sort data
+    this.sortItems();
+    console.log(this.attributes.items);
   }
+
+  sortItems() {
+    const keys = Object.keys(this.attributes.items);
+    const sortedKeys = keys.sort((a, b) => d3.ascending(a, b));
+    for (let i = 0; i < sortedKeys.length; i += 1) {
+      if (this.attributes.items[sortedKeys[i]].subitems) {
+        const subKeys = Object.keys(this.attributes.items[sortedKeys[i]].subitems);
+        const sortedsubKeys = subKeys.sort((a, b) => d3.ascending(a, b));
+        for (let j = 0; j < sortedsubKeys.length; j += 1) {
+          this.attributes.items[sortedKeys[i]].subitems[sortedsubKeys[j]].weight = j;
+        }
+      }
+      this.attributes.items[sortedKeys[i]].weight = i;
+    }
+  }
+
+
   /**
    * Abstract method for rendering controls for the desired visuals, used to render the accordion
    */
