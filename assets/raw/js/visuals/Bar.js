@@ -8,6 +8,7 @@ class Bar extends Visual {
    * Sets default attributes after data is loaded
    */
   onLoadData() {
+    this.attributes.can_stack = true;
     super.onLoadData();
   }
 

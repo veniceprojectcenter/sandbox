@@ -201,19 +201,20 @@ class Visual {
         start_color: '#CC6633',
         end_color: '#333333',
       },
+      font_color: '#FFFFFF',
       items: {}, // Contains objects that specify: key: {weight, color} where
                  // a weight of 0 means first on the donut chart
       label_mode: 'hover',
       title: '',
       description: '',
       category_order: '',
-      font_color: '#FFFFFF',
       aspect_ratio: 1.5,
+      group_by: null,
+      group_by_stack: 'No Column',
+      can_stack: false,
       x_font_rotation: 45,
       x_font_x_offset: 0,
       x_font_y_offset: 0,
-      group_by: null,
-      group_by_stack: 'No Column',
     });
 
     /***** Set items *****/
@@ -227,7 +228,8 @@ class Visual {
     let dataRaw = {};
     this.attributes.items = {};
     if (this.attributes.group_by) {
-      if (!this.attributes.group_by_stack || this.attributes.group_by_stack === 'No Column') {
+      if (!this.attributes.can_stack || !this.attributes.group_by_stack ||
+        this.attributes.group_by_stack === 'No Column') {
         // Single grouping
         dataRaw = Visual.groupBy(this.attributes.group_by, this.data);
       } else {
@@ -236,28 +238,28 @@ class Visual {
           this.data);
       }
     }
+
     // Organize the data into {item: {weight, value, color, subitems: {weight, color, value}}
-    //New??
     const cats = Object.keys(dataRaw);
-    if (this.attributes.group_by_stack !== 'No Column') {
-      let felines = [];
-      let pussy = 0;
+    if (this.attributes.can_stack && this.attributes.group_by_stack &&
+      this.attributes.group_by_stack !== 'No Column') {
+      let innerCats = [];
+      let count = 0;
       for (let i = 0; i < cats.length; i += 1) {
-        felines = Object.keys(dataRaw[cats[i]]);
-        this.attributes.items[cats[i]].subitems = {};
-        for (let j = 0; j < felines.length; j += 1) {
-          pussy += dataRaw[cats[i]][felines[j]].length;
-          this.attributes.items[cats[i]].subitems[felines[j]] = dataRaw[cats[i]][felines[j]];
+        this.attributes.items[cats[i]] = {};
+        innerCats = Object.keys(dataRaw[cats[i]]);
+        for (let j = 0; j < innerCats.length; j += 1) {
+          count += dataRaw[cats[i]][innerCats[j]].length;
+          this.attributes.items[cats[i]].subitems[innerCats[j]] = {
+            value: dataRaw[cats[i]][innerCats[j]].length,
+          };
         }
-        this.attributes.items[cats[i]] = {
-          key: cats[i],
-          value: pussy,
-        };
+        this.attributes.items[cats[i]].key = cats[i];
+        this.attributes.items[cats[i]].value = count;
       }
     } else {
       for (let i = 0; i < cats.length; i += 1) {
         this.attributes.items[cats[i]] = {
-          key: cats[i],
           value: dataRaw[cats[i]].length,
           subitems: undefined,
         };

@@ -18,6 +18,7 @@ class BubbleChart extends Visual {
    * Sets default attributes after data is loaded
    */
   onLoadData() {
+    this.attributes.can_stack = false;
     super.onLoadData();
   }
 

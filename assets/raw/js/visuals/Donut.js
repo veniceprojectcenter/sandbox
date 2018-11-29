@@ -16,6 +16,7 @@ class Donut extends Visual {
    * Sets default attributes after data is loaded
    */
   onLoadData() {
+    this.attributes.can_stack = false;
     this.orderedGroups = null;
     this.changedBins = false;
     super.onLoadData();

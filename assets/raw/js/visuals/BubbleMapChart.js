@@ -18,6 +18,8 @@ class BubbleMapChart extends Visual {
    * Sets default attributes after data is loaded
    */
   onLoadData() {
+    this.attributes.can_stack = false;
+
     this.applyDefaultAttributes({
       title: '',
       infoCols: [], // selected columns for infowindow
