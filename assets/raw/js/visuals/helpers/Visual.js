@@ -134,12 +134,22 @@ class Visual {
    * @return {Object[]} Filtered data
    */
   static hideEmpty(data) {
-    return data.filter(d => d.key !== null &&
+    const emptyFilter = d => d.key !== null &&
       d.key !== undefined &&
       d.key !== '' &&
       (!String(d.key) ||
         (String(d.key).toLowerCase() !== 'null' &&
-          String(d.key).toLowerCase() !== 'undefined')));
+          String(d.key).toLowerCase() !== 'undefined'));
+
+    const newData = data.slice();
+    return newData.filter(emptyFilter).map((item) => {
+      if (!item.subitems) {
+        return item;
+      }
+      const newItem = item;
+      newItem.subitems = newItem.subitems.filter(emptyFilter);
+      return newItem;
+    });
   }
 
   /**
