@@ -168,7 +168,6 @@ class Bar extends Visual {
     x.domain(stackData.map(a => a.key));
 
     // Render the key
-    console.log(keys);
     //this.renderKey(keys, 'below');
     let lbox = {};
     if (this.attributes.group_by_stack !== 'No Column') {
@@ -202,7 +201,6 @@ class Bar extends Visual {
         x: 0, y: 0, width: 0, height: 0,
       };
     }
-
 
     y.rangeRound([height, 0]);
 
