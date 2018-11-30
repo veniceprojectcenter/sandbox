@@ -37,6 +37,7 @@ class Bar extends Visual {
     generalEditor.createSelectBox('bar-column-stack', 'Select stacked column', cats,
       this.attributes.group_by_stack, (e) => {
         this.attributes.group_by_stack = $(e.currentTarget).val();
+        this.structureData();
         this.render();
       }, '', 'Select a Property', 'column-select');
 

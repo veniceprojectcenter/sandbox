@@ -222,7 +222,9 @@ class Visual {
     this.structureData();
   }
 
-// structures the data
+  /**
+   * Uses defined attributes and this.data to populate this.attributes.items with relevant stats
+   */
   structureData() {
     let dataRaw = {};
     this.attributes.items = {};
@@ -264,13 +266,39 @@ class Visual {
         };
       }
     }
-    console.log(this.attributes.items);
 
     // Sort data
     this.sortItems();
-    console.log(this.attributes.items);
+
+    // Add color properties
+    this.colorItemsByPalette();
   }
 
+  /**
+   * Uses start_color and end_color to add colors to this.attributes.items. If there are subitems,
+   * gives them colors as well. (NOTE: If there are subitems, the outer item colors are invalid
+   * and should be ignored)
+   */
+  colorItemsByPalette() {
+    const keys = Object.keys(this.attributes.items);
+    for (let i = 0; i < keys.length; i += 1) {
+      if (this.attributes.items[keys[i]].subitems) {
+        const subKeys = Object.keys(this.attributes.items[keys[i]].subitems);
+        for (let j = 0; j < subKeys.length; j += 1) {
+          this.attributes.items[keys[i]].subitems[subKeys[j]].color = ColorHelper.gradientValue(
+            j / (subKeys.length - 1),
+            this.attributes.color.start_color,
+            this.attributes.color.end_color);
+        }
+      }
+      this.attributes.items[keys[i]].color = ColorHelper.gradientValue(i / (keys.length - 1),
+        this.attributes.color.start_color, this.attributes.color.end_color);
+    }
+  }
+
+  /**
+   * Gives weight attributes to the objects in this.attriutes.items, as well as to the subitems
+   */
   sortItems() {
     const keys = Object.keys(this.attributes.items);
     const sortedKeys = keys.sort((a, b) => d3.ascending(a, b));
@@ -726,7 +754,6 @@ class Visual {
       (e) => {
         this.attributes.group_by = $(e.currentTarget).val();
         this.structureData();
-        this.attributes.items = {};
         this.render();
       });
 
