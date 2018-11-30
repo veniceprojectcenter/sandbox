@@ -275,9 +275,9 @@ class Visual {
   }
 
   /**
-   * Uses start_color and end_color to add colors to this.attributes.items. If there are subitems,
-   * gives them colors as well. (NOTE: If there are subitems, the outer item colors are invalid
-   * and should be ignored)
+   * Uses start_color and end_color to add colors to this.attributes.items based on the assigned
+   * weight attribute. If there are subitems, gives them colors as well.
+   * (NOTE: If there are subitems, the outer item colors are invali and should be ignored)
    */
   colorItemsByPalette() {
     const keys = Object.keys(this.attributes.items);
@@ -286,12 +286,13 @@ class Visual {
         const subKeys = Object.keys(this.attributes.items[keys[i]].subitems);
         for (let j = 0; j < subKeys.length; j += 1) {
           this.attributes.items[keys[i]].subitems[subKeys[j]].color = ColorHelper.gradientValue(
-            j / (subKeys.length - 1),
+            this.attributes.items[keys[i]].subitems[subKeys[i]].weight / (subKeys.length - 1),
             this.attributes.color.start_color,
             this.attributes.color.end_color);
         }
       }
-      this.attributes.items[keys[i]].color = ColorHelper.gradientValue(i / (keys.length - 1),
+      this.attributes.items[keys[i]].color = ColorHelper.gradientValue(
+        this.attributes.items[keys[i]].weight / (keys.length - 1),
         this.attributes.color.start_color, this.attributes.color.end_color);
     }
   }
@@ -884,24 +885,6 @@ class Visual {
     }
   }
 
-  /**
-   * simple color helper, requires an arrow function with (d,i) to use
-   * @param data dataset
-   * @param d arrow function parameter
-   * @param i arrow function parameter
-   * @returns {*} color
-   */
-  colorHelper(data, d, i) {
-    if (this.attributes.color.mode === 'palette' || this.attributes.items[d.data.key] === undefined) {
-      this.attributes.items[d.data.key] = {
-        weight: i,
-        color: ColorHelper.gradientValue(d.index / (data.length - 1),
-          this.attributes.color.start_color, this.attributes.color.end_color),
-      };
-    }
-    return this.attributes.items[d.data.key].color;
-  }
-
   hoverTextHelper(input) {
     const tempString3ReturnoftheArray = [];
     if (this.lengthinPX(input)[0] >= (document.getElementById('visual').clientWidth * 0.4)) {
@@ -1163,7 +1146,6 @@ class Visual {
             colorIter2 += 1;
             return this.attributes.items[tempString].color;
           }
-          console.log(textArray[textIterator]);
           return this.attributes.items[(textArray[textIterator]).trim()].color;
         });
 

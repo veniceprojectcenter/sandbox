@@ -166,6 +166,7 @@ class Donut extends Visual {
     // Empty the container, then place the SVG in there
     document.getElementById('visual').style.height = `${document.getElementById('visual').clientWidth}`;
 
+    /*
     let data = null;
     this.renderData = JSON.parse(JSON.stringify(this.data));
 
@@ -186,6 +187,8 @@ class Donut extends Visual {
     if (this.attributes.hide_empty) {
       data = Visual.hideEmpty(data);
     }
+    */
+
     const width = document.getElementById('visual').clientWidth;
     const height = width;
     const radius = width / 2;
@@ -202,6 +205,15 @@ class Donut extends Visual {
       .style('width', '100%')
       .style('height', '100%');
 
+    // Flatten the data
+    const keys = Object.keys(this.attributes.items);
+    let data = keys.map((item) => {
+      return { key: item,
+        value: this.attributes.items[item].value,
+        weight: this.attributes.items[item].weight,
+        color: this.attributes.items[item].color,
+      };
+    });
     data = this.sortData(data);
 
     const pie = d3.pie()
@@ -224,7 +236,7 @@ class Donut extends Visual {
       .attr('class', 'arc ');
 
     const section = g.append('path')
-      .style('fill', (d, i) => this.colorHelper(data, d, i));
+      .style('fill', d => this.attributes.items[d.data.key].color);
 
     if (this.useTransitions) {
       section.transition()
