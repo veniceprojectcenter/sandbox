@@ -72,13 +72,6 @@ class Bar extends Visual {
       return;
     }
 
-    let renderData = JSON.parse(JSON.stringify(this.data));
-
-    if (this.isNumeric(this.attributes.group_by)) {
-      renderData = this.makeBin(this.attributes.group_by, Number(this.attributes.binSize),
-        Number(this.attributes.binStart));
-    }
-
     const svg = d3.select(`#${this.renderID}`).append('svg')
     .attr('class', 'bar');
 
@@ -97,27 +90,23 @@ class Bar extends Visual {
     let keys = [];
     let stackData = [];
     if (this.attributes.group_by_stack !== 'No Column') {
-      const cats = [this.attributes.group_by, this.attributes.group_by_stack];
-      const multiLevelData = Visual.groupByMultiple(cats, renderData);
-
       keys = this.getSubkeys();
 
-      Object.keys(multiLevelData).forEach((k) => {
-        const tempObj = {};
-        keys.forEach((key) => {
-          if (typeof multiLevelData[k][key] !== 'undefined') {
-            tempObj[key] = multiLevelData[k][key].length;
+      stackData = [];
+      const outerKeys = Object.keys(this.attributes.items);
+      for (let i = 0; i < outerKeys.length; i += 1) {
+        stackData.push({ key: outerKeys[i] });
+        for (let j = 0; j < keys.length; j += 1) {
+          if (this.attributes.items[outerKeys[i]].subitems &&
+            this.attributes.items[outerKeys[i]].subitems[keys[j]]) {
+            stackData[i][keys[j]] = this.attributes.items[outerKeys[i]].subitems[keys[j]].value;
           } else {
-            tempObj[key] = 0;
+            stackData[i][keys[j]] = 0;
           }
-        });
-        tempObj.key = k;
-        stackData.push(tempObj);
-      });
+        }
+      }
 
       stackData = stackData.sort((a, b) => d3.ascending(a.key, b.key));
-      console.log(stackData);
-      console.log(this.attributes.items);
     } else {
       stackData = this.flattenItems();
       keys = ['value'];
@@ -168,7 +157,7 @@ class Bar extends Visual {
 
     // Set graph dimensions
     x.domain(stackData.map(a => a.key));
-    y.domain([0, d3.max(stack[stack.length - 1].map((item) => item.stack.end))]);
+    y.domain([0, d3.max(stack[stack.length - 1].map(item => item.stack.end))]);
 
     // Render the key
     //this.renderKey(keys, 'below');
