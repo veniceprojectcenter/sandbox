@@ -177,16 +177,14 @@ class Donut extends Visual {
     }
     */
 
-    const viewWidth = document.getElementById('visual').clientWidth;
-    const viewHeight = document.getElementById('visual').clientHeight;
-    let height = viewHeight;
-    let width = viewWidth;
+    const width = document.getElementById('visual').clientWidth;
+    const height = document.getElementById('visual').clientHeight;
+    let radius = 0;
     if (width < height) {
-      height = width;
+      radius = width / 2;
     } else {
-      width = height;
+      radius = height / 2;
     }
-    const radius = width / 2;
 
     const arc = d3.arc()
       .outerRadius(radius - 10)
@@ -194,11 +192,11 @@ class Donut extends Visual {
 
     const svg = d3.select(`#${this.renderID}`).append('svg')
       .attr('class', 'donut')
-      .attr('viewBox', `0 0 ${viewWidth} ${viewHeight}`)
-      .style('width', `${viewWidth}`)
-      .style('height', `${viewHeight}`)
+      .attr('viewBox', `0 0 ${width} ${height}`)
+      .style('width', `${width}`)
+      .style('height', `${height}`)
       .append('g')
-      .attr('transform', `translate(${viewWidth / 2},${viewHeight / 2})`)
+      .attr('transform', `translate(${width / 2},${height / 2})`)
       .style('width', '100%')
       .style('height', '100%');
 
