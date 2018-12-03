@@ -152,6 +152,31 @@ class Visual {
     });
   }
 
+  hideEmptyRewrite() {
+    const items = this.attributes.items;
+    const keys = Object.keys(this.attributes.items);
+    const newItems = {};
+    for (let i = 0; i < keys.length; i += 1) {
+      if (keys[i] !== undefined && keys[i] !== '' &&
+      String(keys[i]).toLowerCase() !== 'null' && String(keys[i]).toLowerCase() !== 'undefined') {
+        newItems[keys[i]] = items[keys[i]];
+        if (items[keys[i]].subitems !== undefined) {
+          const subKeys = Object.keys(items[keys[i]].subitems);
+          for (let j = 0; j < subKeys; j += 1) {
+            if (subKeys[j] !== undefined && subKeys[j] !== '' &&
+            String(subKeys[j])
+              .toLowerCase() !== 'null' && String(subKeys[j])
+              .toLowerCase() !== 'undefined') {
+              newItems[keys[i]].subitems = items[i].subitems[j];
+            }
+          }
+        }
+      }
+    }
+    console.log(newItems);
+    // this.attributes.items = newItems;
+  }
+
   /**
    * Sorts the data based on weight values if there are any, or ascending order otherwise
    *
@@ -220,7 +245,7 @@ class Visual {
       x_font_y_offset: 0,
     });
 
-    /***** Set items *****/
+    /** *** Set items **** */
     // Group the data
     this.structureData();
   }
@@ -269,6 +294,7 @@ class Visual {
         };
       }
     }
+
 
     // Sort data
     this.sortItems();
@@ -335,14 +361,12 @@ class Visual {
     if (!keys || keys.length === 0) {
       return [];
     }
-    return keys.map((item) => {
-      return { key: item,
-        value: this.attributes.items[item].value,
-        weight: this.attributes.items[item].weight,
-        color: this.attributes.items[item].color,
-        subitems: this.attributes.items[item].subitems,
-      };
-    });
+    return keys.map(item => ({ key: item,
+      value: this.attributes.items[item].value,
+      weight: this.attributes.items[item].weight,
+      color: this.attributes.items[item].color,
+      subitems: this.attributes.items[item].subitems,
+    }));
   }
 
   /**
@@ -362,9 +386,7 @@ class Visual {
       }
     }
     const temp = Array.from(subSet);
-    return this.sortData(temp.map((a) => {
-      return { key: a };
-    })).map(a => a.key);
+    return this.sortData(temp.map(a => ({ key: a }))).map(a => a.key);
   }
 
 
@@ -809,7 +831,8 @@ class Visual {
       (e) => {
         this.attributes.group_by = $(e.currentTarget).val();
         this.structureData();
-        this.renderKey(Object.keys(this.attributes.items));
+        this.hideEmptyRewrite();
+        this.renderKey();
         this.render();
       });
 
@@ -832,6 +855,7 @@ class Visual {
     generalEditor.createCheckBox('hide-empty', 'Hide Empty Category', this.attributes.hide_empty,
       (e) => {
         this.attributes.hide_empty = e.currentTarget.checked;
+        console.log(' check out that ass');
         this.render();
       });
 
@@ -843,7 +867,7 @@ class Visual {
       { value: 'none', text: 'None' }];
     generalEditor.createSelectBox('drop-showlegend', 'Show Legend', dogs, this.attributes.legend_mode, (e) => {
       this.attributes.legend_mode = $(e.currentTarget).val();
-      this.renderKey(Object.keys(this.attributes.items));
+      this.renderKey();
       this.render();
     });
 

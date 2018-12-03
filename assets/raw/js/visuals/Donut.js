@@ -186,8 +186,6 @@ class Donut extends Visual {
       radius = height / 2;
     }
 
-    console.log(radius);
-
     const arc = d3.arc()
       .outerRadius(radius - 10)
       .innerRadius((radius - 10) * 0.6);
