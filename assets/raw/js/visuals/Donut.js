@@ -153,7 +153,6 @@ class Donut extends Visual {
     }
 
     // Empty the container, then place the SVG in there
-    document.getElementById('visual').style.height = `${document.getElementById('visual').clientWidth}`;
 
     /*
     let data = null;
@@ -178,15 +177,13 @@ class Donut extends Visual {
     }
     */
 
-    let width = document.getElementById('visual').clientWidth;
-    let height = document.getElementById('visual').clientHeight;
+    const width = document.getElementById('visual').clientWidth;
+    const height = document.getElementById('visual').clientHeight;
     let radius = 0;
     if (width < height) {
       radius = width / 2;
-      height = width;
     } else {
       radius = height / 2;
-      width = height;
     }
 
     const arc = d3.arc()
@@ -196,6 +193,8 @@ class Donut extends Visual {
     const svg = d3.select(`#${this.renderID}`).append('svg')
       .attr('class', 'donut')
       .attr('viewBox', `0 0 ${width} ${height}`)
+      .style('width', `${width}`)
+      .style('height', `${height}`)
       .append('g')
       .attr('transform', `translate(${width / 2},${height / 2})`)
       .style('width', '100%')

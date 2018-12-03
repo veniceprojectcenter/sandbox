@@ -1136,15 +1136,18 @@ class Visual {
       return;
     }
 
-    const data = Object.keys(this.attributes.items);
-    const textArray = this.keyDataHelper(data);
+    let keyArray = Object.keys(this.attributes.items);
+    const textArray = this.keyDataHelper(keyArray);
     const heightofTXT = this.lengthinPX('W')[1];
-    const subSet = this.getSubkeys();
     let colNum = 0;
     let rowTotal = 0;
     let textIterator = -1;
     let colorIter1 = 0;
     let colorIter2 = 0;
+
+    if (this.attributes.group_by_stack !== 'No Column') {
+      keyArray = this.getSubkeys();
+    }
 
     const svgBox = d3.select('#key')
       .append('svg')
@@ -1192,20 +1195,20 @@ class Visual {
 
     legend.append('rect')
       .attr('x', (heightofTXT / 2))
-      .attr('y', (heightofTXT / 2))
+      .attr('y', (heightofTXT / 4))
       .attr('width', (heightofTXT / 1.6))
       .attr('height', (heightofTXT / 1.6))
       .attr('fill', () => {
         let tempString = '';
         textIterator += 1;
-        if (textArray.length !== data.length) {
-          if (data[colorIter2] === undefined) {
+        if (textArray.length !== keyArray.length) {
+          if (keyArray[colorIter2] === undefined) {
             colorIter1 += 1;
             return '#000000';
           }
-          if (textArray[colorIter1] !== data[colorIter2]) {
-            if ((data[colorIter2].replace(/^\s+|\s+$/g, '')).startsWith((textArray[colorIter1]).replace(/^\s+|\s+$/g, ''))) {
-              tempString = data[colorIter2];
+          if (textArray[colorIter1] !== keyArray[colorIter2]) {
+            if ((keyArray[colorIter2].replace(/^\s+|\s+$/g, '')).startsWith((textArray[colorIter1]).replace(/^\s+|\s+$/g, ''))) {
+              tempString = keyArray[colorIter2];
               colorIter1 += 1;
               colorIter2 += 1;
               if (this.attributes.group_by_stack !== 'No Column') {
@@ -1249,7 +1252,7 @@ class Visual {
 
     legend.append('text')
       .attr('x', (heightofTXT * 1.32))
-      .attr('y', (heightofTXT * 0.85))
+      .attr('y', (heightofTXT * 0.60))
       .attr('dy', '0.32em')
       .style('font-size', `${this.attributes.font_size}pt`)
       .style('fill', `${this.attributes.font_color}`)
