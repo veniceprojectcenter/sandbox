@@ -108,7 +108,9 @@ class BubbleChart extends Visual {
         .attr('viewBox', `0 0 ${svgWidth} ${svgHeight}`);
 
 
-    let counts = this.getGroupedListCounts(this.attributes.group_by);
+    let counts = this.flattenItems();
+    counts = this.sortData(counts);
+
     if (this.attributes.hide_empty) {
       counts = Visual.hideEmpty(counts);
     }

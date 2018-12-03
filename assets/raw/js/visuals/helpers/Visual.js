@@ -217,7 +217,7 @@ class Visual {
       x_font_y_offset: 0,
     });
 
-    /** *** Set items **** */
+    /***** Set items *****/
     // Group the data
     this.structureData();
   }
@@ -314,6 +314,27 @@ class Visual {
       this.attributes.items[sortedKeys[i]].weight = i;
     }
   }
+
+  /**
+   * Returns an array of data objects with value (amount of items in it), weight (sort order), and
+   * color based on this.attributes.items
+   *
+   * @returns {Object[]}
+   */
+  flattenItems() {
+    const keys = Object.keys(this.attributes.items);
+    if (!keys || keys.length === 0) {
+      return [];
+    }
+    return keys.map((item) => {
+      return { key: item,
+        value: this.attributes.items[item].value,
+        weight: this.attributes.items[item].weight,
+        color: this.attributes.items[item].color,
+      };
+    });
+  }
+
 
   /**
    * Abstract method for rendering controls for the desired visuals, used to render the accordion
@@ -680,7 +701,7 @@ class Visual {
     }
     return binData;
   }
-  
+
   /**
   *Takes a colmnName and returns the lowest value in it numerically
   */
