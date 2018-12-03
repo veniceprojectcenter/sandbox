@@ -1072,47 +1072,47 @@ class Visual {
     if (this.attributes.legend_mode === 'below') {
       document.getElementById('key').style.display = 'block';
       document.getElementById('key').innerHTML = '';
-      document.getElementById('key').style.maxWidth = '100%';
-      document.getElementById('key').style.maxHeight = '20%';
+      document.getElementById('key').style.width = '100%';
+      document.getElementById('key').style.height = '15%';
       document.getElementById('visualColumn').style.flexDirection = 'column';
 
       document.getElementById('visual').style.margin = '1% 1% 2% 1%';
-      document.getElementById('visual').style.minWidth = '96%';
-      document.getElementById('visual').style.minHeight = '80%';
+      document.getElementById('visual').style.width = '100%';
+      document.getElementById('visual').style.height = '85%';
     } else if (this.attributes.legend_mode === 'above') {
       document.getElementById('key').style.display = 'block';
       document.getElementById('key').innerHTML = '';
-      document.getElementById('key').style.maxWidth = '100%';
-      document.getElementById('key').style.maxHeight = '20%';
+      document.getElementById('key').style.width = '100%';
+      document.getElementById('key').style.height = '15%';
       document.getElementById('visualColumn').style.flexDirection = 'column-reverse';
 
       document.getElementById('visual').style.margin = '2% 1% 1% 1%';
-      document.getElementById('visual').style.minWidth = '96%';
-      document.getElementById('visual').style.minHeight = '80%';
+      document.getElementById('visual').style.width = '96%';
+      document.getElementById('visual').style.height = '85%';
     } else if (this.attributes.legend_mode === 'left') {
       document.getElementById('key').style.display = 'block';
       document.getElementById('key').innerHTML = '';
-      document.getElementById('key').style.maxWidth = '25%';
-      document.getElementById('key').style.maxHeight = '100%';
+      document.getElementById('key').style.width = '25%';
+      document.getElementById('key').style.height = '95%';
       document.getElementById('visualColumn').style.flexDirection = 'row-reverse';
 
       document.getElementById('visual').style.margin = '1% 1% 2% 1%';
-      document.getElementById('visual').style.minWidth = '71%';
-      document.getElementById('visual').style.minHeight = '100%';
+      document.getElementById('visual').style.width = '71%';
+      document.getElementById('visual').style.height = '100%';
     } else if (this.attributes.legend_mode === 'right') {
       document.getElementById('key').style.display = 'block';
       document.getElementById('key').innerHTML = '';
-      document.getElementById('key').style.maxWidth = '25%';
-      document.getElementById('key').style.maxHeight = '100%';
+      document.getElementById('key').style.width = '25%';
+      document.getElementById('key').style.height = '95%';
       document.getElementById('visualColumn').style.flexDirection = 'row';
 
       document.getElementById('visual').style.margin = '1% 1% 2% 1%';
-      document.getElementById('visual').style.minWidth = '71%';
-      document.getElementById('visual').style.minHeight = '100%';
+      document.getElementById('visual').style.width = '71%';
+      document.getElementById('visual').style.height = '100%';
     } else {
       document.getElementById('key').style.display = 'none';
-      document.getElementById('visual').style.minWidth = '96%';
-      document.getElementById('visual').style.minHeight = '96%';
+      document.getElementById('visual').style.width = '96%';
+      document.getElementById('visual').style.height = '96%';
       document.getElementById('key').style.outline = '';
       document.getElementById('key').innerHTML = '';
       return;

@@ -216,7 +216,7 @@ function createGraphic(dataSet, graphType, attr = null) {
     Data.fetchData(dataSet, null);
     return;
   }
-  document.getElementById('column2').style.height = '93%';
+  document.getElementById('column2').style.height = '91%';
   document.getElementById('column1').style.height = '93%';
   let attributes = attr;
   if (attributes === null) {
