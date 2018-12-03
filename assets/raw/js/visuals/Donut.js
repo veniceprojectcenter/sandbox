@@ -142,17 +142,6 @@ class Donut extends Visual {
         this.attributes.label_mode = $(e.currentTarget).val();
         this.render();
       });
-
-    const dogs = [
-      { value: 'below', text: 'Below' },
-      { value: 'above', text: 'Above' },
-      { value: 'left', text: 'Left' },
-      { value: 'right', text: 'Right' },
-      { value: 'none', text: 'None' }];
-    generalEditor.createSelectBox('drop-showlegend', 'Show Legend', dogs, this.attributes.show_legend, (e) => {
-      this.attributes.show_legend = $(e.currentTarget).val();
-      this.render();
-    });
   }
 
   /**
@@ -189,9 +178,16 @@ class Donut extends Visual {
     }
     */
 
-    const width = document.getElementById('visual').clientWidth;
-    const height = width;
-    const radius = width / 2;
+    let width = document.getElementById('visual').clientWidth;
+    let height = document.getElementById('visual').clientHeight;
+    let radius = 0;
+    if (width < height) {
+      radius = width / 2;
+      height = width;
+    } else {
+      radius = height / 2;
+      width = height;
+    }
 
     const arc = d3.arc()
       .outerRadius(radius - 10)
@@ -246,8 +242,6 @@ class Donut extends Visual {
     } else {
       section.attr('d', arc);
     }
-
-    this.renderKey(data.map(a => a.key), this.attributes.show_legend);
 
     if (this.attributes.label_mode === 'hover') {
       this.hoverTextDisplay(data, svg, section);

@@ -1,8 +1,3 @@
-.body {
-  padding-bottom: 10px;
-  padding-top: 10px;
-}
-
 body {
   background-color: $background;
 }
@@ -12,30 +7,52 @@ body {
   min-height: 1px;
 }
 
+/*
+.majorSelect {
+  display: flex;
+  flex: 0 1 auto;
+  flex-direction: column;
+}
+*/
+
 .row {
   display: flex;
   flex-wrap: wrap;
 }
 
 .controls {
-  //max-height: 100%; //calc(100vh - 125px);
-  overflow-y: visible;
+  display: flex;
+  flex: 0 1 auto;
+  flex-direction: column;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.graphTitle {
+  visibility: hidden;
 }
 
 .visual {
-  //width: 96%;
-  margin: 2% 2% 5% 2%;
+  margin: 1% 1% 2% 1%;
 }
 
 .intro {
   text-align: center;
   font-size: 2em;
+  height: auto;
+  margin: 0 0 0 0;
 }
 
 .visual-title, .visual-description {
   display: inline-block;
   line-height: 1;
   width: 100%;
+}
+
+.key {
+  display: none;
+  overflow-y: auto;
+  overflow-x: hidden;
 }
 
 .visual-title {
@@ -47,8 +64,11 @@ body {
 }
 
 .column1 {
+  display: flex;
   flex: 0 0 23.5%;
-  max-width: 23.5%;
+  width: 23.5%;
+  height: 77%;
+  flex-direction: column;
   padding-left: 1.5%;
   padding-right: 1.5%;
 }
@@ -57,7 +77,8 @@ body {
   display: flex;
   flex: 0 0 73.5%;
   flex-direction: column;
-  max-width: 73.5%;
+  width: 73.5%;
+  height: 77%;
   padding-left: 1.5%;
   padding-right: 1.5%;
 }
@@ -66,7 +87,8 @@ body {
   display: flex;
   flex-direction: column;
   flex: 1 1 auto;
-  max-width: 100%;
+  width: 100%;
+  height: 100%;
   /*
   position: sticky;
   position: -webkit-sticky;

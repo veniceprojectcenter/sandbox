@@ -193,7 +193,7 @@ class Visual {
       dontDefineDimensions: true,
       font_size: 25,
       hide_empty: true,
-      show_legend: 'none',
+      legend_mode: 'none',
       color: {
         mode: 'palette',
         colors: [],
@@ -217,7 +217,7 @@ class Visual {
       x_font_y_offset: 0,
     });
 
-    /***** Set items *****/
+    /** *** Set items **** */
     // Group the data
     this.structureData();
   }
@@ -314,7 +314,6 @@ class Visual {
       this.attributes.items[sortedKeys[i]].weight = i;
     }
   }
-
 
   /**
    * Abstract method for rendering controls for the desired visuals, used to render the accordion
@@ -430,7 +429,7 @@ class Visual {
     accordionBody3.id = 'misc-accordion-body';
     accordionBody3.style.display = 'none';
 
-    controlsContainer.innerHTML = '<h3> Graph Settings';
+    document.getElementById('graphTitle').style.visibility = 'visible';
     controlsContainer.appendChild(accordion1);
     controlsContainer.appendChild(accordionBody1);
     controlsContainer.appendChild(accordion2);
@@ -541,6 +540,7 @@ class Visual {
     }
     return numericData;
   }
+
   /**
   */
   isNumeric(columnName, maxCategories = 25) {
@@ -548,6 +548,7 @@ class Visual {
     return (groupedList.length >= maxCategories
      && !isNaN(this.data[0][columnName]));
   }
+
   /**
   *Filters This.data and returns only categorical data columns
   *Any data attribute with less than  or equal to maxCategories categories are displayed
@@ -679,6 +680,7 @@ class Visual {
     }
     return binData;
   }
+  
   /**
   *Takes a colmnName and returns the lowest value in it numerically
   */
@@ -755,6 +757,7 @@ class Visual {
       (e) => {
         this.attributes.group_by = $(e.currentTarget).val();
         this.structureData();
+        this.renderKey(Object.keys(this.attributes.items));
         this.render();
       });
 
@@ -779,6 +782,18 @@ class Visual {
         this.attributes.hide_empty = e.currentTarget.checked;
         this.render();
       });
+
+    const dogs = [
+      { value: 'below', text: 'Below' },
+      { value: 'above', text: 'Above' },
+      { value: 'left', text: 'Left' },
+      { value: 'right', text: 'Right' },
+      { value: 'none', text: 'None' }];
+    generalEditor.createSelectBox('drop-showlegend', 'Show Legend', dogs, this.attributes.legend_mode, (e) => {
+      this.attributes.legend_mode = $(e.currentTarget).val();
+      this.renderKey(Object.keys(this.attributes.items));
+      this.render();
+    });
 
     // Populate Color Settings
     colorEditor.createColorField('font-color', 'Font Color', this.attributes.font_color,
@@ -1031,48 +1046,51 @@ class Visual {
    * @param data the data
    * @param position //TODO posiiton
    */
-  renderKey(data, position) {
-    if (position === 'below') {
+  renderKey(data) {
+    if (this.attributes.legend_mode === 'below') {
+      document.getElementById('key').style.display = 'block';
       document.getElementById('key').innerHTML = '';
-      document.getElementById('key').style.minWidth = '100%';
-      document.getElementById('key').style.maxWidth = '100%';
+      document.getElementById('key').style.width = '100%';
+      document.getElementById('key').style.height = '20%';
       document.getElementById('visualColumn').style.flexDirection = 'column';
 
-      document.getElementById('visual').style.margin = '1% 1% 5% 1%';
-      document.getElementById('visual').style.minWidth = '96%';
-      document.getElementById('visual').style.maxWidth = '96%';
-      document.getElementById('visual').style.height = `${document.getElementById('visual').clientWidth}`;
-    } else if (position === 'above') {
+      document.getElementById('visual').style.margin = '1% 1% 2% 1%';
+      document.getElementById('visual').style.width = '96%';
+      document.getElementById('visual').style.height = '80%';
+    } else if (this.attributes.legend_mode === 'above') {
+      document.getElementById('key').style.display = 'block';
       document.getElementById('key').innerHTML = '';
-      document.getElementById('key').style.minWidth = '100%';
-      document.getElementById('key').style.maxWidth = '100%';
+      document.getElementById('key').style.width = '100%';
+      document.getElementById('key').style.height = '20%';
       document.getElementById('visualColumn').style.flexDirection = 'column-reverse';
 
-      document.getElementById('visual').style.margin = '5% 1% 1% 1%';
-      document.getElementById('visual').style.minWidth = '96%';
-      document.getElementById('visual').style.maxWidth = '96%';
-      document.getElementById('visual').style.height = `${document.getElementById('visual').clientWidth}`;
-    } else if (position === 'left') {
+      document.getElementById('visual').style.margin = '2% 1% 1% 1%';
+      document.getElementById('visual').style.width = '96%';
+      document.getElementById('visual').style.height = '80%';
+    } else if (this.attributes.legend_mode === 'left') {
+      document.getElementById('key').style.display = 'block';
       document.getElementById('key').innerHTML = '';
-      document.getElementById('key').style.minWidth = '33%';
-      document.getElementById('key').style.maxWidth = '33%';
+      document.getElementById('key').style.width = '25%';
+      document.getElementById('key').style.height = '100%';
       document.getElementById('visualColumn').style.flexDirection = 'row-reverse';
 
-      document.getElementById('visual').style.margin = '1% 1% 5% 1%';
-      document.getElementById('visual').style.minWidth = '66%';
-      document.getElementById('visual').style.maxWidth = '66%';
-      document.getElementById('visual').style.height = `${document.getElementById('visual').clientWidth}`;
-    } else if (position === 'right') {
+      document.getElementById('visual').style.margin = '1% 1% 2% 1%';
+      document.getElementById('visual').style.width = '71%';
+      document.getElementById('visual').style.height = '100%';
+    } else if (this.attributes.legend_mode === 'right') {
+      document.getElementById('key').style.display = 'block';
       document.getElementById('key').innerHTML = '';
-      document.getElementById('key').style.minWidth = '33%';
-      document.getElementById('key').style.maxWidth = '33%';
+      document.getElementById('key').style.width = '25%';
+      document.getElementById('key').style.height = '100%';
       document.getElementById('visualColumn').style.flexDirection = 'row';
 
-      document.getElementById('visual').style.margin = '1% 1% 5% 1%';
-      document.getElementById('visual').style.minWidth = '66%';
-      document.getElementById('visual').style.maxWidth = '66%';
-      document.getElementById('visual').style.height = `${document.getElementById('visual').clientWidth}`;
+      document.getElementById('visual').style.margin = '1% 1% 2% 1%';
+      document.getElementById('visual').style.width = '71%';
+      document.getElementById('visual').style.height = '100%';
     } else {
+      document.getElementById('key').style.display = 'none';
+      document.getElementById('visual').style.width = '96%';
+      document.getElementById('visual').style.height = '100%';
       document.getElementById('key').style.outline = '';
       document.getElementById('key').innerHTML = '';
       return;

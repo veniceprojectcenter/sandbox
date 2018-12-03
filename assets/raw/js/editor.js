@@ -216,6 +216,8 @@ function createGraphic(dataSet, graphType, attr = null) {
     Data.fetchData(dataSet, null);
     return;
   }
+  document.getElementById('column2').style.height = '93%';
+  document.getElementById('column1').style.height = '93%';
   let attributes = attr;
   if (attributes === null) {
     if (activeVisual && activeVisual.attributes) {
@@ -299,6 +301,11 @@ function renderEditor(defaultDS = null, defaultGT = null) {
   majorSelectContainer.className = 'majorSelect';
   majorSelectContainer.id = 'majorSelect';
 
+  const graphSettingsTitle = document.createElement('div');
+  graphSettingsTitle.className = 'graphTitle';
+  graphSettingsTitle.id = 'graphTitle';
+  graphSettingsTitle.innerHTML = '<h3> Graph Settings';
+
   // Used to render the graph options
   const controlsContainer = document.createElement('div');
   controlsContainer.className = 'controls';
@@ -318,6 +325,7 @@ function renderEditor(defaultDS = null, defaultGT = null) {
   rowContainer.appendChild(column2Container);
 
   column1Container.appendChild(majorSelectContainer);
+  column1Container.appendChild(graphSettingsTitle);
   column1Container.appendChild(controlsContainer);
   visualColumn.appendChild(visualContainer);
   visualColumn.appendChild(keyContainer);
