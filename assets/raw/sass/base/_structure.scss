@@ -21,15 +21,14 @@ body {
 }
 
 .controls {
-  display: flex;
-  flex: 0 1 auto;
-  flex-direction: column;
+  display: inline-block;
   overflow-y: auto;
   overflow-x: hidden;
 }
 
 .graphTitle {
   visibility: hidden;
+  margin-top: 0;
 }
 
 .visual {

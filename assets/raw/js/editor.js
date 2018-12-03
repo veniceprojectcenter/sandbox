@@ -304,7 +304,7 @@ function renderEditor(defaultDS = null, defaultGT = null) {
   const graphSettingsTitle = document.createElement('div');
   graphSettingsTitle.className = 'graphTitle';
   graphSettingsTitle.id = 'graphTitle';
-  graphSettingsTitle.innerHTML = '<h3> Graph Settings';
+  graphSettingsTitle.innerHTML = '<h3 style = \'margin-top: 0;\'>Graph Settings</h3>';
 
   // Used to render the graph options
   const controlsContainer = document.createElement('div');

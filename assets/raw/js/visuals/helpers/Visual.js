@@ -459,6 +459,7 @@ class Visual {
     controlsContainer.appendChild(accordionBody3);
 
     this.renderBasicControls();
+    document.getElementById('controls').style.maxHeight = `${document.getElementById('controls').clientHeight}`;
   }
 
   /**
@@ -1067,140 +1068,188 @@ class Visual {
    * @param data the data
    * @param position //TODO posiiton
    */
-  renderKey(data) {
+  renderKey() {
     if (this.attributes.legend_mode === 'below') {
       document.getElementById('key').style.display = 'block';
       document.getElementById('key').innerHTML = '';
-      document.getElementById('key').style.width = '100%';
-      document.getElementById('key').style.height = '20%';
+      document.getElementById('key').style.maxWidth = '100%';
+      document.getElementById('key').style.maxHeight = '20%';
       document.getElementById('visualColumn').style.flexDirection = 'column';
 
       document.getElementById('visual').style.margin = '1% 1% 2% 1%';
-      document.getElementById('visual').style.width = '96%';
-      document.getElementById('visual').style.height = '80%';
+      document.getElementById('visual').style.minWidth = '96%';
+      document.getElementById('visual').style.minHeight = '80%';
     } else if (this.attributes.legend_mode === 'above') {
       document.getElementById('key').style.display = 'block';
       document.getElementById('key').innerHTML = '';
-      document.getElementById('key').style.width = '100%';
-      document.getElementById('key').style.height = '20%';
+      document.getElementById('key').style.maxWidth = '100%';
+      document.getElementById('key').style.maxHeight = '20%';
       document.getElementById('visualColumn').style.flexDirection = 'column-reverse';
 
       document.getElementById('visual').style.margin = '2% 1% 1% 1%';
-      document.getElementById('visual').style.width = '96%';
-      document.getElementById('visual').style.height = '80%';
+      document.getElementById('visual').style.minWidth = '96%';
+      document.getElementById('visual').style.minHeight = '80%';
     } else if (this.attributes.legend_mode === 'left') {
       document.getElementById('key').style.display = 'block';
       document.getElementById('key').innerHTML = '';
-      document.getElementById('key').style.width = '25%';
-      document.getElementById('key').style.height = '100%';
+      document.getElementById('key').style.maxWidth = '25%';
+      document.getElementById('key').style.maxHeight = '100%';
       document.getElementById('visualColumn').style.flexDirection = 'row-reverse';
 
       document.getElementById('visual').style.margin = '1% 1% 2% 1%';
-      document.getElementById('visual').style.width = '71%';
-      document.getElementById('visual').style.height = '100%';
+      document.getElementById('visual').style.minWidth = '71%';
+      document.getElementById('visual').style.minHeight = '100%';
     } else if (this.attributes.legend_mode === 'right') {
       document.getElementById('key').style.display = 'block';
       document.getElementById('key').innerHTML = '';
-      document.getElementById('key').style.width = '25%';
-      document.getElementById('key').style.height = '100%';
+      document.getElementById('key').style.maxWidth = '25%';
+      document.getElementById('key').style.maxHeight = '100%';
       document.getElementById('visualColumn').style.flexDirection = 'row';
 
       document.getElementById('visual').style.margin = '1% 1% 2% 1%';
-      document.getElementById('visual').style.width = '71%';
-      document.getElementById('visual').style.height = '100%';
+      document.getElementById('visual').style.minWidth = '71%';
+      document.getElementById('visual').style.minHeight = '100%';
     } else {
       document.getElementById('key').style.display = 'none';
-      document.getElementById('visual').style.width = '96%';
-      document.getElementById('visual').style.height = '100%';
+      document.getElementById('visual').style.minWidth = '96%';
+      document.getElementById('visual').style.minHeight = '96%';
       document.getElementById('key').style.outline = '';
       document.getElementById('key').innerHTML = '';
       return;
     }
 
+    const data = Object.keys(this.attributes.items);
     const textArray = this.keyDataHelper(data);
     const heightofTXT = this.lengthinPX('W')[1];
+    const subSet = new Set();
     let colNum = 0;
     let rowTotal = 0;
     let textIterator = -1;
     let colorIter1 = 0;
     let colorIter2 = 0;
 
+    if (this.attributes.group_by_stack !== 'No Column') {
+      let subboi = [];
+      for (let i = 0; i < data.length; i += 1) {
+        subboi = Object.keys(this.attributes.items[data[i]]);
+        for (let j = 0; j < subboi.length; j += 1) {
+          subSet.add(this.attributes.items[data[i]].subitems[subboi[j]]);
+        }
+      }
+    }
+
     const svgBox = d3.select('#key')
-        .append('svg')
-        .attr('class', 'keySVG')
-        .attr('id', 'keySVG')
-        .attr('width', `${document.getElementById('key').clientWidth}`);
+      .append('svg')
+      .attr('class', 'keySVG')
+      .attr('id', 'keySVG')
+      .attr('width', `${document.getElementById('key').clientWidth}`);
 
     const legend = d3.select('#key > svg')
-        .append('g')
-        .selectAll('g')
-        .data(textArray)
-        .enter()
-        .append('g')
-        .attr('transform', () => {
-          let x = 0;
-          let y = 0;
-          textIterator += 1;
-          if (((rowTotal + this.lengthinPX(textArray[textIterator])[0] + (heightofTXT * 1.35)) + 10) >= document.getElementById('key').clientWidth) {
-            colNum += 1;
-            y = (colNum * (heightofTXT + 7));
-            x = 0;
-            rowTotal = this.lengthinPX(textArray[textIterator])[0] + (heightofTXT * 1.35);
-          } else {
-            y = (colNum * (heightofTXT + 7));
-            x = rowTotal;
-            rowTotal += this.lengthinPX(textArray[textIterator])[0] + (heightofTXT * 1.35);
+      .append('g')
+      .selectAll('g')
+      .data(textArray)
+      .enter()
+      .append('g')
+      .attr('transform', () => {
+        let x = 0;
+        let y = 0;
+        textIterator += 1;
+        if (((rowTotal + this.lengthinPX(textArray[textIterator])[0] + (heightofTXT * 1.35)) + 10) >= document.getElementById('key').clientWidth) {
+          colNum += 1;
+          y = (colNum * (heightofTXT + 7));
+          x = 0;
+          rowTotal = this.lengthinPX(textArray[textIterator])[0] + (heightofTXT * 1.35);
+        } else {
+          y = (colNum * (heightofTXT + 7));
+          x = rowTotal;
+          rowTotal += this.lengthinPX(textArray[textIterator])[0] + (heightofTXT * 1.35);
+        }
+        return `translate(${x},${y})`;
+      });
+      /*
+      .on('click', function() {
+        const tempKeys = Object.keys(bigThis.attributes.items);
+        for (let i = 0; i < tempKeys.length; i += 1) {
+          if ((tempKeys[i].replace(/^\s+|\s+$/g, '')).startsWith(this.textContent.replace(/^\s+|\s+$/g, ''))) {
+            bigThis.attributes.current_edit = tempKeys[i];
           }
-          return `translate(${x},${y})`;
-        });
+        }
+        this.style.outline = '2px solid #FFFFFF';
+        //console.log(this.textContent);
+      });
+      */
 
     textIterator = -1;
     svgBox.attr('height', `${((colNum + 1) * (heightofTXT + 7)) + (heightofTXT * 0.3)}`);
 
     legend.append('rect')
-        .attr('x', (heightofTXT / 2))
-        .attr('y', (heightofTXT / 2))
-        .attr('width', (heightofTXT / 1.6))
-        .attr('height', (heightofTXT / 1.6))
-        .attr('fill', () => {
-          let tempString = '';
-          textIterator += 1;
-          if (textArray.length !== data.length) {
-            if (data[colorIter2] === undefined) {
-              colorIter1 += 1;
-              return '#000000';
-            }
-            if (textArray[colorIter1] !== data[colorIter2]) {
-              if ((data[colorIter2].replace(/^\s+|\s+$/g, '')).startsWith((textArray[colorIter1]).replace(/^\s+|\s+$/g, ''))) {
-                tempString = data[colorIter2];
-                colorIter1 += 1;
-                colorIter2 += 1;
-                return this.attributes.items[tempString].color;
-              }
-              colorIter1 += 1;
-              return '#000000';
-            }
-            tempString = textArray[colorIter1];
+      .attr('x', (heightofTXT / 2))
+      .attr('y', (heightofTXT / 2))
+      .attr('width', (heightofTXT / 1.6))
+      .attr('height', (heightofTXT / 1.6))
+      .attr('fill', () => {
+        let tempString = '';
+        textIterator += 1;
+        if (textArray.length !== data.length) {
+          if (data[colorIter2] === undefined) {
             colorIter1 += 1;
-            colorIter2 += 1;
-            return this.attributes.items[tempString].color;
+            return '#000000';
           }
-          return this.attributes.items[(textArray[textIterator]).trim()].color;
-        });
+          if (textArray[colorIter1] !== data[colorIter2]) {
+            if ((data[colorIter2].replace(/^\s+|\s+$/g, '')).startsWith((textArray[colorIter1]).replace(/^\s+|\s+$/g, ''))) {
+              tempString = data[colorIter2];
+              colorIter1 += 1;
+              colorIter2 += 1;
+              if (this.attributes.group_by_stack !== 'No Column') {
+                const iterator = subSet.values();
+                for (let i = 0; i < subSet.size; i += 1) {
+                  if (iterator.next().key === tempString) {
+                    return iterator.color;
+                  }
+                }
+              }
+              return this.attributes.items[tempString].color;
+            }
+            colorIter1 += 1;
+            return '#000000';
+          }
+          tempString = textArray[colorIter1];
+          colorIter1 += 1;
+          colorIter2 += 1;
+          if (this.attributes.group_by_stack !== 'No Column') {
+            const iterator = subSet.values();
+            for (let i = 0; i < subSet.size; i += 1) {
+              if (iterator.next().key === tempString) {
+                return iterator.color;
+              }
+            }
+          }
+          return this.attributes.items[tempString].color;
+        }
+        if (this.attributes.group_by_stack !== 'No Column') {
+          const iterator = subSet.values();
+          for (let i = 0; i < subSet.size; i += 1) {
+            if (iterator.next().key === tempString) {
+              return iterator.color;
+            }
+          }
+        }
+        return this.attributes.items[(textArray[textIterator]).trim()].color;
+      });
 
     textIterator = -1;
 
     legend.append('text')
-        .attr('x', (heightofTXT * 1.32))
-        .attr('y', (heightofTXT * 0.85))
-        .attr('dy', '0.32em')
-        .style('font-size', `${this.attributes.font_size}pt`)
-        .style('fill', `${this.attributes.font_color}`)
-        .style('color', `${this.attributes.font_color}`)
-        .text(() => {
-          textIterator += 1;
-          return textArray[textIterator];
-        });
+      .attr('x', (heightofTXT * 1.32))
+      .attr('y', (heightofTXT * 0.85))
+      .attr('dy', '0.32em')
+      .style('font-size', `${this.attributes.font_size}pt`)
+      .style('fill', `${this.attributes.font_color}`)
+      .style('color', `${this.attributes.font_color}`)
+      .text(() => {
+        textIterator += 1;
+        return textArray[textIterator];
+      });
 
     document.getElementById('key').style.outline = '4px solid #FFFFFF';
   }
