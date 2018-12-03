@@ -181,7 +181,7 @@ class Visual {
   }
 
   /**
-   * Abstract method
+   * Abstract method that applies default attrbibutes and structures data in attributes.items
    */
   onLoadData() {
     if (this.constructor === Visual) {
@@ -286,7 +286,7 @@ class Visual {
         const subKeys = Object.keys(this.attributes.items[keys[i]].subitems);
         for (let j = 0; j < subKeys.length; j += 1) {
           this.attributes.items[keys[i]].subitems[subKeys[j]].color = ColorHelper.gradientValue(
-            this.attributes.items[keys[i]].subitems[subKeys[i]].weight / (subKeys.length - 1),
+            this.attributes.items[keys[i]].subitems[subKeys[j]].weight / (subKeys.length - 1),
             this.attributes.color.start_color,
             this.attributes.color.end_color);
         }
@@ -331,8 +331,28 @@ class Visual {
         value: this.attributes.items[item].value,
         weight: this.attributes.items[item].weight,
         color: this.attributes.items[item].color,
+        subitems: this.attributes.items[item].subitems,
       };
     });
+  }
+
+  /**
+   * Gets a list of all of the keys in the subitems of this.attributes.items
+   *
+   * @returns {string[]} All keys in all subitems
+   */
+  getSubkeys() {
+    const subSet = new Set();
+    const keys = Object.keys(this.attributes.items);
+    for (let i = 0; i < keys.length; i += 1) {
+      if (this.attributes.items[keys[i]].subitems) {
+        const subKeys = Object.keys(this.attributes.items[keys[i]].subitems);
+        for (let j = 0; j < subKeys.length; j += 1) {
+          subSet.add(subKeys[j]);
+        }
+      }
+    }
+    return Array.from(subSet);
   }
 
 
@@ -1063,10 +1083,8 @@ class Visual {
     return textArray;
   }
 
-  /** renders the key
-   *
-   * @param data the data
-   * @param position //TODO posiiton
+  /**
+   * renders the key
    */
   renderKey() {
     if (this.attributes.legend_mode === 'below') {
@@ -1121,22 +1139,12 @@ class Visual {
     const data = Object.keys(this.attributes.items);
     const textArray = this.keyDataHelper(data);
     const heightofTXT = this.lengthinPX('W')[1];
-    const subSet = new Set();
+    const subSet = this.getSubkeys();
     let colNum = 0;
     let rowTotal = 0;
     let textIterator = -1;
     let colorIter1 = 0;
     let colorIter2 = 0;
-
-    if (this.attributes.group_by_stack !== 'No Column') {
-      let subboi = [];
-      for (let i = 0; i < data.length; i += 1) {
-        subboi = Object.keys(this.attributes.items[data[i]]);
-        for (let j = 0; j < subboi.length; j += 1) {
-          subSet.add(this.attributes.items[data[i]].subitems[subboi[j]]);
-        }
-      }
-    }
 
     const svgBox = d3.select('#key')
       .append('svg')
