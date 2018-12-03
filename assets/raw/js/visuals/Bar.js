@@ -72,13 +72,6 @@ class Bar extends Visual {
       return;
     }
 
-    let renderData = JSON.parse(JSON.stringify(this.data));
-
-    if (this.isNumeric(this.attributes.group_by)) {
-      renderData = this.makeBin(this.attributes.group_by, Number(this.attributes.binSize),
-        Number(this.attributes.binStart));
-    }
-
     const svg = d3.select(`#${this.renderID}`).append('svg')
     .attr('class', 'bar');
 
@@ -96,41 +89,28 @@ class Bar extends Visual {
     // Assemble appropriate data
     let keys = [];
     let stackData = [];
-    let dataSizes = [];
     if (this.attributes.group_by_stack !== 'No Column') {
-      const cats = [this.attributes.group_by, this.attributes.group_by_stack];
-      const multiLevelData = Visual.groupByMultiple(cats, renderData);
-      const innerLevelData = Object.values(multiLevelData);
-      dataSizes = innerLevelData.map(d => Object.values(d).reduce((a, b) => a.concat(b)).length);
-
-      Object.keys(multiLevelData).forEach((k) => {
-        keys = keys.concat(Object.keys(multiLevelData[k]));
-      });
-      keys = keys.filter((e, i) => keys.indexOf(e) === i).sort();
-      Object.keys(multiLevelData).forEach((k) => {
-        const tempObj = {};
-        keys.forEach((key) => {
-          if (typeof multiLevelData[k][key] !== 'undefined') {
-            tempObj[key] = multiLevelData[k][key].length;
+      keys = this.getSubkeys();
+      stackData = [];
+      const outerKeys = Object.keys(this.attributes.items);
+      for (let i = 0; i < outerKeys.length; i += 1) {
+        stackData.push({ key: outerKeys[i] });
+        for (let j = 0; j < keys.length; j += 1) {
+          if (this.attributes.items[outerKeys[i]].subitems &&
+            this.attributes.items[outerKeys[i]].subitems[keys[j]]) {
+            stackData[i][keys[j]] = this.attributes.items[outerKeys[i]].subitems[keys[j]].value;
           } else {
-            tempObj[key] = 0;
+            stackData[i][keys[j]] = 0;
           }
-        });
-        tempObj.key = k;
-        stackData.push(tempObj);
-      });
+        }
+      }
+
+      stackData = stackData.sort((a, b) => d3.ascending(a.key, b.key));
     } else {
-      const cats = this.attributes.group_by;
-      const data = Visual.groupBy(cats, renderData);
-      const innerData = Object.values(data);
-      dataSizes = innerData.map(d => d.length);
-
+      stackData = this.flattenItems();
       keys = ['value'];
-      Object.keys(data).forEach((k) => {
-        stackData.push({ key: k, value: data[k].length });
-      });
 
-      // TODO: this does not account for filtering empty
+      stackData = this.sortData(stackData);
     }
 
     if (this.attributes.hide_empty) {
@@ -138,11 +118,45 @@ class Bar extends Visual {
       keys = Visual.hideEmpty(keys.map((a) => {
         return { key: a };
       })).map(a => a.key);
+
+      if (stackData.length === 0) {
+        return; // Escape if there is nothing to display
+      }
     }
 
-    stackData = stackData.sort((a, b) => d3.ascending(a.key, b.key));
+    // Prep data for d3
+    const outerKeys = stackData.map(a => a.key);
+    const stack = [];
+    for (let i = 0; i < keys.length; i += 1) {
+      stack.push([]);
+      stack[i].index = i;
+      stack[i].key = keys[i];
+      for (let j = 0; j < outerKeys.length; j += 1) {
+        if (keys.length === 1) {
+          stack[i].push({
+            key: outerKeys[j],
+            stack: { start: 0, end: this.attributes.items[outerKeys[j]].value },
+          });
+        } else {
+          let start = 0;
+          if (i > 0) {
+            start = stack[i - 1][j].stack.end;
+          }
+          let end = start;
+          if (this.attributes.items[outerKeys[j]].subitems[keys[i]]) {
+            end = start + this.attributes.items[outerKeys[j]].subitems[keys[i]].value;
+          }
+          stack[i].push({
+            key: outerKeys[j],
+            stack: { start, end },
+          });
+        }
+      }
+    }
+
+    // Set graph dimensions
     x.domain(stackData.map(a => a.key));
-    y.domain([0, d3.max(dataSizes)]);
+    y.domain([0, d3.max(stack[stack.length - 1].map(item => item.stack.end))]);
 
     // Render the key
     //this.renderKey(keys, 'below');
@@ -208,19 +222,6 @@ class Bar extends Visual {
       'font-family': 'Gilroy',
       transform: `rotate(-${this.attributes.x_font_rotation}deg) translate(${this.attributes.x_font_x_offset}px,${this.attributes.x_font_y_offset}px)`,
     });
-
-
-    const stack = d3.stack().keys(keys)(stackData);
-
-    for (let i = 0; i < stack.length; i += 1) {
-      for (let j = 0; j < stack[0].length; j += 1) {
-        stack[i][j] = {
-          key: stack[i][j].data.key,
-          value: stack[i][j].data.value,
-          stack: { start: stack[i][j][0], end: stack[i][j][1] },
-        };
-      }
-    }
 
     g.append('g')
     .selectAll('g')
