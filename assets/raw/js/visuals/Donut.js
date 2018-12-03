@@ -200,7 +200,6 @@ class Donut extends Visual {
 
     // Flatten the data
     let data = this.flattenItems();
-    data = this.sortData(data);
 
     const pie = d3.pie()
       .sort(null)

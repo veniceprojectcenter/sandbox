@@ -109,19 +109,6 @@ class Bar extends Visual {
     } else {
       stackData = this.flattenItems();
       keys = ['value'];
-
-      stackData = this.sortData(stackData);
-    }
-
-    if (this.attributes.hide_empty) {
-      stackData = Visual.hideEmpty(stackData);
-      keys = Visual.hideEmpty(keys.map((a) => {
-        return { key: a };
-      })).map(a => a.key);
-
-      if (stackData.length === 0) {
-        return; // Escape if there is nothing to display
-      }
     }
 
     // Prep data for d3

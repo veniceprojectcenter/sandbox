@@ -109,7 +109,6 @@ class BubbleChart extends Visual {
 
 
     let counts = this.flattenItems();
-    counts = this.sortData(counts);
 
     if (this.attributes.hide_empty) {
       counts = Visual.hideEmpty(counts);

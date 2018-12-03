@@ -152,29 +152,30 @@ class Visual {
     });
   }
 
-  hideEmptyRewrite() {
+
+  hideEmptyItems() {
     const items = this.attributes.items;
     const keys = Object.keys(this.attributes.items);
-    const newItems = {};
+
+    const emptyFilter = d => d !== null &&
+      d !== undefined &&
+      d !== '' &&
+      (!String(d) ||
+        (String(d).toLowerCase() !== 'null' &&
+          String(d).toLowerCase() !== 'undefined'));
+
     for (let i = 0; i < keys.length; i += 1) {
-      if (keys[i] !== undefined && keys[i] !== '' &&
-      String(keys[i]).toLowerCase() !== 'null' && String(keys[i]).toLowerCase() !== 'undefined') {
-        newItems[keys[i]] = items[keys[i]];
-        if (items[keys[i]].subitems !== undefined) {
-          const subKeys = Object.keys(items[keys[i]].subitems);
-          for (let j = 0; j < subKeys; j += 1) {
-            if (subKeys[j] !== undefined && subKeys[j] !== '' &&
-            String(subKeys[j])
-              .toLowerCase() !== 'null' && String(subKeys[j])
-              .toLowerCase() !== 'undefined') {
-              newItems[keys[i]].subitems = items[i].subitems[j];
-            }
+      if (!emptyFilter(keys[i])) {
+        delete this.attributes.items[keys[i]];
+      } else if (items[keys[i]].subitems !== undefined) {
+        const subKeys = Object.keys(items[keys[i]].subitems);
+        for (let j = 0; j < subKeys; j += 1) {
+          if (!emptyFilter(subKeys[j])){
+            delete this.attributes.items[keys[i]].subitems[subKeys[j]];
           }
         }
       }
     }
-    console.log(newItems);
-    // this.attributes.items = newItems;
   }
 
   /**
@@ -295,6 +296,10 @@ class Visual {
       }
     }
 
+    // Filter empty
+    if (this.attributes.hide_empty) {
+      this.hideEmptyItems();
+    }
 
     // Sort data
     this.sortItems();
@@ -361,12 +366,13 @@ class Visual {
     if (!keys || keys.length === 0) {
       return [];
     }
-    return keys.map(item => ({ key: item,
+    // I'm sorry to whoever has to figure this out lol
+    return this.sortData(keys.map(item => ({ key: item,
       value: this.attributes.items[item].value,
       weight: this.attributes.items[item].weight,
       color: this.attributes.items[item].color,
       subitems: this.attributes.items[item].subitems,
-    }));
+    })));
   }
 
   /**
@@ -831,7 +837,6 @@ class Visual {
       (e) => {
         this.attributes.group_by = $(e.currentTarget).val();
         this.structureData();
-        this.hideEmptyRewrite();
         this.renderKey();
         this.render();
       });
@@ -855,7 +860,7 @@ class Visual {
     generalEditor.createCheckBox('hide-empty', 'Hide Empty Category', this.attributes.hide_empty,
       (e) => {
         this.attributes.hide_empty = e.currentTarget.checked;
-        console.log(' check out that ass');
+        this.structureData();
         this.render();
       });
 
