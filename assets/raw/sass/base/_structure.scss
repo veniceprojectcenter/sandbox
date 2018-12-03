@@ -45,10 +45,13 @@ body {
 .visual-title, .visual-description {
   display: inline-block;
   line-height: 1;
+  word-wrap: break-word;
+  text-align: center;
   width: 100%;
 }
 
 .key {
+  min-height: 2em;
   display: none;
   overflow-y: auto;
   overflow-x: hidden;

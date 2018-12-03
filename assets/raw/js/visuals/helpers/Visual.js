@@ -1118,8 +1118,8 @@ class Visual {
       return;
     }
 
-    const data = Object.keys(this.attributes.items);
-    const textArray = this.keyDataHelper(data);
+    const keyArray = Object.keys(this.attributes.items);
+    const textArray = this.keyDataHelper(keyArray);
     const heightofTXT = this.lengthinPX('W')[1];
     const subSet = new Set();
     let colNum = 0;
@@ -1130,10 +1130,10 @@ class Visual {
 
     if (this.attributes.group_by_stack !== 'No Column') {
       let subboi = [];
-      for (let i = 0; i < data.length; i += 1) {
-        subboi = Object.keys(this.attributes.items[data[i]]);
+      for (let i = 0; i < keyArray.length; i += 1) {
+        subboi = Object.keys(this.attributes.items[keyArray[i]]);
         for (let j = 0; j < subboi.length; j += 1) {
-          subSet.add(this.attributes.items[data[i]].subitems[subboi[j]]);
+          subSet.add(this.attributes.items[keyArray[i]].subitems[subboi[j]]);
         }
       }
     }
@@ -1184,20 +1184,20 @@ class Visual {
 
     legend.append('rect')
       .attr('x', (heightofTXT / 2))
-      .attr('y', (heightofTXT / 2))
+      .attr('y', (heightofTXT / 4))
       .attr('width', (heightofTXT / 1.6))
       .attr('height', (heightofTXT / 1.6))
       .attr('fill', () => {
         let tempString = '';
         textIterator += 1;
-        if (textArray.length !== data.length) {
-          if (data[colorIter2] === undefined) {
+        if (textArray.length !== keyArray.length) {
+          if (keyArray[colorIter2] === undefined) {
             colorIter1 += 1;
             return '#000000';
           }
-          if (textArray[colorIter1] !== data[colorIter2]) {
-            if ((data[colorIter2].replace(/^\s+|\s+$/g, '')).startsWith((textArray[colorIter1]).replace(/^\s+|\s+$/g, ''))) {
-              tempString = data[colorIter2];
+          if (textArray[colorIter1] !== keyArray[colorIter2]) {
+            if ((keyArray[colorIter2].replace(/^\s+|\s+$/g, '')).startsWith((textArray[colorIter1]).replace(/^\s+|\s+$/g, ''))) {
+              tempString = keyArray[colorIter2];
               colorIter1 += 1;
               colorIter2 += 1;
               if (this.attributes.group_by_stack !== 'No Column') {
@@ -1241,7 +1241,7 @@ class Visual {
 
     legend.append('text')
       .attr('x', (heightofTXT * 1.32))
-      .attr('y', (heightofTXT * 0.85))
+      .attr('y', (heightofTXT * 0.60))
       .attr('dy', '0.32em')
       .style('font-size', `${this.attributes.font_size}pt`)
       .style('fill', `${this.attributes.font_color}`)
