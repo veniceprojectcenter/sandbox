@@ -91,7 +91,6 @@ class Bar extends Visual {
     let stackData = [];
     if (this.attributes.group_by_stack !== 'No Column') {
       keys = this.getSubkeys();
-
       stackData = [];
       const outerKeys = Object.keys(this.attributes.items);
       for (let i = 0; i < outerKeys.length; i += 1) {

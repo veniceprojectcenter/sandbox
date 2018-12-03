@@ -160,14 +160,17 @@ class Visual {
    */
   sortData(data) {
     let sortedData = data;
-    if (Object.keys(this.attributes.items).length > 0) { // Already in order
+    if (!sortedData || sortedData.length === 0) {
+      return [];
+    }
+    if (sortedData[0].weight) { // Already in order
       sortedData = data.sort((a, b) => {
-        if (this.attributes.items[b.key] === undefined) {
+        if (b.weight === undefined) {
           return 1;
-        } else if (this.attributes.items[a.key] === undefined) {
+        } else if (a.weight === undefined) {
           return -1;
         }
-        return this.attributes.items[a.key].weight - this.attributes.items[b.key].weight;
+        return a.weight - b.weight;
       });
     } else { // Fresh sort
       sortedData = data.sort((a, b) => {
@@ -301,14 +304,20 @@ class Visual {
    * Gives weight attributes to the objects in this.attriutes.items, as well as to the subitems
    */
   sortItems() {
+    const sortFunction = (a, b) => d3.ascending(a, b);
+
     const keys = Object.keys(this.attributes.items);
-    const sortedKeys = keys.sort((a, b) => d3.ascending(a, b));
+    const sortedKeys = keys.sort(sortFunction);
+    const subKeys = this.getSubkeys();
+    const sortedsubKeys = subKeys.sort(sortFunction);
+
     for (let i = 0; i < sortedKeys.length; i += 1) {
       if (this.attributes.items[sortedKeys[i]].subitems) {
-        const subKeys = Object.keys(this.attributes.items[sortedKeys[i]].subitems);
-        const sortedsubKeys = subKeys.sort((a, b) => d3.ascending(a, b));
         for (let j = 0; j < sortedsubKeys.length; j += 1) {
-          this.attributes.items[sortedKeys[i]].subitems[sortedsubKeys[j]].weight = j;
+          if (this.attributes.items[sortedKeys[i]].subitems &&
+              this.attributes.items[sortedKeys[i]].subitems[sortedsubKeys[j]]) {
+            this.attributes.items[sortedKeys[i]].subitems[sortedsubKeys[j]].weight = j;
+          }
         }
       }
       this.attributes.items[sortedKeys[i]].weight = i;
@@ -352,7 +361,10 @@ class Visual {
         }
       }
     }
-    return Array.from(subSet);
+    const temp = Array.from(subSet);
+    return this.sortData(temp.map((a) => {
+      return { key: a };
+    })).map(a => a.key);
   }
 
 
@@ -583,8 +595,6 @@ class Visual {
     return numericData;
   }
 
-  /**
-  */
   isNumeric(columnName, maxCategories = 25) {
     const groupedList = this.getGroupedList(columnName);
     return (groupedList.length >= maxCategories
