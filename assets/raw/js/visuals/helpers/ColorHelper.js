@@ -1,19 +1,24 @@
 
 class ColorHelper {
   /**
-   * Returns whether or not the color is light (greater than 50% saturation)
+   * Returns whether or not the color is light (light colors contrast better on black, dark contrast
+   * better on white)
    *
    * @param color Hexcode color to examime
-   * @returns {boolean} True if the color is light (at least 384 total color)
+   * @returns {boolean} True if the color is light based on W3C recommendations
    */
   static isLight(color) {
-    let lightVal = 0;
     const parsedColor = [parseInt(color.substring(1, 3), 16), parseInt(color.substring(3, 5), 16),
       parseInt(color.substring(5, 7), 16)];
-    parsedColor.forEach((d) => {
-      lightVal += d;
+    const luminances = parsedColor.map((rgb) => {
+      const c = rgb / 255;
+      if (c <= 0.03928) {
+        return c / 12.92;
+      } else {
+        return ((c + 0.055) / 1.055) ** 2;
+      }
     });
-    return lightVal > 383;
+    return (luminances[0] * 0.2126) + (luminances[1] * 0.7152) + (luminances[2] * 0.0722) > 0.179;
   }
 
 
