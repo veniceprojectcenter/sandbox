@@ -237,6 +237,8 @@ class Visual {
       label_mode: 'hover',
       title: '',
       description: '',
+      x_label: '',
+      y_label: '',
       category_order: '',
       aspect_ratio: 1.5,
       group_by: null,
@@ -1086,9 +1088,9 @@ class Visual {
     ruler.style.display = 'inline-block';
     ruler.style.whiteSpace = 'nowrap';
     ruler.innerHTML = `<p style = 'display: flex; margin: 0 0 0 0; font-size: ${this.attributes.font_size}pt'>${string}</p>`;
-    document.getElementById('key').appendChild(ruler);
+    document.getElementById('visual').appendChild(ruler);
     const final = [ruler.clientWidth, ruler.clientHeight];
-    document.getElementById('key').removeChild(ruler);
+    document.getElementById('visual').removeChild(ruler);
     return final;
   }
 
@@ -1246,7 +1248,9 @@ class Visual {
         let y = 0;
         textIterator += 1;
         if (((rowTotal + this.lengthinPX(textArray[textIterator])[0] + (heightofTXT * 1.35)) + 10) >= document.getElementById('key').clientWidth) {
-          colNum += 1;
+          if (textIterator > 0) {
+            colNum += 1;
+          }
           y = (colNum * (heightofTXT + 7));
           x = 0;
           rowTotal = this.lengthinPX(textArray[textIterator])[0] + (heightofTXT * 1.35);
