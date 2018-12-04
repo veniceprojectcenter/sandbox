@@ -169,8 +169,8 @@ class Visual {
         delete this.attributes.items[keys[i]];
       } else if (items[keys[i]].subitems !== undefined) {
         const subKeys = Object.keys(items[keys[i]].subitems);
-        for (let j = 0; j < subKeys; j += 1) {
-          if (!emptyFilter(subKeys[j])){
+        for (let j = 0; j < subKeys.length; j += 1) {
+          if (!emptyFilter(subKeys[j])) {
             delete this.attributes.items[keys[i]].subitems[subKeys[j]];
           }
         }
