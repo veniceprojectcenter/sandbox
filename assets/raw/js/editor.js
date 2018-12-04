@@ -217,7 +217,7 @@ function createGraphic(dataSet, graphType, attr = null) {
     return;
   }
   document.getElementById('column2').style.height = '91%';
-  document.getElementById('column1').style.height = '93%';
+  document.getElementById('column1').style.height = '91%';
   let attributes = attr;
   if (attributes === null) {
     if (activeVisual && activeVisual.attributes) {
@@ -259,6 +259,8 @@ function createGraphic(dataSet, graphType, attr = null) {
       activeVisual.render();
     });
   }
+  document.getElementById('controls').style.maxHeight = `calc(100% - 
+    ${document.getElementById('majorSelect').clientHeight + document.getElementById('graphTitle').clientHeight})`;
 }
 
 /**
