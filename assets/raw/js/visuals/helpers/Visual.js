@@ -247,7 +247,6 @@ class Visual {
       x_font_y_offset: 0,
     });
 
-    /** *** Set items **** */
     // Group the data
     this.structureData();
   }
