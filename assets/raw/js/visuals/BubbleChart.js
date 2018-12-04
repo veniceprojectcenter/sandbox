@@ -77,10 +77,7 @@ class BubbleChart extends Visual {
         colorEditor.createColorField('bubble-colorpicker', 'Bubble Color', currentColor,
         (e) => {
           this.attributes.color.mode = 'manual';
-          this.attributes.color.colors[this.currentEditKey] = {
-            key: this.currentEditKey,
-            value: $(e.currentTarget).val(),
-          };
+          this.attributes.items[this.currentEditKey].color = $(e.currentTarget).val();
           this.render();
         });
       }
@@ -134,20 +131,7 @@ class BubbleChart extends Visual {
 
     const circles = node.append('circle')
       .attr('r', d => d.r)
-      .style('fill', (d, i) => {
-        if (this.attributes.color.mode === 'manual') {
-          const temp = this.attributes.color.colors.filter(c => c.key === d.data.key);
-          if (temp.length === 1) {
-            return temp[0].value;
-          }
-        } else if (this.attributes.color.mode === 'single') {
-          return this.attributes.color.single_color;
-        } else if (this.attributes.color.mode === 'palette') {
-          return ColorHelper.gradientValue(i / (d.parent.children.length - 1),
-            this.attributes.color.start_color, this.attributes.color.end_color);
-        }
-        return 'gray';
-      });
+      .style('fill', (d) => d.data.color);
 
     if (this.useTransitions) {
       circles.attr('transform', 'scale(0)')

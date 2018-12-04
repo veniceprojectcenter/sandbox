@@ -911,6 +911,9 @@ class Visual {
     colorEditor.createSelectBox('color-select', 'Select Coloring Mode', colorCats, this.attributes.color.mode,
       (e) => {
         this.attributes.color.mode = $(e.currentTarget).val();
+        if (this.attributes.color.mode === 'palette') {
+          this.colorItemsByPalette();
+        }
         this.renderControls();
         this.render();
       });

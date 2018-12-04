@@ -124,6 +124,7 @@ class Bar extends Visual {
           stack[i].push({
             key: outerKeys[j],
             stack: { start: 0, end: this.attributes.items[outerKeys[j]].value },
+            color: this.attributes.items[outerKeys[j]].color,
           });
         } else {
           let start = 0;
@@ -131,12 +132,15 @@ class Bar extends Visual {
             start = stack[i - 1][j].stack.end;
           }
           let end = start;
+          let color;
           if (this.attributes.items[outerKeys[j]].subitems[keys[i]]) {
             end = start + this.attributes.items[outerKeys[j]].subitems[keys[i]].value;
+            color = this.attributes.items[outerKeys[j]].subitems[keys[i]].color;
           }
           stack[i].push({
             key: outerKeys[j],
             stack: { start, end },
+            color,
           });
         }
       }
@@ -146,42 +150,9 @@ class Bar extends Visual {
     x.domain(stackData.map(a => a.key));
     y.domain([0, d3.max(stack[stack.length - 1].map(item => item.stack.end))]);
 
-    // Render the key
-    // this.renderKey(keys, 'below');
-    let lbox = {};
-    /*
-    if (this.attributes.group_by_stack !== 'No Column') {
-      const legend = g.append('g')
-      .attr('font-size', `${this.attributes.font_size}pt`)
-      .attr('text-anchor', 'end')
-      .selectAll('g')
-      .data(keys.slice())
-      .enter()
-      .append('g')
-      .attr('transform', (d, i) => `translate(10,${(keys.length - i) * 1.25 * this.attributes.font_size})`);
-
-      legend.append('rect')
-      .attr('width', `${this.attributes.font_size}`)
-      .attr('height', `${this.attributes.font_size}`)
-      .attr('fill', (d, e) => ColorHelper.gradientValue(e / (keys.length - 1),
-          this.attributes.color.start_color, this.attributes.color.end_color));
-
-      legend.append('text')
-      .attr('y', '0.5em')
-      .attr('dy', '0.25em')
-      .text(d => (d === '' ? 'NULL' : d));
-
-      lbox = legend.node().getBBox();
-      legend.selectAll('rect')
-      .attr('x', width - (0.25 * lbox.width) - this.attributes.font_size - 15);
-      legend.selectAll('text')
-      .attr('x', width - (0.25 * lbox.width) - this.attributes.font_size - 20);
-    } else {
-      */
-    lbox = {
+    const lbox = {
       x: 0, y: 0, width: 0, height: 0,
     };
-    // }
 
     // Axes
     y.rangeRound([height, 0]);
@@ -218,8 +189,17 @@ class Bar extends Visual {
     .data(stack)
     .enter()
     .append('g')
-    .attr('fill', (d, e) => ColorHelper.gradientValue(e / (keys.length - 1),
-      this.attributes.color.start_color, this.attributes.color.end_color))
+    .attr('fill', (d) => {
+      console.log(d);
+      let color = '#000000';
+      for (let i = 0; i < d.length; i += 1) {
+        if (d[i].color) {
+          color = d[i].color;
+          break;
+        }
+      }
+      return color;
+    })
     .selectAll('rect')
     .data(d => d)
     .enter()
