@@ -170,7 +170,7 @@ class Visual {
         delete this.attributes.items[keys[i]];
       } else if (items[keys[i]].subitems !== undefined) {
         const subKeys = Object.keys(items[keys[i]].subitems);
-        for (let j = 0; j < subKeys; j += 1) {
+        for (let j = 0; j < subKeys.length; j += 1) {
           if (!emptyFilter(subKeys[j])) {
             delete this.attributes.items[keys[i]].subitems[subKeys[j]];
           }
@@ -522,7 +522,8 @@ class Visual {
     controlsContainer.appendChild(accordionBody3);
 
     this.renderBasicControls();
-    document.getElementById('controls').style.maxHeight = `${document.getElementById('controls').clientHeight}`;
+    document.getElementById('controls').style.maxHeight = `calc(100% - 
+    ${document.getElementById('majorSelect').clientHeight + document.getElementById('graphTitle').clientHeight})`;
   }
 
   /**
@@ -881,11 +882,6 @@ class Visual {
       this.render();
     });
 
-    if (this.attributes.group_by_stack === 'No Column' && this.attributes.can_stack) {
-      this.attributes.legend_mode = 'none';
-      document.getElementById('drop-showlegend').style.display = 'none';
-    }
-
     // Populate Color Settings
     colorEditor.createColorField('font-color', 'Font Color', this.attributes.font_color,
       (e) => {
@@ -1206,7 +1202,15 @@ class Visual {
     let textIterator = -1;
     let colorIter1 = 0;
     let colorIter2 = 0;
-    console.log(this.attributes.items);
+
+    if (!this.attributes.group_by || (this.attributes.group_by_stack === 'No Column' && this.attributes.can_stack)) {
+      document.getElementById('key').style.display = 'none';
+      document.getElementById('visual').style.width = '96%';
+      document.getElementById('visual').style.height = '96%';
+      document.getElementById('key').style.outline = '';
+      document.getElementById('key').innerHTML = '';
+      return;
+    }
 
     if (this.attributes.group_by_stack !== 'No Column' && this.attributes.can_stack) {
       const tempArray = [];
@@ -1221,7 +1225,7 @@ class Visual {
         }
       }
       itemObj = tempObj;
-      keyArray = this.removeDuplicates(tempArray);
+      keyArray = this.sortData(this.removeDuplicates(tempArray));
       textArray = this.keyDataHelper(keyArray);
     }
 
