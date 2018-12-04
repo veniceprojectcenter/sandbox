@@ -1127,19 +1127,6 @@ class Visual {
     return textArray;
   }
 
-  removeDuplicates(inputArray) {
-    const seenObj = {};
-    const finalArray = [];
-    let iter = 0;
-    for (let i = 0; i < inputArray.length; i += 1) {
-      if (seenObj[inputArray[i]] !== 1) {
-        seenObj[inputArray[i]] = 1;
-        finalArray[iter] = inputArray[i];
-        iter += 1;
-      }
-    }
-    return finalArray;
-  }
   /**
    * renders the key
    */
@@ -1224,7 +1211,7 @@ class Visual {
         }
       }
       itemObj = tempObj;
-      keyArray = this.sortData(this.removeDuplicates(tempArray));
+      keyArray = this.getSubkeys();
       textArray = this.keyDataHelper(keyArray);
     }
 
