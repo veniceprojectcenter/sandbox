@@ -140,7 +140,8 @@ class Visual {
       d.key !== '' &&
       (!String(d.key) ||
         (String(d.key).toLowerCase() !== 'null' &&
-          String(d.key).toLowerCase() !== 'undefined'));
+          String(d.key).toLowerCase() !== 'undefined' &&
+          String(d.key).toLowerCase() !== 'N/A'));
 
     const newData = data.slice();
     return newData.filter(emptyFilter).map((item) => {
@@ -163,7 +164,8 @@ class Visual {
       d !== '' &&
       (!String(d) ||
         (String(d).toLowerCase() !== 'null' &&
-          String(d).toLowerCase() !== 'undefined'));
+          String(d).toLowerCase() !== 'undefined' &&
+          String(d).toLowerCase() !== 'n/a'));
 
     for (let i = 0; i < keys.length; i += 1) {
       if (!emptyFilter(keys[i])) {
@@ -918,6 +920,7 @@ class Visual {
         (e) => {
           this.attributes.color.start_color = $(e.currentTarget)
           .val();
+          this.colorItemsByPalette();
           this.render();
         });
 
@@ -925,6 +928,7 @@ class Visual {
         (e) => {
           this.attributes.color.end_color = $(e.currentTarget)
           .val();
+          this.colorItemsByPalette();
           this.render();
         });
     } else if (this.attributes.color.mode === 'single') {
