@@ -20,6 +20,8 @@ function routing() {
   }
   if (route.length > 0 && route[0] === 'config-editor') {
     renderConfigEditor(); // TODO: do we still need this?
+  } else if (route.length > 0 && route[0] === 'all-visuals') {
+    renderVisualsList();
   } else if (route.length > 0) {
     page.innerHTML = '<p> Invalid URL';
   } else {

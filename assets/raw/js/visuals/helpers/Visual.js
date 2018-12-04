@@ -316,14 +316,16 @@ class Visual {
    */
   colorItemsByPalette() {
     const keys = Object.keys(this.attributes.items);
+    const subKeys = this.getSubkeys();
     for (let i = 0; i < keys.length; i += 1) {
       if (this.attributes.items[keys[i]].subitems) {
-        const subKeys = Object.keys(this.attributes.items[keys[i]].subitems);
         for (let j = 0; j < subKeys.length; j += 1) {
-          this.attributes.items[keys[i]].subitems[subKeys[j]].color = ColorHelper.gradientValue(
-            this.attributes.items[keys[i]].subitems[subKeys[j]].weight / (subKeys.length - 1),
-            this.attributes.color.start_color,
-            this.attributes.color.end_color);
+          if (this.attributes.items[keys[i]].subitems[subKeys[j]]) {
+            this.attributes.items[keys[i]].subitems[subKeys[j]].color = ColorHelper.gradientValue(
+              this.attributes.items[keys[i]].subitems[subKeys[j]].weight / (subKeys.length - 1),
+              this.attributes.color.start_color,
+              this.attributes.color.end_color);
+          }
         }
       }
       this.attributes.items[keys[i]].color = ColorHelper.gradientValue(
