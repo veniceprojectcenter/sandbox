@@ -1,11 +1,11 @@
 import Data from './visuals/helpers/Data';
 
 const visuals = [
-  { name: 'Bubble Map Chart', image: 'https://datavizproject.com/wp-content/uploads/2016/06/DVP_1_100-87-300x300.png' },
-  { name: 'Donut Chart', image: 'http://datavizproject.com/wp-content/uploads/2015/10/3-Donut-Chart-300x300.png' },
-  { name: 'Bubble Chart', image: 'https://datavizproject.com/wp-content/uploads/2015/10/DVP-23-300x300.png' },
-  { name: 'Bar Chart (vertical)', image: 'https://datavizproject.com/wp-content/uploads/2015/10/4-Bar-Chart-300x300.png' },
-  { name: 'Stacked Bar Chart', image: 'https://datavizproject.com/wp-content/uploads/2016/06/DVP_1_100-05-300x300.png' },
+  { name: 'Bubble Map Chart', image: 'https://datavizproject.com/wp-content/uploads/2016/06/DVP_1_100-87-300x300.png', available: true },
+  { name: 'Donut Chart', image: 'http://datavizproject.com/wp-content/uploads/2015/10/3-Donut-Chart-300x300.png', available: true },
+  { name: 'Bubble Chart', image: 'https://datavizproject.com/wp-content/uploads/2015/10/DVP-23-300x300.png', available: true },
+  { name: 'Bar Chart (vertical)', image: 'https://datavizproject.com/wp-content/uploads/2015/10/4-Bar-Chart-300x300.png', available: true },
+  { name: 'Stacked Bar Chart', image: 'https://datavizproject.com/wp-content/uploads/2016/06/DVP_1_100-05-300x300.png', available: true },
   { name: 'Sankey Diagram', image: 'https://datavizproject.com/wp-content/uploads/2016/06/DVP_1_100-21-300x300.png' },
   { name: 'Alluvial Diagram', image: 'https://datavizproject.com/wp-content/uploads/2016/06/DVP_1_100-93-300x300.png' },
   { name: 'Radial Bar Chart', image: 'https://datavizproject.com/wp-content/uploads/2015/11/DVP_1_100-57-300x300.png' },
@@ -189,12 +189,23 @@ function renderVisualsList(route) {
   gridRow.className = 'row';
 
   const selectionHeader = document.createElement('h3');
-  selectionHeader.innerHTML = 'Images created by the Dataviz Project';
+  selectionHeader.innerHTML = 'All graph types as classified by the Dataviz Project:';
   visualBlocks.appendChild(selectionHeader);
 
   visualBlocks.appendChild(gridRow);
 
-  for (let i = 0; i < visuals.length; i += 1) {
+  const sortedVisuals = visuals.sort((a, b) => {
+    if (a.available && !b.available) {
+      return -1;
+    } else if (b.available && !a.available) {
+      return 1;
+    } else if (a.name < b.name) {
+      return -1;
+    }
+    return 1;
+  });
+
+  for (let i = 0; i < sortedVisuals.length; i += 1) {
     const col = document.createElement('div');
     col.className = 'grid-element';
 
@@ -205,9 +216,13 @@ function renderVisualsList(route) {
 
     const name = document.createElement('div');
     name.className = 'name';
-    name.innerHTML = visuals[i].name;
+    name.innerHTML = sortedVisuals[i].name;
     const image = document.createElement('img');
-    image.src = visuals[i].image;
+    image.src = sortedVisuals[i].image;
+    if (!sortedVisuals[i].available) {
+      image.style.opacity = '0.6';
+      image.style.filter = 'alpha(opacity=40)';
+    }
     link.appendChild(image);
     link.appendChild(name);
     block.appendChild(link);
