@@ -37,7 +37,14 @@ class Bar extends Visual {
     generalEditor.createSelectBox('bar-column-stack', 'Select stacked column', cats,
       this.attributes.group_by_stack, (e) => {
         this.attributes.group_by_stack = $(e.currentTarget).val();
+        if (this.attributes.group_by_stack === 'No Column') {
+          document.getElementById('drop-showlegend').style.display = 'none';
+          this.attributes.legend_mode = 'none';
+          return;
+        }
+        document.getElementById('drop-showlegend').style.display = 'block';
         this.structureData();
+        this.renderKey();
         this.render();
       }, '', 'Select a Property', 'column-select');
 
@@ -146,8 +153,9 @@ class Bar extends Visual {
     y.domain([0, d3.max(stack[stack.length - 1].map(item => item.stack.end))]);
 
     // Render the key
-    //this.renderKey(keys, 'below');
+    // this.renderKey(keys, 'below');
     let lbox = {};
+    /*
     if (this.attributes.group_by_stack !== 'No Column') {
       const legend = g.append('g')
       .attr('font-size', `${this.attributes.font_size}pt`)
@@ -175,10 +183,11 @@ class Bar extends Visual {
       legend.selectAll('text')
       .attr('x', width - (0.25 * lbox.width) - this.attributes.font_size - 20);
     } else {
-      lbox = {
-        x: 0, y: 0, width: 0, height: 0,
-      };
-    }
+      */
+    lbox = {
+      x: 0, y: 0, width: 0, height: 0,
+    };
+    // }
 
     // Axes
     y.rangeRound([height, 0]);

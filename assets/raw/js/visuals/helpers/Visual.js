@@ -111,7 +111,8 @@ class Visual {
    */
   async fetchAndRenderWithControls() {
     await this.fetchData();
-
+    this.renderBasics();
+    this.renderKey();
     this.render();
     this.renderControls();
   }
@@ -170,7 +171,7 @@ class Visual {
       } else if (items[keys[i]].subitems !== undefined) {
         const subKeys = Object.keys(items[keys[i]].subitems);
         for (let j = 0; j < subKeys; j += 1) {
-          if (!emptyFilter(subKeys[j])){
+          if (!emptyFilter(subKeys[j])) {
             delete this.attributes.items[keys[i]].subitems[subKeys[j]];
           }
         }
@@ -854,6 +855,7 @@ class Visual {
           value = 100;
         }
         this.attributes.font_size = `${value}`;
+        this.renderKey();
         this.render();
       }, this.attributes.font_size);
 
@@ -861,6 +863,7 @@ class Visual {
       (e) => {
         this.attributes.hide_empty = e.currentTarget.checked;
         this.structureData();
+        this.renderKey();
         this.render();
       });
 
@@ -875,6 +878,11 @@ class Visual {
       this.renderKey();
       this.render();
     });
+
+    if (this.attributes.group_by_stack === 'No Column' && this.attributes.can_stack) {
+      this.attributes.legend_mode = 'none';
+      document.getElementById('drop-showlegend').style.display = 'none';
+    }
 
     // Populate Color Settings
     colorEditor.createColorField('font-color', 'Font Color', this.attributes.font_color,
@@ -1122,6 +1130,19 @@ class Visual {
     return textArray;
   }
 
+  removeDuplicates(inputArray) {
+    const seenObj = {};
+    const finalArray = [];
+    let iter = 0;
+    for (let i = 0; i < inputArray.length; i += 1) {
+      if (seenObj[inputArray[i]] !== 1) {
+        seenObj[inputArray[i]] = 1;
+        finalArray[iter] = inputArray[i];
+        iter += 1;
+      }
+    }
+    return finalArray;
+  }
   /**
    * renders the key
    */
@@ -1174,18 +1195,32 @@ class Visual {
       document.getElementById('key').innerHTML = '';
       return;
     }
-
-    let keyArray = Object.keys(this.attributes.items);
-    const textArray = this.keyDataHelper(keyArray);
     const heightofTXT = this.lengthinPX('W')[1];
+    let keyArray = this.flattenItems().map(a => a.key);
+    let itemObj = this.attributes.items;
+    let textArray = this.keyDataHelper(keyArray);
     let colNum = 0;
     let rowTotal = 0;
     let textIterator = -1;
     let colorIter1 = 0;
     let colorIter2 = 0;
+    console.log(this.attributes.items);
 
-    if (this.attributes.group_by_stack !== 'No Column') {
-      keyArray = this.getSubkeys();
+    if (this.attributes.group_by_stack !== 'No Column' && this.attributes.can_stack) {
+      const tempArray = [];
+      const tempObj = {};
+      for (let i = 0; i < keyArray.length; i += 1) {
+        if (this.attributes.items[keyArray[i]].subitems !== undefined) {
+          const subKeys = Object.keys(this.attributes.items[keyArray[i]].subitems);
+          for (let j = 0; j < subKeys.length; j += 1) {
+            tempArray.push(subKeys[j]);
+            tempObj[subKeys[j]] = this.attributes.items[keyArray[i]].subitems[subKeys[j]];
+          }
+        }
+      }
+      itemObj = tempObj;
+      keyArray = this.removeDuplicates(tempArray);
+      textArray = this.keyDataHelper(keyArray);
     }
 
     const svgBox = d3.select('#key')
@@ -1250,15 +1285,7 @@ class Visual {
               tempString = keyArray[colorIter2];
               colorIter1 += 1;
               colorIter2 += 1;
-              if (this.attributes.group_by_stack !== 'No Column') {
-                const iterator = subSet.values();
-                for (let i = 0; i < subSet.size; i += 1) {
-                  if (iterator.next().key === tempString) {
-                    return iterator.color;
-                  }
-                }
-              }
-              return this.attributes.items[tempString].color;
+              return itemObj[tempString].color;
             }
             colorIter1 += 1;
             return '#000000';
@@ -1266,25 +1293,9 @@ class Visual {
           tempString = textArray[colorIter1];
           colorIter1 += 1;
           colorIter2 += 1;
-          if (this.attributes.group_by_stack !== 'No Column') {
-            const iterator = subSet.values();
-            for (let i = 0; i < subSet.size; i += 1) {
-              if (iterator.next().key === tempString) {
-                return iterator.color;
-              }
-            }
-          }
-          return this.attributes.items[tempString].color;
+          return itemObj[tempString].color;
         }
-        if (this.attributes.group_by_stack !== 'No Column') {
-          const iterator = subSet.values();
-          for (let i = 0; i < subSet.size; i += 1) {
-            if (iterator.next().key === tempString) {
-              return iterator.color;
-            }
-          }
-        }
-        return this.attributes.items[(textArray[textIterator]).trim()].color;
+        return itemObj[(textArray[textIterator]).trim()].color;
       });
 
     textIterator = -1;
