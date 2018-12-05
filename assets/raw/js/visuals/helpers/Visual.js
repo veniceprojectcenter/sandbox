@@ -244,10 +244,12 @@ class Visual {
       group_by: null,
       group_by_stack: 'No Column',
       can_stack: false,
+      packed_graph: false,
       x_font_rotation: 45,
       x_font_x_offset: 0,
       x_font_y_offset: 0,
     });
+    this.attributes.packed_graph = false;
 
     /** *** Set items **** */
     // Group the data
@@ -524,8 +526,6 @@ class Visual {
     controlsContainer.appendChild(accordionBody3);
 
     this.renderBasicControls();
-    document.getElementById('controls').style.maxHeight = `calc(100% - 
-    ${document.getElementById('majorSelect').clientHeight + document.getElementById('graphTitle').clientHeight})`;
   }
 
   /**
@@ -827,11 +827,17 @@ class Visual {
     generalEditor.createTextField('title-input', 'Title', (e) => {
       this.attributes.title = e.currentTarget.value;
       this.renderBasics();
+      if (this.type === 'Bubble Chart') {
+        this.render();
+      }
     }, this.attributes.title);
 
     generalEditor.createTextField('description-input', 'Description', (e) => {
       this.attributes.description = e.currentTarget.value;
       this.renderBasics();
+      if (this.type === 'Bubble Chart') {
+        this.render();
+      }
     }, this.attributes.description);
 
     const dataCats = [];
@@ -884,6 +890,13 @@ class Visual {
       this.render();
     });
 
+    if (this.attributes.can_stack && (this.attributes.group_by_stack === 'No Column')) {
+      this.attributes.legend_mode = 'none';
+      document.getElementById('drop-showlegend').style.display = 'none';
+    } else {
+      document.getElementById('drop-showlegend').style.display = 'block';
+    }
+
     // Populate Color Settings
     colorEditor.createColorField('font-color', 'Font Color', this.attributes.font_color,
       (e) => {
@@ -893,16 +906,16 @@ class Visual {
 
     const colorCats = [];
     switch (this.type) {
-      case 'Donut-Chart':
+      case 'Donut Chart':
         colorCats.push({ value: 'palette', text: 'Palette Mode' });
         colorCats.push({ value: 'manual', text: 'Manual Mode' });
         break;
-      case 'Bubble-Chart':
+      case 'Bubble Chart':
         colorCats.push({ value: 'palette', text: 'Palette Mode' });
         colorCats.push({ value: 'manual', text: 'Manual Mode' });
         colorCats.push({ value: 'single', text: 'Single Color' });
         break;
-      case 'Bar-Chart':
+      case 'Bar Chart':
         colorCats.push({ value: 'palette', text: 'Palette Mode' });
         break;
       default:
@@ -1013,10 +1026,11 @@ class Visual {
     return tempString3ReturnoftheArray;
   }
 
-  hoverTextDisplay(data, svg, section) {
+  hoverTextDisplay(svg, section, translateArray) {
     const bigThis = this;
     const mouseOver = function (d) {
-      const coords = d3.mouse(this);
+      const boundBox = document.getElementById('svgBox').getBoundingClientRect();
+      const coords = [d3.event.pageX - boundBox.x, d3.event.pageY - boundBox.y];
 
       let outline = '#FFFFFF';
       if (ColorHelper.isLight(bigThis.attributes.font_color)) {
@@ -1057,11 +1071,11 @@ class Visual {
             }
           });
 
-      if (coords[0] > 0) {
-        textBox.attr('transform', `translate(${coords[0] - 5} ${coords[1]})`)
+      if (coords[0] > boundBox.width / 2) {
+        textBox.attr('transform', `translate(${(coords[0] - 5) - translateArray[0]} ${coords[1] - translateArray[1]})`)
             .attr('text-anchor', 'end');
       } else {
-        textBox.attr('transform', `translate(${coords[0] + 5} ${coords[1]})`)
+        textBox.attr('transform', `translate(${(coords[0] + 5) - translateArray[0]} ${coords[1] - translateArray[1]})`)
             .attr('text-anchor', 'start');
       }
     };

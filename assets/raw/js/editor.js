@@ -9,7 +9,7 @@ import Loader from './visuals/helpers/Loader';
 import LoginModal from './visuals/helpers/LoginModal';
 
 // List of all graph types that are available for use
-const graphsAvailable = ['Donut-Chart', 'Bubble-Chart', 'Bubble-Map-Chart', 'Bar-Chart'];
+const graphsAvailable = ['Donut Chart', 'Bubble Chart', 'Bar Chart'];
 
 let activeVisual;
 
@@ -235,16 +235,16 @@ function createGraphic(dataSet, graphType, attr = null) {
 
   let visual = null;
   switch (graphType) {
-    case 'Donut-Chart':
+    case 'Donut Chart':
       visual = new Donut(config);
       break;
-    case 'Bubble-Chart':
+    case 'Bubble Chart':
       visual = new BubbleChart(config);
       break;
     case 'Bubble-Map-Chart':
       visual = new BubbleMapChart(config);
       break;
-    case 'Bar-Chart':
+    case 'Bar Chart':
       visual = new BarChart(config);
       break;
     default:
@@ -259,8 +259,9 @@ function createGraphic(dataSet, graphType, attr = null) {
       activeVisual.render();
     });
   }
-  document.getElementById('controls').style.maxHeight = `calc(100% - 
-    ${document.getElementById('majorSelect').clientHeight + document.getElementById('graphTitle').clientHeight})`;
+  document.getElementById('controls').style.height = `calc(100% - 
+    ${document.getElementById('majorSelect').clientHeight + document.getElementById('graphTitle').clientHeight
+  + document.getElementById('graphTitle').style.marginTop})`;
 }
 
 /**
@@ -306,7 +307,7 @@ function renderEditor(defaultDS = null, defaultGT = null) {
   const graphSettingsTitle = document.createElement('div');
   graphSettingsTitle.className = 'graphTitle';
   graphSettingsTitle.id = 'graphTitle';
-  graphSettingsTitle.innerHTML = '<h3 style = \'margin-top: 0;\'>Graph Settings</h3>';
+  graphSettingsTitle.innerHTML = '<h3>Graph Settings</h3>';
 
   // Used to render the graph options
   const controlsContainer = document.createElement('div');

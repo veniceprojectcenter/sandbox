@@ -10,8 +10,6 @@ class Bar extends Visual {
   onLoadData() {
     const name = '';
     this.attributes.can_stack = true;
-    this.attributes.x_label = this.attributes.group_by;
-    this.attributes.y_label = `Number of ${this.dataSet}`;
     super.onLoadData();
   }
 
@@ -40,6 +38,12 @@ class Bar extends Visual {
     generalEditor.createSelectBox('bar-column-stack', 'Select stacked column', cats,
       this.attributes.group_by_stack, (e) => {
         this.attributes.group_by_stack = $(e.currentTarget).val();
+        if (this.attributes.group_by_stack === 'No Column') {
+          this.attributes.legend_mode = 'none';
+          document.getElementById('drop-showlegend').style.display = 'none';
+        } else {
+          document.getElementById('drop-showlegend').style.display = 'block';
+        }
         this.structureData();
         this.renderKey();
         this.render();
@@ -86,7 +90,15 @@ class Bar extends Visual {
       return;
     }
 
+    if (this.attributes.x_label === '') {
+      this.attributes.x_label = this.attributes.group_by;
+    }
+    if (this.attributes.y_label === '') {
+      this.attributes.y_label = `Number of ${this.dataSet}`;
+    }
+
     const svg = d3.select(`#${this.renderID}`).append('svg')
+      .attr('id', 'svgBox')
       .attr('class', 'bar');
 
     const dt = document.getElementById('visual');

@@ -191,6 +191,7 @@ class Donut extends Visual {
       .innerRadius((radius - 10) * 0.6);
 
     const svg = d3.select(`#${this.renderID}`).append('svg')
+      .attr('id', 'svgBox')
       .attr('class', 'donut')
       .attr('viewBox', `0 0 ${width} ${height}`)
       .append('g')
@@ -233,7 +234,7 @@ class Donut extends Visual {
     }
 
     if (this.attributes.label_mode === 'hover') {
-      this.hoverTextDisplay(data, svg, section);
+      this.hoverTextDisplay(svg, section, [(width / 2), (height / 2)]);
     } else if (this.attributes.label_mode === 'always') {
       let outline = '#FFFFFF';
       if (ColorHelper.isLight(this.attributes.font_color)) {
