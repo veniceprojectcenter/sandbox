@@ -96,8 +96,13 @@ class BubbleChart extends Visual {
     }
 
     const svgWidth = document.getElementById('visual').clientWidth;
-    const svgHeight = document.getElementById('visual').clientWidth;
-    const diameter = document.getElementById('visual').clientWidth;
+    const svgHeight = document.getElementById('visual').clientHeight;
+    let diameter = 0;
+    if (svgWidth < svgHeight) {
+      diameter = svgWidth;
+    } else {
+      diameter = svgHeight;
+    }
 
     const bubble = d3.pack()
         .size([diameter, diameter])
@@ -117,6 +122,8 @@ class BubbleChart extends Visual {
     const root = d3.hierarchy({ children: counts })
           .sum(d => d.value)
           .sort((a, b) => b.value - a.value);
+
+    console.log(root);
 
     bubble(root);
     const node = svg.selectAll('.node')
