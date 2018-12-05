@@ -1,12 +1,13 @@
 import base from './base';
-import updateBreadcrumbs from './breadcrumbs';
 import renderDatasetList from './dataset_list';
 import renderVisualsList from './visuals_list';
 import renderEditor from './editor';
 import renderConfigEditor from './config_editor';
 import Firebase from './Firebase';
 
-
+/**
+ * Uses the URL to determine which page to render
+ */
 function routing() {
   const path = window.location.pathname;
   const split = path.split('/');
@@ -18,20 +19,13 @@ function routing() {
     }
   }
   if (route.length > 0 && route[0] === 'config-editor') {
-    renderConfigEditor();
+    renderConfigEditor(); // TODO: do we still need this?
+  } else if (route.length > 0 && route[0] === 'all-visuals') {
+    renderVisualsList();
+  } else if (route.length > 0) {
+    page.innerHTML = '<p> Invalid URL';
   } else {
-    updateBreadcrumbs(route);
-
-    switch (route.length) {
-      case 0:
-        renderDatasetList(route);
-        break;
-      case 1:
-        renderVisualsList(route);
-        break;
-      default:
-        renderEditor(route);
-    }
+    renderEditor();
   }
 }
 

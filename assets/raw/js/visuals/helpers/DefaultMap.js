@@ -2,7 +2,7 @@ import Visual from './Visual';
 import Map from './Map';
 import EditorGenerator from './EditorGenerator';
 
-/* This file is to be used as a default starting point for new map visualizations
+/** This file is to be used as a default starting point for new map visualizations
  * that feature adding divs
 */
 

@@ -1,0 +1,11 @@
+input[type=range] {
+  border-color: #555555;
+
+  & + .thumb {
+    background-color: $primary;
+  }
+
+  &::-webkit-slider-thumb{
+    background-color: $primary;
+  }
+}

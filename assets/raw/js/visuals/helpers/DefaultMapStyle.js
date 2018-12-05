@@ -1,3 +1,5 @@
+// TODO: make this css cause we aren't absolute monsters???
+
 const style = [
   {
     elementType: 'geometry',

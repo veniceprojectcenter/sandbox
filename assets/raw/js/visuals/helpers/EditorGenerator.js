@@ -4,24 +4,72 @@ class EditorGenerator {
     this.container = container;
   }
 
-  createTextField(id, title, onTextChanged) {
+  createTextField(id, title, onTextChanged, defaultText = null) {
     const context = { id, title };
     this.handlebarsWithContext('text-field-entry', context);
     $(document).ready(() => {
       $(`#${id} > input`).on('input', onTextChanged);
     });
+
+    if (defaultText && defaultText !== '') {
+      const def = document.getElementById(id);
+      def.getElementsByTagName('input')[0].value = defaultText;
+      def.getElementsByTagName('label')[0].setAttribute('class', 'active');
+    }
+  }
+
+  createNumberField(id, title, onNumberChanged, defaultText = null) {
+    const context = { id, title };
+    this.handlebarsWithContext('number-field-entry', context);
+    $(document).ready(() => {
+      $(`#${id} > input`).on('input', onNumberChanged);
+    });
+
+    if (defaultText) {
+      const def = document.getElementById(id);
+      def.getElementsByTagName('input')[0].value = defaultText;
+      def.getElementsByTagName('label')[0].setAttribute('class', 'active');
+    }
   }
 
   createColorField(id, title, color, onColorChanged) {
-    const context = { id, title, color };
+    let context;
+    if (color) {
+      context = { id, title, color: color.substring(1, color.length) };
+    } else {
+      context = { id, title, color: '000000' };
+    }
     this.handlebarsWithContext('colorpicker', context);
     $(`#${id}-field`).on('change', (e) => {
-      $(e.currentTarget).siblings('input[type="text"]').val($(e.currentTarget).val());
+      let val = $(e.currentTarget).val();
+      val = val.substring(1, val.length);
+      $(e.currentTarget).siblings('input[type="text"]').val(val);
       onColorChanged(e);
     });
-    $(`#${id}-mirror`).on('change', (e) => {
-      $(e.currentTarget).siblings('input[type="color"]').val($(e.currentTarget).val());
-      onColorChanged(e);
+    $(`#${id}-mirror`).on('input', (e) => {
+      let ogval = $(e.currentTarget).val();
+      const valid = /[0-9A-Fa-f]/;
+      // Clear unwanted characters
+      for (let i = 0; i < ogval.length; i += 1) {
+        if (!valid.test(ogval.substring(i, i + 1))) {
+          ogval = ogval.substring(0, i) + ogval.substring(i + 1, ogval.length);
+          i -= 1;
+        }
+      }
+
+      if (ogval.length > 6) {
+        ogval = ogval.substring(0, 6);
+      }
+
+      // Valid hexcode found, perform color update
+      if (ogval.length === 6) {
+        const val = `#${ogval}`;
+        $(e.currentTarget).val(val);
+        $(e.currentTarget).siblings('input[type="color"]').val(val);
+        onColorChanged(e);
+      }
+
+      $(e.currentTarget).val(ogval);
     });
   }
   createRemoveButton(id, onPress) {
@@ -37,9 +85,9 @@ class EditorGenerator {
     $(`#${id}-right`).click(onRightClicked);
   }
 
-  createSelectBox(id, title, options, current, onOptionChanged, defaultValue = '', defaultText = 'Select a Property') {
+  createSelectBox(id, title, options, current, onOptionChanged, defaultValue = '', defaultText = 'Select a Property', prevElement = null) {
     const context = { id, title, options, defaultValue, defaultText };
-    this.handlebarsWithContext('select-entry', context);
+    this.handlebarsWithContext('select-entry', context, prevElement);
     $(`#${id}-select`).val(current).material_select();
     $(`#${id}-select`).change(onOptionChanged);
   }
@@ -129,12 +177,17 @@ class EditorGenerator {
     this.handlebarsWithContext('spacer', context);
   }
 
-  handlebarsWithContext(handlebarId, context) {
+  handlebarsWithContext(handlebarId, context, prevElement = null) {
     const source = document.getElementById(handlebarId).innerHTML;
     const template = Handlebars.compile(source);
     const html = template(context);
 
-    $(this.container).append(html);
+    if (prevElement === null) {
+      $(this.container)
+      .append(html);
+    } else {
+      $(`#${prevElement}`).after(html);
+    }
   }
 }
 

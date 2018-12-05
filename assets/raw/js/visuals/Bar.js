@@ -1,131 +1,80 @@
 import Visual from './helpers/Visual';
 import EditorGenerator from './helpers/EditorGenerator';
+import ColorHelper from './helpers/ColorHelper';
 
 class Bar extends Visual {
+
+  /**
+   * Sets default attributes after data is loaded
+   */
   onLoadData() {
-    this.categoricalData = this.getCategoricalData(50);
-    let defaultCat1 = '';
-    let defaultCat2 = '';
-    if (this.data.length > 0) {
-      const cats = Object.keys(this.categoricalData[0]);
-      if (cats.length > 2) {
-        defaultCat1 = cats[1];
-        defaultCat2 = cats[2];
-        console.log(`Using ${defaultCat1} and ${defaultCat2}`);
-      }
-    }
-    this.applyDefaultAttributes({
-      aspect_ratio: 1.5,
-      font_size: '8',
-      x_font_rotation: 45,
-      x_font_x_offset: 0,
-      x_font_y_offset: 0,
-      color: {
-        mode: 'list',
-        colorspace: 'hcl',
-        list: [
-          0, 45, 90, 135, 180, 225, 270, 315,
-          120, 165, 210, 255, 300, 345, 30, 75,
-          240, 285, 330, 15, 60, 105, 150, 195,
-        ],
-        range: [0, 359],
-      },
-      hide_empty: '',
-      category_order: '',
-      group_by_main: defaultCat1,
-      group_by_stack: defaultCat2,
-      title: '',
-      description: '',
-    });
+    this.attributes.can_stack = true;
+    super.onLoadData();
   }
 
+  /**
+   * Creates menu options
+   */
   renderControls() {
+    super.renderControls();
+
     if (this.data.length === 0) {
       alert('Dataset is empty!');
       return;
     }
-    Visual.empty(this.renderControlsID);
-    const controlsContainer = document.getElementById(this.renderControlsID);
 
-    const editor = new EditorGenerator(controlsContainer);
-
-    editor.createHeader('Configure Bar Chart');
-
-    this.renderBasicControls(editor);
+    const generalEditor = new EditorGenerator(document.getElementById('general-accordion-body'));
+    const colorEditor = new EditorGenerator(document.getElementById('color-accordion-body'));
+    const miscEditor = new EditorGenerator(document.getElementById('misc-accordion-body'));
 
     const cats = [];
-    const catsRaw = Object.keys(this.categoricalData[0]);
+    const catsRaw = Object.keys(this.data[0]);
     for (let i = 0; i < catsRaw.length; i += 1) {
       cats.push({ value: catsRaw[i], text: catsRaw[i] });
     }
+    cats.unshift({ value: 'No Column', text: 'No Column' });
 
-    editor.createSelectBox('bar-column-main', 'Select main column to display', cats, this.attributes.group_by_main,
-     (e) => {
-       const value = $(e.currentTarget).val();
-       this.attributes.group_by_main = value;
-       this.render();
-     });
-    const stackCats = cats;
-    stackCats.unshift({ value: 'No Column', text: 'No Column' });
-    editor.createSelectBox('bar-column-stack', 'Select stack column to display', stackCats, this.attributes.group_by_stack,
-     (e) => {
-       const value = $(e.currentTarget).val();
-       this.attributes.group_by_stack = value;
-       this.render();
-     });
-
-    editor.createNumberSlider('bar-font-size',
-      'Label Font Size', this.attributes.font_size, 1, 60, 1,
-      (e) => {
-        const value = $(e.currentTarget).val();
-        this.attributes.font_size = `${value}`;
+    generalEditor.createSelectBox('bar-column-stack', 'Select stacked column', cats,
+      this.attributes.group_by_stack, (e) => {
+        this.attributes.group_by_stack = $(e.currentTarget).val();
+        this.structureData();
+        this.renderKey();
         this.render();
-      });
+      }, '', 'Select a Property', 'column-select');
 
-    editor.createNumberSlider('bar-x-font-rotation',
+    miscEditor.createNumberSlider('bar-x-font-rotation',
       'X Axis Font Rotation', this.attributes.x_font_rotation, 0, 90, 1,
       (e) => {
         const value = $(e.currentTarget).val();
         this.attributes.x_font_rotation = `${value}`;
         this.render();
       });
-    editor.createNumberSlider('bar-x-font-x-offset',
+    miscEditor.createNumberSlider('bar-x-font-x-offset',
       'X Axis Font X Offset', this.attributes.x_font_x_offset, -50, 50, 1,
       (e) => {
         const value = $(e.currentTarget).val();
         this.attributes.x_font_x_offset = `${value}`;
         this.render();
       });
-    editor.createNumberSlider('bar-x-font-y-offset',
+    miscEditor.createNumberSlider('bar-x-font-y-offset',
       'X Axis Font Y Offset', this.attributes.x_font_y_offset, -50, 50, 1,
       (e) => {
         const value = $(e.currentTarget).val();
         this.attributes.x_font_y_offset = `${value}`;
         this.render();
       });
-
-    editor.createNumberSlider('bar-color',
-      'Bar color', this.attributes.color.list[0], 0, 359, 1,
-      (e) => {
-        const value = $(e.currentTarget).val();
-        this.attributes.color.list[0] = `${value}`;
-        this.render();
-      });
   }
 
+  /**
+   * Renders visuals for Bar chart
+   */
   render() {
-    // Empty the container, then place the SVG in there
-    Visual.empty(this.renderID);
-
-    let renderData = JSON.parse(JSON.stringify(this.categoricalData));
-
-    if (this.isNumeric(this.attributes.group_by_main)) {
-      renderData = this.makeBin(this.attributes.group_by_main, Number(this.attributes.binSize),
-      Number(this.attributes.binStart));
+    if (!super.render()) {
+      return;
     }
 
     const svg = d3.select(`#${this.renderID}`).append('svg')
-      .attr('class', 'bar');
+    .attr('class', 'bar');
 
     const margin = { top: 10, right: 10, bottom: 35, left: 25 };
     const dt = document.getElementById(`${this.renderID}`);
@@ -133,98 +82,90 @@ class Bar extends Visual {
     const height = width * (1.0 / this.attributes.aspect_ratio);
 
     const g = svg.append('g')
-      .attr('transform', `translate(${margin.left},${margin.top})`);
+    .attr('transform', `translate(${margin.left},${margin.top})`);
 
     const x = d3.scaleBand();
     const y = d3.scaleLinear();
 
+    // Assemble appropriate data
     let keys = [];
-    const stackData = [];
+    let stackData = [];
     if (this.attributes.group_by_stack !== 'No Column') {
-      const cats = [this.attributes.group_by_main, this.attributes.group_by_stack];
-      const multiLevelData = Visual.groupByMultiple(cats, renderData);
-      const innerLevelData = Object.values(multiLevelData);
-      const dataMapFunction = d => Object.values(d).reduce((a, b) => a.concat(b)).length;
-      const dataSizes = innerLevelData.map(dataMapFunction);
-
-      Object.keys(multiLevelData).forEach((k) => {
-        keys = keys.concat(Object.keys(multiLevelData[k]));
-      });
-      keys = keys.filter((e, i) => keys.indexOf(e) === i).sort();
-      Object.keys(multiLevelData).forEach((k) => {
-        const tempObj = {};
-        keys.forEach((key) => {
-          if (typeof multiLevelData[k][key] !== 'undefined') {
-            tempObj[key] = multiLevelData[k][key].length;
+      keys = this.getSubkeys();
+      stackData = [];
+      const outerKeys = Object.keys(this.attributes.items);
+      for (let i = 0; i < outerKeys.length; i += 1) {
+        stackData.push({ key: outerKeys[i] });
+        for (let j = 0; j < keys.length; j += 1) {
+          if (this.attributes.items[outerKeys[i]].subitems &&
+            this.attributes.items[outerKeys[i]].subitems[keys[j]]) {
+            stackData[i][keys[j]] = this.attributes.items[outerKeys[i]].subitems[keys[j]].value;
           } else {
-            tempObj[key] = 0;
+            stackData[i][keys[j]] = 0;
           }
-        });
-        tempObj.key = k;
-        stackData.push(tempObj);
-      });
+        }
+      }
 
-      x.domain(Object.keys(multiLevelData));
-      y.domain([0, d3.max(dataSizes)]);
+      stackData = stackData.sort((a, b) => d3.ascending(a.key, b.key));
     } else {
-      const cats = this.attributes.group_by_main;
-      const data = Visual.groupBy(cats, renderData);
-      const innerData = Object.values(data);
-      const dataSizes = innerData.map(d => d.length);
-
+      stackData = this.flattenItems();
       keys = ['value'];
-      Object.keys(data).forEach((k) => {
-        stackData.push({ key: k, value: data[k].length });
-      });
-
-      x.domain(Object.keys(data));
-      y.domain([0, d3.max(dataSizes)]);
     }
 
-    const colorspace = d3.scaleOrdinal().domain(keys).range(this.attributes.color.list);
-    const z = i => d3.hcl(colorspace(keys[i]), 100, 50).rgb();
-
-    let lbox = {};
-    if (this.attributes.group_by_stack !== 'No Column') {
-      const legend = g.append('g')
-        .attr('font-family', 'sans-serif')
-        .attr('font-size', `${this.attributes.font_size}pt`)
-        .attr('text-anchor', 'end')
-        .selectAll('g')
-        .data(keys.slice())
-        .enter()
-        .append('g')
-          .attr('transform', (d, i) => `translate(10,${(keys.length - i) * 1.25 * this.attributes.font_size})`);
-
-      legend.append('rect')
-        .attr('width', `${this.attributes.font_size}`)
-        .attr('height', `${this.attributes.font_size}`)
-        .attr('fill', (d, e) => z(e));
-
-      legend.append('text')
-        .attr('y', '0.5em')
-        .attr('dy', '0.25em')
-        .text(d => (d === '' ? 'NULL' : d));
-
-      lbox = legend.node().getBBox();
-      legend.selectAll('rect')
-        .attr('x', width - (0.25 * lbox.width) - this.attributes.font_size - 15);
-      legend.selectAll('text')
-        .attr('x', width - (0.25 * lbox.width) - this.attributes.font_size - 20);
-    } else {
-      lbox = {
-        x: 0, y: 0, width: 0, height: 0,
-      };
+    // Prep data for d3
+    const outerKeys = stackData.map(a => a.key);
+    const stack = [];
+    for (let i = 0; i < keys.length; i += 1) {
+      stack.push([]);
+      stack[i].index = i;
+      stack[i].key = keys[i];
+      for (let j = 0; j < outerKeys.length; j += 1) {
+        if (keys.length === 1) {
+          stack[i].push({
+            key: outerKeys[j],
+            stack: { start: 0, end: this.attributes.items[outerKeys[j]].value },
+            color: this.attributes.items[outerKeys[j]].color,
+          });
+        } else {
+          let start = 0;
+          if (i > 0) {
+            start = stack[i - 1][j].stack.end;
+          }
+          let end = start;
+          let color;
+          if (this.attributes.items[outerKeys[j]].subitems[keys[i]]) {
+            end = start + this.attributes.items[outerKeys[j]].subitems[keys[i]].value;
+            color = this.attributes.items[outerKeys[j]].subitems[keys[i]].color;
+          }
+          stack[i].push({
+            key: outerKeys[j],
+            stack: { start, end },
+            color,
+          });
+        }
+      }
     }
 
+    // Set graph dimensions
+    x.domain(stackData.map(a => a.key));
+    y.domain([0, d3.max(stack[stack.length - 1].map(item => item.stack.end))]);
+
+    const lbox = {
+      x: 0, y: 0, width: 0, height: 0,
+    };
+
+    // Axes
     y.rangeRound([height, 0]);
 
     g.append('g')
-        .attr('class', 'axis axis--y')
-        .call(d3.axisLeft(y).ticks(10))
-      .selectAll('text')
-        .attr('text-anchor', 'end')
-        .style('font-size', `${this.attributes.font_size}pt`);
+    .attr('class', 'axis axis--y')
+    .call(d3.axisLeft(y).ticks(10))
+    .selectAll('text')
+    .attr('text-anchor', 'end')
+    .styles({
+      'font-size': `${this.attributes.font_size}pt`,
+      'font-family': 'Gilroy',
+    });
 
     const ybox = svg.select('.axis--y').node().getBBox();
 
@@ -232,30 +173,41 @@ class Bar extends Visual {
     x.rangeRound([0, adjWidth]).padding(0.1);
 
     g.append('g')
-        .attr('class', 'axis axis--x')
-        .attr('transform', `translate(0,${height})`)
-        .call(d3.axisBottom(x))
-      .selectAll('text')
-        .attr('text-anchor', 'end')
-        .styles({
-          'font-size': `${this.attributes.font_size}pt`,
-          transform: `rotate(-${this.attributes.x_font_rotation}deg) translate(${this.attributes.x_font_x_offset}px,${this.attributes.x_font_y_offset}px)`,
-        });
+    .attr('class', 'axis axis--x')
+    .attr('transform', `translate(0,${height})`)
+    .call(d3.axisBottom(x))
+    .selectAll('text')
+    .attr('text-anchor', 'end')
+    .styles({
+      'font-size': `${this.attributes.font_size}pt`,
+      'font-family': 'Gilroy',
+      transform: `rotate(-${this.attributes.x_font_rotation}deg) translate(${this.attributes.x_font_x_offset}px,${this.attributes.x_font_y_offset}px)`,
+    });
 
     g.append('g')
-      .selectAll('g')
-      .data(d3.stack().keys(keys)(stackData))
-      .enter()
-      .append('g')
-        .attr('fill', (d, e) => z(e))
-      .selectAll('rect')
-      .data(d => d)
-      .enter()
-      .append('rect')
-        .attr('x', d => x(d.data.key))
-        .attr('y', d => y(d[1]))
-        .attr('height', d => y(d[0]) - y(d[1]))
-        .attr('width', x.bandwidth());
+    .selectAll('g')
+    .data(stack)
+    .enter()
+    .append('g')
+    .attr('fill', (d) => {
+      console.log(d);
+      let color = '#000000';
+      for (let i = 0; i < d.length; i += 1) {
+        if (d[i].color) {
+          color = d[i].color;
+          break;
+        }
+      }
+      return color;
+    })
+    .selectAll('rect')
+    .data(d => d)
+    .enter()
+    .append('rect')
+    .attr('x', d => x(d.key))
+    .attr('y', d => y(d.stack.end))
+    .attr('height', d => y(d.stack.start) - y(d.stack.end))
+    .attr('width', x.bandwidth());
 
     const gbox = g.node().getBBox();
     g.attr('transform', `translate(${-gbox.x},${margin.top})`);

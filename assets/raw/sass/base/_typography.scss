@@ -1,5 +1,16 @@
+@font-face {
+  font-family: 'Gilroy';
+  src: url(../font/Gilroy-Regular.eot);
+  src: url(../font/Gilroy-Regular.eot#iefix) format('embedded-opentype'),
+      url(../font/Gilroy-Regular.woff2) format('woff2'),
+      url(../font/Gilroy-Regular.woff) format('woff'),
+      url(../font/Gilroy-Regular.ttf) format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
 body {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Gilroy', sans-serif;
 }
 
 footer {
@@ -8,9 +19,13 @@ footer {
   }
 }
 
+h1, h2, h3, h4, h5, h6, p,
+.h1, .h2, .h3, .h4, .h5, .h6, .p{
+  color: $text;
+}
+
 h1 {
   font: {
-    family: 'Roboto', sans-serif;
     size: 3em;
   }
 

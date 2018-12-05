@@ -2,6 +2,9 @@ import Visual from './helpers/Visual';
 import EditorGenerator from './helpers/EditorGenerator';
 import ColorHelper from './helpers/ColorHelper';
 
+/**
+ * Class that is used for creating Donut charts
+ */
 class Donut extends Visual {
   constructor(config, renderID, renderControlsID) {
     super(config, renderID, renderControlsID);
@@ -9,36 +12,22 @@ class Donut extends Visual {
     this.useTransitions = true;
   }
 
+  /**
+   * Sets default attributes after data is loaded
+   */
   onLoadData() {
-    let defaultCat = '';
-    if (this.data.length > 0) {
-      const cats = Object.keys(this.data[0]);
-      if (cats.length > 1) {
-        defaultCat = cats[1];
-      }
-    }
+    this.attributes.can_stack = false;
     this.orderedGroups = null;
     this.changedBins = false;
-    this.applyDefaultAttributes({
-      width: 500,
-      height: 500,
-      dontDefineDimensions: true,
-      font_size: 20,
-      hide_empty: true,
-      show_legend: true,
-      color: {
-        mode: 'manual',
-      },
-      items: {}, // Contains objects that specify: key: {weight, color} where
-                 // a weight of 0 means first on the donut chart
-      label_mode: 'hover',
-      group_by: defaultCat,
-      title: '',
-      description: '',
-    });
+    super.onLoadData();
   }
 
+  /**
+   * Creates menu options
+   */
   renderControls() {
+    super.renderControls();
+
     if (this.data.length === 0) {
       alert('Dataset is empty!');
       return;
@@ -51,22 +40,19 @@ class Donut extends Visual {
 
     this.disableTransitions();
 
-    Visual.empty(this.renderControlsID);
-    const controlsContainer = document.getElementById(this.renderControlsID);
+    const generalEditor = new EditorGenerator(document.getElementById('general-accordion-body'));
+    const colorEditor = new EditorGenerator(document.getElementById('color-accordion-body'));
+    const miscEditor = new EditorGenerator(document.getElementById('misc-accordion-body'));
 
-    const editor = new EditorGenerator(controlsContainer);
-
-    editor.createHeader('Configure Donut Chart');
-    this.renderBasicControls(editor);
-
+    /*
     const cats = [];
-    let catsRaw = Object.keys(this.getCategoricalData(30)[0]);
+    let catsRaw = Object.keys(this.getCategoricalData(50)[0]);
     catsRaw = catsRaw.concat(Object.keys(this.getNumericData(2)[0]));
     for (let i = 0; i < catsRaw.length; i += 1) {
       cats.push({ value: catsRaw[i], text: catsRaw[i] });
     }
-    editor.createSelectBox('donut-column', 'Select column to display', cats, this.attributes.group_by,
-     (e) => {
+    editor.createSelectBox('donut-column', 'Select column to display', cats,
+     this.attributes.group_by, (e) => {
        const value = $(e.currentTarget).val();
        this.attributes.group_by = value;
        this.attributes.items = {};
@@ -89,13 +75,15 @@ class Donut extends Visual {
        this.render();
        this.changedBins = false;
      });
-    editor.createTextField('bin-start', 'Start Value of first Group', (e) => {
+     */
+
+    miscEditor.createTextField('bin-start', 'Start Value of first Group', (e) => {
       this.attributes.binStart = $(e.currentTarget).val();
       this.changedBins = true;
       this.render();
       this.changedBins = false;
     });
-    editor.createTextField('bin-size', 'Group Size', (e) => {
+    miscEditor.createTextField('bin-size', 'Group Size', (e) => {
       this.attributes.binSize = $(e.currentTarget).val();
       this.changedBins = true;
       this.render();
@@ -106,16 +94,15 @@ class Donut extends Visual {
     start.style.display = 'none';
     size.style.display = 'none';
 
-    if (this.currentEditKey != null) {
-      editor.createColorField('donut-piececolor',
+    if (this.currentEditKey !== null && this.attributes.color.mode === 'manual') { // TODO: make pieces movable in non-manual mode
+      miscEditor.createColorField('donut-piececolor',
        `${this.currentEditKey} Color`,
        this.attributes.items[this.currentEditKey].color, (e) => {
-         const value = $(e.currentTarget).val();
-         this.attributes.items[this.currentEditKey].color = value;
+         this.attributes.items[this.currentEditKey].color = $(e.currentTarget).val();
          this.render();
        },
       );
-      editor.createLeftRightButtons('donut-order', 'Change Piece Position',
+      miscEditor.createLeftRightButtons('donut-order', 'Change Piece Position',
         (e) => {
           const currentWeight = this.attributes.items[this.currentEditKey].weight;
           const keys = Object.keys(this.attributes.items);
@@ -146,46 +133,31 @@ class Donut extends Visual {
         });
     }
 
-    editor.createCheckBox('bubble-hideempty', 'Hide Empty Category', this.attributes.hide_empty, (e) => {
-      this.attributes.hide_empty = e.currentTarget.checked;
-      this.render();
-    });
-
-    editor.createCheckBox('bubble-showlegend', 'Show Legend', this.attributes.show_legend, (e) => {
-      this.attributes.show_legend = e.currentTarget.checked;
-      this.render();
-    });
-
-    editor.createNumberSlider('donut-font-size',
-     'Label Font Size',
-      this.attributes.font_size,
-       1, 60, 1,
-     (e) => {
-       const value = $(e.currentTarget).val();
-       this.attributes.font_size = `${value}`;
-       this.render();
-     });
-
     const displayModes = [
       { value: 'hover', text: 'On Hover' },
       { value: 'always', text: 'Always Visible' },
       { value: 'hidden', text: 'Hidden' }];
-    editor.createSelectBox('donut-labelmode', 'Label Display', displayModes, this.attributes.label_mode,
+    generalEditor.createSelectBox('donut-labelmode', 'Label Display', displayModes, this.attributes.label_mode,
       (e) => {
-        const value = $(e.currentTarget).val();
-        this.attributes.label_mode = value;
+        this.attributes.label_mode = $(e.currentTarget).val();
         this.render();
       });
   }
 
+  /**
+   * Renders visuals for Donut chart
+   */
   render() {
+    if (!super.render()) {
+      return;
+    }
+
     // Empty the container, then place the SVG in there
-    Visual.empty(this.renderID);
-    const width = 500;
-    const height = 500;
-    const radius = Math.min(width, height) / 2;
+
+    /*
     let data = null;
     this.renderData = JSON.parse(JSON.stringify(this.data));
+
     if (this.isNumeric(this.attributes.group_by)) {
       this.renderData = this.makeBin(this.attributes.group_by, Number(this.attributes.binSize),
       Number(this.attributes.binStart));
@@ -200,153 +172,97 @@ class Donut extends Visual {
       }
     }
 
+    if (this.attributes.hide_empty) {
+      data = Visual.hideEmpty(data);
+    }
+    */
+
+    const width = document.getElementById('visual').clientWidth;
+    const height = document.getElementById('visual').clientHeight;
+    let radius = 0;
+    if (width < height) {
+      radius = width / 2;
+    } else {
+      radius = height / 2;
+    }
+
     const arc = d3.arc()
       .outerRadius(radius - 10)
-      .innerRadius(100);
+      .innerRadius((radius - 10) * 0.6);
+
+    const svg = d3.select(`#${this.renderID}`).append('svg')
+      .attr('class', 'donut')
+      .attr('viewBox', `0 0 ${width} ${height}`)
+      .append('g')
+      .attr('transform', `translate(${width / 2},${height / 2})`)
+      .style('width', '100%')
+      .style('height', '100%');
+
+    // Flatten the data
+    let data = this.flattenItems();
 
     const pie = d3.pie()
       .sort(null)
       .value(d => d.value);
 
-    let extraHeight = (data.length * 22) + 10;
-    if (this.attributes.show_legend === false) { extraHeight = 0; }
-
-    const svg = d3.select(`#${this.renderID}`).append('svg')
-      .attr('class', 'donut')
-      .attr('viewBox', `0 0 ${width} ${height + extraHeight}`)
-      .append('g')
-      .attr('transform', `translate(${width / 2},${height / 2})`)
-      .style('max-width', '100%')
-      .style('max-height', '100%');
-
-    if (!this.attributes.dontDefineDimensions) {
-      d3.select(`#${this.renderID} > svg`)
-        .style('width', this.attributes.width)
-        .style('height', this.attributes.height);
-    }
-
-    if (this.attributes.hide_empty) {
-      data = data.filter(d => d.key !== undefined &&
-        d.key !== '' &&
-        d.key.toLowerCase() !== 'null' &&
-        d.key.toLowerCase() !== 'undefined');
-    }
-
-    data = data.sort((a, b) => {
-      if (this.attributes.items[b.key] !== undefined &&
-      this.attributes.items[a.key] !== undefined) {
-        return this.attributes.items[a.key].weight - this.attributes.items[b.key].weight;
-      }
-      return 0;
-    });
+    const tweenPie = (b) => {
+      const i = d3.interpolate({ startAngle: 0, endAngle: 0 }, b);
+      return t => arc(i(t));
+    };
 
     const g = svg.selectAll('.arc')
       .data(pie(data))
       .enter().append('g')
       .attr('class', 'arc ');
 
-    const tweenPie = function (b) {
-      const i = d3.interpolate({ startAngle: 0, endAngle: 0 }, b);
-      return function (t) { return arc(i(t)); };
-    };
-    const path = g.append('path')
-      .style('fill', (d, i) => {
-        if (this.attributes.items[d.data.key] === undefined) {
-          const hue = d.index / data.length;
-          const color = d3.hsl(hue * 360.0, 1, 0.6);
-          this.attributes.items[d.data.key] = {
-            weight: i,
-            color: ColorHelper.rgbToHex(color.toString()),
-          };
-        }
-        return this.attributes.items[d.data.key].color;
-      });
+    const g2 = svg.selectAll('.arc2')
+      .data(pie(data))
+      .enter().append('g')
+      .attr('class', 'arc ');
+
+    const section = g.append('path')
+      .style('fill', d => this.attributes.items[d.data.key].color);
 
     if (this.useTransitions) {
-      path.transition()
+      section.transition()
         .delay(500)
         .duration(700)
         .attrTween('d', tweenPie);
     } else {
-      path.attr('d', arc);
+      section.attr('d', arc);
     }
 
-    if (this.attributes.label_mode == 'hover') {
-      const donut = this;
-      const handleMouseOver = function (d, i) {
-        let coordinates = [0, 0];
-        coordinates = d3.mouse(this);
+    if (this.attributes.label_mode === 'hover') {
+      this.hoverTextDisplay(data, svg, section);
+    } else if (this.attributes.label_mode === 'always') {
+      let outline = '#FFFFFF';
+      if (ColorHelper.isLight(this.attributes.font_color)) {
+        outline = '#000000';
+      }
 
-        d3.select('#donut-tooltip').remove();
-
-        d3.select(this)
-          .attr('fill-opacity', '0.5');
-
-        const text = svg.append('text')
-          .attr('id', 'donut-tooltip')
-          .attr('class', 'hovertext')
-          .style('font-size', `${donut.attributes.font_size}pt`)
-          .text(d.data.key);
-        if (coordinates[0] > 0) {
-          text.attr('transform', `translate(${coordinates[0] - 5} ${coordinates[1]})`)
-          .attr('text-anchor', 'end');
-        } else {
-          text.attr('transform', `translate(${coordinates[0] + 5} ${coordinates[1]})`)
-          .attr('text-anchor', 'start');
-        }
-      };
-
-      const handleMouseOut = function (d, i) {
-        d3.select(this)
-          .attr('fill-opacity', 1);
-        d3.select('#donut-tooltip').remove();
-      };
-
-      path.on('mousemove', handleMouseOver)
-          .on('mouseout', handleMouseOut);
-    } else if (this.attributes.label_mode == 'always') {
-      g.append('text')
+      g2.append('text')
+        .attr('class', 'alwaystext')
         .attr('transform', d => `translate(${arc.centroid(d)})`)
         .attr('dy', '.35em')
-        .attr('style', `font-size:${this.attributes.font_size}pt`)
+        .style('font-size', `${this.attributes.font_size}pt`)
+        .style('fill', `${this.attributes.font_color}`)
+        .style('color', `${this.attributes.font_color}`)
+        .style('stroke', `${outline}`)
+        .style('stroke-width', '0.025em')
+        .style('stroke-linejoin', 'round')
         .attr('id', d => `label-${d.data.key}`)
         .text(d => d.data.key);
     }
 
-    if (this.attributes.show_legend) {
-      const legend = d3.select(`#${this.renderID} > svg`).append('g')
-        .attr('font-family', 'sans-serif')
-        .attr('font-size', 10)
-        .attr('text-anchor', 'end')
-        .selectAll('g')
-        .data(pie(data))
-        .enter()
-        .append('g')
-          .attr('transform', (d, i) => `translate(0,${(i * 22) + 500})`);
-
-      legend.append('rect')
-        .attr('x', width - 19)
-        .attr('width', 19)
-        .attr('height', 19)
-        .attr('fill', d => this.attributes.items[d.data.key].color);
-
-      legend.append('text')
-        .attr('x', width - 24)
-        .attr('y', 9.5)
-        .attr('dy', '0.32em')
-        .style('font-size', '18px')
-        .text(d => (d === '' ? 'NULL' : d.data.key));
-    }
-
     if (this.editmode) {
-      path.on('click', (d) => {
+      section.on('click', (d) => {
         this.currentEditKey = d.data.key;
         this.renderControls();
         this.render();
       });
       const editKey = this.currentEditKey;
       if (editKey !== null) {
-        path.attr('stroke-width', (d) => {
+        section.attr('stroke-width', (d) => {
           if (d.data.key === editKey) { return '1px'; }
           return '0';
         })

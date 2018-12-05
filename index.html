@@ -26,12 +26,27 @@
 
 <header>
   <h1><a href="/">Sandbox</a></h1>
-  <span id="breadcrumbs"></span>
 </header>
-<div id="page" class="container body">
-</div>
+<div id="page" class="container body"></div>
 <footer>
-Venice Project Center · <a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank"><object class="cc" data="/assets/prod/images/by-sa.svg" type="image/svg+xml"></object></a> · <a href="/config-editor">Manage Configs</a> · <button id="clear-cache">Clear Cache</button>
+  <div class="sponsorship">
+    <a href="http://www.veniceprojectcenter.org/vpc">
+      <object class="vpc" data="/assets/prod/images/vpc-logo.png" type="image/png"></object>
+    </a>
+    <a href="https://www.wpi.edu/">
+      <object class="wpi" data="/assets/prod/images/wpi-logo.png" type="image/png"></object>
+    </a>
+  </div>
+  <div class="sandbox-parts">
+  <a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank">
+    <object class="cc" data="/assets/prod/images/by-sa.svg" type="image/svg+xml"></object></a>
+    <button onclick="window.location.href='/all-visuals'">See All Graph Types</button>
+  <button id="clear-cache">Clear Cache</button>
+  </div>
+  <div class="credits">
+    <p> Created by the Knowing Venice and Open teams in 2017, and further improved by the 30th Anniversary Team in 2018.
+    </p>
+  </div>
 </footer>
 
 <!-- Templates -->
@@ -120,6 +135,13 @@ Venice Project Center · <a href="https://creativecommons.org/licenses/by-sa/4.0
   </div>
 </script>
 
+<script id="number-field-entry" type="text/x-handlebars-template">
+  <div class="input-field" id="{{id}}">
+    <input type="number" id="{{id}}-number">
+    <label for="{{id}}-number">{{title}}</label>
+  </div>
+</script>
+
 <script id="remove-button" type="text/x-handlebars-template">
   <a id="{{id}}-button"style="height:22px;width:22px;line-height:25px;margin-top:25px" class="btn-floating btn-large waves-effect waves-light"><font color="white">x</font></a>
 </script >
@@ -137,7 +159,7 @@ Venice Project Center · <a href="https://creativecommons.org/licenses/by-sa/4.0
 </script>
 
 <script id="check-entry" type="text/x-handlebars-template">
-  <form action="#" id="{{id}}">
+  <div id="{{id}}">
     <input type="checkbox" id="{{id}}-checkbox" {{checked}}/>
     <label for="{{id}}-checkbox">{{title}}</label>
   </div>
@@ -163,7 +185,8 @@ Venice Project Center · <a href="https://creativecommons.org/licenses/by-sa/4.0
 <script id="colorpicker" type="text/x-handlebars-template">
   <div class="color-wrapper">
     <label class="color-label">{{title}}</label>
-    <input type="color" class="colorpicker-color" id="{{id}}-field" value="{{color}}" />
+    <input type="color" class="colorpicker-color" id="{{id}}-field" value="#{{color}}" />
+    <label class="buffer">#</label>
     <input type="text" class="colorpicker-input" id="{{id}}-mirror" value="{{color}}" />
   </div>
 </script>
@@ -175,8 +198,8 @@ Venice Project Center · <a href="https://creativecommons.org/licenses/by-sa/4.0
 <script id="leftrightbuttons" type="text/x-handlebars-template">
   <div id="{{id}}" class="leftrightwrapper">
     <label>{{title}}</label>
-    <a id="{{id}}-left" class="waves-effect waves-light btn">Counter-Clockwise</a>
-    <a id="{{id}}-right" class="waves-effect waves-light btn">Clockwise</a>
+    <span id="{{id}}-left" class="left-button">Counter-Clockwise</span>
+    <span id="{{id}}-right" class="right-button">Clockwise</span>
   </div>
 </script>
 

@@ -1,6 +1,12 @@
 .grid {
+  .grid-element {
+    flex: 0 0 20%;
+    max-width: 20%;
+    padding: 1% 1%;
+  }
+
   .block {
-    background: $white;
+    background: $primary;
     border-radius: 10px;
     cursor: pointer;
     margin-bottom: 15px;
@@ -32,7 +38,7 @@
     }
   }
 
-  a {
+  div {
     &:hover,
     &:focus {
       text-decoration: none;

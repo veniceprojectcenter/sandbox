@@ -1,0 +1,47 @@
+.input-field {
+  label {
+    color: $subtletext;
+  }
+
+  // Dropdown Selectors
+  .select-dropdown {
+    color: $text;
+    background: #FFFFFF;
+  }
+
+  span.caret{
+    color: $text;
+  }
+
+  .dropdown-content {
+    li > span {
+      color: #000000;
+    }
+
+    li.disabled > span {
+      color: #444444;
+    }
+  }
+
+  // Typed Input
+  input[type=text], input[type=number] {
+    color: $text;
+
+    &:focus {
+      border-color: $primary !important;
+      box-shadow: 0 0 !important;
+    }
+
+    &:focus + label {
+      color: $primary !important;
+      border: $primary;
+    }
+
+    // Remove up/down arrows for numerical selection
+    &::-webkit-inner-spin-button,
+    &::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+  }
+}
