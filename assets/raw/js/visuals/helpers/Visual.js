@@ -239,8 +239,6 @@ class Visual {
       label_mode: 'hover',
       title: '',
       description: '',
-      x_label: '',
-      y_label: '',
       category_order: '',
       aspect_ratio: 1.5,
       group_by: null,
@@ -252,7 +250,6 @@ class Visual {
       x_font_y_offset: 0,
     });
     this.attributes.packed_graph = false;
-    this.attributes.y_label = `Number of ${this.dataSet}`;
 
     // Group the data
     this.structureData();
@@ -850,7 +847,6 @@ class Visual {
     generalEditor.createSelectBox('column-select', 'Select data to display', dataCats, this.attributes.group_by,
       (e) => {
         this.attributes.group_by = $(e.currentTarget).val();
-        this.attributes.x_label = this.attributes.group_by;
         this.structureData();
         this.renderKey();
         this.render();

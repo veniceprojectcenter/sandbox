@@ -79,11 +79,6 @@ class Bar extends Visual {
         this.attributes.x_font_y_offset = `${value}`;
         this.render();
       });
-    if (this.attributes.x_label === '') {
-    }
-    if (this.attributes.y_label === '') {
-
-    }
   }
 
   /**
@@ -177,7 +172,11 @@ class Bar extends Visual {
 
     let offsetWidth = 0;
     let offsetHeight = 0;
-    if (this.attributes.y_label !== '') {
+    let yText = this.attributes.y_label;
+    if (!yText || yText === '') {
+      yText = `Number of ${this.dataSet}`;
+    }
+    if (yText) {
       offsetWidth = (this.lengthinPX('W')[1]);
       svg.append('g')
         .attr('transform', `translate(${(offsetWidth * 0.5)}, ${(height / 2)})`)// ((height / 2) + (yLabelLength / 2)))//((textHeight * 0.2)))
@@ -187,21 +186,26 @@ class Bar extends Visual {
         .style('font-size', `${this.attributes.font_size}pt`)
         .style('fill', `${this.attributes.font_color}`)
         .style('color', `${this.attributes.font_color}`)
-        .text(this.attributes.y_label);
+        .text(yText);
     }
     const fontOffset = 2 * (this.attributes.font_size - 10);
-    if (this.attributes.x_label !== '') {
+
+    let xText = this.attributes.x_label;
+    if (!xText || xText === '') {
+      xText = this.attributes.group_by;
+    }
+    if (xText) {
       offsetHeight = ((this.lengthinPX('W')[1]));
       svg.append('g')
-        .attr('id', 'bar-x-axis')
-        .attr('class', 'bar-x-axis')
-        .attr('transform', `translate(${(width / 2)}, ${height + margin.top + margin.bottom})`)// ((height / 2) + (yLabelLength / 2)))//((textHeight * 0.2)))
-        .append('text')
-        .attr('text-anchor', 'middle')
-        .style('font-size', `${this.attributes.font_size}pt`)
-        .style('fill', `${this.attributes.font_color}`)
-        .style('color', `${this.attributes.font_color}`)
-        .text(this.attributes.x_label);
+      .attr('id', 'bar-x-axis')
+      .attr('class', 'bar-x-axis')
+      .attr('transform', `translate(${(width / 2)}, ${height + margin.top + margin.bottom})`)// ((height / 2) + (yLabelLength / 2)))//((textHeight * 0.2)))
+      .append('text')
+      .attr('text-anchor', 'middle')
+      .style('font-size', `${this.attributes.font_size}pt`)
+      .style('fill', `${this.attributes.font_color}`)
+      .style('color', `${this.attributes.font_color}`)
+      .text(xText);
     }
     // Axes
     y.rangeRound([height - (offsetHeight * 2), 0]);
@@ -260,7 +264,7 @@ class Bar extends Visual {
     .attr('height', d => y(d.stack.start) - y(d.stack.end))
     .attr('width', x.bandwidth());
 
-    if (this.attributes.x_label !== '') {
+    if (xText) {
       d3.select('#bar-x-axis').attr('transform', `translate(${width / 2}, ${height + svg.select('.axis--x').node().getBBox().height - offsetHeight})`);
     }
 
