@@ -1,6 +1,5 @@
 import Visual from './helpers/Visual';
 import EditorGenerator from './helpers/EditorGenerator';
-import ColorHelper from './helpers/ColorHelper';
 
 class Bar extends Visual {
 
@@ -167,6 +166,9 @@ class Bar extends Visual {
       }
     }
 
+    if (stack.length === 0) {
+      return;
+    }
     // Set graph dimensions
     x.domain(stackData.map(a => a.key));
     y.domain([0, d3.max(stack[stack.length - 1].map(item => item.stack.end))]);
@@ -246,7 +248,6 @@ class Bar extends Visual {
     .enter()
     .append('g')
       .attr('fill', (d) => {
-        console.log(d);
         let color = '#000000';
         for (let i = 0; i < d.length; i += 1) {
           if (d[i].color) {

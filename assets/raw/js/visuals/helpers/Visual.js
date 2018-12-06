@@ -545,6 +545,7 @@ class Visual {
     if (!this.attributes.group_by || !this.data ||
       !Object.keys(this.data[0]).includes(this.attributes.group_by)) {
       this.attributes.group_by = null;
+      this.attributes.group_by_stack = 'No Column';
       return false;
     }
 
@@ -862,6 +863,9 @@ class Visual {
 
     if (document.getElementById('column-select')) {
       document.getElementById('column-select').remove();
+    }
+    if (document.getElementById('bar-column-stack')) {
+      document.getElementById('bar-column-stack').remove();
     }
 
     const dataCats = [];
