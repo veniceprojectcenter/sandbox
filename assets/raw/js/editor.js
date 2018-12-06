@@ -414,16 +414,6 @@ function renderEditor(defaultDS = null, defaultGT = null) {
     page.appendChild(rowContainer);
     page.appendChild(downloadContainer);
 
-    // Select Data Set
-    controlsEditor.createSelectBox('dataSelector', 'Data Set', dsCats, defaultDSName,
-      (e) => {
-        currDataSet = $(e.currentTarget).val();
-        if (activeVisual) {
-          activeVisual.dataSet = currGraphType;
-        }
-        createGraphic(currDataSet, currGraphType);
-      },
-      null, 'Select a Data Set');
     // Select GraphType
     controlsEditor.createSelectBox('graphSelector', 'Graph Type', graphCats, defaultGT,
       (e) => {
@@ -434,6 +424,16 @@ function renderEditor(defaultDS = null, defaultGT = null) {
         createGraphic(currDataSet, currGraphType);
       },
       null, 'Select a Graph Type');
+    // Select Data Set
+    controlsEditor.createSelectBox('dataSelector', 'Data Set', dsCats, defaultDSName,
+      (e) => {
+        currDataSet = $(e.currentTarget).val();
+        if (activeVisual) {
+          activeVisual.dataSet = currGraphType;
+        }
+        createGraphic(currDataSet, currGraphType);
+      },
+      null, 'Select a Data Set');
   });
 }
 

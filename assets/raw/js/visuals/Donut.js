@@ -141,7 +141,7 @@ class Donut extends Visual {
       (e) => {
         this.attributes.label_mode = $(e.currentTarget).val();
         this.render();
-      });
+      }, '', 'Select a Label Mode', 'drop-showlegend');
   }
 
   /**

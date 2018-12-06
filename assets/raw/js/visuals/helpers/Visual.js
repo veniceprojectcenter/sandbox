@@ -858,6 +858,26 @@ class Visual {
    * Populates the accordion generetaed in renderControls() with various graph options
    */
   renderBasicControls() {
+    const majorEditor = new EditorGenerator(document.getElementById('majorSelect'));
+
+    if (document.getElementById('column-select')) {
+      document.getElementById('column-select').remove();
+    }
+
+    const dataCats = [];
+    // Change the call to getColumns to change the filter
+    const dataCatsRaw = this.getColumns({ filterEmpty: true, maxCategories: 50 });
+    for (let i = 0; i < dataCatsRaw.length; i += 1) {
+      dataCats.push({ value: dataCatsRaw[i], text: dataCatsRaw[i] });
+    }
+    majorEditor.createSelectBox('column-select', 'Select data to display', dataCats, this.attributes.group_by,
+      (e) => {
+        this.attributes.group_by = $(e.currentTarget).val();
+        this.structureData();
+        this.renderKey();
+        this.render();
+      });
+
     const generalEditor = new EditorGenerator(document.getElementById('general-accordion-body'));
     const colorEditor = new EditorGenerator(document.getElementById('color-accordion-body'));
 
@@ -878,20 +898,6 @@ class Visual {
       }
     }, this.attributes.description);
 
-    const dataCats = [];
-    // Change the call to getColumns to change the filter
-    const dataCatsRaw = this.getColumns({ filterEmpty: true, maxCategories: 50 });
-    for (let i = 0; i < dataCatsRaw.length; i += 1) {
-      dataCats.push({ value: dataCatsRaw[i], text: dataCatsRaw[i] });
-    }
-    generalEditor.createSelectBox('column-select', 'Select data to display', dataCats, this.attributes.group_by,
-      (e) => {
-        this.attributes.group_by = $(e.currentTarget).val();
-        this.structureData();
-        this.renderKey();
-        this.render();
-      });
-
     generalEditor.createNumberField('font-size', 'Font Size',
       (e) => {
         let value = $(e.currentTarget).val();
@@ -908,14 +914,6 @@ class Visual {
         this.renderKey();
         this.render();
       }, this.attributes.font_size);
-
-    generalEditor.createCheckBox('hide-empty', 'Hide Empty Category', this.attributes.hide_empty,
-      (e) => {
-        this.attributes.hide_empty = e.currentTarget.checked;
-        this.structureData();
-        this.renderKey();
-        this.render();
-      });
 
     const dogs = [
       { value: 'below', text: 'Below' },
@@ -936,6 +934,14 @@ class Visual {
       document.getElementById('key').style.display = 'block';
       document.getElementById('drop-showlegend').style.display = 'block';
     }
+
+    generalEditor.createCheckBox('hide-empty', 'Hide Empty Category', this.attributes.hide_empty,
+      (e) => {
+        this.attributes.hide_empty = e.currentTarget.checked;
+        this.structureData();
+        this.renderKey();
+        this.render();
+      });
 
     // Populate Color Settings
     colorEditor.createColorField('font-color', 'Font Color', this.attributes.font_color,
