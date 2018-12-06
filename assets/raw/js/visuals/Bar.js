@@ -79,6 +79,11 @@ class Bar extends Visual {
         this.attributes.x_font_y_offset = `${value}`;
         this.render();
       });
+    if (this.attributes.x_label === '') {
+    }
+    if (this.attributes.y_label === '') {
+
+    }
   }
 
   /**
@@ -87,13 +92,6 @@ class Bar extends Visual {
   render() {
     if (!super.render()) {
       return;
-    }
-
-    if (this.attributes.x_label === '') {
-      this.attributes.x_label = this.attributes.group_by;
-    }
-    if (this.attributes.y_label === '') {
-      this.attributes.y_label = `Number of ${this.dataSet}`;
     }
 
     const svg = d3.select(`#${this.renderID}`).append('svg')
@@ -217,6 +215,8 @@ class Bar extends Visual {
       .attr('text-anchor', 'end')
       .styles({
         'font-size': `${this.attributes.font_size}pt`,
+        fill: `${this.attributes.font_color}`,
+        color: `${this.attributes.font_color}`,
         'font-family': 'Gilroy',
       });
 
@@ -229,6 +229,8 @@ class Bar extends Visual {
       .attr('text-anchor', 'end')
       .styles({
         'font-size': `${this.attributes.font_size}pt`,
+        fill: `${this.attributes.font_color}`,
+        color: `${this.attributes.font_color}`,
         'font-family': 'Gilroy',
         transform: `rotate(-${this.attributes.x_font_rotation}deg) translate(${this.attributes.x_font_x_offset}px,${this.attributes.x_font_y_offset}px)`,
       });
