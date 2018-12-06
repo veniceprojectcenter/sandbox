@@ -2,9 +2,8 @@ body {
   background-color: $background;
 }
 
-.controls, .visual, .intro, .key, .majorSelect {
+.controls, .visual, .intro, .key, .majorSelect,.graphTitle {
   position: relative;
-  min-height: 1px;
 }
 
 /*
@@ -21,14 +20,14 @@ body {
 }
 
 .controls {
-  display: inline-block;
+  display: block;
   overflow-y: auto;
   overflow-x: hidden;
 }
 
 .graphTitle {
   visibility: hidden;
-  margin-top: 0;
+  margin-top: -25px;
 }
 
 .visual {
