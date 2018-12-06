@@ -1,3 +1,4 @@
+import html2canvas from 'html2canvas';
 import Visual from './visuals/helpers/Visual';
 import Donut from './visuals/Donut';
 import BubbleChart from './visuals/BubbleChart';
@@ -87,10 +88,13 @@ function createPublishButton(loginModal) {
 function createSVGButton() {
   const saveSVGButton = document.createElement('button');
   saveSVGButton.innerText = 'Export for Illustrator';
+
+  /*
   saveSVGButton.addEventListener('click', async () => {
     let svgData = '';
     const svg = $(`#${activeVisual.renderID} svg`);
-    const map = document.querySelector(`#${activeVisual.renderID} .map`) || document.querySelector(`#${activeVisual.renderID}.map`);
+    const map = document.querySelector(`#${activeVisual.renderID} .map`) ||
+     document.querySelector(`#${activeVisual.renderID}.map`);
     if (svg.length === 1) {
       activeVisual.editmode = false;
       activeVisual.render();
@@ -127,7 +131,43 @@ function createSVGButton() {
       activeVisual.render();
     }
   });
+  */
 
+  saveSVGButton.addEventListener('click', async () => {
+    const graph = document.getElementById('column2');
+
+    // Change the svg to better shit
+    function setDimensions(targetElem) {
+      const svgElem = targetElem.getElementsByTagName('svg');
+      for (const node of svgElem) {
+        if (!node.hasAttribute('height') || !node.hasAttribute('width')) {
+          const height = window.getComputedStyle(node, null).height;
+          const width = window.getComputedStyle(node, null).width;
+          node.setAttribute('width', width);
+          node.setAttribute('height', height);
+          node.replaceWith(node);
+        }
+      }
+    }
+    const svg = $('#column2');
+    setDimensions(svg[0]);
+
+    html2canvas(graph, {
+      backgroundColor: null,
+      allowTaint: true,
+    }).then((canvas) => {
+      const img = canvas.toDataURL('image/png');
+
+      const downloadLink = document.createElement('a');
+      downloadLink.href = img;
+      if (activeVisual.attributes.title && activeVisual.attributes.title !== '') {
+        downloadLink.download = `${activeVisual.attributes.title}.png`;
+      } else {
+        downloadLink.download = `${activeVisual.dataSet}-${activeVisual.type}.png`;
+      }
+      downloadLink.click();
+    });
+  });
   return saveSVGButton;
 }
 

@@ -562,7 +562,6 @@ class Visual {
    * @returns {String[]} Array of all keys, or empty array if there is no data
    */
   getColumns(options = {}) {
-    console.log(this.data);
     if (this.data.length > 0) {
       const currColumns = Object.keys(this.data[0]);
       // Filter out any columns with 1 or less categories after hiding Empty (null, undefined, etc.)
