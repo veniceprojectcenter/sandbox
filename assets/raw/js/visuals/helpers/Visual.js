@@ -249,6 +249,7 @@ class Visual {
       group_by_stack: 'No Column',
       can_stack: false,
       packed_graph: false,
+      filter_columns: true,
       x_font_rotation: 45,
       x_font_x_offset: 0,
       x_font_y_offset: 0,
@@ -870,7 +871,11 @@ class Visual {
 
     const dataCats = [];
     // Change the call to getColumns to change the filter
-    const dataCatsRaw = this.getColumns({ filterEmpty: true, maxCategories: 50 });
+    let options = {};
+    if (this.attributes.filter_columns) {
+      options = { filterEmpty: true, maxCategories: 50 };
+    }
+    const dataCatsRaw = this.getColumns(options);
     for (let i = 0; i < dataCatsRaw.length; i += 1) {
       dataCats.push({ value: dataCatsRaw[i], text: dataCatsRaw[i] });
     }
@@ -945,6 +950,12 @@ class Visual {
         this.structureData();
         this.renderKey();
         this.render();
+      });
+
+    generalEditor.createCheckBox('filter-columns', 'Hide Outlier Columns', this.attributes.filter_columns,
+      (e) => {
+        this.attributes.filter_columns = e.currentTarget.checked;
+        this.renderControls();
       });
 
     // Populate Color Settings

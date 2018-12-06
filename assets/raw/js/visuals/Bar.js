@@ -26,8 +26,13 @@ class Bar extends Visual {
     const colorEditor = new EditorGenerator(document.getElementById('color-accordion-body'));
     const miscEditor = new EditorGenerator(document.getElementById('misc-accordion-body'));
 
+
+    let options = {};
+    if (this.attributes.filter_columns) {
+      options = { filterEmpty: true, maxCategories: 50 };
+    }
     const cats = [];
-    const catsRaw = Object.keys(this.data[0]);
+    const catsRaw = this.getColumns(options);
     for (let i = 0; i < catsRaw.length; i += 1) {
       cats.push({ value: catsRaw[i], text: catsRaw[i] });
     }
