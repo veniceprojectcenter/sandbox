@@ -38,9 +38,10 @@ class Bar extends Visual {
       this.attributes.group_by_stack, (e) => {
         this.attributes.group_by_stack = $(e.currentTarget).val();
         if (this.attributes.group_by_stack === 'No Column') {
-          this.attributes.legend_mode = 'none';
+          document.getElementById('key').style.display = 'none';
           document.getElementById('drop-showlegend').style.display = 'none';
         } else {
+          document.getElementById('key').style.display = 'block';
           document.getElementById('drop-showlegend').style.display = 'block';
         }
         this.structureData();
