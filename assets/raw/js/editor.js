@@ -89,22 +89,13 @@ function createPublishButton(loginModal) {
 function createSVGButton() {
   const saveSVGButton = document.createElement('button');
   saveSVGButton.innerText = 'Export for Illustrator';
+
+  /*
   saveSVGButton.addEventListener('click', async () => {
-    html2canvas($('#column2'), {
-      onrendered(canvas) {
-        // Convert and download as image
-        canvas2image.saveAsPNG(canvas);
-        $('#img-out')
-          .append(canvas);
-      },
-    });
-  });
-  return saveSVGButton;
-}
-    /*
     let svgData = '';
     const svg = $(`#${activeVisual.renderID} svg`);
-    const map = document.querySelector(`#${activeVisual.renderID} .map`) || document.querySelector(`#${activeVisual.renderID}.map`);
+    const map = document.querySelector(`#${activeVisual.renderID} .map`) ||
+     document.querySelector(`#${activeVisual.renderID}.map`);
     if (svg.length === 1) {
       activeVisual.editmode = false;
       activeVisual.render();
@@ -141,10 +132,45 @@ function createSVGButton() {
       activeVisual.render();
     }
   });
-
-
-  return saveSVGButton;
   */
+
+  saveSVGButton.addEventListener('click', async () => {
+    const graph = document.getElementById('column2');
+
+    // Change the svg to better shit
+    function setDimensions(targetElem) {
+      const svgElem = targetElem.getElementsByTagName('svg');
+      for (const node of svgElem) {
+        if (!node.hasAttribute('height') || !node.hasAttribute('width')) {
+          const height = window.getComputedStyle(node, null).height;
+          const width = window.getComputedStyle(node, null).width;
+          node.setAttribute('width', width);
+          node.setAttribute('height', height);
+          node.replaceWith(node);
+        }
+      }
+    }
+    const svg = $('#column2');
+    setDimensions(svg[0]);
+
+    html2canvas(graph, {
+      backgroundColor: null,
+      allowTaint: true,
+    }).then((canvas) => {
+      const img = canvas.toDataURL('image/png');
+
+      const downloadLink = document.createElement('a');
+      downloadLink.href = img;
+      if (activeVisual.attributes.title && activeVisual.attributes.title !== '') {
+        downloadLink.download = `${activeVisual.attributes.title}.png`;
+      } else {
+        downloadLink.download = `${activeVisual.dataSet}-${activeVisual.type}.png`;
+      }
+      downloadLink.click();
+    });
+  });
+  return saveSVGButton;
+}
 
 /**
  * Creates the download button, which downloads a json of the active dataSet when pressed
@@ -389,16 +415,6 @@ function renderEditor(defaultDS = null, defaultGT = null) {
     page.appendChild(rowContainer);
     page.appendChild(downloadContainer);
 
-    // Select Data Set
-    controlsEditor.createSelectBox('dataSelector', 'Data Set', dsCats, defaultDSName,
-      (e) => {
-        currDataSet = $(e.currentTarget).val();
-        if (activeVisual) {
-          activeVisual.dataSet = currGraphType;
-        }
-        createGraphic(currDataSet, currGraphType);
-      },
-      null, 'Select a Data Set');
     // Select GraphType
     controlsEditor.createSelectBox('graphSelector', 'Graph Type', graphCats, defaultGT,
       (e) => {
@@ -409,6 +425,16 @@ function renderEditor(defaultDS = null, defaultGT = null) {
         createGraphic(currDataSet, currGraphType);
       },
       null, 'Select a Graph Type');
+    // Select Data Set
+    controlsEditor.createSelectBox('dataSelector', 'Data Set', dsCats, defaultDSName,
+      (e) => {
+        currDataSet = $(e.currentTarget).val();
+        if (activeVisual) {
+          activeVisual.dataSet = currGraphType;
+        }
+        createGraphic(currDataSet, currGraphType);
+      },
+      null, 'Select a Data Set');
   });
 }
 

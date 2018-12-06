@@ -30,7 +30,6 @@
     "vinyl-source-stream": "^1.1.0"
   },
   "dependencies": {
-    "canvas2image": "^1.0.5",
     "html2canvas": "^1.0.0-alpha.12",
     "jquery": "^3.3.1",
     "xmlhttprequest": "^1.8.0"

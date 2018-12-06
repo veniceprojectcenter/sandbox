@@ -249,6 +249,7 @@ class Visual {
       group_by_stack: 'No Column',
       can_stack: false,
       packed_graph: false,
+      filter_columns: true,
       x_font_rotation: 45,
       x_font_x_offset: 0,
       x_font_y_offset: 0,
@@ -545,6 +546,7 @@ class Visual {
     if (!this.attributes.group_by || !this.data ||
       !Object.keys(this.data[0]).includes(this.attributes.group_by)) {
       this.attributes.group_by = null;
+      this.attributes.group_by_stack = 'No Column';
       return false;
     }
 
@@ -858,6 +860,33 @@ class Visual {
    * Populates the accordion generetaed in renderControls() with various graph options
    */
   renderBasicControls() {
+    const majorEditor = new EditorGenerator(document.getElementById('majorSelect'));
+
+    if (document.getElementById('column-select')) {
+      document.getElementById('column-select').remove();
+    }
+    if (document.getElementById('bar-column-stack')) {
+      document.getElementById('bar-column-stack').remove();
+    }
+
+    const dataCats = [];
+    // Change the call to getColumns to change the filter
+    let options = {};
+    if (this.attributes.filter_columns) {
+      options = { filterEmpty: true, maxCategories: 50 };
+    }
+    const dataCatsRaw = this.getColumns(options);
+    for (let i = 0; i < dataCatsRaw.length; i += 1) {
+      dataCats.push({ value: dataCatsRaw[i], text: dataCatsRaw[i] });
+    }
+    majorEditor.createSelectBox('column-select', 'Select data to display', dataCats, this.attributes.group_by,
+      (e) => {
+        this.attributes.group_by = $(e.currentTarget).val();
+        this.structureData();
+        this.renderKey();
+        this.render();
+      });
+
     const generalEditor = new EditorGenerator(document.getElementById('general-accordion-body'));
     const colorEditor = new EditorGenerator(document.getElementById('color-accordion-body'));
 
@@ -878,25 +907,9 @@ class Visual {
       }
     }, this.attributes.description);
 
-    const dataCats = [];
-    // Change the call to getColumns to change the filter
-    const dataCatsRaw = this.getColumns({ filterEmpty: true, maxCategories: 50 });
-    for (let i = 0; i < dataCatsRaw.length; i += 1) {
-      dataCats.push({ value: dataCatsRaw[i], text: dataCatsRaw[i] });
-    }
-    generalEditor.createSelectBox('column-select', 'Select data to display', dataCats, this.attributes.group_by,
-      (e) => {
-        this.attributes.group_by = $(e.currentTarget)
-          .val();
-        this.structureData();
-        this.renderKey();
-        this.render();
-      });
-
     generalEditor.createNumberField('font-size', 'Font Size',
       (e) => {
-        let value = $(e.currentTarget)
-          .val();
+        let value = $(e.currentTarget).val();
         if (value === '') {
           value = 10;
         } else if (Number(value) < 1) {
@@ -911,14 +924,6 @@ class Visual {
         this.render();
       }, this.attributes.font_size);
 
-    generalEditor.createCheckBox('hide-empty', 'Hide Empty Category', this.attributes.hide_empty,
-      (e) => {
-        this.attributes.hide_empty = e.currentTarget.checked;
-        this.structureData();
-        this.renderKey();
-        this.render();
-      });
-
     const dogs = [
       { value: 'below', text: 'Below' },
       { value: 'above', text: 'Above' },
@@ -926,8 +931,7 @@ class Visual {
       { value: 'right', text: 'Right' },
       { value: 'none', text: 'None' }];
     generalEditor.createSelectBox('drop-showlegend', 'Show Legend', dogs, this.attributes.legend_mode, (e) => {
-      this.attributes.legend_mode = $(e.currentTarget)
-        .val();
+      this.attributes.legend_mode = $(e.currentTarget).val();
       this.renderKey();
       this.render();
     });
@@ -941,6 +945,20 @@ class Visual {
       document.getElementById('key').style.display = 'block';
       document.getElementById('drop-showlegend').style.display = 'block';
     }
+
+    generalEditor.createCheckBox('hide-empty', 'Hide Empty Category', this.attributes.hide_empty,
+      (e) => {
+        this.attributes.hide_empty = e.currentTarget.checked;
+        this.structureData();
+        this.renderKey();
+        this.render();
+      });
+
+    generalEditor.createCheckBox('filter-columns', 'Hide Outlier Columns', this.attributes.filter_columns,
+      (e) => {
+        this.attributes.filter_columns = e.currentTarget.checked;
+        this.renderControls();
+      });
 
     // Populate Color Settings
     colorEditor.createColorField('font-color', 'Font Color', this.attributes.font_color,
