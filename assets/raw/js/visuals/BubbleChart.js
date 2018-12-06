@@ -12,6 +12,7 @@ class BubbleChart extends Visual {
     this.editmode = false;
     this.currentEditKey = null;
     this.useTransitions = true;
+    this.attributes.packed_graph = true;
   }
 
   /**
@@ -93,30 +94,28 @@ class BubbleChart extends Visual {
     }
 
     const svgWidth = document.getElementById('visual').clientWidth;
-    const svgHeight = document.getElementById('visual').clientWidth;
-    const diameter = document.getElementById('visual').clientWidth;
+    const svgHeight = document.getElementById('visual').clientHeight;
 
     const bubble = d3.pack()
-        .size([diameter, diameter])
+        .size([svgWidth, svgHeight])
         .padding(1.5);
 
     const svg = d3.select(`#${this.renderID}`).append('svg')
+        .attr('id', 'svgBox')
         .attr('class', 'bubble-chart')
         .attr('viewBox', `0 0 ${svgWidth} ${svgHeight}`);
 
-
-    let counts = this.flattenItems();
-
-    if (this.attributes.hide_empty) {
-      counts = Visual.hideEmpty(counts);
-    }
+    const g = svg.append('g')
+      .style('width', '100%')
+      .style('height', '100%');
+    const counts = this.flattenItems();
 
     const root = d3.hierarchy({ children: counts })
           .sum(d => d.value)
           .sort((a, b) => b.value - a.value);
 
     bubble(root);
-    const node = svg.selectAll('.node')
+    const node = g.selectAll('.node')
       .data(root.children)
     .enter().append('g')
       .attr('class', 'node')
@@ -141,7 +140,7 @@ class BubbleChart extends Visual {
         .attr('transform', 'scale(1)');
     }
 
-    const text = svg.selectAll('.nodetext')
+    const text = g.selectAll('.nodetext')
       .data(root.children)
       .enter()
       .append('text')
@@ -150,9 +149,17 @@ class BubbleChart extends Visual {
       .attr('data-key', d => d.data.key)
       .style('text-anchor', 'middle')
       .style('pointer-events', 'none')
+      .style('fill', `${this.attributes.font_color}`)
+      .style('color', `${this.attributes.font_color}`)
+      .style('stroke', () => {
+        if (ColorHelper.isLight(this.attributes.font_color)) {
+          return '#000000';
+        }
+        return '#FFFFFF';
+      })
+      .style('stroke-width', '0.025em')
+      .style('stroke-linejoin', 'round')
       .style('font-size', `${this.attributes.font_size}pt`)
-      .style('text-shadow', '0px 0px 5px white')
-      .attr('fill', this.attributes.font_color)
       .text(d => d.data.key);
 
     if (this.useTransitions) {
@@ -163,9 +170,12 @@ class BubbleChart extends Visual {
       .attr('transform', d => `translate(${d.x},${d.y})scale(1)`);
     }
 
-    //this.renderKey(root.children.map(a => a.key), 'below');
+    // this.renderKey(root.children.map(a => a.key), 'below');
 
     if (this.attributes.label_mode === 'hover') {
+      this.hoverTextDisplay(svg, node, [0, 0]);
+      text.style('display', 'none');
+      /*
       text.style('display', 'none');
       const handleMouseOver = function (d) {
         d3.select(this)
@@ -185,7 +195,7 @@ class BubbleChart extends Visual {
       };
 
       node.select('circle').on('mouseover', handleMouseOver)
-            .on('mouseout', handleMouseOut);
+            .on('mouseout', handleMouseOut); */
     } else if (this.attributes.label_mode === 'hidden') {
       text.style('display', 'none');
     }

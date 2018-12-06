@@ -37,10 +37,26 @@ class Bar extends Visual {
     generalEditor.createSelectBox('bar-column-stack', 'Select stacked column', cats,
       this.attributes.group_by_stack, (e) => {
         this.attributes.group_by_stack = $(e.currentTarget).val();
+        if (this.attributes.group_by_stack === 'No Column') {
+          this.attributes.legend_mode = 'none';
+          document.getElementById('drop-showlegend').style.display = 'none';
+        } else {
+          document.getElementById('drop-showlegend').style.display = 'block';
+        }
         this.structureData();
         this.renderKey();
         this.render();
       }, '', 'Select a Property', 'column-select');
+
+    miscEditor.createTextField('bar-x-label', 'X Label', (e) => {
+      this.attributes.x_label = e.currentTarget.value;
+      this.render();
+    }, this.attributes.x_label);
+
+    miscEditor.createTextField('bar-y-label', 'Y Label', (e) => {
+      this.attributes.y_label = e.currentTarget.value;
+      this.render();
+    }, this.attributes.y_label);
 
     miscEditor.createNumberSlider('bar-x-font-rotation',
       'X Axis Font Rotation', this.attributes.x_font_rotation, 0, 90, 1,
@@ -73,16 +89,27 @@ class Bar extends Visual {
       return;
     }
 
-    const svg = d3.select(`#${this.renderID}`).append('svg')
-    .attr('class', 'bar');
+    if (this.attributes.x_label === '') {
+      this.attributes.x_label = this.attributes.group_by;
+    }
+    if (this.attributes.y_label === '') {
+      this.attributes.y_label = `Number of ${this.dataSet}`;
+    }
 
-    const margin = { top: 10, right: 10, bottom: 35, left: 25 };
-    const dt = document.getElementById(`${this.renderID}`);
-    const width = dt.scrollWidth - (margin.left + margin.right);
-    const height = width * (1.0 / this.attributes.aspect_ratio);
+    const svg = d3.select(`#${this.renderID}`).append('svg')
+      .attr('id', 'svgBox')
+      .attr('class', 'bar');
+
+    const dt = document.getElementById('visual');
+    const margin = { top: (dt.clientHeight * 0.02),
+      right: (dt.clientWidth * 0.02),
+      bottom: (dt.clientHeight * 0.02),
+      left: (dt.clientWidth * 0.02) };
+    const width = dt.clientWidth - (margin.left + margin.right);
+    const height = dt.clientHeight - (margin.top + margin.bottom);
 
     const g = svg.append('g')
-    .attr('transform', `translate(${margin.left},${margin.top})`);
+      .attr('transform', `translate(${margin.left},${margin.top})`);
 
     const x = d3.scaleBand();
     const y = d3.scaleLinear();
@@ -150,68 +177,93 @@ class Bar extends Visual {
     x.domain(stackData.map(a => a.key));
     y.domain([0, d3.max(stack[stack.length - 1].map(item => item.stack.end))]);
 
-    const lbox = {
-      x: 0, y: 0, width: 0, height: 0,
-    };
-
+    let offsetWidth = 0;
+    let offsetHeight = 0;
+    if (this.attributes.y_label !== '') {
+      offsetWidth = (this.lengthinPX('W')[1]);
+      svg.append('g')
+        .attr('transform', `translate(${(offsetWidth * 0.5)}, ${(height / 2)})`)// ((height / 2) + (yLabelLength / 2)))//((textHeight * 0.2)))
+        .append('text')
+        .attr('text-anchor', 'middle')
+        .attr('transform', 'rotate(270)')
+        .style('font-size', `${this.attributes.font_size}pt`)
+        .style('fill', `${this.attributes.font_color}`)
+        .style('color', `${this.attributes.font_color}`)
+        .text(this.attributes.y_label);
+    }
+    const fontOffset = 2 * (this.attributes.font_size - 10);
+    if (this.attributes.x_label !== '') {
+      offsetHeight = ((this.lengthinPX('W')[1]));
+      svg.append('g')
+        .attr('id', 'bar-x-axis')
+        .attr('class', 'bar-x-axis')
+        .attr('transform', `translate(${(width / 2)}, ${height + margin.top + margin.bottom})`)// ((height / 2) + (yLabelLength / 2)))//((textHeight * 0.2)))
+        .append('text')
+        .attr('text-anchor', 'middle')
+        .style('font-size', `${this.attributes.font_size}pt`)
+        .style('fill', `${this.attributes.font_color}`)
+        .style('color', `${this.attributes.font_color}`)
+        .text(this.attributes.x_label);
+    }
     // Axes
-    y.rangeRound([height, 0]);
+    y.rangeRound([height - (offsetHeight * 2), 0]);
+    x.rangeRound([0, width - (offsetWidth * 2)]).padding(0.05);
 
     g.append('g')
-    .attr('class', 'axis axis--y')
-    .call(d3.axisLeft(y).ticks(10))
-    .selectAll('text')
-    .attr('text-anchor', 'end')
-    .styles({
-      'font-size': `${this.attributes.font_size}pt`,
-      'font-family': 'Gilroy',
-    });
-
-    const ybox = svg.select('.axis--y').node().getBBox();
-
-    const adjWidth = width - (ybox.width + lbox.width) - 25;
-    x.rangeRound([0, adjWidth]).padding(0.1);
+      .attr('class', 'axis axis--y')
+      .attr('transform', `translate(0,${offsetHeight})`)
+      .call(d3.axisLeft(y).ticks(10))
+      .selectAll('text')
+      .attr('text-anchor', 'end')
+      .styles({
+        'font-size': `${this.attributes.font_size}pt`,
+        'font-family': 'Gilroy',
+      });
 
     g.append('g')
-    .attr('class', 'axis axis--x')
-    .attr('transform', `translate(0,${height})`)
-    .call(d3.axisBottom(x))
-    .selectAll('text')
-    .attr('text-anchor', 'end')
-    .styles({
-      'font-size': `${this.attributes.font_size}pt`,
-      'font-family': 'Gilroy',
-      transform: `rotate(-${this.attributes.x_font_rotation}deg) translate(${this.attributes.x_font_x_offset}px,${this.attributes.x_font_y_offset}px)`,
-    });
+      .attr('class', 'axis axis--x')
+      .attr('id', 'bar-x-labels')
+      .attr('transform', `translate(0,${height - offsetHeight})`)
+      .call(d3.axisBottom(x))
+      .selectAll('text')
+      .attr('text-anchor', 'end')
+      .styles({
+        'font-size': `${this.attributes.font_size}pt`,
+        'font-family': 'Gilroy',
+        transform: `rotate(-${this.attributes.x_font_rotation}deg) translate(${this.attributes.x_font_x_offset}px,${this.attributes.x_font_y_offset}px)`,
+      });
 
     g.append('g')
     .selectAll('g')
     .data(stack)
     .enter()
     .append('g')
-    .attr('fill', (d) => {
-      console.log(d);
-      let color = '#000000';
-      for (let i = 0; i < d.length; i += 1) {
-        if (d[i].color) {
-          color = d[i].color;
-          break;
+      .attr('fill', (d) => {
+        console.log(d);
+        let color = '#000000';
+        for (let i = 0; i < d.length; i += 1) {
+          if (d[i].color) {
+            color = d[i].color;
+            break;
+          }
         }
-      }
-      return color;
-    })
+        return color;
+      })
     .selectAll('rect')
     .data(d => d)
     .enter()
     .append('rect')
     .attr('x', d => x(d.key))
-    .attr('y', d => y(d.stack.end))
+      .attr('y', d => (y(d.stack.end) + offsetHeight))
     .attr('height', d => y(d.stack.start) - y(d.stack.end))
     .attr('width', x.bandwidth());
 
+    if (this.attributes.x_label !== '') {
+      d3.select('#bar-x-axis').attr('transform', `translate(${width / 2}, ${height + svg.select('.axis--x').node().getBBox().height - offsetHeight})`);
+    }
+
     const gbox = g.node().getBBox();
-    g.attr('transform', `translate(${-gbox.x},${margin.top})`);
-    const fontOffset = 2 * (this.attributes.font_size - 10);
+    g.attr('transform', `translate(${-gbox.x + offsetWidth},${margin.top - offsetHeight})`);
     const viewBoxWidth = gbox.width + fontOffset + gbox.x + margin.left + margin.right;
     const viewBoxHeight = gbox.height + gbox.y + margin.top + margin.bottom;
     svg.attr('viewBox', `0 0 ${viewBoxWidth} ${viewBoxHeight}`);
