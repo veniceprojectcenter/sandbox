@@ -1,3 +1,5 @@
+import html2canvas from 'html2canvas';
+
 import Visual from './visuals/helpers/Visual';
 import Donut from './visuals/Donut';
 import BubbleChart from './visuals/BubbleChart';
@@ -88,6 +90,18 @@ function createSVGButton() {
   const saveSVGButton = document.createElement('button');
   saveSVGButton.innerText = 'Export for Illustrator';
   saveSVGButton.addEventListener('click', async () => {
+    html2canvas($('#column2'), {
+      onrendered(canvas) {
+        // Convert and download as image
+        canvas2image.saveAsPNG(canvas);
+        $('#img-out')
+          .append(canvas);
+      },
+    });
+  });
+  return saveSVGButton;
+}
+    /*
     let svgData = '';
     const svg = $(`#${activeVisual.renderID} svg`);
     const map = document.querySelector(`#${activeVisual.renderID} .map`) || document.querySelector(`#${activeVisual.renderID}.map`);
@@ -128,8 +142,9 @@ function createSVGButton() {
     }
   });
 
+
   return saveSVGButton;
-}
+  */
 
 /**
  * Creates the download button, which downloads a json of the active dataSet when pressed

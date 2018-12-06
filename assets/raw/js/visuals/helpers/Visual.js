@@ -562,7 +562,6 @@ class Visual {
    * @returns {String[]} Array of all keys, or empty array if there is no data
    */
   getColumns(options = {}) {
-    console.log(this.data);
     if (this.data.length > 0) {
       const currColumns = Object.keys(this.data[0]);
       // Filter out any columns with 1 or less categories after hiding Empty (null, undefined, etc.)
@@ -887,7 +886,8 @@ class Visual {
     }
     generalEditor.createSelectBox('column-select', 'Select data to display', dataCats, this.attributes.group_by,
       (e) => {
-        this.attributes.group_by = $(e.currentTarget).val();
+        this.attributes.group_by = $(e.currentTarget)
+          .val();
         this.structureData();
         this.renderKey();
         this.render();
@@ -895,7 +895,8 @@ class Visual {
 
     generalEditor.createNumberField('font-size', 'Font Size',
       (e) => {
-        let value = $(e.currentTarget).val();
+        let value = $(e.currentTarget)
+          .val();
         if (value === '') {
           value = 10;
         } else if (Number(value) < 1) {
@@ -925,12 +926,15 @@ class Visual {
       { value: 'right', text: 'Right' },
       { value: 'none', text: 'None' }];
     generalEditor.createSelectBox('drop-showlegend', 'Show Legend', dogs, this.attributes.legend_mode, (e) => {
-      this.attributes.legend_mode = $(e.currentTarget).val();
+      this.attributes.legend_mode = $(e.currentTarget)
+        .val();
       this.renderKey();
       this.render();
     });
 
-    if (this.attributes.can_stack && (this.attributes.group_by_stack === 'No Column')) {
+    if (!this.attributes.group_by) {
+      document.getElementById('key').style.display = 'none';
+    } else if (this.attributes.can_stack && (this.attributes.group_by_stack === 'No Column')) {
       document.getElementById('key').style.display = 'none';
       document.getElementById('drop-showlegend').style.display = 'none';
     } else {
@@ -942,6 +946,7 @@ class Visual {
     colorEditor.createColorField('font-color', 'Font Color', this.attributes.font_color,
       (e) => {
         this.attributes.font_color = $(e.currentTarget).val();
+        this.renderKey();
         this.render();
       });
 
@@ -970,6 +975,7 @@ class Visual {
           this.colorItemsByPalette();
         }
         this.renderControls();
+        this.renderKey();
         this.render();
       });
 
@@ -979,6 +985,7 @@ class Visual {
           this.attributes.color.start_color = $(e.currentTarget)
           .val();
           this.colorItemsByPalette();
+          this.renderKey();
           this.render();
         });
 
@@ -987,6 +994,7 @@ class Visual {
           this.attributes.color.end_color = $(e.currentTarget)
           .val();
           this.colorItemsByPalette();
+          this.renderKey();
           this.render();
         });
     } else if (this.attributes.color.mode === 'single') {
@@ -994,6 +1002,7 @@ class Visual {
         this.attributes.color.single_color, (e) => {
           this.attributes.color.single_color = $(e.currentTarget)
           .val();
+          this.renderKey();
           this.render();
         });
     }
