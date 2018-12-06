@@ -154,7 +154,11 @@ class Visual {
     });
   }
 
+  // Functions that act on this.attributes.items
 
+  /**
+   * Removes undefined, null, or other unwanted values from the items object
+   */
   hideEmptyItems() {
     const items = this.attributes.items;
     const keys = Object.keys(this.attributes.items);
@@ -401,6 +405,7 @@ class Visual {
     return this.sortData(temp.map(a => ({ key: a }))).map(a => a.key);
   }
 
+  // Standard Graph Functions
 
   /**
    * Abstract method for rendering controls for the desired visuals, used to render the accordion
@@ -551,13 +556,43 @@ class Visual {
   // DATA HELPER FUNCTIONS
 
   /**
-   * Checks the columns of this.data and returns them in an array
+   * Checks the columns of this.data and returns them in an array, with filters based on options
    *
+   * @param {Object} options Contains options for filtering columns
    * @returns {String[]} Array of all keys, or empty array if there is no data
    */
-  getColumns() {
+  getColumns(options = {}) {
+    console.log(this.data);
     if (this.data.length > 0) {
-      return Object.keys(this.data[0]);
+      const currColumns = Object.keys(this.data[0]);
+      // Filter out any columns with 1 or less categories after hiding Empty (null, undefined, etc.)
+      if (options.filterEmpty && options.filterEmpty === true) {
+        for (let i = 0; i < currColumns.length; i += 1) {
+          const filtered = Visual.hideEmpty(this.data.map((a) => {
+            return { key: a[currColumns[i]] };
+          }));
+
+          if (filtered.length <= 1) {
+            currColumns.splice(i, i + 1);
+            i -= 1;
+          }
+        }
+      }
+      // Filters out columns with more than the desired number of categories
+      if (options.maxCategories) {
+        for (let i = 0; i < currColumns.length; i += 1) {
+          const column = new Set();
+          const keys = this.data.map(a => a[currColumns[i]]);
+          keys.forEach((key) => {
+            column.add(key);
+          });
+          if (column.size > options.maxCategories) {
+            currColumns.splice(i, i + 1);
+            i -= 1;
+          }
+        }
+      }
+      return currColumns;
     }
     return [];
   }
@@ -818,6 +853,11 @@ class Visual {
     return groups;
   }
 
+  // Graphics Helpers
+
+  /**
+   * Populates the accordion generetaed in renderControls() with various graph options
+   */
   renderBasicControls() {
     const generalEditor = new EditorGenerator(document.getElementById('general-accordion-body'));
     const colorEditor = new EditorGenerator(document.getElementById('color-accordion-body'));
@@ -840,7 +880,8 @@ class Visual {
     }, this.attributes.description);
 
     const dataCats = [];
-    const dataCatsRaw = Object.keys(this.data[0]); // TODO: better filtering??????????????????????????
+    // Change the call to getColumns to change the filter
+    const dataCatsRaw = this.getColumns({ filterEmpty: true, maxCategories: 50 });
     for (let i = 0; i < dataCatsRaw.length; i += 1) {
       dataCats.push({ value: dataCatsRaw[i], text: dataCatsRaw[i] });
     }
