@@ -88,7 +88,7 @@ function createPublishButton(loginModal) {
  */
 function createSVGButton() {
   const saveSVGButton = document.createElement('button');
-  saveSVGButton.innerText = 'Export for Illustrator';
+  saveSVGButton.innerText = 'Save as PNG';
 
   /*
   saveSVGButton.addEventListener('click', async () => {
@@ -179,7 +179,7 @@ function createSVGButton() {
  */
 function createDownloadConfig() {
   const downloadButton = document.createElement('button');
-  downloadButton.innerText = 'Create Save File';
+  downloadButton.innerText = 'Save Config File';
   downloadButton.addEventListener('click', () => {
     const config = {
       type: activeVisual.type,
