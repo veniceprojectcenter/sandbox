@@ -879,7 +879,7 @@ class Visual {
     for (let i = 0; i < dataCatsRaw.length; i += 1) {
       dataCats.push({ value: dataCatsRaw[i], text: dataCatsRaw[i] });
     }
-    majorEditor.createSelectBox('column-select', 'Select data to display', dataCats, this.attributes.group_by,
+    majorEditor.createSelectBox('column-select', 'Data Column', dataCats, this.attributes.group_by,
       (e) => {
         this.attributes.group_by = $(e.currentTarget).val();
         this.structureData();
@@ -946,18 +946,18 @@ class Visual {
       document.getElementById('drop-showlegend').style.display = 'block';
     }
 
-    generalEditor.createCheckBox('hide-empty', 'Hide Empty Category', this.attributes.hide_empty,
+    generalEditor.createCheckBox('filter-columns', 'Hide Outlier Columns', this.attributes.filter_columns,
+      (e) => {
+        this.attributes.filter_columns = e.currentTarget.checked;
+        this.renderControls();
+      });
+
+    generalEditor.createCheckBox('hide-empty', 'Hide Empty Data', this.attributes.hide_empty,
       (e) => {
         this.attributes.hide_empty = e.currentTarget.checked;
         this.structureData();
         this.renderKey();
         this.render();
-      });
-
-    generalEditor.createCheckBox('filter-columns', 'Hide Outlier Columns', this.attributes.filter_columns,
-      (e) => {
-        this.attributes.filter_columns = e.currentTarget.checked;
-        this.renderControls();
       });
 
     // Populate Color Settings
