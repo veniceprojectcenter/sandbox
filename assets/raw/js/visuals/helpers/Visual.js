@@ -243,8 +243,8 @@ class Visual {
         mode: 'palette',
         colors: [],
         single_color: '#808080',
-        start_color: '#CC6633',
-        end_color: '#333333',
+        start_color: '#b30000',
+        end_color: '#0000b3',
       },
       font_color: '#FFFFFF',
       items: {}, // Contains objects that specify: key: {weight, color} where
