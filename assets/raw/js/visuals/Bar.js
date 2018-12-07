@@ -23,7 +23,6 @@ class Bar extends Visual {
     }
 
     const generalEditor = new EditorGenerator(document.getElementById('general-accordion-body'));
-    const colorEditor = new EditorGenerator(document.getElementById('color-accordion-body'));
     const miscEditor = new EditorGenerator(document.getElementById('misc-accordion-body'));
 
 

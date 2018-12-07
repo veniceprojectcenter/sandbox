@@ -280,7 +280,9 @@ function createGraphic(dataSet, graphType, attr = null) {
     activeVisual.fetchAndRenderWithControls();
     generateDownloadButtons();
     window.addEventListener('resize', () => {
+      activeVisual.renderKey();
       activeVisual.render();
+      activeVisual.renderBasics();
     });
   }
   document.getElementById('controls').style.height = `calc(100% - 
@@ -317,8 +319,12 @@ function renderEditor(defaultDS = null, defaultGT = null) {
   visualContainer.className = 'visual';
   visualContainer.id = Visual.DEFAULT_RENDER_ID;
 
+  const blurbContainer = document.createElement('div');
+  blurbContainer.className = 'blurb';
+  blurbContainer.id = 'blurb';
+
   // Intro blurb which will be overwritten when the graphs are rendered
-  visualContainer.innerHTML = '<p class="intro"> Welcome to the Venice Project Center Sandbox ' +
+  blurbContainer.innerHTML = '<p class="intro"> Welcome to the Venice Project Center Sandbox ' +
     'Application! This site is designed so anyone can make useful visualizations from the vast ' +
     'expanse of data that the VPC has collected since its founding in 1988. Select a data set ' +
     'and graph type to begin!';
@@ -356,6 +362,7 @@ function renderEditor(defaultDS = null, defaultGT = null) {
   column1Container.appendChild(controlsContainer);
   visualColumn.appendChild(visualContainer);
   visualColumn.appendChild(keyContainer);
+  column2Container.appendChild(blurbContainer);
   column2Container.appendChild(visualColumn);
 
   // Setup page to render later
