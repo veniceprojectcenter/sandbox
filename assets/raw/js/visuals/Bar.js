@@ -37,7 +37,7 @@ class Bar extends Visual {
     }
     cats.unshift({ value: 'No Column', text: 'No Column' });
 
-    generalEditor.createSelectBox('bar-column-stack', 'Select stacked column', cats,
+    generalEditor.createSelectBox('bar-column-stack', 'Stacked Data Column', cats,
       this.attributes.group_by_stack, (e) => {
         this.attributes.group_by_stack = $(e.currentTarget).val();
         if (this.attributes.group_by_stack === 'No Column') {
