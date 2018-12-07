@@ -70,8 +70,6 @@ class Bar extends Visual {
       this.render();
     }, this.attributes.y_label);
 
-    document.getElementById('bar-y-label').style.marginTop = '0';
-
     miscEditor.createCheckBox('bar-show-y', 'Show Y Label', this.attributes.show_y_label, (e) => {
       this.attributes.show_y_label = e.currentTarget.checked;
       this.render();
