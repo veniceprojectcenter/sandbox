@@ -85,75 +85,49 @@ function createPublishButton(loginModal) {
  *
  * @returns {HTMLButtonElement}
  */
-function createSVGButton() {
-  const saveSVGButton = document.createElement('button');
-  saveSVGButton.innerText = 'Export for Illustrator';
+function createPNGButton() {
+  const savePNGButton = document.createElement('button');
+  savePNGButton.innerText = 'Export for Illustrator';
 
-  /*
-  saveSVGButton.addEventListener('click', async () => {
-    let svgData = '';
-    const svg = $(`#${activeVisual.renderID} svg`);
-    const map = document.querySelector(`#${activeVisual.renderID} .map`) ||
-     document.querySelector(`#${activeVisual.renderID}.map`);
-    if (svg.length === 1) {
-      activeVisual.editmode = false;
-      activeVisual.render();
-      svg.attr('version', '1.1')
-      .attr('xmlns:xlink', 'http://www.w3.org/1999/xlink')
-      .attr('xmlns', 'http://www.w3.org/2000/svg')
-      .attr('xml:space', 'preserve');
-
-      svgData = svg[0].outerHTML;
-    } else if (map) {
-      if (activeVisual.map) {
-        svgData = await activeVisual.map.export();
-      } else {
-        Materialize.toast('Error exporting map', 3000);
-      }
-    } else {
-      Materialize.toast('This chart type is not supported for Illustrator!', 3000);
-    }
-
-    if (svgData) {
-      const svgBlob = new Blob([svgData], { type: 'image/svg+xml;charset=utf-8' });
-      const svgUrl = URL.createObjectURL(svgBlob);
-      const downloadLink = document.createElement('a');
-      downloadLink.href = svgUrl;
-      if (activeVisual.attributes.title && activeVisual.attributes.title !== '') {
-        downloadLink.download = `${activeVisual.attributes.title}.svg`;
-      } else {
-        downloadLink.download = `${activeVisual.dataSet}-${activeVisual.type}.svg`;
-      }
-      downloadLink.click();
-    }
-    if (svg.length === 1 && !activeVisual.editmode) {
-      activeVisual.editmode = true;
-      activeVisual.render();
-    }
-  });
-  */
-
-  saveSVGButton.addEventListener('click', async () => {
+  savePNGButton.addEventListener('click', async () => {
     const graph = document.getElementById('column2');
+    const svg = $('#column2')[0];
 
-    // Change the svg to better shit
-    function setDimensions(targetElem) {
-      const svgElem = targetElem.getElementsByTagName('svg');
-      for (const node of svgElem) {
-        if (!node.hasAttribute('height') || !node.hasAttribute('width')) {
-          const height = window.getComputedStyle(node, null).height;
-          const width = window.getComputedStyle(node, null).width;
-          node.setAttribute('width', width);
-          node.setAttribute('height', height);
-          node.replaceWith(node);
-        }
+    // Force dimensions (and font) onto svg elements
+    const svgElem = svg.getElementsByTagName('svg');
+    for (const node of svgElem) {
+      node.style['font-family'] = 'Arial';
+      if (!node.hasAttribute('height') || !node.hasAttribute('width')) {
+        const height = window.getComputedStyle(node, null).height;
+        const width = window.getComputedStyle(node, null).width;
+        node.setAttribute('width', width);
+        node.setAttribute('height', height);
+        node.replaceWith(node);
       }
     }
-    const svg = $('#column2');
-    setDimensions(svg[0]);
 
-    html2canvas(graph, {
+    // Make key visible
+    /*
+    const key = document.getElementById('key');
+
+    let overflowX, overflowY;
+    if (key) {
+      overflowX = key.style['overflow-x'];
+      key.style['overflow-x'] = 'visible';
+      overflowY = key.style['overflow-y'];
+      key.style['overflow-y'] = 'visible';
+    }
+    */
+
+    // Force uniform font onto the graphics
+    const children = svg.childNodes;
+    for (let i = 0; i < children.length; i += 1) {
+      children[i].style['font-family'] = 'Arial';
+    }
+
+    await html2canvas(graph, {
       backgroundColor: null,
+      logging: false,
       allowTaint: true,
     }).then((canvas) => {
       const img = canvas.toDataURL('image/png');
@@ -167,8 +141,17 @@ function createSVGButton() {
       }
       downloadLink.click();
     });
+
+    // Removed forced fonts
+    for (let i = 0; i < children.length; i += 1) {
+      children[i].style['font-family'] = null;
+    }
+
+    for (const node of svgElem) {
+      node.style['font-family'] = null;
+    }
   });
-  return saveSVGButton;
+  return savePNGButton;
 }
 
 /**
@@ -207,7 +190,7 @@ function generateDownloadButtons(id = 'download') {
   const loginModal = new LoginModal();
   // const publishButton = createPublishButton(loginModal);
   const downloadButton = createDownloadConfig();
-  const saveSVGButton = createSVGButton();
+  const saveSVGButton = createPNGButton();
 
   const uploadButton = document.createElement('input');
   uploadButton.type = 'file';
