@@ -879,7 +879,7 @@ class Visual {
     for (let i = 0; i < dataCatsRaw.length; i += 1) {
       dataCats.push({ value: dataCatsRaw[i], text: dataCatsRaw[i] });
     }
-    majorEditor.createSelectBox('column-select', 'Select data to display', dataCats, this.attributes.group_by,
+    majorEditor.createSelectBox('column-select', 'Data Column', dataCats, this.attributes.group_by,
       (e) => {
         this.attributes.group_by = $(e.currentTarget).val();
         this.structureData();
@@ -936,7 +936,9 @@ class Visual {
       this.render();
     });
 
-    if (this.attributes.can_stack && (this.attributes.group_by_stack === 'No Column')) {
+    if (!this.attributes.group_by) {
+      document.getElementById('key').style.display = 'none';
+    } else if (this.attributes.can_stack && (this.attributes.group_by_stack === 'No Column')) {
       document.getElementById('key').style.display = 'none';
       document.getElementById('drop-showlegend').style.display = 'none';
     } else {
@@ -944,7 +946,13 @@ class Visual {
       document.getElementById('drop-showlegend').style.display = 'block';
     }
 
-    generalEditor.createCheckBox('hide-empty', 'Hide Empty Category', this.attributes.hide_empty,
+    generalEditor.createCheckBox('filter-columns', 'Hide Outlier Columns', this.attributes.filter_columns,
+      (e) => {
+        this.attributes.filter_columns = e.currentTarget.checked;
+        this.renderControls();
+      });
+
+    generalEditor.createCheckBox('hide-empty', 'Hide Empty Data', this.attributes.hide_empty,
       (e) => {
         this.attributes.hide_empty = e.currentTarget.checked;
         this.structureData();
@@ -952,16 +960,11 @@ class Visual {
         this.render();
       });
 
-    generalEditor.createCheckBox('filter-columns', 'Hide Outlier Columns', this.attributes.filter_columns,
-      (e) => {
-        this.attributes.filter_columns = e.currentTarget.checked;
-        this.renderControls();
-      });
-
     // Populate Color Settings
     colorEditor.createColorField('font-color', 'Font Color', this.attributes.font_color,
       (e) => {
         this.attributes.font_color = $(e.currentTarget).val();
+        this.renderKey();
         this.render();
       });
 
@@ -990,6 +993,7 @@ class Visual {
           this.colorItemsByPalette();
         }
         this.renderControls();
+        this.renderKey();
         this.render();
       });
 
@@ -999,6 +1003,7 @@ class Visual {
           this.attributes.color.start_color = $(e.currentTarget)
           .val();
           this.colorItemsByPalette();
+          this.renderKey();
           this.render();
         });
 
@@ -1007,6 +1012,7 @@ class Visual {
           this.attributes.color.end_color = $(e.currentTarget)
           .val();
           this.colorItemsByPalette();
+          this.renderKey();
           this.render();
         });
     } else if (this.attributes.color.mode === 'single') {
@@ -1014,6 +1020,7 @@ class Visual {
         this.attributes.color.single_color, (e) => {
           this.attributes.color.single_color = $(e.currentTarget)
           .val();
+          this.renderKey();
           this.render();
         });
     }
@@ -1138,10 +1145,10 @@ class Visual {
           });
 
       if (coords[0] > boundBox.width / 2) {
-        textBox.attr('transform', `translate(${(coords[0] - 5) - translateArray[0]} ${coords[1] - translateArray[1]})`)
+        textBox.attr('transform', `translate(${(coords[0] - 5) - translateArray[0]} ${coords[1] - translateArray[1] - window.pageYOffset})`)
             .attr('text-anchor', 'end');
       } else {
-        textBox.attr('transform', `translate(${(coords[0] + 5) - translateArray[0]} ${coords[1] - translateArray[1]})`)
+        textBox.attr('transform', `translate(${(coords[0] + 5) - translateArray[0]} ${coords[1] - translateArray[1] - window.pageYOffset})`)
             .attr('text-anchor', 'start');
       }
     };

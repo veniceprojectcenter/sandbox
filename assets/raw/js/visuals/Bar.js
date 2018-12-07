@@ -53,15 +53,32 @@ class Bar extends Visual {
         this.render();
       }, '', 'Select a Property', 'column-select');
 
-    miscEditor.createTextField('bar-x-label', 'X Label', (e) => {
+    this.attributes.show_x_label = true;
+    this.attributes.show_y_label = true;
+
+    miscEditor.createTextField('bar-x-label', 'Custom X Label', (e) => {
       this.attributes.x_label = e.currentTarget.value;
       this.render();
     }, this.attributes.x_label);
 
-    miscEditor.createTextField('bar-y-label', 'Y Label', (e) => {
+    miscEditor.createCheckBox('bar-show-x', 'Show X Label', this.attributes.show_x_label, (e) => {
+      this.attributes.show_x_label = e.currentTarget.checked;
+      this.render();
+    });
+
+    miscEditor.createTextField('bar-y-label', 'Custom Y Label', (e) => {
       this.attributes.y_label = e.currentTarget.value;
       this.render();
     }, this.attributes.y_label);
+
+    document.getElementById('bar-y-label').style.marginTop = '0';
+
+    miscEditor.createCheckBox('bar-show-y', 'Show Y Label', this.attributes.show_y_label, (e) => {
+      this.attributes.show_y_label = e.currentTarget.checked;
+      this.render();
+    });
+
+    document.getElementById('bar-show-y').style.marginBottom = '5%';
 
     miscEditor.createNumberSlider('bar-x-font-rotation',
       'X Axis Font Rotation', this.attributes.x_font_rotation, 0, 90, 1,
@@ -184,7 +201,7 @@ class Bar extends Visual {
     if (!yText || yText === '') {
       yText = `Number of ${this.dataSet}`;
     }
-    if (yText) {
+    if (this.attributes.show_y_label) {
       offsetWidth = (this.lengthinPX('W')[1]);
       svg.append('g')
         .attr('transform', `translate(${(offsetWidth * 0.5)}, ${(height / 2)})`)// ((height / 2) + (yLabelLength / 2)))//((textHeight * 0.2)))
@@ -202,7 +219,7 @@ class Bar extends Visual {
     if (!xText || xText === '') {
       xText = this.attributes.group_by;
     }
-    if (xText) {
+    if (this.attributes.show_x_label) {
       offsetHeight = ((this.lengthinPX('W')[1]));
       svg.append('g')
       .attr('id', 'bar-x-axis')

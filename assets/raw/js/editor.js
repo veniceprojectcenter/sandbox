@@ -1,4 +1,5 @@
 import html2canvas from 'html2canvas';
+
 import Visual from './visuals/helpers/Visual';
 import Donut from './visuals/Donut';
 import BubbleChart from './visuals/BubbleChart';
@@ -87,7 +88,7 @@ function createPublishButton(loginModal) {
  */
 function createPNGButton() {
   const savePNGButton = document.createElement('button');
-  savePNGButton.innerText = 'Export for Illustrator';
+  savePNGButton.innerText = 'Save as PNG';
 
   savePNGButton.addEventListener('click', async () => {
     const graph = document.getElementById('column2');
@@ -161,7 +162,7 @@ function createPNGButton() {
  */
 function createDownloadConfig() {
   const downloadButton = document.createElement('button');
-  downloadButton.innerText = 'Create Save File';
+  downloadButton.innerText = 'Save Config File';
   downloadButton.addEventListener('click', () => {
     const config = {
       type: activeVisual.type,
