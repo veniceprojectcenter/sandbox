@@ -72,7 +72,16 @@ class Visual {
    *
    * @param id ID of the container to clear
    */
-  static empty(id) {
+  empty(id) {
+    if (this.attributes.group_by) {
+      document.getElementById('blurb').style.display = 'none';
+      if (document.getElementById('visual-title')) {
+        document.getElementById('visual-title').style.display = 'block';
+      }
+      if (document.getElementById('visual-description')) {
+        document.getElementById('visual-description').style.display = 'block';
+      }
+    }
     document.getElementById(id).innerHTML = '';
   }
 
@@ -417,9 +426,9 @@ class Visual {
     }
 
     if (document.getElementById('general-accordion-button')) {
-      Visual.empty('general-accordion-body');
-      Visual.empty('color-accordion-body');
-      Visual.empty('misc-accordion-body');
+      this.empty('general-accordion-body');
+      this.empty('color-accordion-body');
+      this.empty('misc-accordion-body');
       this.renderBasicControls();
       return; // Will not recreate this objs, just rerender the interiors
     }
@@ -547,10 +556,17 @@ class Visual {
       !Object.keys(this.data[0]).includes(this.attributes.group_by)) {
       this.attributes.group_by = null;
       this.attributes.group_by_stack = 'No Column';
+      document.getElementById('blurb').style.display = 'block';
+      if (document.getElementById('visual-title')) {
+        document.getElementById('visual-title').style.display = 'none';
+      }
+      if (document.getElementById('visual-description')) {
+        document.getElementById('visual-description').style.display = 'none';
+      }
       return false;
     }
 
-    Visual.empty(this.renderID);
+    this.empty(this.renderID);
 
     return true;
   }
@@ -569,9 +585,7 @@ class Visual {
       // Filter out any columns with 1 or less categories after hiding Empty (null, undefined, etc.)
       if (options.filterEmpty && options.filterEmpty === true) {
         for (let i = 0; i < currColumns.length; i += 1) {
-          const filtered = Visual.hideEmpty(this.data.map((a) => {
-            return { key: a[currColumns[i]] };
-          }));
+          const filtered = Visual.hideEmpty(this.data.map(a => ({ key: a[currColumns[i]] })));
 
           if (filtered.length <= 1) {
             currColumns.splice(i, i + 1);
@@ -869,6 +883,12 @@ class Visual {
       document.getElementById('bar-column-stack').remove();
     }
 
+    if (!this.attributes.group_by) {
+      document.getElementById('graphTitle').style.display = 'none';
+      document.getElementById('controls').style.display = 'none';
+    }
+
+
     const dataCats = [];
     // Change the call to getColumns to change the filter
     let options = {};
@@ -882,6 +902,13 @@ class Visual {
     majorEditor.createSelectBox('column-select', 'Data Column', dataCats, this.attributes.group_by,
       (e) => {
         this.attributes.group_by = $(e.currentTarget).val();
+        if (!this.attributes.group_by) {
+          document.getElementById('graphTitle').style.display = 'none';
+          document.getElementById('controls').style.display = 'none';
+        } else {
+          document.getElementById('graphTitle').style.display = 'block';
+          document.getElementById('controls').style.display = 'block';
+        }
         this.structureData();
         this.renderKey();
         this.render();
