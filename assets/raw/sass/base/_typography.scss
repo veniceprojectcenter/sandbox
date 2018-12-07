@@ -9,6 +9,39 @@
   font-style: normal;
 }
 
+@font-face {
+  font-family: 'Gilroy-Bold';
+  src: url(../font/Gilroy-Bold.eot);
+  src: url(../font/Gilroy-Bold.eot#iefix) format('embedded-opentype'),
+  url(../font/Gilroy-Bold.woff2) format('woff2'),
+  url(../font/Gilroy-Bold.woff) format('woff'),
+  url(../font/Gilroy-Bold.ttf) format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Gilroy-SemiBold';
+  src: url(../font/Gilroy-SemiBold.eot);
+  src: url(../font/Gilroy-SemiBold.eot#iefix) format('embedded-opentype'),
+  url(../font/Gilroy-SemiBold.woff2) format('woff2'),
+  url(../font/Gilroy-SemiBold.woff) format('woff'),
+  url(../font/Gilroy-SemiBold.ttf) format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Gilroy-Medium';
+  src: url(../font/Gilroy-Medium.eot);
+  src: url(../font/Gilroy-Medium.eot#iefix) format('embedded-opentype'),
+  url(../font/Gilroy-Medium.woff2) format('woff2'),
+  url(../font/Gilroy-Medium.woff) format('woff'),
+  url(../font/Gilroy-Medium.ttf) format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
 body {
   font-family: 'Gilroy', sans-serif;
 }
@@ -29,6 +62,8 @@ h1 {
     size: 3em;
   }
 
+  font-family: 'Gilroy-SemiBold', sans-serif;
+
   a {
     color: $text;
     text-decoration: none;
@@ -41,5 +76,14 @@ h1 {
 }
 
 h2 {
-  font-size: 2.5em;
+  font-size: 2.6em;
+}
+
+h3 {
+  font-size: 2.3em;
+  margin: 1% 0;
+}
+
+#graphTitle {
+  font-family: 'Gilroy-Medium', sans-serif;
 }
