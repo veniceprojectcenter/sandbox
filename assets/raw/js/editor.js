@@ -175,7 +175,7 @@ function createDownloadConfig() {
     tempButton.className = 'button';
     tempButton.innerText = 'Download Config';
     tempButton.href = `data:text/json;charset=utf-8,${JSON.stringify(config)}`;
-    tempButton.download = `${activeVisual.dataSet}-${activeVisual.type}-config.json`;
+    tempButton.download = `${activeVisual.dataSet}-${activeVisual.type}-config.sndbx`;
     tempButton.click();
   });
 
@@ -196,9 +196,16 @@ function generateDownloadButtons(id = 'download') {
   const uploadButton = document.createElement('input');
   uploadButton.type = 'file';
   uploadButton.id = 'file';
+  uploadButton.accept = '.sndbx';
   uploadButton.onchange = () => {
     const file = document.getElementById('file').files[0];
     if (!file) {
+      return;
+    }
+    const name = file.name;
+    const index = name.lastIndexOf('.');
+    if (!index || name.substring(index + 1, name.length) !== 'sndbx') {
+      Materialize.toast('Invalid File Type', 3000);
       return;
     }
     const fr = new FileReader();
