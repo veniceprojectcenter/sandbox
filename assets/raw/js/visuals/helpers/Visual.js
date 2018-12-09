@@ -948,6 +948,7 @@ class Visual {
         }
         this.attributes.font_size = `${value}`;
         this.renderKey();
+        this.renderBasics();
         this.render();
       }, this.attributes.font_size);
 
@@ -1423,7 +1424,7 @@ class Visual {
         return textArray[textIterator];
       });
 
-    document.getElementById('key').style.outline = '4px solid #FFFFFF';
+    document.getElementById('key').style.outline = `4px solid #FFFFFF`;
   }
 }
 

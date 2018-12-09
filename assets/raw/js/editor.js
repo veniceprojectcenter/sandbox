@@ -334,7 +334,7 @@ function renderEditor(defaultDS = null, defaultGT = null) {
   blurbContainer.innerHTML = '<p class="intro"> Welcome to the Venice Project Center Sandbox ' +
     'Application! This site is designed so anyone can make useful visualizations from the vast ' +
     'expanse of data that the VPC has collected since its founding in 1988. Select a data set ' +
-    'and graph type to begin!';
+    'and graph type to begin!</p>';
 
   // Used to hold the permanent selections for graph type and data set
   const majorSelectContainer = document.createElement('div');
