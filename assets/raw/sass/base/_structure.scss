@@ -2,7 +2,7 @@ body {
   background-color: $background;
 }
 
-.controls, .visual, .intro, .key, .majorSelect,.graphTitle {
+.controls, .visual, .intro, .keyContainer, .majorSelect,.graphTitle {
   position: relative;
 }
 
@@ -34,20 +34,6 @@ body {
   margin: 1% 1% 2% 1%;
 }
 
-.intro {
-  text-align: center;
-  font-size: 2em;
-  height: auto;
-  margin: 0 0 0 0;
-}
-
-#intro2 {
-  text-align: left;
-  font-size: 2em;
-  height: auto;
-  margin: 0 0 0 0;
-}
-
 .visual-title, .visual-description {
   display: inline-block;
   line-height: 1;
@@ -59,16 +45,27 @@ body {
 .blurb {
   display: block;
   width: 100%;
-  height: 100%;
+  min-height: 100%;
   padding: 2% 2% 2% 2%;
   overflow-y: auto;
   overflow-x: hidden;
 }
 
-.key {
+.keyContainer {
+  margin-top: 3.2em;
   display: none;
+}
+.key {
+  max-height: 100%;
+  max-width: 100%;
   overflow-y: auto;
   overflow-x: hidden;
+}
+
+#keyTitle {
+  position: absolute;
+  top: -1.5em;
+  left: -0.1em;
 }
 
 .visual-title {
@@ -105,9 +102,4 @@ body {
   flex: 1 1 auto;
   width: 100%;
   height: 100%;
-  /*
-  position: sticky;
-  position: -webkit-sticky;
-  top: 1px;
-  */
 }

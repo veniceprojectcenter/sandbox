@@ -964,13 +964,19 @@ class Visual {
       this.render();
     });
 
-    if (!this.attributes.group_by) {
-      document.getElementById('key').style.display = 'none';
-    } else if (this.attributes.can_stack && (this.attributes.group_by_stack === 'No Column')) {
-      document.getElementById('key').style.display = 'none';
+    if (this.attributes.group_by_stack === 'No Column' && this.attributes.can_stack) {
       document.getElementById('drop-showlegend').style.display = 'none';
     } else {
-      document.getElementById('key').style.display = 'block';
+      document.getElementById('drop-showlegend').style.display = 'block';
+    }
+
+    if (!this.attributes.group_by) {
+      document.getElementById('keyContainer').style.display = 'none';
+    } else if (this.attributes.can_stack && (this.attributes.group_by_stack === 'No Column')) {
+      document.getElementById('keyContainer').style.display = 'none';
+      document.getElementById('drop-showlegend').style.display = 'none';
+    } else {
+      document.getElementById('keyContainer').style.display = 'block';
       document.getElementById('drop-showlegend').style.display = 'block';
     }
 
@@ -1218,13 +1224,13 @@ class Visual {
     const textArray = [];
     const heightofTXT = this.lengthinPX('W')[1];
     for (let i = 0; i < data.length; i += 1) {
-      if ((this.lengthinPX(data[i])[0] + (heightofTXT * 1.35)) >= document.getElementById('key').clientWidth) {
+      if ((this.lengthinPX(data[i])[0] + (heightofTXT * 1.35)) >= document.getElementById('keyContainer').clientWidth) {
         const tempString = data[i].split(' ');
         let tempString2ElectricBoogaloo = `${tempString[0]} `;
         const tempString3ReturnoftheArray = [];
         for (let j = 1; j < tempString.length; j += 1) {
           if (((this.lengthinPX((tempString2ElectricBoogaloo + tempString[j]))[0])
-            + (heightofTXT * 1.35) + 10) >= document.getElementById('key').clientWidth) {
+            + (heightofTXT * 1.35) + 10) >= document.getElementById('keyContainer').clientWidth) {
             tempString3ReturnoftheArray.push(tempString2ElectricBoogaloo);
             tempString2ElectricBoogaloo = `${tempString[j]} `;
           } else {
@@ -1250,55 +1256,57 @@ class Visual {
    */
   renderKey() {
     if (this.attributes.legend_mode === 'below') {
-      document.getElementById('key').style.display = 'block';
+      document.getElementById('keyContainer').style.display = 'block';
       document.getElementById('key').innerHTML = '';
-      document.getElementById('key').style.width = '100%';
-      document.getElementById('key').style.height = '15%';
+      document.getElementById('keyContainer').style.width = '100%';
+      document.getElementById('keyContainer').style.height = '15%';
       document.getElementById('visualColumn').style.flexDirection = 'column';
 
       document.getElementById('visual').style.margin = '1% 1% 2% 1%';
       document.getElementById('visual').style.width = '100%';
-      document.getElementById('visual').style.height = '85%';
+      document.getElementById('visual').style.height = 'calc(85% - 3.2em - 2%)';
     } else if (this.attributes.legend_mode === 'above') {
-      document.getElementById('key').style.display = 'block';
+      document.getElementById('keyContainer').style.display = 'block';
       document.getElementById('key').innerHTML = '';
-      document.getElementById('key').style.width = '100%';
-      document.getElementById('key').style.height = '15%';
+      document.getElementById('keyContainer').style.width = '100%';
+      document.getElementById('keyContainer').style.height = '15%';
       document.getElementById('visualColumn').style.flexDirection = 'column-reverse';
 
       document.getElementById('visual').style.margin = '2% 1% 1% 1%';
       document.getElementById('visual').style.width = '96%';
-      document.getElementById('visual').style.height = '85%';
+      document.getElementById('visual').style.height = 'calc(85% - 3.2em - 2%)';
     } else if (this.attributes.legend_mode === 'left') {
-      document.getElementById('key').style.display = 'block';
+      document.getElementById('keyContainer').style.display = 'block';
       document.getElementById('key').innerHTML = '';
-      document.getElementById('key').style.width = '25%';
-      document.getElementById('key').style.height = '95%';
+      document.getElementById('keyContainer').style.width = '25%';
+      document.getElementById('keyContainer').style.height = 'calc(95% - 3.2em)';
       document.getElementById('visualColumn').style.flexDirection = 'row-reverse';
 
       document.getElementById('visual').style.margin = '1% 1% 2% 1%';
       document.getElementById('visual').style.width = '71%';
       document.getElementById('visual').style.height = '100%';
     } else if (this.attributes.legend_mode === 'right') {
-      document.getElementById('key').style.display = 'block';
+      document.getElementById('keyContainer').style.display = 'block';
       document.getElementById('key').innerHTML = '';
-      document.getElementById('key').style.width = '25%';
-      document.getElementById('key').style.height = '95%';
+      document.getElementById('keyContainer').style.width = '25%';
+      document.getElementById('keyContainer').style.height = 'calc(95% - 3.2em)';
       document.getElementById('visualColumn').style.flexDirection = 'row';
 
       document.getElementById('visual').style.margin = '1% 1% 2% 1%';
       document.getElementById('visual').style.width = '71%';
       document.getElementById('visual').style.height = '100%';
     } else {
-      document.getElementById('key').style.display = 'none';
+      document.getElementById('keyContainer').style.display = 'none';
       document.getElementById('visual').style.width = '96%';
       document.getElementById('visual').style.height = '96%';
-      document.getElementById('key').style.outline = '';
+      document.getElementById('keyContainer').style.outline = '';
       document.getElementById('key').innerHTML = '';
       return;
     }
+
     const heightofTXT = this.lengthinPX('W')[1];
-    let keyArray = this.flattenItems().map(a => a.key);
+    let keyArray = this.flattenItems()
+      .map(a => a.key);
     let itemObj = this.attributes.items;
     let textArray = this.keyDataHelper(keyArray);
     let colNum = 0;
@@ -1308,10 +1316,10 @@ class Visual {
     let colorIter2 = 0;
 
     if (!this.attributes.group_by || (this.attributes.group_by_stack === 'No Column' && this.attributes.can_stack)) {
-      document.getElementById('key').style.display = 'none';
+      document.getElementById('keyContainer').style.display = 'none';
       document.getElementById('visual').style.width = '96%';
       document.getElementById('visual').style.height = '96%';
-      document.getElementById('key').style.outline = '';
+      document.getElementById('keyContainer').style.outline = '';
       document.getElementById('key').innerHTML = '';
       return;
     }
@@ -1337,7 +1345,7 @@ class Visual {
       .append('svg')
       .attr('class', 'keySVG')
       .attr('id', 'keySVG')
-      .attr('width', `${document.getElementById('key').clientWidth}`);
+      .attr('width', `${document.getElementById('keyContainer').clientWidth}`);
 
     const legend = d3.select('#key > svg')
       .append('g')
@@ -1349,7 +1357,7 @@ class Visual {
         let x = 0;
         let y = 0;
         textIterator += 1;
-        if (((rowTotal + this.lengthinPX(textArray[textIterator])[0] + (heightofTXT * 1.35)) + 10) >= document.getElementById('key').clientWidth) {
+        if (((rowTotal + this.lengthinPX(textArray[textIterator])[0] + (heightofTXT * 1.35)) + 10) >= document.getElementById('keyContainer').clientWidth) {
           if (textIterator > 0) {
             colNum += 1;
           }
@@ -1363,18 +1371,18 @@ class Visual {
         }
         return `translate(${x},${y})`;
       });
-      /*
-      .on('click', function() {
-        const tempKeys = Object.keys(bigThis.attributes.items);
-        for (let i = 0; i < tempKeys.length; i += 1) {
-          if ((tempKeys[i].replace(/^\s+|\s+$/g, '')).startsWith(this.textContent.replace(/^\s+|\s+$/g, ''))) {
-            bigThis.attributes.current_edit = tempKeys[i];
-          }
+    /*
+    .on('click', function() {
+      const tempKeys = Object.keys(bigThis.attributes.items);
+      for (let i = 0; i < tempKeys.length; i += 1) {
+        if ((tempKeys[i].replace(/^\s+|\s+$/g, '')).startsWith(this.textContent.replace(/^\s+|\s+$/g, ''))) {
+          bigThis.attributes.current_edit = tempKeys[i];
         }
-        this.style.outline = '2px solid #FFFFFF';
-        //console.log(this.textContent);
-      });
-      */
+      }
+      this.style.outline = '2px solid #FFFFFF';
+      //console.log(this.textContent);
+    });
+    */
 
     textIterator = -1;
     svgBox.attr('height', `${((colNum + 1) * (heightofTXT + 7)) + (heightofTXT * 0.3)}`);
@@ -1424,7 +1432,7 @@ class Visual {
         return textArray[textIterator];
       });
 
-    document.getElementById('key').style.outline = `4px solid #FFFFFF`;
+    document.getElementById('keyContainer').style.outline = '4px solid #FFFFFF';
   }
 }
 

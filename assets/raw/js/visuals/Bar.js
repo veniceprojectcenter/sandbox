@@ -41,10 +41,10 @@ class Bar extends Visual {
       this.attributes.group_by_stack, (e) => {
         this.attributes.group_by_stack = $(e.currentTarget).val();
         if (this.attributes.group_by_stack === 'No Column') {
-          document.getElementById('key').style.display = 'none';
+          document.getElementById('keyContainer').style.display = 'none';
           document.getElementById('drop-showlegend').style.display = 'none';
         } else {
-          document.getElementById('key').style.display = 'block';
+          document.getElementById('keyContainer').style.display = 'block';
           document.getElementById('drop-showlegend').style.display = 'block';
         }
         this.structureData();
@@ -120,8 +120,8 @@ class Bar extends Visual {
     const width = dt.clientWidth - (margin.left + margin.right);
     const height = dt.clientHeight - (margin.top + margin.bottom);
 
-    const g = svg.append('g')
-      .attr('transform', `translate(${margin.left},${margin.top})`);
+    const g = svg.append('g');
+      //.attr('transform', `translate(${margin.left},${margin.top})`);
 
     const x = d3.scaleBand();
     const y = d3.scaleLinear();
@@ -286,12 +286,12 @@ class Bar extends Visual {
     .attr('width', x.bandwidth());
 
     if (xText) {
-      d3.select('#bar-x-axis').attr('transform', `translate(${width / 2}, ${height + svg.select('.axis--x').node().getBBox().height - offsetHeight})`);
+      d3.select('#bar-x-axis').attr('transform', `translate(${width / 2}, ${(height + svg.select('.axis--x').node().getBBox().height) - offsetHeight})`);
     }
 
     const gbox = g.node().getBBox();
     g.attr('transform', `translate(${-gbox.x + offsetWidth},${margin.top - offsetHeight})`);
-    const viewBoxWidth = gbox.width + fontOffset + gbox.x + margin.left + margin.right;
+    const viewBoxWidth = gbox.width + fontOffset + gbox.x + margin.left + margin.right + offsetWidth;
     const viewBoxHeight = gbox.height + gbox.y + margin.top + margin.bottom;
     svg.attr('viewBox', `0 0 ${viewBoxWidth} ${viewBoxHeight}`);
 

@@ -250,6 +250,9 @@ function createGraphic(dataSet, graphType, attr = null) {
       attributes = {};
     }
   }
+  if (attributes.group_by === undefined) {
+    console.log('yikes');
+  }
 
   const config = {
     dataSet,
@@ -324,10 +327,63 @@ function renderEditor(defaultDS = null, defaultGT = null) {
   blurbContainer.id = 'blurb';
 
   // Intro blurb which will be overwritten when the graphs are rendered
-  blurbContainer.innerHTML = '<p class="intro"> Welcome to the Venice Project Center Sandbox ' +
-    'Application! This site is designed so anyone can make useful visualizations from the vast ' +
-    'expanse of data that the VPC has collected since its founding in 1988. Select a data set ' +
-    'and graph type to begin!</p>';
+  const introTitle = document.createElement('h2');
+  introTitle.className = 'introTitle';
+  introTitle.id = 'introTitle';
+  introTitle.innerText = 'Welcome to the Venice Project Center Sandbox Application!';
+
+  const intro = document.createElement('p');
+  intro.className = 'intro';
+  intro.id = 'intro';
+  intro.innerText = 'This site is designed so anyone can make useful visualizations from the vast ' +
+  'expanse of data that the VPC has collected since its founding in 1988. Select a data set ' +
+  'and graph type to begin!';
+
+  const guideTitle1 = document.createElement('h2');
+  guideTitle1.className = 'guideTitle';
+  guideTitle1.id = 'guideTitle1';
+  guideTitle1.innerText = 'How to Create a Sandbox Graphic';
+
+  const guidePart1 = document.createElement('div');
+  guidePart1.className = 'guide';
+  guidePart1.id = 'guidePart1';
+  guidePart1.innerHTML = '<ol type="1"><li class="upperList">Select a Graph Type<ol type="a">' +
+    '<li class="lowerList">Donut Chart - this is a circular chart with empty space in the middle useful for directly comparing the percentages of certain values</li>' +
+    '<li class="lowerList">Bubble Chart - this is a chart that creates circles with sizes based on the percentage of the data each element encompasses</li>' +
+    '<li class="lowerList">Bar Chart - this is a chart that compares the raw values of data columns against each other with x and y labels for each axis</li></ol></li>' +
+    '<li class="upperList">Select a Data Set<ul><li class="tabbed">The data sets pull from the Venice Project Center\'s databases in order to get the most recent data for any particular topic. Currently, the ' +
+    'topics available are Bells, Bridges, and Stores. This data has been collected by students from Worcester Polytechnic Institute since 1988, ' +
+    'and due to the changing nature of databases since that time, there could be inaccuracies in the data. The Venice Project Center is currently ' +
+    'working to fix these inaccuracies.</li></ul></li>' +
+    '<li class="upperList">Select a Data Column<ul><li class="tabbed">The data column is the specific data from the data set that will be visualized. The column names are based off of the raw data, so the names ' +
+    'could be very technical.</li></ul></li>' +
+    '<li class="upperList">(Bar Graph) Select a Stacked Data Column<ul><li class="tabbed">The stacked data column is exclusive to the bar graph, and will sort the stacked items based on the values set in the data column. This is ' +
+    'useful for categorizing different elements of the data sets.</li></ul></li></ol>';
+
+  const guideTitle2 = document.createElement('h2');
+  guideTitle2.className = 'guideTitle';
+  guideTitle2.id = 'guideTitle2';
+  guideTitle2.innerText = 'Editing Graph Settings';
+
+  const guidePart2 = document.createElement('div');
+  guidePart2.className = 'guide';
+  guidePart2.id = 'guidePart2';
+  guidePart2.innerHTML = '<ol type="1"><li class="upperList">General Settings<ol type="a"><li class="lowerList">Title: The title for the graph</li>' +
+    '<li class="lowerList">Description: The description for the graph</li><li class="lowerList">Font Size: The font size of all elements in the graph.<ul><li class="lowerList">Note: the title is always 2X the font size</li></ul></li>' +
+    '<li class="lowerList">Show Legend: Changes the location of the legend (key) on the page. None will hide the key.<ul><li class="lowerList">Note: (Bar Graph) The key will show the stacked element</li></ul></li>' +
+    '<li class="lowerList">Hide Outlier Data: Hides Data Sets from the Data Set Selector that have data inappropriate for the currently selected Graph Type</li>' +
+    '<li class="lowerList">Hide Empty Data: Hides empty values from the current visual.<ul><li class="lowerList">Note: Empty Values are \'\', \' \', and null</li></ul></li></ol></li>' +
+    '<li class="upperList">Color Settings<ol type="a"><li class="lowerList">Font Color: The color for all font in the visual</li><li class="lowerList">Coloring Mode<ol type="i">' +
+    '<li class="lowerList">Palette Mode: Chooses 2 Colors and sets each element to a gradient between the 2 colors</li>' +
+    '<li class="lowerList">Manual Mode: Allows the user to select a section of the graph and choose a particular color</li></ol></li></ol></li>' +
+    '<li class="upperList">Other Settings: These are reserved for Graph Type particular settings</li></ol>';
+
+  blurbContainer.appendChild(introTitle);
+  blurbContainer.appendChild(intro);
+  blurbContainer.appendChild(guideTitle1);
+  blurbContainer.appendChild(guidePart1);
+  blurbContainer.appendChild(guideTitle2);
+  blurbContainer.appendChild(guidePart2);
 
   // Used to hold the permanent selections for graph type and data set
   const majorSelectContainer = document.createElement('div');
@@ -350,8 +406,20 @@ function renderEditor(defaultDS = null, defaultGT = null) {
   downloadContainer.id = 'download';
 
   const keyContainer = document.createElement('div');
-  keyContainer.className = 'key';
-  keyContainer.id = 'key';
+  keyContainer.className = 'keyContainer';
+  keyContainer.id = 'keyContainer';
+
+  const keyTitle = document.createElement('h3');
+  keyTitle.id = 'keyTitle';
+  keyTitle.innerText = 'Legend';
+
+  const key = document.createElement('div');
+  key.className = 'key';
+  key.id = 'key';
+
+
+  keyContainer.appendChild(keyTitle);
+  keyContainer.appendChild(key);
 
   // Create Page Structure
   rowContainer.appendChild(column1Container);
