@@ -205,7 +205,7 @@ class Visual {
     if (!sortedData || sortedData.length === 0) {
       return [];
     }
-    if (sortedData[0].weight) { // Already in order
+    if (sortedData[0].weight !== undefined && sortedData[0].weight !== null) { // Already in order
       sortedData = data.sort((a, b) => {
         if (b.weight === undefined) {
           return 1;
@@ -248,11 +248,12 @@ class Visual {
       },
       font_color: '#FFFFFF',
       items: {}, // Contains objects that specify: key: {weight, color} where
-                 // a weight of 0 means first on the donut chart
+                 // a weight of 0 means first on the graph
       label_mode: 'hover',
       title: '',
       description: '',
       category_order: '',
+      sort_type: 'ascendingName',
       aspect_ratio: 1.5,
       group_by: null,
       group_by_stack: 'No Column',
@@ -355,7 +356,18 @@ class Visual {
    * Gives weight attributes to the objects in this.attriutes.items, as well as to the subitems
    */
   sortItems() {
-    const sortFunction = (a, b) => d3.ascending(a, b);
+    let sortFunction;
+    if (this.attributes.sort_type === 'ascendingName') {
+      sortFunction = (a, b) => d3.ascending(a, b);
+    } else if (this.attributes.sort_type === 'descendingName') {
+      sortFunction = (a, b) => d3.descending(a, b);
+    } else if (this.attributes.sort_type === 'ascendingNumber') { // These 2 don't work yet
+      sortFunction = (a, b) => d3.ascending(a, b);
+    } else if (this.attributes.sort_type === 'descendingNumber') {
+      sortFunction = (a, b) => d3.descending(a, b);
+    } else {
+      return; // Invalid sorting option
+    }
 
     const keys = Object.keys(this.attributes.items);
     const sortedKeys = keys.sort(sortFunction);
@@ -952,15 +964,28 @@ class Visual {
         this.render();
       }, this.attributes.font_size);
 
-    const dogs = [
+    const keyCats = [
       { value: 'below', text: 'Below' },
       { value: 'above', text: 'Above' },
       { value: 'left', text: 'Left' },
       { value: 'right', text: 'Right' },
       { value: 'none', text: 'None' }];
-    generalEditor.createSelectBox('drop-showlegend', 'Show Legend', dogs, this.attributes.legend_mode, (e) => {
+    generalEditor.createSelectBox('drop-showlegend', 'Show Legend', keyCats, this.attributes.legend_mode, (e) => {
       this.attributes.legend_mode = $(e.currentTarget).val();
       this.renderKey();
+      this.render();
+    });
+
+    const sortCats = [
+      { value: 'ascendingName', text: 'Name, Ascending' },
+      { value: 'descendingName', text: 'Name, Descending' },
+      // { value: 'ascendingNumber', text: 'Number of Items, Ascending' }, // These have not been implemented
+      // { value: 'descendingNumber', text: 'Number of Items, Descending' }
+      ];
+    generalEditor.createSelectBox('drop-sorttype', 'Sorting Method', sortCats, this.attributes.sort_type, (e) => {
+      this.attributes.sort_type = $(e.currentTarget).val();
+      this.sortItems();
+      this.colorItemsByPalette();
       this.render();
     });
 
