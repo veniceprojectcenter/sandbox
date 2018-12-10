@@ -77,7 +77,6 @@ class BubbleChart extends Visual {
         }
         colorEditor.createColorField('bubble-colorpicker', 'Bubble Color', currentColor,
         (e) => {
-          this.attributes.color.mode = 'manual';
           this.attributes.items[this.currentEditKey].color = $(e.currentTarget).val();
           this.render();
         });

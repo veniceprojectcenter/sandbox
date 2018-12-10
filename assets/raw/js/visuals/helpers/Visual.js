@@ -330,7 +330,7 @@ class Visual {
   /**
    * Uses start_color and end_color to add colors to this.attributes.items based on the assigned
    * weight attribute. If there are subitems, gives them colors as well.
-   * (NOTE: If there are subitems, the outer item colors are invali and should be ignored)
+   * (NOTE: If there are subitems, the outer item colors are invalid and should be ignored)
    */
   colorItemsByPalette() {
     const keys = Object.keys(this.attributes.items);
@@ -349,6 +349,25 @@ class Visual {
       this.attributes.items[keys[i]].color = ColorHelper.gradientValue(
         this.attributes.items[keys[i]].weight / (keys.length - 1),
         this.attributes.color.start_color, this.attributes.color.end_color);
+    }
+  }
+
+  /**
+   * Uses single_color to add colors to this.attributes.items and their subitems
+   */
+  colorItemsBySingleColor() {
+    const keys = Object.keys(this.attributes.items);
+    const subKeys = this.getSubkeys();
+    for (let i = 0; i < keys.length; i += 1) {
+      if (this.attributes.items[keys[i]].subitems) {
+        for (let j = 0; j < subKeys.length; j += 1) {
+          if (this.attributes.items[keys[i]].subitems[subKeys[j]]) {
+            this.attributes.items[keys[i]].subitems[subKeys[j]].color =
+              this.attributes.color.single_color;
+          }
+        }
+      }
+      this.attributes.items[keys[i]].color = this.attributes.color.single_color;
     }
   }
 
@@ -1040,6 +1059,8 @@ class Visual {
         this.attributes.color.mode = $(e.currentTarget).val();
         if (this.attributes.color.mode === 'palette') {
           this.colorItemsByPalette();
+        } else if (this.attributes.color.mode === 'single') {
+          this.colorItemsBySingleColor();
         }
         this.renderControls();
         this.renderKey();
@@ -1069,6 +1090,7 @@ class Visual {
         this.attributes.color.single_color, (e) => {
           this.attributes.color.single_color = $(e.currentTarget)
           .val();
+          this.colorItemsBySingleColor();
           this.renderKey();
           this.render();
         });
