@@ -119,19 +119,6 @@ function createPNGButton() {
       }
     }
 
-    // Make key visible
-    /*
-    const key = document.getElementById('key');
-
-    let overflowX, overflowY;
-    if (key) {
-      overflowX = key.style['overflow-x'];
-      key.style['overflow-x'] = 'visible';
-      overflowY = key.style['overflow-y'];
-      key.style['overflow-y'] = 'visible';
-    }
-    */
-
     // Force uniform font onto the graphics
     const children = svg.childNodes;
     for (let i = 0; i < children.length; i += 1) {
@@ -241,17 +228,27 @@ function generateDownloadButtons(id = 'download') {
   };
   const uploadLabel = document.createElement('label');
   uploadLabel.className = 'fileInputLabel';
-  uploadLabel.textContent = 'Upload Saved Graph';
+  uploadLabel.textContent = 'Upload Config File';
   uploadLabel.setAttribute('for', 'file');
 
   const downloadContainer = document.getElementById(id);
   downloadContainer.innerHTML = '';
-  // downloadContainer.appendChild(publishButton);
-  downloadContainer.appendChild(uploadButton);
-  downloadContainer.appendChild(uploadLabel);
-  downloadContainer.appendChild(downloadButton);
-  downloadContainer.appendChild(saveSVGButton);
-  downloadContainer.appendChild(loginModal.generate());
+
+  const downloadCol1 = document.createElement('div');
+  downloadCol1.className = 'downCol1';
+  downloadCol1.id = 'downCol1';
+
+  const downloadCol2 = document.createElement('div');
+  downloadCol2.className = 'downCol2';
+  downloadCol2.id = 'downCol2';
+
+  downloadCol1.appendChild(uploadButton);
+  downloadCol1.appendChild(uploadLabel);
+  downloadCol2.appendChild(downloadButton);
+  downloadCol2.appendChild(saveSVGButton);
+  downloadCol2.appendChild(loginModal.generate());
+  downloadContainer.appendChild(downloadCol1);
+  downloadContainer.appendChild(downloadCol2);
 
   if (!document.getElementById('visual').innerHTML) {
     downloadButton.style.visibility = 'hidden';
@@ -417,12 +414,26 @@ function renderEditor(defaultDS = null, defaultGT = null) {
     '<li class="lowerList">Manual Mode: Allows the user to select a section of the graph and choose a particular color</li></ol></li></ol></li>' +
     '<li class="upperList">Other Settings: These are reserved for Graph Type particular settings</li></ol>';
 
+  const guideTitle3 = document.createElement('h2');
+  guideTitle3.className = 'guideTitle';
+  guideTitle3.id = 'guideTitle3';
+  guideTitle3.innerText = 'Downloading & Uploading Graphics';
+
+  const guidePart3 = document.createElement('div');
+  guidePart3.className = 'guide';
+  guidePart3.id = 'guidePart2';
+  guidePart3.innerHTML = '<ol type="1"><li class="upperList">Save Config File - This saves a ".SNDBX" to the user\'s downloads folder, which contains data for how the graphic is configured</li>' +
+    '<li class="upperList">Upload Config File - This allows a user to upload a ".SNDBX" file to Sandbox, and upon loading the graphic, the user can continue working on the graphic that had been previously saved</li>' +
+    '<li class="upperList">Save as PNG - This saves the current Title, Description, Graphic, and Key together as a PNG image file.<ul><li class="lowerList">Note: The key will automatically resize in the image to fit all of its contents</li></ul></li></ol>';
+
   blurbContainer.appendChild(introTitle);
   blurbContainer.appendChild(intro);
   blurbContainer.appendChild(guideTitle1);
   blurbContainer.appendChild(guidePart1);
   blurbContainer.appendChild(guideTitle2);
   blurbContainer.appendChild(guidePart2);
+  blurbContainer.appendChild(guideTitle3);
+  blurbContainer.appendChild(guidePart3);
 
   // Used to hold the permanent selections for graph type and data set
   const majorSelectContainer = document.createElement('div');
