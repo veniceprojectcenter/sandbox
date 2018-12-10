@@ -94,7 +94,18 @@ function createPNGButton() {
   savePNGButton.addEventListener('click', async () => {
     const graph = document.getElementById('column2');
     const svg = $('#column2')[0];
+    let keyStyle = '';
 
+    graph.style.height = 'auto';
+    document.getElementById('visualColumn').style.height = 'auto';
+    if (document.getElementById('keyContainer')) {
+      keyStyle = document.getElementById('keyContainer').style.height;
+      document.getElementById('keyContainer').style.height = 'auto';
+      document.getElementById('key').style.maxHeight = 'none';
+      document.getElementById('key').style.overflowY = 'visible';
+      document.getElementById('key').style.overflowX = 'visible';
+      document.getElementById('keyTitle').style.display = 'none';
+    }
     // Force dimensions (and font) onto svg elements
     const svgElem = svg.getElementsByTagName('svg');
     for (const node of svgElem) {
@@ -151,6 +162,15 @@ function createPNGButton() {
 
     for (const node of svgElem) {
       node.style['font-family'] = null;
+    }
+    graph.style.height = '91%';
+    document.getElementById('visualColumn').style.height = '100%';
+    if (document.getElementById('keyContainer')) {
+      document.getElementById('keyContainer').style.height = keyStyle;
+      document.getElementById('key').style.maxHeight = '100%';
+      document.getElementById('key').style.overflowY = 'auto';
+      document.getElementById('key').style.overflowX = 'hidden';
+      document.getElementById('keyTitle').style.display = 'block';
     }
   });
   return savePNGButton;
