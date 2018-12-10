@@ -151,32 +151,6 @@ class Donut extends Visual {
     if (!super.render()) {
       return;
     }
-
-    // Empty the container, then place the SVG in there
-
-    /*
-    let data = null;
-    this.renderData = JSON.parse(JSON.stringify(this.data));
-
-    if (this.isNumeric(this.attributes.group_by)) {
-      this.renderData = this.makeBin(this.attributes.group_by, Number(this.attributes.binSize),
-      Number(this.attributes.binStart));
-    }
-
-    if (this.changedBins || this.orderedGroups == null) {
-      data = this.getGroupedListCounts(this.attributes.group_by, this.renderData);
-    } else {
-      data = [];
-      for (let i = 0; i < this.orderedGroups.length; i += 1) {
-        data.push({ key: this.orderedGroups[i].key, value: this.orderedGroups[i].value.length });
-      }
-    }
-
-    if (this.attributes.hide_empty) {
-      data = Visual.hideEmpty(data);
-    }
-    */
-
     const width = document.getElementById('visual').clientWidth;
     const height = document.getElementById('visual').clientHeight;
     let radius = 0;
@@ -270,8 +244,6 @@ class Donut extends Visual {
         .attr('stroke', 'black');
       }
     }
-
-    this.renderBasics();
   }
 }
 export default Donut;

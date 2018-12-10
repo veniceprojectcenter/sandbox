@@ -44,19 +44,6 @@ class BubbleChart extends Visual {
     const colorEditor = new EditorGenerator(document.getElementById('color-accordion-body'));
     const miscEditor = new EditorGenerator(document.getElementById('misc-accordion-body'));
 
-    /*
-    const cats = [];
-    const catsRaw = Object.keys(this.getCategoricalData()[0]);
-    for (let i = 0; i < catsRaw.length; i += 1) {
-      cats.push({ value: catsRaw[i], text: catsRaw[i] });
-    }
-    editor.createSelectBox('bubble-column', 'Select column to group by', cats, this.attributes.group_by,
-      (e) => {
-        this.attributes.group_by = $(e.currentTarget).val();
-        this.render();
-      });
-      */
-
     const displayModes = [
         { value: 'always', text: 'Always Visible' },
         { value: 'hover', text: 'On Hover' },
@@ -169,32 +156,9 @@ class BubbleChart extends Visual {
       .attr('transform', d => `translate(${d.x},${d.y})scale(1)`);
     }
 
-    // this.renderKey(root.children.map(a => a.key), 'below');
-
     if (this.attributes.label_mode === 'hover') {
       this.hoverTextDisplay(svg, node, [0, 0]);
       text.style('display', 'none');
-      /*
-      text.style('display', 'none');
-      const handleMouseOver = function (d) {
-        d3.select(this)
-            .attr('fill-opacity', 0.5);
-
-        d3.select(this.parentNode.parentNode)
-          .select(`text[data-key="${d.data.key}"]`)
-          .style('display', 'initial');
-      };
-
-      const handleMouseOut = function (d) {
-        d3.select(this)
-            .attr('fill-opacity', 1);
-        d3.select(this.parentNode.parentNode)
-          .select(`text[data-key="${d.data.key}"]`)
-          .style('display', 'none');
-      };
-
-      node.select('circle').on('mouseover', handleMouseOver)
-            .on('mouseout', handleMouseOut); */
     } else if (this.attributes.label_mode === 'hidden') {
       text.style('display', 'none');
     }
@@ -205,8 +169,6 @@ class BubbleChart extends Visual {
         this.renderControls();
       });
     }
-
-    this.renderBasics();
   }
 }
 export default BubbleChart;

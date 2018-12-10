@@ -88,6 +88,7 @@ function createPublishButton(loginModal) {
  */
 function createPNGButton() {
   const savePNGButton = document.createElement('button');
+  savePNGButton.id = 'saveButt';
   savePNGButton.innerText = 'Save as PNG';
 
   savePNGButton.addEventListener('click', async () => {
@@ -162,6 +163,7 @@ function createPNGButton() {
  */
 function createDownloadConfig() {
   const downloadButton = document.createElement('button');
+  downloadButton.id = 'downloadButt';
   downloadButton.innerText = 'Save Config File';
   downloadButton.addEventListener('click', () => {
     const config = {
@@ -213,7 +215,7 @@ function generateDownloadButtons(id = 'download') {
       const result = JSON.parse(e.target.result);
 
       renderEditor(result.dataSet, result.type);
-      createGraphic(result.dataSet, result.type, result.attributes);
+      createGraphic(result.dataSet, result.type, false, result.attributes);
     };
     fr.readAsText(file);
   };
@@ -225,11 +227,19 @@ function generateDownloadButtons(id = 'download') {
   const downloadContainer = document.getElementById(id);
   downloadContainer.innerHTML = '';
   // downloadContainer.appendChild(publishButton);
-  downloadContainer.appendChild(downloadButton);
-  downloadContainer.appendChild(saveSVGButton);
   downloadContainer.appendChild(uploadButton);
   downloadContainer.appendChild(uploadLabel);
+  downloadContainer.appendChild(downloadButton);
+  downloadContainer.appendChild(saveSVGButton);
   downloadContainer.appendChild(loginModal.generate());
+
+  if (!document.getElementById('visual').innerHTML) {
+    downloadButton.style.visibility = 'hidden';
+    saveSVGButton.style.visibility = 'hidden';
+  } else {
+    downloadButton.style.visibility = 'visible';
+    saveSVGButton.style.visibility = 'visible';
+  }
   loginModal.bind();
 }
 
@@ -238,21 +248,23 @@ function generateDownloadButtons(id = 'download') {
  *
  * @param {String} dataSet Name of the data set to render
  * @param {String} graphType Name of the graph type to use
+ * @param clearGroup bool to clear group_by (in case of switching datasets)
  * @param {Object} attr = null Attributes to use for graph construction
  */
-function createGraphic(dataSet, graphType, attr = null) {
+function createGraphic(dataSet, graphType, clearGroup, attr = null) {
   if (dataSet === null || dataSet === undefined) {
     return;
   } else if (graphType === null || graphType === undefined) {
     Data.fetchData(dataSet, null);
     return;
   }
-  document.getElementById('column2').style.height = '91%';
-  document.getElementById('column1').style.height = '91%';
   let attributes = attr;
   if (attributes === null) {
     if (activeVisual && activeVisual.attributes) {
       attributes = activeVisual.attributes;
+      if (clearGroup) {
+        attributes.group_by = null;
+      }
     } else {
       attributes = {};
     }
@@ -285,13 +297,14 @@ function createGraphic(dataSet, graphType, attr = null) {
   if (visual !== null) {
     activeVisual = visual;
     activeVisual.fetchAndRenderWithControls();
-    generateDownloadButtons();
     window.addEventListener('resize', () => {
       activeVisual.renderKey();
-      activeVisual.render();
       activeVisual.renderBasics();
+      activeVisual.render();
     });
   }
+  generateDownloadButtons();
+
   document.getElementById('controls').style.height = `calc(100% - 
     ${document.getElementById('majorSelect').clientHeight + document.getElementById('graphTitle').clientHeight
   + document.getElementById('graphTitle').style.marginTop})`;
@@ -343,7 +356,7 @@ function renderEditor(defaultDS = null, defaultGT = null) {
   'expanse of data that the Venice Project Center has collected since its founding in 1988. In the 30+ years since then, ' +
   'the project center has collected over a 1,000,000 individual data points on a wide variety of topics all across Venice. </p>' +
   '<p>This data is available for anyone to use under Creative Commons Attribution-ShareAlike 4.0 International. However, ' +
-  'the Venice Project Center is not liable for any data inaccuracies present in the data or damages that may result from innacurate data usage.</p>';
+  'the Venice Project Center is not liable for any data inaccuracies present in the data or damages that may result from inaccurate data usage.</p>';
 
   const guideTitle1 = document.createElement('h2');
   guideTitle1.className = 'guideTitle';
@@ -479,6 +492,8 @@ function renderEditor(defaultDS = null, defaultGT = null) {
     page.appendChild(rowContainer);
     page.appendChild(downloadContainer);
 
+    generateDownloadButtons();
+
     // Select GraphType
     controlsEditor.createSelectBox('graphSelector', 'Graph Type', graphCats, defaultGT,
       (e) => {
@@ -486,7 +501,7 @@ function renderEditor(defaultDS = null, defaultGT = null) {
         if (activeVisual) {
           activeVisual.type = currGraphType;
         }
-        createGraphic(currDataSet, currGraphType);
+        createGraphic(currDataSet, currGraphType, false);
       },
       null, 'Select a Graph Type');
     // Select Data Set
@@ -496,7 +511,7 @@ function renderEditor(defaultDS = null, defaultGT = null) {
         if (activeVisual) {
           activeVisual.dataSet = currGraphType;
         }
-        createGraphic(currDataSet, currGraphType);
+        createGraphic(currDataSet, currGraphType, true);
       },
       null, 'Select a Data Set');
   });

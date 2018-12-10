@@ -121,7 +121,6 @@ class Bar extends Visual {
     const height = dt.clientHeight - (margin.top + margin.bottom);
 
     const g = svg.append('g');
-      //.attr('transform', `translate(${margin.left},${margin.top})`);
 
     const x = d3.scaleBand();
     const y = d3.scaleLinear();
@@ -291,11 +290,10 @@ class Bar extends Visual {
 
     const gbox = g.node().getBBox();
     g.attr('transform', `translate(${-gbox.x + offsetWidth},${margin.top - offsetHeight})`);
-    const viewBoxWidth = gbox.width + fontOffset + gbox.x + margin.left + margin.right + offsetWidth;
+    const viewBoxWidth = gbox.width + fontOffset + gbox.x
+      + margin.left + margin.right + offsetWidth;
     const viewBoxHeight = gbox.height + gbox.y + margin.top + margin.bottom;
     svg.attr('viewBox', `0 0 ${viewBoxWidth} ${viewBoxHeight}`);
-
-    this.renderBasics();
   }
 }
 

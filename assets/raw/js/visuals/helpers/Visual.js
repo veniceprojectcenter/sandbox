@@ -594,9 +594,20 @@ class Visual {
       if (document.getElementById('visual-description')) {
         document.getElementById('visual-description').style.display = 'none';
       }
+      document.getElementById('graphTitle').style.display = 'none';
+      document.getElementById('controls').style.display = 'none';
+      document.getElementById('downloadButt').style.visibility = 'hidden';
+      document.getElementById('saveButt').style.visibility = 'hidden';
+      document.getElementById('column2').style.height = '77%';
+      document.getElementById('column1').style.height = '77%';
       return false;
     }
-
+    document.getElementById('graphTitle').style.display = 'block';
+    document.getElementById('controls').style.display = 'block';
+    document.getElementById('downloadButt').style.visibility = 'visible';
+    document.getElementById('saveButt').style.visibility = 'visible';
+    document.getElementById('column2').style.height = '91%';
+    document.getElementById('column1').style.height = '91%';
     this.empty(this.renderID);
 
     return true;
@@ -933,15 +944,9 @@ class Visual {
     majorEditor.createSelectBox('column-select', 'Data Column', dataCats, this.attributes.group_by,
       (e) => {
         this.attributes.group_by = $(e.currentTarget).val();
-        if (!this.attributes.group_by) {
-          document.getElementById('graphTitle').style.display = 'none';
-          document.getElementById('controls').style.display = 'none';
-        } else {
-          document.getElementById('graphTitle').style.display = 'block';
-          document.getElementById('controls').style.display = 'block';
-        }
         this.structureData();
         this.renderKey();
+        this.renderBasics();
         this.render();
       });
 
@@ -992,6 +997,7 @@ class Visual {
     generalEditor.createSelectBox('drop-showlegend', 'Show Legend', keyCats, this.attributes.legend_mode, (e) => {
       this.attributes.legend_mode = $(e.currentTarget).val();
       this.renderKey();
+      this.renderBasics();
       this.render();
     });
 
@@ -1025,6 +1031,7 @@ class Visual {
         this.attributes.hide_empty = e.currentTarget.checked;
         this.structureData();
         this.renderKey();
+        this.renderBasics();
         this.render();
       });
 
@@ -1033,6 +1040,7 @@ class Visual {
       (e) => {
         this.attributes.font_color = $(e.currentTarget).val();
         this.renderKey();
+        this.renderBasics();
         this.render();
       });
 
