@@ -976,6 +976,12 @@ class Visual {
       this.render();
     });
 
+    if (this.attributes.group_by_stack === 'No Column' && this.attributes.can_stack) {
+      document.getElementById('drop-showlegend').style.display = 'none';
+    } else {
+      document.getElementById('drop-showlegend').style.display = 'block';
+    }
+
     const sortCats = [
       { value: 'ascendingName', text: 'Name, Ascending' },
       { value: 'descendingName', text: 'Name, Descending' },
@@ -988,16 +994,6 @@ class Visual {
       this.colorItemsByPalette();
       this.render();
     });
-
-    if (!this.attributes.group_by) {
-      document.getElementById('keyContainer').style.display = 'none';
-    } else if (this.attributes.can_stack && (this.attributes.group_by_stack === 'No Column')) {
-      document.getElementById('keyContainer').style.display = 'none';
-      document.getElementById('drop-showlegend').style.display = 'none';
-    } else {
-      document.getElementById('keyContainer').style.display = 'block';
-      document.getElementById('drop-showlegend').style.display = 'block';
-    }
 
     generalEditor.createCheckBox('filter-columns', 'Hide Outlier Columns', this.attributes.filter_columns,
       (e) => {
