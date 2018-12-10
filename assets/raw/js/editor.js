@@ -257,9 +257,6 @@ function createGraphic(dataSet, graphType, attr = null) {
       attributes = {};
     }
   }
-  if (attributes.group_by === undefined) {
-    console.log('yikes');
-  }
 
   const config = {
     dataSet,
@@ -342,11 +339,11 @@ function renderEditor(defaultDS = null, defaultGT = null) {
   const intro = document.createElement('div');
   intro.className = 'intro';
   intro.id = 'intro';
-  intro.innerHTML = '<p>This site is designed so anyone can make useful visualizations from the vast ' +
+  intro.innerHTML = '<p>This site is designed so anyone can make visualizations from the vast ' +
   'expanse of data that the Venice Project Center has collected since its founding in 1988. In the 30+ years since then, ' +
-  'the project center has collected over a 1,000,000 individual data points, on a wide variety of topics all across Venice. </p>' +
-  '<p>This data is available for anyone to use under Creative Commons Attribution-ShareAlike 4.0 International; however, due to ' +
-  'the nature of student collected data, there could be inaccuracies. The Venice Project Center is not liable for any data inaccuracies.</p>';
+  'the project center has collected over a 1,000,000 individual data points on a wide variety of topics all across Venice. </p>' +
+  '<p>This data is available for anyone to use under Creative Commons Attribution-ShareAlike 4.0 International. However, ' +
+  'the Venice Project Center is not liable for any data inaccuracies present in the data or damages that may result from innacurate data usage.</p>';
 
   const guideTitle1 = document.createElement('h2');
   guideTitle1.className = 'guideTitle';
@@ -357,13 +354,12 @@ function renderEditor(defaultDS = null, defaultGT = null) {
   guidePart1.className = 'guide';
   guidePart1.id = 'guidePart1';
   guidePart1.innerHTML = '<ol type="1"><li class="upperList">Select a Graph Type<ol type="a">' +
-    '<li class="lowerList">Donut Chart - this is a circular chart with empty space in the middle useful for directly comparing the percentages of certain values</li>' +
-    '<li class="lowerList">Bubble Chart - this is a chart that creates circles with sizes based on the percentage of the data each element encompasses</li>' +
-    '<li class="lowerList">Bar Chart - this is a chart that compares the raw values of data columns against each other with x and y labels for each axis</li></ol></li>' +
+    '<li class="lowerList">Donut Chart: a circular chart with empty space in the middle that is useful for directly comparing the relative percentages of groups</li>' +
+    '<li class="lowerList">Bubble Chart: a chart that creates circles with sizes based on the percentage of the data each element encompasses</li>' +
+    '<li class="lowerList">Bar Chart: a vertical chart that compares the raw values of data columns against each other with x and y labels for each axis</li></ol></li>' +
     '<li class="upperList">Select a Data Set<ul><li class="tabbed">The data sets pull from the Venice Project Center\'s databases in order to get the most recent data for any particular topic. Currently, the ' +
     'topics available are Bells, Bridges, and Stores. This data has been collected by students from Worcester Polytechnic Institute since 1988, ' +
-    'and due to the changing nature of databases since that time, there could be inaccuracies in the data. The Venice Project Center is currently ' +
-    'working to fix these inaccuracies.</li></ul></li>' +
+    'and the Venice Project Center is currently working to bring more accurate and comprehensive data.</li></ul></li>' +
     '<li class="upperList">Select a Data Column<ul><li class="tabbed">The data column is the specific data from the data set that will be visualized. The column names are based off of the raw data, so the names ' +
     'could be very technical.</li></ul></li>' +
     '<li class="upperList">(Bar Graph) Select a Stacked Data Column<ul><li class="tabbed">The stacked data column is exclusive to the bar graph, and will sort the stacked items based on the values set in the data column. This is ' +
@@ -378,12 +374,13 @@ function renderEditor(defaultDS = null, defaultGT = null) {
   guidePart2.className = 'guide';
   guidePart2.id = 'guidePart2';
   guidePart2.innerHTML = '<ol type="1"><li class="upperList">General Settings<ol type="a"><li class="lowerList">Title: The title for the graph</li>' +
-    '<li class="lowerList">Description: The description for the graph</li><li class="lowerList">Font Size: The font size of all elements in the graph.<ul><li class="lowerList">Note: the title is always 2X the font size</li></ul></li>' +
+    '<li class="lowerList">Description: The description for the graph</li><li class="lowerList">Font Size: The font size of all elements in the graph.<ul><li class="lowerList">Note: the title is always 2 times the font size</li></ul></li>' +
     '<li class="lowerList">Show Legend: Changes the location of the legend (key) on the page. None will hide the key.<ul><li class="lowerList">Note: (Bar Graph) The key will show the stacked element</li></ul></li>' +
     '<li class="lowerList">Hide Outlier Data: Hides Data Sets from the Data Set Selector that have data inappropriate for the currently selected Graph Type</li>' +
-    '<li class="lowerList">Hide Empty Data: Hides empty values from the current visual.<ul><li class="lowerList">Note: Empty Values are \'\', \' \', and null</li></ul></li></ol></li>' +
+    '<li class="lowerList">Hide Empty Data: Hides empty values from the current visual.<ul><li class="lowerList">Note: Empty Values are undefined, \' \', null, and \'N/A\'</li></ul></li></ol></li>' +
     '<li class="upperList">Color Settings<ol type="a"><li class="lowerList">Font Color: The color for all font in the visual</li><li class="lowerList">Coloring Mode<ol type="i">' +
     '<li class="lowerList">Palette Mode: Chooses 2 Colors and sets each element to a gradient between the 2 colors</li>' +
+    '<li class="lowerList">Single Mode: Chooses 1 Colors and sets each element to that color</li>' +
     '<li class="lowerList">Manual Mode: Allows the user to select a section of the graph and choose a particular color</li></ol></li></ol></li>' +
     '<li class="upperList">Other Settings: These are reserved for Graph Type particular settings</li></ol>';
 
