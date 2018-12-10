@@ -332,12 +332,14 @@ function renderEditor(defaultDS = null, defaultGT = null) {
   introTitle.id = 'introTitle';
   introTitle.innerText = 'Welcome to the Venice Project Center Sandbox Application!';
 
-  const intro = document.createElement('p');
+  const intro = document.createElement('div');
   intro.className = 'intro';
   intro.id = 'intro';
-  intro.innerText = 'This site is designed so anyone can make useful visualizations from the vast ' +
-  'expanse of data that the VPC has collected since its founding in 1988. Select a data set ' +
-  'and graph type to begin!';
+  intro.innerHTML = '<p>This site is designed so anyone can make useful visualizations from the vast ' +
+  'expanse of data that the Venice Project Center has collected since its founding in 1988. In the 30+ years since then, ' +
+  'the project center has collected over a 1,000,000 individual data points, on a wide variety of topics all across Venice. </p>' +
+  '<p>This data is available for anyone to use under Creative Commons Attribution-ShareAlike 4.0 International; however, due to ' +
+  'the nature of student collected data, there could be inaccuracies. The Venice Project Center is not liable for any data inaccuracies.</p>';
 
   const guideTitle1 = document.createElement('h2');
   guideTitle1.className = 'guideTitle';
