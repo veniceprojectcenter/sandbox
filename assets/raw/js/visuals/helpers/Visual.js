@@ -1193,6 +1193,11 @@ class Visual {
             }
           });
 
+      const tempHeight = (document.getElementById('tooltip').getBoundingClientRect()).height;
+      if ((coords[1] + tempHeight) >= boundBox.height) {
+        coords[1] -= tempHeight * 0.78;
+      }
+
       if (coords[0] > boundBox.width / 2) {
         textBox.attr('transform', `translate(${(coords[0] - 5) - translateArray[0]} ${coords[1] - translateArray[1] - window.pageYOffset})`)
             .attr('text-anchor', 'end');
