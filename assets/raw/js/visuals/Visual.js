@@ -60,6 +60,12 @@ class Visual {
     }
     document.getElementById('downloadButt').style.visibility = 'hidden';
     document.getElementById('saveButt').style.visibility = 'hidden';
+
+    // Avoid fetching if the data is already fetched
+    if (this.data) {
+      this.onLoadData();
+    }
+
     loader = new Loader();
     loader.render();
 
@@ -294,8 +300,10 @@ class Visual {
     });
     this.attributes.packed_graph = false;
 
-    // Group the data
-    this.structureData();
+    // Group the data if necessary
+    if (Object.keys(this.attributes.items).length <= 0) {
+      this.structureData();
+    }
   }
 
   /**
