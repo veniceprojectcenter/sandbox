@@ -1099,7 +1099,7 @@ class Visual {
 
     const colorCats = [];
     switch (this.type) {
-      case 'Donut Chart':
+      case 'Donut/Pie Chart':
         colorCats.push({ value: 'palette', text: 'Palette Mode' });
         colorCats.push({ value: 'manual', text: 'Manual Mode' });
         break;

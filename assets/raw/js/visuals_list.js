@@ -44,7 +44,7 @@ const visuals = [
   { name: 'Parallel Sets', image: 'https://datavizproject.com/wp-content/uploads/2015/11/DVP_1_100-59-300x300.png' },
   { name: 'Proportional Area Chart (Square)', image: 'https://datavizproject.com/wp-content/uploads/2016/06/DVP_1_100-07-300x300.png' },
   { name: 'Funnel Chart', image: 'https://datavizproject.com/wp-content/uploads/2015/11/DVP-61-300x300.png' },
-  { name: 'Pie Chart', image: 'https://datavizproject.com/wp-content/uploads/2015/10/11-Pie-Chart-300x300.png' },
+  { name: 'Pie Chart', image: 'https://datavizproject.com/wp-content/uploads/2015/10/11-Pie-Chart-300x300.png', available: true },
   { name: 'Linear Process Diagram', image: 'https://datavizproject.com/wp-content/uploads/2016/06/DVP_1_100-97-300x300.png' },
   { name: 'Packed Circle Chart', image: 'https://datavizproject.com/wp-content/uploads/2016/06/DVP_1_100-67-300x300.png' },
   { name: 'Convex Treemap', image: 'https://datavizproject.com/wp-content/uploads/2015/10/DVP-37-300x300.png' },

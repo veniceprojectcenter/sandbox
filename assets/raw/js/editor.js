@@ -11,7 +11,7 @@ import Loader from './visuals/helpers/Loader';
 import LoginModal from './visuals/helpers/LoginModal';
 
 // List of all graph types that are available for use
-const graphsAvailable = ['Donut Chart', 'Bubble Chart', 'Bar Chart'];
+const graphsAvailable = ['Donut/Pie Chart', 'Bubble Chart', 'Bar Chart'];
 
 let activeVisual;
 
@@ -283,7 +283,7 @@ function createGraphic(dataSet, graphType, clearGroup, attr = null) {
 
   let visual = null;
   switch (graphType) {
-    case 'Donut Chart':
+    case 'Donut/Pie Chart':
       visual = new Donut(config);
       break;
     case 'Bubble Chart':
@@ -374,7 +374,7 @@ function renderEditor(defaultDS = null, defaultGT = null) {
   guidePart1.className = 'guide';
   guidePart1.id = 'guidePart1';
   guidePart1.innerHTML = '<ol type="1"><li class="upperList">Select a Graph Type<ol type="a">' +
-    '<li class="lowerList">Donut Chart: a circular chart with empty space in the middle that is useful for directly comparing the relative percentages of groups</li>' +
+    '<li class="lowerList">Donut/Pie Chart: a circular chart with empty space in the middle that is useful for directly comparing the relative percentages of groups</li>' +
     '<li class="lowerList">Bubble Chart: a chart that creates circles with sizes based on the percentage of the data each element encompasses</li>' +
     '<li class="lowerList">Bar Chart: a vertical chart that compares the raw values of data columns against each other with x and y labels for each axis</li></ol></li>' +
     '<li class="upperList">Select a Data Set<ul><li class="tabbed">The data sets pull from the Venice Project Center\'s databases in order to get the most recent data for any particular topic. Currently, the ' +
