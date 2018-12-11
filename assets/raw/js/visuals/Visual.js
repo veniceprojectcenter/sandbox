@@ -148,8 +148,9 @@ class Visual {
   async fetchAndRenderWithControls() {
     await this.fetchData();
     this.renderBasics();
-    this.renderKey();
+    this.reserveKeySpace();
     this.render();
+    this.renderKey();
     this.renderControls();
   }
 
@@ -975,9 +976,10 @@ class Visual {
       (e) => {
         this.attributes.group_by = $(e.currentTarget).val();
         this.structureData();
-        this.renderKey();
+        this.reserveKeySpace();
         this.renderBasics();
         this.render();
+        this.renderKey();
       });
 
     const generalEditor = new EditorGenerator(document.getElementById('general-accordion-body'));
@@ -1013,9 +1015,10 @@ class Visual {
           value = 100;
         }
         this.attributes.font_size = `${value}`;
-        this.renderKey();
+        this.reserveKeySpace();
         this.renderBasics();
         this.render();
+        this.renderKey();
       }, this.attributes.font_size);
 
     const keyCats = [
@@ -1026,9 +1029,10 @@ class Visual {
       { value: 'none', text: 'None' }];
     generalEditor.createSelectBox('drop-showlegend', 'Show Legend', keyCats, this.attributes.legend_mode, (e) => {
       this.attributes.legend_mode = $(e.currentTarget).val();
-      this.renderKey();
+      this.reserveKeySpace();
       this.renderBasics();
       this.render();
+      this.renderKey();
     });
 
     if (this.attributes.group_by_stack === 'No Column' && this.attributes.can_stack) {
@@ -1060,18 +1064,20 @@ class Visual {
       (e) => {
         this.attributes.hide_empty = e.currentTarget.checked;
         this.structureData();
-        this.renderKey();
+        this.reserveKeySpace();
         this.renderBasics();
         this.render();
+        this.renderKey();
       });
 
     // Populate Color Settings
     colorEditor.createColorField('font-color', 'Font Color', this.attributes.font_color,
       (e) => {
         this.attributes.font_color = $(e.currentTarget).val();
-        this.renderKey();
+        this.reserveKeySpace();
         this.renderBasics();
         this.render();
+        this.renderKey();
       });
 
     const colorCats = [];
@@ -1101,8 +1107,9 @@ class Visual {
           this.colorItemsBySingleColor();
         }
         this.renderControls();
-        this.renderKey();
+        this.reserveKeySpace();
         this.render();
+        this.renderKey();
       });
 
     if (this.attributes.color.mode === 'palette') {
@@ -1111,8 +1118,9 @@ class Visual {
           this.attributes.color.start_color = $(e.currentTarget)
           .val();
           this.colorItemsByPalette();
-          this.renderKey();
+          this.reserveKeySpace();
           this.render();
+          this.renderKey();
         });
 
       colorEditor.createColorField('grad-end', 'Select Palette End', this.attributes.color.end_color,
@@ -1120,8 +1128,9 @@ class Visual {
           this.attributes.color.end_color = $(e.currentTarget)
           .val();
           this.colorItemsByPalette();
-          this.renderKey();
+          this.reserveKeySpace();
           this.render();
+          this.renderKey();
         });
     } else if (this.attributes.color.mode === 'single') {
       colorEditor.createColorField('single-color-picker', 'Select Color',
@@ -1129,8 +1138,9 @@ class Visual {
           this.attributes.color.single_color = $(e.currentTarget)
           .val();
           this.colorItemsBySingleColor();
-          this.renderKey();
+          this.reserveKeySpace();
           this.render();
+          this.renderKey();
         });
     }
   }
@@ -1331,10 +1341,7 @@ class Visual {
     return textArray;
   }
 
-  /**
-   * renders the key
-   */
-  renderKey() {
+  reserveKeySpace() {
     if (this.attributes.legend_mode === 'below') {
       document.getElementById('keyContainer').style.display = 'block';
       document.getElementById('key').innerHTML = '';
@@ -1381,8 +1388,13 @@ class Visual {
       document.getElementById('visual').style.height = '96%';
       document.getElementById('keyContainer').style.outline = '';
       document.getElementById('key').innerHTML = '';
-      return;
     }
+  }
+
+  /**
+   * renders the key
+   */
+  renderKey() {
     const heightofTXT = this.lengthinPX('W')[1];
     let keyArray = this.flattenItems()
       .map(a => a.key);

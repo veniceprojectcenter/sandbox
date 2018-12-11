@@ -107,7 +107,9 @@ class Donut extends Visual {
        `${this.currentEditKey} Color`,
        this.attributes.items[this.currentEditKey].color, (e) => {
          this.attributes.items[this.currentEditKey].color = $(e.currentTarget).val();
+         this.reserveKeySpace();
          this.render();
+         this.renderKey();
        },
       );
       miscEditor.createLeftRightButtons('donut-order', 'Change Piece Position',
@@ -240,8 +242,10 @@ class Donut extends Visual {
     if (this.editmode) {
       section.on('click', (d) => {
         this.currentEditKey = d.data.key;
+        this.reserveKeySpace();
         this.renderControls();
         this.render();
+        this.renderKey();
       });
       const editKey = this.currentEditKey;
       if (editKey !== null) {

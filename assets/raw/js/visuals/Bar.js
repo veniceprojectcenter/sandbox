@@ -48,8 +48,9 @@ class Bar extends Visual {
           document.getElementById('drop-showlegend').style.display = 'block';
         }
         this.structureData();
-        this.renderKey();
+        this.reserveKeySpace();
         this.render();
+        this.renderKey();
       }, '', 'Select a Property', 'column-select');
 
     this.attributes.show_x_label = true;

@@ -305,9 +305,10 @@ function createGraphic(dataSet, graphType, clearGroup, attr = null) {
     activeVisual = visual;
     activeVisual.fetchAndRenderWithControls();
     window.addEventListener('resize', () => {
-      activeVisual.renderKey();
+      activeVisual.reserveKeySpace();
       activeVisual.renderBasics();
       activeVisual.render();
+      activeVisual.renderKey();
     });
   }
   generateDownloadButtons();
