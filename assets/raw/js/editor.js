@@ -412,9 +412,9 @@ function renderEditor(defaultDS = null, defaultGT = null) {
   const guidePart3 = document.createElement('div');
   guidePart3.className = 'guide';
   guidePart3.id = 'guidePart2';
-  guidePart3.innerHTML = '<ol type="1"><li class="upperList">Save Config File - This saves a ".SNDBX" to the user\'s downloads folder, which contains data for how the graphic is configured</li>' +
-    '<li class="upperList">Upload Config File - This allows a user to upload a ".SNDBX" file to Sandbox, and upon loading the graphic, the user can continue working on the graphic that had been previously saved</li>' +
-    '<li class="upperList">Save as PNG - This saves the current Title, Description, Graphic, and Key together as a PNG image file.<ul><li class="lowerList">Note: The key will automatically resize in the image to fit all of its contents</li></ul></li></ol>';
+  guidePart3.innerHTML = '<ol type="1"><li class="upperList">Save Config File: This saves a ".SNDBX" to the user\'s downloads folder, which contains data for how the graphic is configured</li>' +
+    '<li class="upperList">Upload Config File: This allows a user to upload a ".SNDBX" file to Sandbox, and upon loading the graphic, the user can continue working on the graphic that had been previously saved</li>' +
+    '<li class="upperList">Save as PNG: This saves the current Title, Description, Graphic, and Key together as a PNG image file.<ul><li class="lowerList">Note: The key will automatically resize in the image to fit all of its contents</li></ul></li></ol>';
 
   blurbContainer.appendChild(introTitle);
   blurbContainer.appendChild(intro);
