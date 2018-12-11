@@ -1,8 +1,8 @@
 /* eslint class-methods-use-this: ["error", { "exceptMethods": ["render", "renderControls"] }] */
-import Loader from './Loader';
-import Data from './Data';
-import EditorGenerator from './EditorGenerator';
-import ColorHelper from './ColorHelper';
+import Loader from './helpers/Loader';
+import Data from '../dataRetrieval/Data';
+import EditorGenerator from './helpers/EditorGenerator';
+import ColorHelper from './helpers/ColorHelper';
 
 /**
  * Abstract class that all other Charts will inherit from

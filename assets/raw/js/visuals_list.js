@@ -1,4 +1,4 @@
-import Data from './visuals/helpers/Data';
+import Data from './dataRetrieval/Data';
 
 // I didn't want to do all this by hand for a useless feature so sorry future teams
 const visuals = [

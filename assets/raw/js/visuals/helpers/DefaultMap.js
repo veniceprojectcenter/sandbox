@@ -1,4 +1,4 @@
-import Visual from './Visual';
+import Visual from '../Visual';
 import Map from './Map';
 import EditorGenerator from './EditorGenerator';
 

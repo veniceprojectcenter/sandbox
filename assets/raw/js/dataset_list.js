@@ -1,5 +1,5 @@
 import Loader from './visuals/helpers/Loader';
-import Data from './visuals/helpers/Data';
+import Data from './dataRetrieval/Data';
 
 /**
  * Renders the dataset list page using the data set Objects

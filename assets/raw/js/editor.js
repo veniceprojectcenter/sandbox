@@ -1,12 +1,12 @@
 import html2canvas from 'html2canvas';
 
-import Visual from './visuals/helpers/Visual';
+import Visual from './visuals/Visual';
 import Donut from './visuals/Donut';
 import BubbleChart from './visuals/BubbleChart';
 import BubbleMapChart from './visuals/BubbleMapChart';
 import BarChart from './visuals/Bar';
 import EditorGenerator from './visuals/helpers/EditorGenerator';
-import Data from './visuals/helpers/Data';
+import Data from './dataRetrieval/Data';
 import Loader from './visuals/helpers/Loader';
 import LoginModal from './visuals/helpers/LoginModal';
 

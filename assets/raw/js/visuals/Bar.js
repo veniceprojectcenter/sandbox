@@ -1,4 +1,4 @@
-import Visual from './helpers/Visual';
+import Visual from './Visual';
 import EditorGenerator from './helpers/EditorGenerator';
 
 class Bar extends Visual {
