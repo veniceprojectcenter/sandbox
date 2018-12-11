@@ -1513,7 +1513,7 @@ class Visual {
         if (textArray.length !== keyArray.length) {
           if (keyArray[colorIter2] === undefined) {
             colorIter1 += 1;
-            return '#000000';
+            return 'transparent';
           }
           if (textArray[colorIter1] !== keyArray[colorIter2]) {
             if ((keyArray[colorIter2].replace(/^\s+|\s+$/g, '')).startsWith((textArray[colorIter1]).replace(/^\s+|\s+$/g, ''))) {
@@ -1523,7 +1523,7 @@ class Visual {
               return itemObj[tempString].color;
             }
             colorIter1 += 1;
-            return '#000000';
+            return 'transparent';
           }
           tempString = textArray[colorIter1];
           colorIter1 += 1;
