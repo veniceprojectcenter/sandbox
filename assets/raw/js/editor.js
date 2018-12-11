@@ -234,23 +234,13 @@ function generateDownloadButtons(id = 'download') {
   const downloadContainer = document.getElementById(id);
   downloadContainer.innerHTML = '';
 
-  const downloadCol1 = document.createElement('div');
-  downloadCol1.className = 'downCol1';
-  downloadCol1.id = 'downCol1';
+  downloadContainer.appendChild(uploadButton);
+  downloadContainer.appendChild(uploadLabel);
+  downloadContainer.appendChild(downloadButton);
+  downloadContainer.appendChild(saveSVGButton);
+  downloadContainer.appendChild(loginModal.generate());
 
-  const downloadCol2 = document.createElement('div');
-  downloadCol2.className = 'downCol2';
-  downloadCol2.id = 'downCol2';
-
-  downloadCol1.appendChild(uploadButton);
-  downloadCol1.appendChild(uploadLabel);
-  downloadCol2.appendChild(downloadButton);
-  downloadCol2.appendChild(saveSVGButton);
-  downloadCol2.appendChild(loginModal.generate());
-  downloadContainer.appendChild(downloadCol1);
-  downloadContainer.appendChild(downloadCol2);
-
-  if (!document.getElementById('visual').innerHTML) {
+  if (!document.getElementById('visual').innerHTML || document.getElementById('loader')) {
     downloadButton.style.visibility = 'hidden';
     saveSVGButton.style.visibility = 'hidden';
   } else {
@@ -489,15 +479,16 @@ function renderEditor(defaultDS = null, defaultGT = null) {
   page.classList.add('container-fluid');
   page.innerHTML = ''; // Clear the page
 
+  page.appendChild(rowContainer);
+  page.appendChild(downloadContainer);
+
+  generateDownloadButtons();
 
   const controlsEditor = new EditorGenerator(majorSelectContainer);
   // Prep list of Data Sets and Graphs
   let dataSets = [];
-  const loader = new Loader('page');
-  const container = document.getElementById('page');
-  if (container) {
-    loader.render();
-  }
+  const loader = new Loader();
+  loader.render();
 
   Data.fetchDataSets((sets) => {
     dataSets = sets;
@@ -516,14 +507,7 @@ function renderEditor(defaultDS = null, defaultGT = null) {
     let currDataSet = defaultDS;
     let currGraphType = defaultGT;
 
-    if (container) {
-      loader.remove();
-    }
-
-    page.appendChild(rowContainer);
-    page.appendChild(downloadContainer);
-
-    generateDownloadButtons();
+    loader.remove();
 
     // Select GraphType
     controlsEditor.createSelectBox('graphSelector', 'Graph Type', graphCats, defaultGT,

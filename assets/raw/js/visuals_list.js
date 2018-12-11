@@ -2,7 +2,7 @@ import Data from './visuals/helpers/Data';
 
 // I didn't want to do all this by hand for a useless feature so sorry future teams
 const visuals = [
-  { name: 'Bubble Map Chart', image: 'https://datavizproject.com/wp-content/uploads/2016/06/DVP_1_100-87-300x300.png', available: true },
+  { name: 'Bubble Map Chart', image: 'https://datavizproject.com/wp-content/uploads/2016/06/DVP_1_100-87-300x300.png', available: false },
   { name: 'Donut Chart', image: 'http://datavizproject.com/wp-content/uploads/2015/10/3-Donut-Chart-300x300.png', available: true },
   { name: 'Bubble Chart', image: 'https://datavizproject.com/wp-content/uploads/2015/10/DVP-23-300x300.png', available: true },
   { name: 'Bar Chart (vertical)', image: 'https://datavizproject.com/wp-content/uploads/2015/10/4-Bar-Chart-300x300.png', available: true },

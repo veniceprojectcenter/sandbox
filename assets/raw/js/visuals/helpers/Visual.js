@@ -43,19 +43,46 @@ class Visual {
    */
   async fetchData() {
     let loader = null;
-    let container = null;
-    if (this.renderID) {
-      loader = new Loader(this.renderID);
-      container = document.getElementById(this.renderID);
-      if (container) {
-        loader.render();
-      }
+    document.getElementById('graphTitle').style.display = 'none';
+    document.getElementById('controls').style.display = 'none';
+    document.getElementById('visualColumn').style.display = 'none';
+    document.getElementById('column2').style.height = '77%';
+    document.getElementById('column1').style.height = '77%';
+    document.getElementById('blurb').style.display = 'block';
+    if (document.getElementById('visual-title')) {
+      document.getElementById('visual-title').style.display = 'none';
     }
+    if (document.getElementById('visual-description')) {
+      document.getElementById('visual-description').style.display = 'none';
+    }
+    if (document.getElementById('column-select')) {
+      document.getElementById('column-select').style.display = 'none';
+    }
+    document.getElementById('downloadButt').style.visibility = 'hidden';
+    document.getElementById('saveButt').style.visibility = 'hidden';
+    loader = new Loader();
+    loader.render();
+
     await Data.fetchData(this.dataSet, (data) => {
       this.data = data;
-      if (container) {
-        loader.remove();
+      document.getElementById('graphTitle').style.display = 'block';
+      document.getElementById('controls').style.display = 'block';
+      document.getElementById('visualColumn').style.display = 'flex';
+      document.getElementById('column2').style.height = '91%';
+      document.getElementById('column1').style.height = '91%';
+      document.getElementById('blurb').style.display = 'none';
+      if (document.getElementById('visual-title')) {
+        document.getElementById('visual-title').style.display = 'block';
       }
+      if (document.getElementById('visual-description')) {
+        document.getElementById('visual-description').style.display = 'block';
+      }
+      if (document.getElementById('column-select')) {
+        document.getElementById('column-select').style.display = 'block';
+      }
+      document.getElementById('downloadButt').style.visibility = 'visible';
+      document.getElementById('saveButt').style.visibility = 'visible';
+      loader.remove();
       this.onLoadData();
     });
   }
@@ -594,6 +621,7 @@ class Visual {
       if (document.getElementById('visual-description')) {
         document.getElementById('visual-description').style.display = 'none';
       }
+      document.getElementById('visualColumn').style.display = 'none';
       document.getElementById('graphTitle').style.display = 'none';
       document.getElementById('controls').style.display = 'none';
       document.getElementById('downloadButt').style.visibility = 'hidden';
@@ -608,6 +636,7 @@ class Visual {
     document.getElementById('saveButt').style.visibility = 'visible';
     document.getElementById('column2').style.height = '91%';
     document.getElementById('column1').style.height = '91%';
+    document.getElementById('visualColumn').style.display = 'flex';
     this.empty(this.renderID);
 
     return true;
@@ -1012,7 +1041,7 @@ class Visual {
       { value: 'descendingName', text: 'Name, Descending' },
       // { value: 'ascendingNumber', text: 'Number of Items, Ascending' }, // These have not been implemented
       // { value: 'descendingNumber', text: 'Number of Items, Descending' }
-      ];
+    ];
     generalEditor.createSelectBox('drop-sorttype', 'Sorting Method', sortCats, this.attributes.sort_type, (e) => {
       this.attributes.sort_type = $(e.currentTarget).val();
       this.sortItems();
