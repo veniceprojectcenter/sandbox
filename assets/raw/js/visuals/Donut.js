@@ -77,6 +77,14 @@ class Donut extends Visual {
      });
      */
 
+    miscEditor.createNumberSlider('radius-multiple',
+      'Inner Radius Ratio', this.attributes.radius_multiple, 0, 0.99, 0.01,
+      (e) => {
+        const value = $(e.currentTarget).val();
+        this.attributes.radius_multiple = `${value}`;
+        this.render();
+      });
+
     miscEditor.createTextField('bin-start', 'Start Value of first Group', (e) => {
       this.attributes.binStart = $(e.currentTarget).val();
       this.changedBins = true;
@@ -162,7 +170,7 @@ class Donut extends Visual {
 
     const arc = d3.arc()
       .outerRadius(radius - 10)
-      .innerRadius((radius - 10) * 0.6);
+      .innerRadius((radius - 10) * this.attributes.radius_multiple);
 
     const svg = d3.select(`#${this.renderID}`).append('svg')
       .attr('id', 'svgBox')

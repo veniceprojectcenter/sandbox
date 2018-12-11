@@ -287,6 +287,7 @@ class Visual {
       can_stack: false,
       packed_graph: false,
       filter_columns: true,
+      radius_multiple: 0.6,
       x_font_rotation: 45,
       x_font_x_offset: 0,
       x_font_y_offset: 0,
