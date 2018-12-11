@@ -23,6 +23,7 @@ class Bar extends Visual {
     }
 
     const generalEditor = new EditorGenerator(document.getElementById('general-accordion-body'));
+    const colorEditor = new EditorGenerator(document.getElementById('color-accordion-body'));
     const miscEditor = new EditorGenerator(document.getElementById('misc-accordion-body'));
 
 
@@ -37,6 +38,7 @@ class Bar extends Visual {
     }
     cats.unshift({ value: 'No Column', text: 'No Column' });
 
+    // creates the stacked column selector, and renders the key/legend select if there is a stacked column
     generalEditor.createSelectBox('bar-column-stack', 'Stacked Data Column', cats,
       this.attributes.group_by_stack, (e) => {
         this.attributes.group_by_stack = $(e.currentTarget).val();
@@ -56,21 +58,25 @@ class Bar extends Visual {
     this.attributes.show_x_label = true;
     this.attributes.show_y_label = true;
 
+    // creates the text field for a custom x label - if no custom label -> sets to group_by
     miscEditor.createTextField('bar-x-label', 'Custom X Label', (e) => {
       this.attributes.x_label = e.currentTarget.value;
       this.render();
     }, this.attributes.x_label);
 
+    // creates checkbox for show/hide x label
     miscEditor.createCheckBox('bar-show-x', 'Show X Label', this.attributes.show_x_label, (e) => {
       this.attributes.show_x_label = e.currentTarget.checked;
       this.render();
     });
 
+    // creates the text field for a custom y label - if no custom label -> sets to group_by
     miscEditor.createTextField('bar-y-label', 'Custom Y Label', (e) => {
       this.attributes.y_label = e.currentTarget.value;
       this.render();
     }, this.attributes.y_label);
 
+    // creates checkbox for show/hide y label
     miscEditor.createCheckBox('bar-show-y', 'Show Y Label', this.attributes.show_y_label, (e) => {
       this.attributes.show_y_label = e.currentTarget.checked;
       this.render();
@@ -78,6 +84,7 @@ class Bar extends Visual {
 
     document.getElementById('bar-show-y').style.marginBottom = '5%';
 
+    // creates slider for the x tick text rotation
     miscEditor.createNumberSlider('bar-x-font-rotation',
       'X Axis Font Rotation', this.attributes.x_font_rotation, 0, 90, 1,
       (e) => {
@@ -85,6 +92,8 @@ class Bar extends Visual {
         this.attributes.x_font_rotation = `${value}`;
         this.render();
       });
+
+    // creates slider for x tick text x offset
     miscEditor.createNumberSlider('bar-x-font-x-offset',
       'X Axis Font X Offset', this.attributes.x_font_x_offset, -50, 50, 1,
       (e) => {
@@ -92,6 +101,8 @@ class Bar extends Visual {
         this.attributes.x_font_x_offset = `${value}`;
         this.render();
       });
+
+    // creates slider for x tick text y offset
     miscEditor.createNumberSlider('bar-x-font-y-offset',
       'X Axis Font Y Offset', this.attributes.x_font_y_offset, -50, 50, 1,
       (e) => {
@@ -113,6 +124,7 @@ class Bar extends Visual {
       .attr('id', 'svgBox')
       .attr('class', 'bar');
 
+    // set height / width
     const dt = document.getElementById('visual');
     const margin = { top: (dt.clientHeight * 0.02),
       right: (dt.clientWidth * 0.02),
@@ -192,6 +204,7 @@ class Bar extends Visual {
     x.domain(stackData.map(a => a.key));
     y.domain([0, d3.max(stack[stack.length - 1].map(item => item.stack.end))]);
 
+    // set x / y labels
     let offsetWidth = 0;
     let offsetHeight = 0;
     let yText = this.attributes.y_label;
@@ -229,7 +242,8 @@ class Bar extends Visual {
       .style('color', `${this.attributes.font_color}`)
       .text(xText);
     }
-    // Axes
+
+    // set graph dimensions
     y.rangeRound([height - (offsetHeight * 2), 0]);
     x.rangeRound([0, width - (offsetWidth * 2)]).padding(0.05);
 

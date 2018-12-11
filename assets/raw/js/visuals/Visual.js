@@ -43,6 +43,8 @@ class Visual {
    */
   async fetchData() {
     let loader = null;
+
+    // set css for loader
     document.getElementById('graphTitle').style.display = 'none';
     document.getElementById('controls').style.display = 'none';
     document.getElementById('visualColumn').style.display = 'none';
@@ -66,11 +68,14 @@ class Visual {
       this.onLoadData();
     }
 
+    // create loader
     loader = new Loader();
     loader.render();
 
     await Data.fetchData(this.dataSet, (data) => {
       this.data = data;
+
+      // unset css for loader
       document.getElementById('graphTitle').style.display = 'block';
       document.getElementById('controls').style.display = 'block';
       document.getElementById('visualColumn').style.display = 'flex';
@@ -88,6 +93,8 @@ class Visual {
       }
       document.getElementById('downloadButt').style.visibility = 'visible';
       document.getElementById('saveButt').style.visibility = 'visible';
+
+      // remove loader
       loader.remove();
       this.onLoadData();
     });
@@ -102,7 +109,6 @@ class Visual {
 
   /**
    * Empties the indicated page element
-   *
    * @param id ID of the container to clear
    */
   empty(id) {
@@ -121,7 +127,6 @@ class Visual {
   /**
    * Adds all items from defaults to this.attributes, unless a value is already there. It also
    * checks for sub-objects and their keys as well
-   *
    * @param {Object} defaults Contains default attributes
    */
   applyDefaultAttributes(defaults) {
@@ -148,7 +153,6 @@ class Visual {
 
   /**
    * Fetches data, then calls render() and renderControls()
-   *
    * @returns {Promise<void>}
    */
   async fetchAndRenderWithControls() {
@@ -162,7 +166,6 @@ class Visual {
 
   /**
    * Fetches data, then calls render()
-   *
    * @returns {Promise<void>}
    */
   async fetchAndRender() {
@@ -173,7 +176,6 @@ class Visual {
 
   /**
    * Filters data with null, undefined, and blank key attributes
-   *
    * @param {Object[]} data Data to filter
    * @return {Object[]} Filtered data
    */
@@ -230,7 +232,6 @@ class Visual {
 
   /**
    * Sorts the data based on weight values if there are any, or ascending order otherwise
-   *
    * @param {Object[]} data Sorts the data objects
    * @returns {Object[]} Array of sorted data
    */
@@ -260,7 +261,7 @@ class Visual {
   }
 
   /**
-   * Abstract method that applies default attrbibutes and structures data in attributes.items
+   * Abstract method that applies default attributes and structures data in attributes.items
    */
   onLoadData() {
     if (this.constructor === Visual) {
@@ -299,7 +300,8 @@ class Visual {
       x_font_x_offset: 0,
       x_font_y_offset: 0,
     });
-    this.attributes.packed_graph = false;
+
+    this.attributes.packed_graph = false; // for bubblechart. Note: d3.pack is the worst thing
 
     // Group the data if necessary
     if (Object.keys(this.attributes.items).length <= 0) {
@@ -446,7 +448,6 @@ class Visual {
   /**
    * Returns an array of data objects with value (amount of items in it), weight (sort order), and
    * color based on this.attributes.items
-   *
    * @returns {Object[]}
    */
   flattenItems() {
@@ -465,7 +466,6 @@ class Visual {
 
   /**
    * Gets a list of all of the keys in the subitems of this.attributes.items
-   *
    * @returns {string[]} All keys in all subitems
    */
   getSubkeys() {
@@ -503,6 +503,7 @@ class Visual {
 
     const controlsContainer = document.getElementById(Visual.DEFAULT_RENDER_CONTROLS_ID);
 
+    // creates 'categories' for graph settings
     const accordion1 = document.createElement('button');
     accordion1.className = 'accordion-button';
     accordion1.textContent = 'General Settings';
@@ -612,7 +613,6 @@ class Visual {
 
   /**
    * Abstract method for rendering the desired visual, returns false if there is nothing to render
-   *
    * @return {boolean} False if there is no data to render, true otherwise
    */
   render() {
@@ -624,6 +624,8 @@ class Visual {
       !Object.keys(this.data[0]).includes(this.attributes.group_by)) {
       this.attributes.group_by = null;
       this.attributes.group_by_stack = 'No Column';
+
+      // set proper css for no visual
       document.getElementById('blurb').style.display = 'block';
       if (document.getElementById('visual-title')) {
         document.getElementById('visual-title').style.display = 'none';
@@ -640,6 +642,8 @@ class Visual {
       document.getElementById('column1').style.height = '77%';
       return false;
     }
+
+    // set proper css for visual
     document.getElementById('graphTitle').style.display = 'block';
     document.getElementById('controls').style.display = 'block';
     document.getElementById('downloadButt').style.visibility = 'visible';
@@ -656,7 +660,6 @@ class Visual {
 
   /**
    * Checks the columns of this.data and returns them in an array, with filters based on options
-   *
    * @param {Object} options Contains options for filtering columns
    * @returns {String[]} Array of all keys, or empty array if there is no data
    */
@@ -695,7 +698,6 @@ class Visual {
 
   /**
    * Groups the input data based on the given column name
-   *
    * @param {string} columnName name of column to check
    * @param {Object[]} inputData Full list of data
    * @returns {Array} Array of Objects that each contain 'key', which is the value in the designated
@@ -724,7 +726,6 @@ class Visual {
 
   /**
    * Counts the input data based on the given column name
-   *
    * @param {string} columnName name of column to check
    * @param {Object[]} inputData Full list of data
    * @returns {Array} Array of Objects that contain a key (which is the value in the designated
@@ -740,9 +741,9 @@ class Visual {
   }
 
   /**
-  *Filters This.data and returns only numeric data columns
-  *Any data with more than maxCategories categories and is numeric is diplayed
-  **Data returned is in same format as this.data
+  * Filters This.data and returns only numeric data columns
+  * Any data with more than maxCategories categories and is numeric is diplayed
+  * Data returned is in same format as this.data
   */
   getNumericData(maxCategories = 25, data = this.data) {
     const dataKeys = Object.keys(data[0]);
@@ -766,9 +767,9 @@ class Visual {
   }
 
   /**
-  *Filters This.data and returns only categorical data columns
-  *Any data attribute with less than  or equal to maxCategories categories are displayed
-  *Data returned is in same format as this.data
+  * Filters This.data and returns only categorical data columns
+  * Any data attribute with less than  or equal to maxCategories categories are displayed
+  * Data returned is in same format as this.data
   */
   getCategoricalData(maxCategories = 25, data = this.data) {
     const dataKeys = Object.keys(data[0]);
@@ -785,8 +786,8 @@ class Visual {
   }
 
   /**
-  *Filters categorical data with the criteria given and returns only data columns which
-  *match the given criteria
+  * Filters categorical data with the criteria given and returns only data columns which
+  * match the given criteria
   */
   filterCategorical(filters, data = this.data) {
     const categoricalData = JSON.parse(JSON.stringify(data));
@@ -805,8 +806,8 @@ class Visual {
   }
 
   /**
-  *Filters numerical data with the criteria given and returns only data columns which
-  *match the given criteria
+  * Filters numerical data with the criteria given and returns only data columns which
+  * match the given criteria
   */
   filterNumerical(filters, data = this.data) {
     const numericalData = JSON.parse(JSON.stringify(data));
@@ -859,9 +860,9 @@ class Visual {
   }
 
   /**
-  *Filters This.data and returns only identifying data columns
-  *Any data with more than maxCategories categories and is not numeric are displayed
-  *Data returned is in same format as this.data
+  * Filters This.data and returns only identifying data columns
+  * Any data with more than maxCategories categories and is not numeric are displayed
+  * Data returned is in same format as this.data
   */
   getIdData(maxCategories = 25) {
     const dataKeys = Object.keys(this.data[0]);
@@ -879,8 +880,8 @@ class Visual {
   }
 
   /**
-  *Takes a columnName, binSize, and start of first bin and
-  *returns a copy of data with the volume
+  * Takes a columnName, binSize, and start of first bin and
+  * returns a copy of data with the volume
   */
   makeBin(columnName, binSize, start = 0, theData = this.data, maxBins = 100) {
     const binData = JSON.parse(JSON.stringify(theData));
@@ -898,7 +899,7 @@ class Visual {
   }
 
   /**
-  *Takes a colmnName and returns the lowest value in it numerically
+  * Takes a colmnName and returns the lowest value in it numerically
   */
   getMin(columnName) {
     let minVal = this.data[0][columnName];
@@ -952,7 +953,7 @@ class Visual {
   // Graphics Helpers
 
   /**
-   * Populates the accordion generetaed in renderControls() with various graph options
+   * Populates the accordion generated in renderControls() with various graph options
    */
   renderBasicControls() {
     const majorEditor = new EditorGenerator(document.getElementById('majorSelect'));
@@ -970,6 +971,7 @@ class Visual {
     }
 
 
+    // create select box for the data column based on data set
     const dataCats = [];
     // Change the call to getColumns to change the filter
     let options = {};
@@ -1029,6 +1031,7 @@ class Visual {
         this.renderKey();
       }, this.attributes.font_size);
 
+    // create select box for legend mode
     const keyCats = [
       { value: 'below', text: 'Below' },
       { value: 'above', text: 'Above' },
@@ -1043,12 +1046,14 @@ class Visual {
       this.renderKey();
     });
 
+    // if stacked graph (ie. barchart), removes options for key
     if (this.attributes.group_by_stack === 'No Column' && this.attributes.can_stack) {
       document.getElementById('drop-showlegend').style.display = 'none';
     } else {
       document.getElementById('drop-showlegend').style.display = 'block';
     }
 
+    // create select box for ascending/descending sort order
     const sortCats = [
       { value: 'ascendingName', text: 'Name, Ascending' },
       { value: 'descendingName', text: 'Name, Descending' },
@@ -1062,12 +1067,16 @@ class Visual {
       this.render();
     });
 
+    // create select box for removing garbage columns
+    // Conditions: < 2 non-empty data values || > 50 non-empty data values
     generalEditor.createCheckBox('filter-columns', 'Hide Outlier Columns', this.attributes.filter_columns,
       (e) => {
         this.attributes.filter_columns = e.currentTarget.checked;
         this.renderControls();
       });
 
+    // creates select box for removing garbage data
+    // Conditions: if data = '', ' ', null, undefined, 'null', 'N/A'
     generalEditor.createCheckBox('hide-empty', 'Hide Empty Data', this.attributes.hide_empty,
       (e) => {
         this.attributes.hide_empty = e.currentTarget.checked;
@@ -1202,6 +1211,7 @@ class Visual {
     }
   }
 
+  // helper to wrap text for hovertext. Note: only newlines text at spaces
   hoverTextHelper(input) {
     const tempString3ReturnoftheArray = [];
     if (this.lengthinPX(input)[0] >= (document.getElementById('visual').clientWidth * 0.4)) {
@@ -1226,6 +1236,7 @@ class Visual {
     return tempString3ReturnoftheArray;
   }
 
+  // renders the hovertext for """""any""""" graph type
   hoverTextDisplay(svg, section, translateArray) {
     const bigThis = this;
     const mouseOver = function (d) {
@@ -1271,11 +1282,13 @@ class Visual {
             }
           });
 
+      // moves text up if going below visual div
       const tempHeight = (document.getElementById('tooltip').getBoundingClientRect()).height;
       if ((coords[1] + tempHeight) >= boundBox.height) {
         coords[1] -= tempHeight * 0.78;
       }
 
+      // appends wrapped text to mouse
       if (coords[0] > boundBox.width / 2) {
         textBox.attr('transform', `translate(${(coords[0] - 5) - translateArray[0]} ${coords[1] - translateArray[1] - window.pageYOffset})`)
             .attr('text-anchor', 'end');
@@ -1298,9 +1311,9 @@ class Visual {
   }
 
   /**
-   * gets the length of any string in pixels
+   * gets the size of any string in pixels. Note: probably more efficient way to do this
    * @param string inputed string
-   * @returns {number[]} length
+   * @returns {number[]} [0 - text length][1 - text height]
    */
   lengthinPX(string) {
     const ruler = document.createElement('span');
@@ -1314,9 +1327,8 @@ class Visual {
   }
 
   /** helps the key convert the data into an array
-   *
    * @param data the data
-   * @returns {Array}
+   * @returns {Array} array of wrapped text with seperate strings for each new line
    */
   keyDataHelper(data) {
     const textArray = [];
@@ -1349,6 +1361,9 @@ class Visual {
     return textArray;
   }
 
+  /**
+   * sets the css for the key. Note: this HAS to be done before visual.render() or else mass hysteria ensues
+   */
   reserveKeySpace() {
     if (this.attributes.legend_mode === 'below') {
       document.getElementById('keyContainer').style.display = 'block';
@@ -1414,6 +1429,7 @@ class Visual {
     let colorIter1 = 0;
     let colorIter2 = 0;
 
+    // hides the key if there is no appropriate data for it
     if (!this.attributes.group_by || (this.attributes.group_by_stack === 'No Column' && this.attributes.can_stack)) {
       document.getElementById('keyContainer').style.display = 'none';
       document.getElementById('visual').style.width = '96%';
@@ -1423,14 +1439,13 @@ class Visual {
       return;
     }
 
+    // restructures the data if the key is for a stacked column
     if (this.attributes.group_by_stack !== 'No Column' && this.attributes.can_stack) {
-      const tempArray = [];
       const tempObj = {};
       for (let i = 0; i < keyArray.length; i += 1) {
         if (this.attributes.items[keyArray[i]].subitems !== undefined) {
           const subKeys = Object.keys(this.attributes.items[keyArray[i]].subitems);
           for (let j = 0; j < subKeys.length; j += 1) {
-            tempArray.push(subKeys[j]);
             tempObj[subKeys[j]] = this.attributes.items[keyArray[i]].subitems[subKeys[j]];
           }
         }
@@ -1452,7 +1467,7 @@ class Visual {
       .data(textArray)
       .enter()
       .append('g')
-      .attr('transform', () => {
+      .attr('transform', () => { // sets the positions for the key elements (rect + text)
         let x = 0;
         let y = 0;
         textIterator += 1;
@@ -1470,7 +1485,7 @@ class Visual {
         }
         return `translate(${x},${y})`;
       });
-    /*
+    /* This was the start of something great
     .on('click', function() {
       const tempKeys = Object.keys(bigThis.attributes.items);
       for (let i = 0; i < tempKeys.length; i += 1) {
@@ -1486,6 +1501,7 @@ class Visual {
     textIterator = -1;
     svgBox.attr('height', `${((colNum + 1) * (heightofTXT + 7)) + (heightofTXT * 0.3)}`);
 
+    // sets colors and sizes for rect. Note: if text is a newline continuation of some element -> sets rect to black to hide in background
     legend.append('rect')
       .attr('x', (heightofTXT / 2))
       .attr('y', (heightofTXT / 4))
@@ -1519,6 +1535,7 @@ class Visual {
 
     textIterator = -1;
 
+    // attaches appropriate text to rect
     legend.append('text')
       .attr('x', (heightofTXT * 1.32))
       .attr('y', (heightofTXT * 0.60))

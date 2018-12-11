@@ -1,5 +1,8 @@
 class Loader {
 
+  /**
+   * creates the loading container and and loading animation
+   */
   render() {
     const loaderContainer = document.createElement('div');
     loaderContainer.className = 'loader-container';
@@ -16,6 +19,9 @@ class Loader {
     container.appendChild(loaderContainer);
   }
 
+  /**
+   * clears the loading container and loading animation
+   */
   remove() {
     const container = document.getElementById('column1');
     container.removeChild(document.getElementById('loader-container'));

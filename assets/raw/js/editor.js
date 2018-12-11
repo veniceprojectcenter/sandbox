@@ -17,7 +17,6 @@ let activeVisual;
 
 /**
  * Publishes the state of the current graph to Firebase for later use
- *
  * @returns {Promise<void>}
  */
 async function publishConfig() {
@@ -59,9 +58,7 @@ async function publishConfig() {
 
 /**
  * Creates the publish button, which publishes the active graph
- *
  * @param {LoginModal} loginModal Used for authentication and publishing
- *
  * @returns {HTMLButtonElement}
  */
 function createPublishButton(loginModal) {
@@ -83,7 +80,6 @@ function createPublishButton(loginModal) {
 
 /**
  * Creates the saveSVG button, which downloads an SVG of the current graph
- *
  * @returns {HTMLButtonElement}
  */
 function createPNGButton() {
@@ -96,6 +92,7 @@ function createPNGButton() {
     const svg = $('#column2')[0];
     let keyStyle = '';
 
+    // set css so that whole key goes into png
     graph.style.height = 'auto';
     document.getElementById('visualColumn').style.height = 'auto';
     if (document.getElementById('keyContainer')) {
@@ -106,6 +103,7 @@ function createPNGButton() {
       document.getElementById('key').style.overflowX = 'visible';
       document.getElementById('keyTitle').style.display = 'none';
     }
+
     // Force dimensions (and font) onto svg elements
     const svgElem = svg.getElementsByTagName('svg');
     for (const node of svgElem) {
@@ -150,6 +148,8 @@ function createPNGButton() {
     for (const node of svgElem) {
       node.style['font-family'] = null;
     }
+
+    // reset css for visual
     graph.style.height = '91%';
     document.getElementById('visualColumn').style.height = '100%';
     if (document.getElementById('keyContainer')) {
@@ -165,7 +165,6 @@ function createPNGButton() {
 
 /**
  * Creates the download button, which downloads a json of the active dataSet when pressed
- *
  * @returns {HTMLButtonElement}
  */
 function createDownloadConfig() {
@@ -193,7 +192,6 @@ function createDownloadConfig() {
 
 /**
  * Renders the publish and export buttons in the container specified
- *
  * @param {String} id ID of container to use
  */
 function generateDownloadButtons(id = 'download') {
@@ -240,6 +238,7 @@ function generateDownloadButtons(id = 'download') {
   downloadContainer.appendChild(saveSVGButton);
   downloadContainer.appendChild(loginModal.generate());
 
+  // hide / show download and png buttons if there is a visual loaded
   if (!document.getElementById('visual').innerHTML || document.getElementById('loader')) {
     downloadButton.style.visibility = 'hidden';
     saveSVGButton.style.visibility = 'hidden';
@@ -252,7 +251,6 @@ function generateDownloadButtons(id = 'download') {
 
 /**
  * Calls the render function of the appropriate graph
- *
  * @param {String} dataSet Name of the data set to render
  * @param {String} graphType Name of the graph type to use
  * @param clearGroup bool to clear group_by (in case of switching datasets)
@@ -291,9 +289,6 @@ function createGraphic(dataSet, graphType, clearGroup, attr = null) {
     case 'Bubble Chart':
       visual = new BubbleChart(config);
       break;
-    case 'Bubble-Map-Chart':
-      visual = new BubbleMapChart(config);
-      break;
     case 'Bar Chart':
       visual = new BarChart(config);
       break;
@@ -304,6 +299,7 @@ function createGraphic(dataSet, graphType, clearGroup, attr = null) {
   if (visual !== null) {
     activeVisual = visual;
     activeVisual.fetchAndRenderWithControls();
+    // rerenders everything on window resize
     window.addEventListener('resize', () => {
       activeVisual.reserveKeySpace();
       activeVisual.renderBasics();
@@ -313,6 +309,7 @@ function createGraphic(dataSet, graphType, clearGroup, attr = null) {
   }
   generateDownloadButtons();
 
+  // set math for control col size based on rest of col1
   document.getElementById('controls').style.height = `calc(100% - 
     ${document.getElementById('majorSelect').clientHeight + document.getElementById('graphTitle').clientHeight
   + document.getElementById('graphTitle').style.marginTop})`;
@@ -320,7 +317,6 @@ function createGraphic(dataSet, graphType, clearGroup, attr = null) {
 
 /**
  * Renders the editor page using the information given in the URL
- *
  * @param {String} defaultDS Name of the default dataSet to use
  * @param {String} defaultGT Name of the default graphType to use
  */
@@ -330,14 +326,17 @@ function renderEditor(defaultDS = null, defaultGT = null) {
   rowContainer.className = 'row';
   rowContainer.id = 'row';
 
+  // holds controls
   const column1Container = document.createElement('div');
   column1Container.className = 'column1';
   column1Container.id = 'column1';
 
+  // holds visual elements
   const column2Container = document.createElement('div');
   column2Container.className = 'column2';
   column2Container.id = 'column2';
 
+  // holds key + visual
   const visualColumn = document.createElement('div');
   visualColumn.className = 'visualColumn';
   visualColumn.id = 'visualColumn';
@@ -347,11 +346,11 @@ function renderEditor(defaultDS = null, defaultGT = null) {
   visualContainer.className = 'visual';
   visualContainer.id = Visual.DEFAULT_RENDER_ID;
 
+  // Intro blurb which will be overwritten when the graphs are rendered
   const blurbContainer = document.createElement('div');
   blurbContainer.className = 'blurb';
   blurbContainer.id = 'blurb';
 
-  // Intro blurb which will be overwritten when the graphs are rendered
   const introTitle = document.createElement('h2');
   introTitle.className = 'introTitle';
   introTitle.id = 'introTitle';
@@ -431,6 +430,7 @@ function renderEditor(defaultDS = null, defaultGT = null) {
   majorSelectContainer.className = 'majorSelect';
   majorSelectContainer.id = 'majorSelect';
 
+  // "Graph Settings"
   const graphSettingsTitle = document.createElement('div');
   graphSettingsTitle.className = 'graphTitle';
   graphSettingsTitle.id = 'graphTitle';
@@ -446,6 +446,7 @@ function renderEditor(defaultDS = null, defaultGT = null) {
   downloadContainer.className = 'download';
   downloadContainer.id = 'download';
 
+  // holds the key + keyTitle
   const keyContainer = document.createElement('div');
   keyContainer.className = 'keyContainer';
   keyContainer.id = 'keyContainer';
@@ -480,6 +481,7 @@ function renderEditor(defaultDS = null, defaultGT = null) {
   page.classList.add('container-fluid');
   page.innerHTML = ''; // Clear the page
 
+  // append everything
   page.appendChild(rowContainer);
   page.appendChild(downloadContainer);
 

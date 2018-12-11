@@ -44,6 +44,7 @@ class BubbleChart extends Visual {
     const colorEditor = new EditorGenerator(document.getElementById('color-accordion-body'));
     const miscEditor = new EditorGenerator(document.getElementById('misc-accordion-body'));
 
+    // create selection box for graph labels
     const displayModes = [
         { value: 'always', text: 'Always Visible' },
         { value: 'hover', text: 'On Hover' },
@@ -54,6 +55,7 @@ class BubbleChart extends Visual {
           this.render();
         });
 
+    // create selection box for selected element color (if colormode == manual)
     if (this.attributes.color.mode === 'manual') {
       if (this.currentEditKey != null) {
         colorEditor.createSubHeader(`Edit Color for: ${this.currentEditKey}`);
@@ -65,7 +67,9 @@ class BubbleChart extends Visual {
         colorEditor.createColorField('bubble-colorpicker', 'Bubble Color', currentColor,
         (e) => {
           this.attributes.items[this.currentEditKey].color = $(e.currentTarget).val();
+          this.reserveKeySpace();
           this.render();
+          this.renderKey();
         });
       }
     }
@@ -79,9 +83,11 @@ class BubbleChart extends Visual {
       return;
     }
 
+    // set width / height
     const svgWidth = document.getElementById('visual').clientWidth;
     const svgHeight = document.getElementById('visual').clientHeight;
 
+    // set pack for all bubbles. Note: d3.packs are the worst thing ever
     const bubble = d3.pack()
         .size([svgWidth, svgHeight])
         .padding(1.5);
@@ -126,6 +132,7 @@ class BubbleChart extends Visual {
         .attr('transform', 'scale(1)');
     }
 
+    // sets text for "always visible" label
     const text = g.selectAll('.nodetext')
       .data(root.children)
       .enter()
@@ -156,6 +163,7 @@ class BubbleChart extends Visual {
       .attr('transform', d => `translate(${d.x},${d.y})scale(1)`);
     }
 
+    // renders labels
     if (this.attributes.label_mode === 'hover') {
       this.hoverTextDisplay(svg, node, [0, 0]);
       text.style('display', 'none');
@@ -163,6 +171,7 @@ class BubbleChart extends Visual {
       text.style('display', 'none');
     }
 
+    // sets edit mode for selected section
     if (this.editmode && this.attributes.color.mode === 'manual') {
       node.select('circle').on('click', (d) => {
         this.currentEditKey = d.data.key;
