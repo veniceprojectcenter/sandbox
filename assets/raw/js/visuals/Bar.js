@@ -1,6 +1,5 @@
-import Visual from './helpers/Visual';
+import Visual from './Visual';
 import EditorGenerator from './helpers/EditorGenerator';
-import ColorHelper from './helpers/ColorHelper';
 
 class Bar extends Visual {
 
@@ -27,38 +26,65 @@ class Bar extends Visual {
     const colorEditor = new EditorGenerator(document.getElementById('color-accordion-body'));
     const miscEditor = new EditorGenerator(document.getElementById('misc-accordion-body'));
 
+
+    let options = {};
+    if (this.attributes.filter_columns) {
+      options = { filterEmpty: true, maxCategories: 50 };
+    }
     const cats = [];
-    const catsRaw = Object.keys(this.data[0]);
+    const catsRaw = this.getColumns(options);
     for (let i = 0; i < catsRaw.length; i += 1) {
       cats.push({ value: catsRaw[i], text: catsRaw[i] });
     }
     cats.unshift({ value: 'No Column', text: 'No Column' });
 
-    generalEditor.createSelectBox('bar-column-stack', 'Select stacked column', cats,
+    // creates the stacked column selector, and renders the key/legend select if there is a stacked column
+    generalEditor.createSelectBox('bar-column-stack', 'Stacked Data Column', cats,
       this.attributes.group_by_stack, (e) => {
         this.attributes.group_by_stack = $(e.currentTarget).val();
         if (this.attributes.group_by_stack === 'No Column') {
-          document.getElementById('key').style.display = 'none';
+          document.getElementById('keyContainer').style.display = 'none';
           document.getElementById('drop-showlegend').style.display = 'none';
         } else {
-          document.getElementById('key').style.display = 'block';
+          document.getElementById('keyContainer').style.display = 'block';
           document.getElementById('drop-showlegend').style.display = 'block';
         }
         this.structureData();
-        this.renderKey();
+        this.reserveKeySpace();
         this.render();
+        this.renderKey();
       }, '', 'Select a Property', 'column-select');
 
-    miscEditor.createTextField('bar-x-label', 'X Label', (e) => {
+    this.attributes.show_x_label = true;
+    this.attributes.show_y_label = true;
+
+    // creates the text field for a custom x label - if no custom label -> sets to group_by
+    miscEditor.createTextField('bar-x-label', 'Custom X Label', (e) => {
       this.attributes.x_label = e.currentTarget.value;
       this.render();
     }, this.attributes.x_label);
 
-    miscEditor.createTextField('bar-y-label', 'Y Label', (e) => {
+    // creates checkbox for show/hide x label
+    miscEditor.createCheckBox('bar-show-x', 'Show X Label', this.attributes.show_x_label, (e) => {
+      this.attributes.show_x_label = e.currentTarget.checked;
+      this.render();
+    });
+
+    // creates the text field for a custom y label - if no custom label -> sets to group_by
+    miscEditor.createTextField('bar-y-label', 'Custom Y Label', (e) => {
       this.attributes.y_label = e.currentTarget.value;
       this.render();
     }, this.attributes.y_label);
 
+    // creates checkbox for show/hide y label
+    miscEditor.createCheckBox('bar-show-y', 'Show Y Label', this.attributes.show_y_label, (e) => {
+      this.attributes.show_y_label = e.currentTarget.checked;
+      this.render();
+    });
+
+    document.getElementById('bar-show-y').style.marginBottom = '5%';
+
+    // creates slider for the x tick text rotation
     miscEditor.createNumberSlider('bar-x-font-rotation',
       'X Axis Font Rotation', this.attributes.x_font_rotation, 0, 90, 1,
       (e) => {
@@ -66,6 +92,8 @@ class Bar extends Visual {
         this.attributes.x_font_rotation = `${value}`;
         this.render();
       });
+
+    // creates slider for x tick text x offset
     miscEditor.createNumberSlider('bar-x-font-x-offset',
       'X Axis Font X Offset', this.attributes.x_font_x_offset, -50, 50, 1,
       (e) => {
@@ -73,6 +101,8 @@ class Bar extends Visual {
         this.attributes.x_font_x_offset = `${value}`;
         this.render();
       });
+
+    // creates slider for x tick text y offset
     miscEditor.createNumberSlider('bar-x-font-y-offset',
       'X Axis Font Y Offset', this.attributes.x_font_y_offset, -50, 50, 1,
       (e) => {
@@ -94,6 +124,7 @@ class Bar extends Visual {
       .attr('id', 'svgBox')
       .attr('class', 'bar');
 
+    // set height / width
     const dt = document.getElementById('visual');
     const margin = { top: (dt.clientHeight * 0.02),
       right: (dt.clientWidth * 0.02),
@@ -102,8 +133,7 @@ class Bar extends Visual {
     const width = dt.clientWidth - (margin.left + margin.right);
     const height = dt.clientHeight - (margin.top + margin.bottom);
 
-    const g = svg.append('g')
-      .attr('transform', `translate(${margin.left},${margin.top})`);
+    const g = svg.append('g');
 
     const x = d3.scaleBand();
     const y = d3.scaleLinear();
@@ -167,17 +197,21 @@ class Bar extends Visual {
       }
     }
 
+    if (stack.length === 0) {
+      return;
+    }
     // Set graph dimensions
     x.domain(stackData.map(a => a.key));
     y.domain([0, d3.max(stack[stack.length - 1].map(item => item.stack.end))]);
 
+    // set x / y labels
     let offsetWidth = 0;
     let offsetHeight = 0;
     let yText = this.attributes.y_label;
     if (!yText || yText === '') {
       yText = `Number of ${this.dataSet}`;
     }
-    if (yText) {
+    if (this.attributes.show_y_label) {
       offsetWidth = (this.lengthinPX('W')[1]);
       svg.append('g')
         .attr('transform', `translate(${(offsetWidth * 0.5)}, ${(height / 2)})`)// ((height / 2) + (yLabelLength / 2)))//((textHeight * 0.2)))
@@ -195,7 +229,7 @@ class Bar extends Visual {
     if (!xText || xText === '') {
       xText = this.attributes.group_by;
     }
-    if (xText) {
+    if (this.attributes.show_x_label) {
       offsetHeight = ((this.lengthinPX('W')[1]));
       svg.append('g')
       .attr('id', 'bar-x-axis')
@@ -208,7 +242,8 @@ class Bar extends Visual {
       .style('color', `${this.attributes.font_color}`)
       .text(xText);
     }
-    // Axes
+
+    // set graph dimensions
     y.rangeRound([height - (offsetHeight * 2), 0]);
     x.rangeRound([0, width - (offsetWidth * 2)]).padding(0.05);
 
@@ -246,7 +281,6 @@ class Bar extends Visual {
     .enter()
     .append('g')
       .attr('fill', (d) => {
-        console.log(d);
         let color = '#000000';
         for (let i = 0; i < d.length; i += 1) {
           if (d[i].color) {
@@ -266,16 +300,15 @@ class Bar extends Visual {
     .attr('width', x.bandwidth());
 
     if (xText) {
-      d3.select('#bar-x-axis').attr('transform', `translate(${width / 2}, ${height + svg.select('.axis--x').node().getBBox().height - offsetHeight})`);
+      d3.select('#bar-x-axis').attr('transform', `translate(${width / 2}, ${(height + svg.select('.axis--x').node().getBBox().height) - offsetHeight})`);
     }
 
     const gbox = g.node().getBBox();
     g.attr('transform', `translate(${-gbox.x + offsetWidth},${margin.top - offsetHeight})`);
-    const viewBoxWidth = gbox.width + fontOffset + gbox.x + margin.left + margin.right;
+    const viewBoxWidth = gbox.width + fontOffset + gbox.x
+      + margin.left + margin.right + offsetWidth;
     const viewBoxHeight = gbox.height + gbox.y + margin.top + margin.bottom;
     svg.attr('viewBox', `0 0 ${viewBoxWidth} ${viewBoxHeight}`);
-
-    this.renderBasics();
   }
 }
 

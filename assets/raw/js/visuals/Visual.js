@@ -1,8 +1,8 @@
 /* eslint class-methods-use-this: ["error", { "exceptMethods": ["render", "renderControls"] }] */
-import Loader from './Loader';
-import Data from './Data';
-import EditorGenerator from './EditorGenerator';
-import ColorHelper from './ColorHelper';
+import Loader from './helpers/Loader';
+import Data from '../dataRetrieval/Data';
+import EditorGenerator from './helpers/EditorGenerator';
+import ColorHelper from './helpers/ColorHelper';
 
 /**
  * Abstract class that all other Charts will inherit from
@@ -43,19 +43,59 @@ class Visual {
    */
   async fetchData() {
     let loader = null;
-    let container = null;
-    if (this.renderID) {
-      loader = new Loader(this.renderID);
-      container = document.getElementById(this.renderID);
-      if (container) {
-        loader.render();
-      }
+
+    // set css for loader
+    document.getElementById('graphTitle').style.display = 'none';
+    document.getElementById('controls').style.display = 'none';
+    document.getElementById('visualColumn').style.display = 'none';
+    document.getElementById('column2').style.height = '77%';
+    document.getElementById('column1').style.height = '77%';
+    document.getElementById('blurb').style.display = 'block';
+    if (document.getElementById('visual-title')) {
+      document.getElementById('visual-title').style.display = 'none';
     }
+    if (document.getElementById('visual-description')) {
+      document.getElementById('visual-description').style.display = 'none';
+    }
+    if (document.getElementById('column-select')) {
+      document.getElementById('column-select').style.display = 'none';
+    }
+    document.getElementById('downloadButt').style.visibility = 'hidden';
+    document.getElementById('saveButt').style.visibility = 'hidden';
+
+    // Avoid fetching if the data is already fetched
+    if (this.data) {
+      this.onLoadData();
+    }
+
+    // create loader
+    loader = new Loader();
+    loader.render();
+
     await Data.fetchData(this.dataSet, (data) => {
       this.data = data;
-      if (container) {
-        loader.remove();
+
+      // unset css for loader
+      document.getElementById('graphTitle').style.display = 'block';
+      document.getElementById('controls').style.display = 'block';
+      document.getElementById('visualColumn').style.display = 'flex';
+      document.getElementById('column2').style.height = '91%';
+      document.getElementById('column1').style.height = '91%';
+      document.getElementById('blurb').style.display = 'none';
+      if (document.getElementById('visual-title')) {
+        document.getElementById('visual-title').style.display = 'block';
       }
+      if (document.getElementById('visual-description')) {
+        document.getElementById('visual-description').style.display = 'block';
+      }
+      if (document.getElementById('column-select')) {
+        document.getElementById('column-select').style.display = 'block';
+      }
+      document.getElementById('downloadButt').style.visibility = 'visible';
+      document.getElementById('saveButt').style.visibility = 'visible';
+
+      // remove loader
+      loader.remove();
       this.onLoadData();
     });
   }
@@ -69,17 +109,24 @@ class Visual {
 
   /**
    * Empties the indicated page element
-   *
    * @param id ID of the container to clear
    */
-  static empty(id) {
+  empty(id) {
+    if (this.attributes.group_by) {
+      document.getElementById('blurb').style.display = 'none';
+      if (document.getElementById('visual-title')) {
+        document.getElementById('visual-title').style.display = 'block';
+      }
+      if (document.getElementById('visual-description')) {
+        document.getElementById('visual-description').style.display = 'block';
+      }
+    }
     document.getElementById(id).innerHTML = '';
   }
 
   /**
    * Adds all items from defaults to this.attributes, unless a value is already there. It also
    * checks for sub-objects and their keys as well
-   *
    * @param {Object} defaults Contains default attributes
    */
   applyDefaultAttributes(defaults) {
@@ -106,20 +153,19 @@ class Visual {
 
   /**
    * Fetches data, then calls render() and renderControls()
-   *
    * @returns {Promise<void>}
    */
   async fetchAndRenderWithControls() {
     await this.fetchData();
     this.renderBasics();
-    this.renderKey();
+    this.reserveKeySpace();
     this.render();
+    this.renderKey();
     this.renderControls();
   }
 
   /**
    * Fetches data, then calls render()
-   *
    * @returns {Promise<void>}
    */
   async fetchAndRender() {
@@ -130,7 +176,6 @@ class Visual {
 
   /**
    * Filters data with null, undefined, and blank key attributes
-   *
    * @param {Object[]} data Data to filter
    * @return {Object[]} Filtered data
    */
@@ -187,7 +232,6 @@ class Visual {
 
   /**
    * Sorts the data based on weight values if there are any, or ascending order otherwise
-   *
    * @param {Object[]} data Sorts the data objects
    * @returns {Object[]} Array of sorted data
    */
@@ -196,7 +240,7 @@ class Visual {
     if (!sortedData || sortedData.length === 0) {
       return [];
     }
-    if (sortedData[0].weight) { // Already in order
+    if (sortedData[0].weight !== undefined && sortedData[0].weight !== null) { // Already in order
       sortedData = data.sort((a, b) => {
         if (b.weight === undefined) {
           return 1;
@@ -217,7 +261,7 @@ class Visual {
   }
 
   /**
-   * Abstract method that applies default attrbibutes and structures data in attributes.items
+   * Abstract method that applies default attributes and structures data in attributes.items
    */
   onLoadData() {
     if (this.constructor === Visual) {
@@ -234,29 +278,35 @@ class Visual {
         mode: 'palette',
         colors: [],
         single_color: '#808080',
-        start_color: '#CC6633',
-        end_color: '#333333',
+        start_color: '#b30000',
+        end_color: '#0000b3',
       },
       font_color: '#FFFFFF',
       items: {}, // Contains objects that specify: key: {weight, color} where
-                 // a weight of 0 means first on the donut chart
+                 // a weight of 0 means first on the graph
       label_mode: 'hover',
       title: '',
       description: '',
       category_order: '',
+      sort_type: 'ascendingName',
       aspect_ratio: 1.5,
       group_by: null,
       group_by_stack: 'No Column',
       can_stack: false,
       packed_graph: false,
+      filter_columns: true,
+      radius_multiple: 0.6,
       x_font_rotation: 45,
       x_font_x_offset: 0,
       x_font_y_offset: 0,
     });
-    this.attributes.packed_graph = false;
 
-    // Group the data
-    this.structureData();
+    this.attributes.packed_graph = false; // for bubblechart. Note: d3.pack is the worst thing
+
+    // Group the data if necessary
+    if (Object.keys(this.attributes.items).length <= 0) {
+      this.structureData();
+    }
   }
 
   /**
@@ -319,7 +369,7 @@ class Visual {
   /**
    * Uses start_color and end_color to add colors to this.attributes.items based on the assigned
    * weight attribute. If there are subitems, gives them colors as well.
-   * (NOTE: If there are subitems, the outer item colors are invali and should be ignored)
+   * (NOTE: If there are subitems, the outer item colors are invalid and should be ignored)
    */
   colorItemsByPalette() {
     const keys = Object.keys(this.attributes.items);
@@ -342,10 +392,40 @@ class Visual {
   }
 
   /**
+   * Uses single_color to add colors to this.attributes.items and their subitems
+   */
+  colorItemsBySingleColor() {
+    const keys = Object.keys(this.attributes.items);
+    const subKeys = this.getSubkeys();
+    for (let i = 0; i < keys.length; i += 1) {
+      if (this.attributes.items[keys[i]].subitems) {
+        for (let j = 0; j < subKeys.length; j += 1) {
+          if (this.attributes.items[keys[i]].subitems[subKeys[j]]) {
+            this.attributes.items[keys[i]].subitems[subKeys[j]].color =
+              this.attributes.color.single_color;
+          }
+        }
+      }
+      this.attributes.items[keys[i]].color = this.attributes.color.single_color;
+    }
+  }
+
+  /**
    * Gives weight attributes to the objects in this.attriutes.items, as well as to the subitems
    */
   sortItems() {
-    const sortFunction = (a, b) => d3.ascending(a, b);
+    let sortFunction;
+    if (this.attributes.sort_type === 'ascendingName') {
+      sortFunction = (a, b) => d3.ascending(a, b);
+    } else if (this.attributes.sort_type === 'descendingName') {
+      sortFunction = (a, b) => d3.descending(a, b);
+    } else if (this.attributes.sort_type === 'ascendingNumber') { // These 2 don't work yet
+      sortFunction = (a, b) => d3.ascending(a, b);
+    } else if (this.attributes.sort_type === 'descendingNumber') {
+      sortFunction = (a, b) => d3.descending(a, b);
+    } else {
+      return; // Invalid sorting option
+    }
 
     const keys = Object.keys(this.attributes.items);
     const sortedKeys = keys.sort(sortFunction);
@@ -368,7 +448,6 @@ class Visual {
   /**
    * Returns an array of data objects with value (amount of items in it), weight (sort order), and
    * color based on this.attributes.items
-   *
    * @returns {Object[]}
    */
   flattenItems() {
@@ -387,7 +466,6 @@ class Visual {
 
   /**
    * Gets a list of all of the keys in the subitems of this.attributes.items
-   *
    * @returns {string[]} All keys in all subitems
    */
   getSubkeys() {
@@ -416,15 +494,16 @@ class Visual {
     }
 
     if (document.getElementById('general-accordion-button')) {
-      Visual.empty('general-accordion-body');
-      Visual.empty('color-accordion-body');
-      Visual.empty('misc-accordion-body');
+      this.empty('general-accordion-body');
+      this.empty('color-accordion-body');
+      this.empty('misc-accordion-body');
       this.renderBasicControls();
       return; // Will not recreate this objs, just rerender the interiors
     }
 
     const controlsContainer = document.getElementById(Visual.DEFAULT_RENDER_CONTROLS_ID);
 
+    // creates 'categories' for graph settings
     const accordion1 = document.createElement('button');
     accordion1.className = 'accordion-button';
     accordion1.textContent = 'General Settings';
@@ -534,7 +613,6 @@ class Visual {
 
   /**
    * Abstract method for rendering the desired visual, returns false if there is nothing to render
-   *
    * @return {boolean} False if there is no data to render, true otherwise
    */
   render() {
@@ -545,10 +623,35 @@ class Visual {
     if (!this.attributes.group_by || !this.data ||
       !Object.keys(this.data[0]).includes(this.attributes.group_by)) {
       this.attributes.group_by = null;
+      this.attributes.group_by_stack = 'No Column';
+
+      // set proper css for no visual
+      document.getElementById('blurb').style.display = 'block';
+      if (document.getElementById('visual-title')) {
+        document.getElementById('visual-title').style.display = 'none';
+      }
+      if (document.getElementById('visual-description')) {
+        document.getElementById('visual-description').style.display = 'none';
+      }
+      document.getElementById('visualColumn').style.display = 'none';
+      document.getElementById('graphTitle').style.display = 'none';
+      document.getElementById('controls').style.display = 'none';
+      document.getElementById('downloadButt').style.visibility = 'hidden';
+      document.getElementById('saveButt').style.visibility = 'hidden';
+      document.getElementById('column2').style.height = '77%';
+      document.getElementById('column1').style.height = '77%';
       return false;
     }
 
-    Visual.empty(this.renderID);
+    // set proper css for visual
+    document.getElementById('graphTitle').style.display = 'block';
+    document.getElementById('controls').style.display = 'block';
+    document.getElementById('downloadButt').style.visibility = 'visible';
+    document.getElementById('saveButt').style.visibility = 'visible';
+    document.getElementById('column2').style.height = '91%';
+    document.getElementById('column1').style.height = '91%';
+    document.getElementById('visualColumn').style.display = 'flex';
+    this.empty(this.renderID);
 
     return true;
   }
@@ -557,20 +660,16 @@ class Visual {
 
   /**
    * Checks the columns of this.data and returns them in an array, with filters based on options
-   *
    * @param {Object} options Contains options for filtering columns
    * @returns {String[]} Array of all keys, or empty array if there is no data
    */
   getColumns(options = {}) {
-    console.log(this.data);
     if (this.data.length > 0) {
       const currColumns = Object.keys(this.data[0]);
       // Filter out any columns with 1 or less categories after hiding Empty (null, undefined, etc.)
       if (options.filterEmpty && options.filterEmpty === true) {
         for (let i = 0; i < currColumns.length; i += 1) {
-          const filtered = Visual.hideEmpty(this.data.map((a) => {
-            return { key: a[currColumns[i]] };
-          }));
+          const filtered = Visual.hideEmpty(this.data.map(a => ({ key: a[currColumns[i]] })));
 
           if (filtered.length <= 1) {
             currColumns.splice(i, i + 1);
@@ -599,7 +698,6 @@ class Visual {
 
   /**
    * Groups the input data based on the given column name
-   *
    * @param {string} columnName name of column to check
    * @param {Object[]} inputData Full list of data
    * @returns {Array} Array of Objects that each contain 'key', which is the value in the designated
@@ -628,7 +726,6 @@ class Visual {
 
   /**
    * Counts the input data based on the given column name
-   *
    * @param {string} columnName name of column to check
    * @param {Object[]} inputData Full list of data
    * @returns {Array} Array of Objects that contain a key (which is the value in the designated
@@ -644,9 +741,9 @@ class Visual {
   }
 
   /**
-  *Filters This.data and returns only numeric data columns
-  *Any data with more than maxCategories categories and is numeric is diplayed
-  **Data returned is in same format as this.data
+  * Filters This.data and returns only numeric data columns
+  * Any data with more than maxCategories categories and is numeric is diplayed
+  * Data returned is in same format as this.data
   */
   getNumericData(maxCategories = 25, data = this.data) {
     const dataKeys = Object.keys(data[0]);
@@ -670,9 +767,9 @@ class Visual {
   }
 
   /**
-  *Filters This.data and returns only categorical data columns
-  *Any data attribute with less than  or equal to maxCategories categories are displayed
-  *Data returned is in same format as this.data
+  * Filters This.data and returns only categorical data columns
+  * Any data attribute with less than  or equal to maxCategories categories are displayed
+  * Data returned is in same format as this.data
   */
   getCategoricalData(maxCategories = 25, data = this.data) {
     const dataKeys = Object.keys(data[0]);
@@ -689,8 +786,8 @@ class Visual {
   }
 
   /**
-  *Filters categorical data with the criteria given and returns only data columns which
-  *match the given criteria
+  * Filters categorical data with the criteria given and returns only data columns which
+  * match the given criteria
   */
   filterCategorical(filters, data = this.data) {
     const categoricalData = JSON.parse(JSON.stringify(data));
@@ -709,8 +806,8 @@ class Visual {
   }
 
   /**
-  *Filters numerical data with the criteria given and returns only data columns which
-  *match the given criteria
+  * Filters numerical data with the criteria given and returns only data columns which
+  * match the given criteria
   */
   filterNumerical(filters, data = this.data) {
     const numericalData = JSON.parse(JSON.stringify(data));
@@ -763,9 +860,9 @@ class Visual {
   }
 
   /**
-  *Filters This.data and returns only identifying data columns
-  *Any data with more than maxCategories categories and is not numeric are displayed
-  *Data returned is in same format as this.data
+  * Filters This.data and returns only identifying data columns
+  * Any data with more than maxCategories categories and is not numeric are displayed
+  * Data returned is in same format as this.data
   */
   getIdData(maxCategories = 25) {
     const dataKeys = Object.keys(this.data[0]);
@@ -783,8 +880,8 @@ class Visual {
   }
 
   /**
-  *Takes a columnName, binSize, and start of first bin and
-  *returns a copy of data with the volume
+  * Takes a columnName, binSize, and start of first bin and
+  * returns a copy of data with the volume
   */
   makeBin(columnName, binSize, start = 0, theData = this.data, maxBins = 100) {
     const binData = JSON.parse(JSON.stringify(theData));
@@ -802,7 +899,7 @@ class Visual {
   }
 
   /**
-  *Takes a colmnName and returns the lowest value in it numerically
+  * Takes a colmnName and returns the lowest value in it numerically
   */
   getMin(columnName) {
     let minVal = this.data[0][columnName];
@@ -856,9 +953,45 @@ class Visual {
   // Graphics Helpers
 
   /**
-   * Populates the accordion generetaed in renderControls() with various graph options
+   * Populates the accordion generated in renderControls() with various graph options
    */
   renderBasicControls() {
+    const majorEditor = new EditorGenerator(document.getElementById('majorSelect'));
+
+    if (document.getElementById('column-select')) {
+      document.getElementById('column-select').remove();
+    }
+    if (document.getElementById('bar-column-stack')) {
+      document.getElementById('bar-column-stack').remove();
+    }
+
+    if (!this.attributes.group_by) {
+      document.getElementById('graphTitle').style.display = 'none';
+      document.getElementById('controls').style.display = 'none';
+    }
+
+
+    // create select box for the data column based on data set
+    const dataCats = [];
+    // Change the call to getColumns to change the filter
+    let options = {};
+    if (this.attributes.filter_columns) {
+      options = { filterEmpty: true, maxCategories: 50 };
+    }
+    const dataCatsRaw = this.getColumns(options);
+    for (let i = 0; i < dataCatsRaw.length; i += 1) {
+      dataCats.push({ value: dataCatsRaw[i], text: dataCatsRaw[i] });
+    }
+    majorEditor.createSelectBox('column-select', 'Data Column', dataCats, this.attributes.group_by,
+      (e) => {
+        this.attributes.group_by = $(e.currentTarget).val();
+        this.structureData();
+        this.reserveKeySpace();
+        this.renderBasics();
+        this.render();
+        this.renderKey();
+      });
+
     const generalEditor = new EditorGenerator(document.getElementById('general-accordion-body'));
     const colorEditor = new EditorGenerator(document.getElementById('color-accordion-body'));
 
@@ -879,20 +1012,6 @@ class Visual {
       }
     }, this.attributes.description);
 
-    const dataCats = [];
-    // Change the call to getColumns to change the filter
-    const dataCatsRaw = this.getColumns({ filterEmpty: true, maxCategories: 50 });
-    for (let i = 0; i < dataCatsRaw.length; i += 1) {
-      dataCats.push({ value: dataCatsRaw[i], text: dataCatsRaw[i] });
-    }
-    generalEditor.createSelectBox('column-select', 'Select data to display', dataCats, this.attributes.group_by,
-      (e) => {
-        this.attributes.group_by = $(e.currentTarget).val();
-        this.structureData();
-        this.renderKey();
-        this.render();
-      });
-
     generalEditor.createNumberField('font-size', 'Font Size',
       (e) => {
         let value = $(e.currentTarget).val();
@@ -906,48 +1025,81 @@ class Visual {
           value = 100;
         }
         this.attributes.font_size = `${value}`;
-        this.renderKey();
+        this.reserveKeySpace();
+        this.renderBasics();
         this.render();
+        this.renderKey();
       }, this.attributes.font_size);
 
-    generalEditor.createCheckBox('hide-empty', 'Hide Empty Category', this.attributes.hide_empty,
-      (e) => {
-        this.attributes.hide_empty = e.currentTarget.checked;
-        this.structureData();
-        this.renderKey();
-        this.render();
-      });
-
-    const dogs = [
+    // create select box for legend mode
+    const keyCats = [
       { value: 'below', text: 'Below' },
       { value: 'above', text: 'Above' },
       { value: 'left', text: 'Left' },
       { value: 'right', text: 'Right' },
       { value: 'none', text: 'None' }];
-    generalEditor.createSelectBox('drop-showlegend', 'Show Legend', dogs, this.attributes.legend_mode, (e) => {
+    generalEditor.createSelectBox('drop-showlegend', 'Show Legend', keyCats, this.attributes.legend_mode, (e) => {
       this.attributes.legend_mode = $(e.currentTarget).val();
+      this.reserveKeySpace();
+      this.renderBasics();
+      this.render();
       this.renderKey();
+    });
+
+    // if stacked graph (ie. barchart), removes options for key
+    if (this.attributes.group_by_stack === 'No Column' && this.attributes.can_stack) {
+      document.getElementById('drop-showlegend').style.display = 'none';
+    } else {
+      document.getElementById('drop-showlegend').style.display = 'block';
+    }
+
+    // create select box for ascending/descending sort order
+    const sortCats = [
+      { value: 'ascendingName', text: 'Name, Ascending' },
+      { value: 'descendingName', text: 'Name, Descending' },
+      // { value: 'ascendingNumber', text: 'Number of Items, Ascending' }, // These have not been implemented
+      // { value: 'descendingNumber', text: 'Number of Items, Descending' }
+    ];
+    generalEditor.createSelectBox('drop-sorttype', 'Sorting Method', sortCats, this.attributes.sort_type, (e) => {
+      this.attributes.sort_type = $(e.currentTarget).val();
+      this.sortItems();
+      this.colorItemsByPalette();
       this.render();
     });
 
-    if (this.attributes.can_stack && (this.attributes.group_by_stack === 'No Column')) {
-      document.getElementById('key').style.display = 'none';
-      document.getElementById('drop-showlegend').style.display = 'none';
-    } else {
-      document.getElementById('key').style.display = 'block';
-      document.getElementById('drop-showlegend').style.display = 'block';
-    }
+    // create select box for removing garbage columns
+    // Conditions: < 2 non-empty data values || > 50 non-empty data values
+    generalEditor.createCheckBox('filter-columns', 'Hide Outlier Columns', this.attributes.filter_columns,
+      (e) => {
+        this.attributes.filter_columns = e.currentTarget.checked;
+        this.renderControls();
+      });
+
+    // creates select box for removing garbage data
+    // Conditions: if data = '', ' ', null, undefined, 'null', 'N/A'
+    generalEditor.createCheckBox('hide-empty', 'Hide Empty Data', this.attributes.hide_empty,
+      (e) => {
+        this.attributes.hide_empty = e.currentTarget.checked;
+        this.structureData();
+        this.reserveKeySpace();
+        this.renderBasics();
+        this.render();
+        this.renderKey();
+      });
 
     // Populate Color Settings
     colorEditor.createColorField('font-color', 'Font Color', this.attributes.font_color,
       (e) => {
         this.attributes.font_color = $(e.currentTarget).val();
+        this.reserveKeySpace();
+        this.renderBasics();
         this.render();
+        this.renderKey();
       });
 
     const colorCats = [];
     switch (this.type) {
-      case 'Donut Chart':
+      case 'Donut/Pie Chart':
         colorCats.push({ value: 'palette', text: 'Palette Mode' });
         colorCats.push({ value: 'manual', text: 'Manual Mode' });
         break;
@@ -968,9 +1120,13 @@ class Visual {
         this.attributes.color.mode = $(e.currentTarget).val();
         if (this.attributes.color.mode === 'palette') {
           this.colorItemsByPalette();
+        } else if (this.attributes.color.mode === 'single') {
+          this.colorItemsBySingleColor();
         }
         this.renderControls();
+        this.reserveKeySpace();
         this.render();
+        this.renderKey();
       });
 
     if (this.attributes.color.mode === 'palette') {
@@ -979,7 +1135,9 @@ class Visual {
           this.attributes.color.start_color = $(e.currentTarget)
           .val();
           this.colorItemsByPalette();
+          this.reserveKeySpace();
           this.render();
+          this.renderKey();
         });
 
       colorEditor.createColorField('grad-end', 'Select Palette End', this.attributes.color.end_color,
@@ -987,14 +1145,19 @@ class Visual {
           this.attributes.color.end_color = $(e.currentTarget)
           .val();
           this.colorItemsByPalette();
+          this.reserveKeySpace();
           this.render();
+          this.renderKey();
         });
     } else if (this.attributes.color.mode === 'single') {
       colorEditor.createColorField('single-color-picker', 'Select Color',
         this.attributes.color.single_color, (e) => {
           this.attributes.color.single_color = $(e.currentTarget)
           .val();
+          this.colorItemsBySingleColor();
+          this.reserveKeySpace();
           this.render();
+          this.renderKey();
         });
     }
   }
@@ -1048,6 +1211,7 @@ class Visual {
     }
   }
 
+  // helper to wrap text for hovertext. Note: only newlines text at spaces
   hoverTextHelper(input) {
     const tempString3ReturnoftheArray = [];
     if (this.lengthinPX(input)[0] >= (document.getElementById('visual').clientWidth * 0.4)) {
@@ -1072,6 +1236,7 @@ class Visual {
     return tempString3ReturnoftheArray;
   }
 
+  // renders the hovertext for """""any""""" graph type
   hoverTextDisplay(svg, section, translateArray) {
     const bigThis = this;
     const mouseOver = function (d) {
@@ -1117,11 +1282,18 @@ class Visual {
             }
           });
 
+      // moves text up if going below visual div
+      const tempHeight = (document.getElementById('tooltip').getBoundingClientRect()).height;
+      if ((coords[1] + tempHeight) >= boundBox.height) {
+        coords[1] -= tempHeight * 0.78;
+      }
+
+      // appends wrapped text to mouse
       if (coords[0] > boundBox.width / 2) {
-        textBox.attr('transform', `translate(${(coords[0] - 5) - translateArray[0]} ${coords[1] - translateArray[1]})`)
+        textBox.attr('transform', `translate(${(coords[0] - 5) - translateArray[0]} ${coords[1] - translateArray[1] - window.pageYOffset})`)
             .attr('text-anchor', 'end');
       } else {
-        textBox.attr('transform', `translate(${(coords[0] + 5) - translateArray[0]} ${coords[1] - translateArray[1]})`)
+        textBox.attr('transform', `translate(${(coords[0] + 5) - translateArray[0]} ${coords[1] - translateArray[1] - window.pageYOffset})`)
             .attr('text-anchor', 'start');
       }
     };
@@ -1139,9 +1311,9 @@ class Visual {
   }
 
   /**
-   * gets the length of any string in pixels
+   * gets the size of any string in pixels. Note: probably more efficient way to do this
    * @param string inputed string
-   * @returns {number[]} length
+   * @returns {number[]} [0 - text length][1 - text height]
    */
   lengthinPX(string) {
     const ruler = document.createElement('span');
@@ -1155,21 +1327,20 @@ class Visual {
   }
 
   /** helps the key convert the data into an array
-   *
    * @param data the data
-   * @returns {Array}
+   * @returns {Array} array of wrapped text with seperate strings for each new line
    */
   keyDataHelper(data) {
     const textArray = [];
     const heightofTXT = this.lengthinPX('W')[1];
     for (let i = 0; i < data.length; i += 1) {
-      if ((this.lengthinPX(data[i])[0] + (heightofTXT * 1.35)) >= document.getElementById('key').clientWidth) {
+      if ((this.lengthinPX(data[i])[0] + (heightofTXT * 1.35)) >= document.getElementById('keyContainer').clientWidth) {
         const tempString = data[i].split(' ');
         let tempString2ElectricBoogaloo = `${tempString[0]} `;
         const tempString3ReturnoftheArray = [];
         for (let j = 1; j < tempString.length; j += 1) {
           if (((this.lengthinPX((tempString2ElectricBoogaloo + tempString[j]))[0])
-            + (heightofTXT * 1.35) + 10) >= document.getElementById('key').clientWidth) {
+            + (heightofTXT * 1.35) + 10) >= document.getElementById('keyContainer').clientWidth) {
             tempString3ReturnoftheArray.push(tempString2ElectricBoogaloo);
             tempString2ElectricBoogaloo = `${tempString[j]} `;
           } else {
@@ -1191,59 +1362,65 @@ class Visual {
   }
 
   /**
-   * renders the key
+   * sets the css for the key. Note: this HAS to be done before visual.render() or else mass hysteria ensues
    */
-  renderKey() {
+  reserveKeySpace() {
     if (this.attributes.legend_mode === 'below') {
-      document.getElementById('key').style.display = 'block';
+      document.getElementById('keyContainer').style.display = 'block';
       document.getElementById('key').innerHTML = '';
-      document.getElementById('key').style.width = '100%';
-      document.getElementById('key').style.height = '15%';
+      document.getElementById('keyContainer').style.width = '100%';
+      document.getElementById('keyContainer').style.height = '15%';
       document.getElementById('visualColumn').style.flexDirection = 'column';
 
       document.getElementById('visual').style.margin = '1% 1% 2% 1%';
       document.getElementById('visual').style.width = '100%';
-      document.getElementById('visual').style.height = '85%';
+      document.getElementById('visual').style.height = 'calc(85% - 3.2em - 2%)';
     } else if (this.attributes.legend_mode === 'above') {
-      document.getElementById('key').style.display = 'block';
+      document.getElementById('keyContainer').style.display = 'block';
       document.getElementById('key').innerHTML = '';
-      document.getElementById('key').style.width = '100%';
-      document.getElementById('key').style.height = '15%';
+      document.getElementById('keyContainer').style.width = '100%';
+      document.getElementById('keyContainer').style.height = '15%';
       document.getElementById('visualColumn').style.flexDirection = 'column-reverse';
 
       document.getElementById('visual').style.margin = '2% 1% 1% 1%';
       document.getElementById('visual').style.width = '96%';
-      document.getElementById('visual').style.height = '85%';
+      document.getElementById('visual').style.height = 'calc(85% - 3.2em - 2%)';
     } else if (this.attributes.legend_mode === 'left') {
-      document.getElementById('key').style.display = 'block';
+      document.getElementById('keyContainer').style.display = 'block';
       document.getElementById('key').innerHTML = '';
-      document.getElementById('key').style.width = '25%';
-      document.getElementById('key').style.height = '95%';
+      document.getElementById('keyContainer').style.width = '25%';
+      document.getElementById('keyContainer').style.height = 'calc(95% - 3.2em)';
       document.getElementById('visualColumn').style.flexDirection = 'row-reverse';
 
       document.getElementById('visual').style.margin = '1% 1% 2% 1%';
       document.getElementById('visual').style.width = '71%';
       document.getElementById('visual').style.height = '100%';
     } else if (this.attributes.legend_mode === 'right') {
-      document.getElementById('key').style.display = 'block';
+      document.getElementById('keyContainer').style.display = 'block';
       document.getElementById('key').innerHTML = '';
-      document.getElementById('key').style.width = '25%';
-      document.getElementById('key').style.height = '95%';
+      document.getElementById('keyContainer').style.width = '25%';
+      document.getElementById('keyContainer').style.height = 'calc(95% - 3.2em)';
       document.getElementById('visualColumn').style.flexDirection = 'row';
 
       document.getElementById('visual').style.margin = '1% 1% 2% 1%';
       document.getElementById('visual').style.width = '71%';
       document.getElementById('visual').style.height = '100%';
     } else {
-      document.getElementById('key').style.display = 'none';
+      document.getElementById('keyContainer').style.display = 'none';
       document.getElementById('visual').style.width = '96%';
       document.getElementById('visual').style.height = '96%';
-      document.getElementById('key').style.outline = '';
+      document.getElementById('keyContainer').style.outline = '';
       document.getElementById('key').innerHTML = '';
-      return;
     }
+  }
+
+  /**
+   * renders the key
+   */
+  renderKey() {
     const heightofTXT = this.lengthinPX('W')[1];
-    let keyArray = this.flattenItems().map(a => a.key);
+    let keyArray = this.flattenItems()
+      .map(a => a.key);
     let itemObj = this.attributes.items;
     let textArray = this.keyDataHelper(keyArray);
     let colNum = 0;
@@ -1252,23 +1429,23 @@ class Visual {
     let colorIter1 = 0;
     let colorIter2 = 0;
 
+    // hides the key if there is no appropriate data for it
     if (!this.attributes.group_by || (this.attributes.group_by_stack === 'No Column' && this.attributes.can_stack)) {
-      document.getElementById('key').style.display = 'none';
+      document.getElementById('keyContainer').style.display = 'none';
       document.getElementById('visual').style.width = '96%';
       document.getElementById('visual').style.height = '96%';
-      document.getElementById('key').style.outline = '';
+      document.getElementById('keyContainer').style.outline = '';
       document.getElementById('key').innerHTML = '';
       return;
     }
 
+    // restructures the data if the key is for a stacked column
     if (this.attributes.group_by_stack !== 'No Column' && this.attributes.can_stack) {
-      const tempArray = [];
       const tempObj = {};
       for (let i = 0; i < keyArray.length; i += 1) {
         if (this.attributes.items[keyArray[i]].subitems !== undefined) {
           const subKeys = Object.keys(this.attributes.items[keyArray[i]].subitems);
           for (let j = 0; j < subKeys.length; j += 1) {
-            tempArray.push(subKeys[j]);
             tempObj[subKeys[j]] = this.attributes.items[keyArray[i]].subitems[subKeys[j]];
           }
         }
@@ -1282,7 +1459,7 @@ class Visual {
       .append('svg')
       .attr('class', 'keySVG')
       .attr('id', 'keySVG')
-      .attr('width', `${document.getElementById('key').clientWidth}`);
+      .attr('width', `${document.getElementById('keyContainer').clientWidth}`);
 
     const legend = d3.select('#key > svg')
       .append('g')
@@ -1290,11 +1467,11 @@ class Visual {
       .data(textArray)
       .enter()
       .append('g')
-      .attr('transform', () => {
+      .attr('transform', () => { // sets the positions for the key elements (rect + text)
         let x = 0;
         let y = 0;
         textIterator += 1;
-        if (((rowTotal + this.lengthinPX(textArray[textIterator])[0] + (heightofTXT * 1.35)) + 10) >= document.getElementById('key').clientWidth) {
+        if (((rowTotal + this.lengthinPX(textArray[textIterator])[0] + (heightofTXT * 1.35)) + 10) >= document.getElementById('keyContainer').clientWidth) {
           if (textIterator > 0) {
             colNum += 1;
           }
@@ -1308,22 +1485,23 @@ class Visual {
         }
         return `translate(${x},${y})`;
       });
-      /*
-      .on('click', function() {
-        const tempKeys = Object.keys(bigThis.attributes.items);
-        for (let i = 0; i < tempKeys.length; i += 1) {
-          if ((tempKeys[i].replace(/^\s+|\s+$/g, '')).startsWith(this.textContent.replace(/^\s+|\s+$/g, ''))) {
-            bigThis.attributes.current_edit = tempKeys[i];
-          }
+    /* This was the start of something great
+    .on('click', function() {
+      const tempKeys = Object.keys(bigThis.attributes.items);
+      for (let i = 0; i < tempKeys.length; i += 1) {
+        if ((tempKeys[i].replace(/^\s+|\s+$/g, '')).startsWith(this.textContent.replace(/^\s+|\s+$/g, ''))) {
+          bigThis.attributes.current_edit = tempKeys[i];
         }
-        this.style.outline = '2px solid #FFFFFF';
-        //console.log(this.textContent);
-      });
-      */
+      }
+      this.style.outline = '2px solid #FFFFFF';
+      //console.log(this.textContent);
+    });
+    */
 
     textIterator = -1;
     svgBox.attr('height', `${((colNum + 1) * (heightofTXT + 7)) + (heightofTXT * 0.3)}`);
 
+    // sets colors and sizes for rect. Note: if text is a newline continuation of some element -> sets rect to black to hide in background
     legend.append('rect')
       .attr('x', (heightofTXT / 2))
       .attr('y', (heightofTXT / 4))
@@ -1335,7 +1513,7 @@ class Visual {
         if (textArray.length !== keyArray.length) {
           if (keyArray[colorIter2] === undefined) {
             colorIter1 += 1;
-            return '#000000';
+            return 'transparent';
           }
           if (textArray[colorIter1] !== keyArray[colorIter2]) {
             if ((keyArray[colorIter2].replace(/^\s+|\s+$/g, '')).startsWith((textArray[colorIter1]).replace(/^\s+|\s+$/g, ''))) {
@@ -1345,7 +1523,7 @@ class Visual {
               return itemObj[tempString].color;
             }
             colorIter1 += 1;
-            return '#000000';
+            return 'transparent';
           }
           tempString = textArray[colorIter1];
           colorIter1 += 1;
@@ -1357,6 +1535,7 @@ class Visual {
 
     textIterator = -1;
 
+    // attaches appropriate text to rect
     legend.append('text')
       .attr('x', (heightofTXT * 1.32))
       .attr('y', (heightofTXT * 0.60))
@@ -1369,7 +1548,7 @@ class Visual {
         return textArray[textIterator];
       });
 
-    document.getElementById('key').style.outline = '4px solid #FFFFFF';
+    document.getElementById('keyContainer').style.outline = '4px solid #FFFFFF';
   }
 }
 

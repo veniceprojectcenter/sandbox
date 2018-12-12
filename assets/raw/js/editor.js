@@ -1,21 +1,22 @@
-import Visual from './visuals/helpers/Visual';
+import html2canvas from 'html2canvas';
+
+import Visual from './visuals/Visual';
 import Donut from './visuals/Donut';
 import BubbleChart from './visuals/BubbleChart';
 import BubbleMapChart from './visuals/BubbleMapChart';
 import BarChart from './visuals/Bar';
 import EditorGenerator from './visuals/helpers/EditorGenerator';
-import Data from './visuals/helpers/Data';
+import Data from './dataRetrieval/Data';
 import Loader from './visuals/helpers/Loader';
 import LoginModal from './visuals/helpers/LoginModal';
 
 // List of all graph types that are available for use
-const graphsAvailable = ['Donut Chart', 'Bubble Chart', 'Bar Chart'];
+const graphsAvailable = ['Donut/Pie Chart', 'Bubble Chart', 'Bar Chart'];
 
 let activeVisual;
 
 /**
  * Publishes the state of the current graph to Firebase for later use
- *
  * @returns {Promise<void>}
  */
 async function publishConfig() {
@@ -57,9 +58,7 @@ async function publishConfig() {
 
 /**
  * Creates the publish button, which publishes the active graph
- *
  * @param {LoginModal} loginModal Used for authentication and publishing
- *
  * @returns {HTMLButtonElement}
  */
 function createPublishButton(loginModal) {
@@ -81,64 +80,97 @@ function createPublishButton(loginModal) {
 
 /**
  * Creates the saveSVG button, which downloads an SVG of the current graph
- *
  * @returns {HTMLButtonElement}
  */
-function createSVGButton() {
-  const saveSVGButton = document.createElement('button');
-  saveSVGButton.innerText = 'Export for Illustrator';
-  saveSVGButton.addEventListener('click', async () => {
-    let svgData = '';
-    const svg = $(`#${activeVisual.renderID} svg`);
-    const map = document.querySelector(`#${activeVisual.renderID} .map`) || document.querySelector(`#${activeVisual.renderID}.map`);
-    if (svg.length === 1) {
-      activeVisual.editmode = false;
-      activeVisual.render();
-      svg.attr('version', '1.1')
-      .attr('xmlns:xlink', 'http://www.w3.org/1999/xlink')
-      .attr('xmlns', 'http://www.w3.org/2000/svg')
-      .attr('xml:space', 'preserve');
+function createPNGButton() {
+  const savePNGButton = document.createElement('button');
+  savePNGButton.id = 'saveButt';
+  savePNGButton.innerText = 'Save as PNG';
 
-      svgData = svg[0].outerHTML;
-    } else if (map) {
-      if (activeVisual.map) {
-        svgData = await activeVisual.map.export();
-      } else {
-        Materialize.toast('Error exporting map', 3000);
-      }
-    } else {
-      Materialize.toast('This chart type is not supported for Illustrator!', 3000);
+  savePNGButton.addEventListener('click', async () => {
+    const graph = document.getElementById('column2');
+    const svg = $('#column2')[0];
+    let keyStyle = '';
+
+    // set css so that whole key goes into png
+    graph.style.height = 'auto';
+    document.getElementById('visualColumn').style.height = 'auto';
+    if (document.getElementById('keyContainer')) {
+      keyStyle = document.getElementById('keyContainer').style.height;
+      document.getElementById('keyContainer').style.height = 'auto';
+      document.getElementById('key').style.maxHeight = 'none';
+      document.getElementById('key').style.overflowY = 'visible';
+      document.getElementById('key').style.overflowX = 'visible';
+      document.getElementById('keyTitle').style.display = 'none';
     }
 
-    if (svgData) {
-      const svgBlob = new Blob([svgData], { type: 'image/svg+xml;charset=utf-8' });
-      const svgUrl = URL.createObjectURL(svgBlob);
+    // Force dimensions (and font) onto svg elements
+    const svgElem = svg.getElementsByTagName('svg');
+    for (const node of svgElem) {
+      node.style['font-family'] = 'Arial';
+      if (!node.hasAttribute('height') || !node.hasAttribute('width')) {
+        const height = window.getComputedStyle(node, null).height;
+        const width = window.getComputedStyle(node, null).width;
+        node.setAttribute('width', width);
+        node.setAttribute('height', height);
+        node.replaceWith(node);
+      }
+    }
+
+    // Force uniform font onto the graphics
+    const children = svg.childNodes;
+    for (let i = 0; i < children.length; i += 1) {
+      children[i].style['font-family'] = 'Arial';
+    }
+
+    await html2canvas(graph, {
+      backgroundColor: null,
+      logging: false,
+      allowTaint: true,
+    }).then((canvas) => {
+      const img = canvas.toDataURL('image/png');
+
       const downloadLink = document.createElement('a');
-      downloadLink.href = svgUrl;
+      downloadLink.href = img;
       if (activeVisual.attributes.title && activeVisual.attributes.title !== '') {
-        downloadLink.download = `${activeVisual.attributes.title}.svg`;
+        downloadLink.download = `${activeVisual.attributes.title}.png`;
       } else {
-        downloadLink.download = `${activeVisual.dataSet}-${activeVisual.type}.svg`;
+        downloadLink.download = `${activeVisual.dataSet}-${activeVisual.type}.png`;
       }
       downloadLink.click();
+    });
+
+    // Removed forced fonts
+    for (let i = 0; i < children.length; i += 1) {
+      children[i].style['font-family'] = null;
     }
-    if (svg.length === 1 && !activeVisual.editmode) {
-      activeVisual.editmode = true;
-      activeVisual.render();
+
+    for (const node of svgElem) {
+      node.style['font-family'] = null;
+    }
+
+    // reset css for visual
+    graph.style.height = '91%';
+    document.getElementById('visualColumn').style.height = '100%';
+    if (document.getElementById('keyContainer')) {
+      document.getElementById('keyContainer').style.height = keyStyle;
+      document.getElementById('key').style.maxHeight = '100%';
+      document.getElementById('key').style.overflowY = 'auto';
+      document.getElementById('key').style.overflowX = 'hidden';
+      document.getElementById('keyTitle').style.display = 'block';
     }
   });
-
-  return saveSVGButton;
+  return savePNGButton;
 }
 
 /**
  * Creates the download button, which downloads a json of the active dataSet when pressed
- *
  * @returns {HTMLButtonElement}
  */
 function createDownloadConfig() {
   const downloadButton = document.createElement('button');
-  downloadButton.innerText = 'Create Save File';
+  downloadButton.id = 'downloadButt';
+  downloadButton.innerText = 'Save Config File';
   downloadButton.addEventListener('click', () => {
     const config = {
       type: activeVisual.type,
@@ -151,7 +183,7 @@ function createDownloadConfig() {
     tempButton.className = 'button';
     tempButton.innerText = 'Download Config';
     tempButton.href = `data:text/json;charset=utf-8,${JSON.stringify(config)}`;
-    tempButton.download = `${activeVisual.dataSet}-${activeVisual.type}-config.json`;
+    tempButton.download = `${activeVisual.dataSet}-${activeVisual.type}-config.sndbx`;
     tempButton.click();
   });
 
@@ -160,21 +192,27 @@ function createDownloadConfig() {
 
 /**
  * Renders the publish and export buttons in the container specified
- *
  * @param {String} id ID of container to use
  */
 function generateDownloadButtons(id = 'download') {
   const loginModal = new LoginModal();
   // const publishButton = createPublishButton(loginModal);
   const downloadButton = createDownloadConfig();
-  const saveSVGButton = createSVGButton();
+  const saveSVGButton = createPNGButton();
 
   const uploadButton = document.createElement('input');
   uploadButton.type = 'file';
   uploadButton.id = 'file';
+  uploadButton.accept = '.sndbx';
   uploadButton.onchange = () => {
     const file = document.getElementById('file').files[0];
     if (!file) {
+      return;
+    }
+    const name = file.name;
+    const index = name.lastIndexOf('.');
+    if (!index || name.substring(index + 1, name.length) !== 'sndbx') {
+      Materialize.toast('Invalid File Type', 3000);
       return;
     }
     const fr = new FileReader();
@@ -182,46 +220,56 @@ function generateDownloadButtons(id = 'download') {
       const result = JSON.parse(e.target.result);
 
       renderEditor(result.dataSet, result.type);
-      createGraphic(result.dataSet, result.type, result.attributes);
+      createGraphic(result.dataSet, result.type, false, result.attributes);
     };
     fr.readAsText(file);
   };
   const uploadLabel = document.createElement('label');
   uploadLabel.className = 'fileInputLabel';
-  uploadLabel.textContent = 'Upload Saved Graph';
+  uploadLabel.textContent = 'Upload Config File';
   uploadLabel.setAttribute('for', 'file');
 
   const downloadContainer = document.getElementById(id);
   downloadContainer.innerHTML = '';
-  // downloadContainer.appendChild(publishButton);
-  downloadContainer.appendChild(downloadButton);
-  downloadContainer.appendChild(saveSVGButton);
+
   downloadContainer.appendChild(uploadButton);
   downloadContainer.appendChild(uploadLabel);
+  downloadContainer.appendChild(downloadButton);
+  downloadContainer.appendChild(saveSVGButton);
   downloadContainer.appendChild(loginModal.generate());
+
+  // hide / show download and png buttons if there is a visual loaded
+  if (!document.getElementById('visual').innerHTML || document.getElementById('loader')) {
+    downloadButton.style.visibility = 'hidden';
+    saveSVGButton.style.visibility = 'hidden';
+  } else {
+    downloadButton.style.visibility = 'visible';
+    saveSVGButton.style.visibility = 'visible';
+  }
   loginModal.bind();
 }
 
 /**
  * Calls the render function of the appropriate graph
- *
  * @param {String} dataSet Name of the data set to render
  * @param {String} graphType Name of the graph type to use
+ * @param clearGroup bool to clear group_by (in case of switching datasets)
  * @param {Object} attr = null Attributes to use for graph construction
  */
-function createGraphic(dataSet, graphType, attr = null) {
+function createGraphic(dataSet, graphType, clearGroup, attr = null) {
   if (dataSet === null || dataSet === undefined) {
     return;
   } else if (graphType === null || graphType === undefined) {
     Data.fetchData(dataSet, null);
     return;
   }
-  document.getElementById('column2').style.height = '91%';
-  document.getElementById('column1').style.height = '91%';
   let attributes = attr;
   if (attributes === null) {
     if (activeVisual && activeVisual.attributes) {
       attributes = activeVisual.attributes;
+      if (clearGroup) {
+        attributes.group_by = null;
+      }
     } else {
       attributes = {};
     }
@@ -235,14 +283,11 @@ function createGraphic(dataSet, graphType, attr = null) {
 
   let visual = null;
   switch (graphType) {
-    case 'Donut Chart':
+    case 'Donut/Pie Chart':
       visual = new Donut(config);
       break;
     case 'Bubble Chart':
       visual = new BubbleChart(config);
-      break;
-    case 'Bubble-Map-Chart':
-      visual = new BubbleMapChart(config);
       break;
     case 'Bar Chart':
       visual = new BarChart(config);
@@ -254,11 +299,17 @@ function createGraphic(dataSet, graphType, attr = null) {
   if (visual !== null) {
     activeVisual = visual;
     activeVisual.fetchAndRenderWithControls();
-    generateDownloadButtons();
+    // rerenders everything on window resize
     window.addEventListener('resize', () => {
+      activeVisual.reserveKeySpace();
+      activeVisual.renderBasics();
       activeVisual.render();
+      activeVisual.renderKey();
     });
   }
+  generateDownloadButtons();
+
+  // set math for control col size based on rest of col1
   document.getElementById('controls').style.height = `calc(100% - 
     ${document.getElementById('majorSelect').clientHeight + document.getElementById('graphTitle').clientHeight
   + document.getElementById('graphTitle').style.marginTop})`;
@@ -266,7 +317,6 @@ function createGraphic(dataSet, graphType, attr = null) {
 
 /**
  * Renders the editor page using the information given in the URL
- *
  * @param {String} defaultDS Name of the default dataSet to use
  * @param {String} defaultGT Name of the default graphType to use
  */
@@ -276,14 +326,17 @@ function renderEditor(defaultDS = null, defaultGT = null) {
   rowContainer.className = 'row';
   rowContainer.id = 'row';
 
+  // holds controls
   const column1Container = document.createElement('div');
   column1Container.className = 'column1';
   column1Container.id = 'column1';
 
+  // holds visual elements
   const column2Container = document.createElement('div');
   column2Container.className = 'column2';
   column2Container.id = 'column2';
 
+  // holds key + visual
   const visualColumn = document.createElement('div');
   visualColumn.className = 'visualColumn';
   visualColumn.id = 'visualColumn';
@@ -294,16 +347,90 @@ function renderEditor(defaultDS = null, defaultGT = null) {
   visualContainer.id = Visual.DEFAULT_RENDER_ID;
 
   // Intro blurb which will be overwritten when the graphs are rendered
-  visualContainer.innerHTML = '<p class="intro"> Welcome to the Venice Project Center Sandbox ' +
-    'Application! This site is designed so anyone can make useful visualizations from the vast ' +
-    'expanse of data that the VPC has collected since its founding in 1988. Select a data set ' +
-    'and graph type to begin!';
+  const blurbContainer = document.createElement('div');
+  blurbContainer.className = 'blurb';
+  blurbContainer.id = 'blurb';
+
+  const introTitle = document.createElement('h2');
+  introTitle.className = 'introTitle';
+  introTitle.id = 'introTitle';
+  introTitle.innerText = 'Welcome to the Venice Project Center Sandbox Application!';
+
+  const intro = document.createElement('div');
+  intro.className = 'intro';
+  intro.id = 'intro';
+  intro.innerHTML = '<p>This site is designed so anyone can make visualizations from the vast ' +
+  'expanse of data that the Venice Project Center has collected since its founding in 1988. In the 30+ years since then, ' +
+  'the project center has collected over a 1,000,000 individual data points on a wide variety of topics all across Venice. </p>' +
+  '<p>This data is available for anyone to use under Creative Commons Attribution-ShareAlike 4.0 International. However, ' +
+  'the Venice Project Center is not liable for any data inaccuracies present in the data or damages that may result from inaccurate data usage.</p>';
+
+  const guideTitle1 = document.createElement('h2');
+  guideTitle1.className = 'guideTitle';
+  guideTitle1.id = 'guideTitle1';
+  guideTitle1.innerText = 'How to Create a Sandbox Graphic';
+
+  const guidePart1 = document.createElement('div');
+  guidePart1.className = 'guide';
+  guidePart1.id = 'guidePart1';
+  guidePart1.innerHTML = '<ol type="1"><li class="upperList">Select a Graph Type<ol type="a">' +
+    '<li class="lowerList">Donut/Pie Chart: a circular chart with empty space in the middle that is useful for directly comparing the relative percentages of groups</li>' +
+    '<li class="lowerList">Bubble Chart: a chart that creates circles with sizes based on the percentage of the data each element encompasses</li>' +
+    '<li class="lowerList">Bar Chart: a vertical chart that compares the raw values of data columns against each other with x and y labels for each axis</li></ol></li>' +
+    '<li class="upperList">Select a Data Set<ul><li class="tabbed">The data sets pull from the Venice Project Center\'s databases in order to get the most recent data for any particular topic. Currently, the ' +
+    'topics available are Bells, Bridges, and Stores. This data has been collected by students from Worcester Polytechnic Institute since 1988, ' +
+    'and the Venice Project Center is currently working to bring more accurate and comprehensive data.</li></ul></li>' +
+    '<li class="upperList">Select a Data Column<ul><li class="tabbed">The data column is the specific data from the data set that will be visualized. The column names are based off of the raw data, so the names ' +
+    'could be very technical.</li></ul></li>' +
+    '<li class="upperList">(Bar Graph) Select a Stacked Data Column<ul><li class="tabbed">The stacked data column is exclusive to the bar graph, and will sort the stacked items based on the values set in the data column. This is ' +
+    'useful for categorizing different elements of the data sets.</li></ul></li></ol>';
+
+  const guideTitle2 = document.createElement('h2');
+  guideTitle2.className = 'guideTitle';
+  guideTitle2.id = 'guideTitle2';
+  guideTitle2.innerText = 'Editing Graph Settings';
+
+  const guidePart2 = document.createElement('div');
+  guidePart2.className = 'guide';
+  guidePart2.id = 'guidePart2';
+  guidePart2.innerHTML = '<ol type="1"><li class="upperList">General Settings<ol type="a"><li class="lowerList">Title: The title for the graph</li>' +
+    '<li class="lowerList">Description: The description for the graph</li><li class="lowerList">Font Size: The font size of all elements in the graph.<ul><li class="lowerList">Note: the title is always 2 times the font size</li></ul></li>' +
+    '<li class="lowerList">Show Legend: Changes the location of the legend (key) on the page. None will hide the key.<ul><li class="lowerList">Note: (Bar Graph) The key will show the stacked element</li></ul></li>' +
+    '<li class="lowerList">Hide Outlier Data: Hides Data Sets from the Data Set Selector that have data inappropriate for the currently selected Graph Type</li>' +
+    '<li class="lowerList">Hide Empty Data: Hides empty values from the current visual.<ul><li class="lowerList">Note: Empty Values are undefined, \' \', null, and \'N/A\'</li></ul></li></ol></li>' +
+    '<li class="upperList">Color Settings<ol type="a"><li class="lowerList">Font Color: The color for all font in the visual</li><li class="lowerList">Coloring Mode<ol type="i">' +
+    '<li class="lowerList">Palette Mode: Chooses 2 Colors and sets each element to a gradient between the 2 colors</li>' +
+    '<li class="lowerList">Single Mode: Chooses 1 Colors and sets each element to that color</li>' +
+    '<li class="lowerList">Manual Mode: Allows the user to select a section of the graph and choose a particular color</li></ol></li></ol></li>' +
+    '<li class="upperList">Other Settings: These are reserved for Graph Type particular settings</li></ol>';
+
+  const guideTitle3 = document.createElement('h2');
+  guideTitle3.className = 'guideTitle';
+  guideTitle3.id = 'guideTitle3';
+  guideTitle3.innerText = 'Downloading & Uploading Graphics';
+
+  const guidePart3 = document.createElement('div');
+  guidePart3.className = 'guide';
+  guidePart3.id = 'guidePart2';
+  guidePart3.innerHTML = '<ol type="1"><li class="upperList">Save Config File: This saves a ".SNDBX" to the user\'s downloads folder, which contains data for how the graphic is configured</li>' +
+    '<li class="upperList">Upload Config File: This allows a user to upload a ".SNDBX" file to Sandbox, and upon loading the graphic, the user can continue working on the graphic that had been previously saved</li>' +
+    '<li class="upperList">Save as PNG: This saves the current Title, Description, Graphic, and Key together as a PNG image file.<ul><li class="lowerList">Note: The key will automatically resize in the image to fit all of its contents</li></ul></li></ol>';
+
+  blurbContainer.appendChild(introTitle);
+  blurbContainer.appendChild(intro);
+  blurbContainer.appendChild(guideTitle1);
+  blurbContainer.appendChild(guidePart1);
+  blurbContainer.appendChild(guideTitle2);
+  blurbContainer.appendChild(guidePart2);
+  blurbContainer.appendChild(guideTitle3);
+  blurbContainer.appendChild(guidePart3);
 
   // Used to hold the permanent selections for graph type and data set
   const majorSelectContainer = document.createElement('div');
   majorSelectContainer.className = 'majorSelect';
   majorSelectContainer.id = 'majorSelect';
 
+  // "Graph Settings"
   const graphSettingsTitle = document.createElement('div');
   graphSettingsTitle.className = 'graphTitle';
   graphSettingsTitle.id = 'graphTitle';
@@ -319,9 +446,22 @@ function renderEditor(defaultDS = null, defaultGT = null) {
   downloadContainer.className = 'download';
   downloadContainer.id = 'download';
 
+  // holds the key + keyTitle
   const keyContainer = document.createElement('div');
-  keyContainer.className = 'key';
-  keyContainer.id = 'key';
+  keyContainer.className = 'keyContainer';
+  keyContainer.id = 'keyContainer';
+
+  const keyTitle = document.createElement('h3');
+  keyTitle.id = 'keyTitle';
+  keyTitle.innerText = 'Legend';
+
+  const key = document.createElement('div');
+  key.className = 'key';
+  key.id = 'key';
+
+
+  keyContainer.appendChild(keyTitle);
+  keyContainer.appendChild(key);
 
   // Create Page Structure
   rowContainer.appendChild(column1Container);
@@ -332,6 +472,7 @@ function renderEditor(defaultDS = null, defaultGT = null) {
   column1Container.appendChild(controlsContainer);
   visualColumn.appendChild(visualContainer);
   visualColumn.appendChild(keyContainer);
+  column2Container.appendChild(blurbContainer);
   column2Container.appendChild(visualColumn);
 
   // Setup page to render later
@@ -340,15 +481,17 @@ function renderEditor(defaultDS = null, defaultGT = null) {
   page.classList.add('container-fluid');
   page.innerHTML = ''; // Clear the page
 
+  // append everything
+  page.appendChild(rowContainer);
+  page.appendChild(downloadContainer);
+
+  generateDownloadButtons();
 
   const controlsEditor = new EditorGenerator(majorSelectContainer);
   // Prep list of Data Sets and Graphs
   let dataSets = [];
-  const loader = new Loader('page');
-  const container = document.getElementById('page');
-  if (container) {
-    loader.render();
-  }
+  const loader = new Loader();
+  loader.render();
 
   Data.fetchDataSets((sets) => {
     dataSets = sets;
@@ -367,23 +510,8 @@ function renderEditor(defaultDS = null, defaultGT = null) {
     let currDataSet = defaultDS;
     let currGraphType = defaultGT;
 
-    if (container) {
-      loader.remove();
-    }
+    loader.remove();
 
-    page.appendChild(rowContainer);
-    page.appendChild(downloadContainer);
-
-    // Select Data Set
-    controlsEditor.createSelectBox('dataSelector', 'Data Set', dsCats, defaultDSName,
-      (e) => {
-        currDataSet = $(e.currentTarget).val();
-        if (activeVisual) {
-          activeVisual.dataSet = currGraphType;
-        }
-        createGraphic(currDataSet, currGraphType);
-      },
-      null, 'Select a Data Set');
     // Select GraphType
     controlsEditor.createSelectBox('graphSelector', 'Graph Type', graphCats, defaultGT,
       (e) => {
@@ -391,9 +519,19 @@ function renderEditor(defaultDS = null, defaultGT = null) {
         if (activeVisual) {
           activeVisual.type = currGraphType;
         }
-        createGraphic(currDataSet, currGraphType);
+        createGraphic(currDataSet, currGraphType, false);
       },
       null, 'Select a Graph Type');
+    // Select Data Set
+    controlsEditor.createSelectBox('dataSelector', 'Data Set', dsCats, defaultDSName,
+      (e) => {
+        currDataSet = $(e.currentTarget).val();
+        if (activeVisual) {
+          activeVisual.dataSet = currGraphType;
+        }
+        createGraphic(currDataSet, currGraphType, true);
+      },
+      null, 'Select a Data Set');
   });
 }
 

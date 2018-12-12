@@ -9,6 +9,39 @@
   font-style: normal;
 }
 
+@font-face {
+  font-family: 'Gilroy-Bold';
+  src: url(../font/Gilroy-Bold.eot);
+  src: url(../font/Gilroy-Bold.eot#iefix) format('embedded-opentype'),
+  url(../font/Gilroy-Bold.woff2) format('woff2'),
+  url(../font/Gilroy-Bold.woff) format('woff'),
+  url(../font/Gilroy-Bold.ttf) format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Gilroy-SemiBold';
+  src: url(../font/Gilroy-SemiBold.eot);
+  src: url(../font/Gilroy-SemiBold.eot#iefix) format('embedded-opentype'),
+  url(../font/Gilroy-SemiBold.woff2) format('woff2'),
+  url(../font/Gilroy-SemiBold.woff) format('woff'),
+  url(../font/Gilroy-SemiBold.ttf) format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Gilroy-Medium';
+  src: url(../font/Gilroy-Medium.eot);
+  src: url(../font/Gilroy-Medium.eot#iefix) format('embedded-opentype'),
+  url(../font/Gilroy-Medium.woff2) format('woff2'),
+  url(../font/Gilroy-Medium.woff) format('woff'),
+  url(../font/Gilroy-Medium.ttf) format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
 body {
   font-family: 'Gilroy', sans-serif;
 }
@@ -19,8 +52,8 @@ footer {
   }
 }
 
-h1, h2, h3, h4, h5, h6, p,
-.h1, .h2, .h3, .h4, .h5, .h6, .p{
+h1, h2, h3, h4, h5, h6, p, dt, dd, li,
+.h1, .h2, .h3, .h4, .h5, .h6, .p, .dt, .dd, .li{
   color: $text;
 }
 
@@ -28,6 +61,8 @@ h1 {
   font: {
     size: 3em;
   }
+
+  font-family: 'Gilroy-SemiBold', sans-serif;
 
   a {
     color: $text;
@@ -41,5 +76,56 @@ h1 {
 }
 
 h2 {
+  font-size: 2.6em;
+}
+
+h3 {
+  font-size: 2.3em;
+  margin: 1% 0;
+}
+
+#graphTitle, #introTitle, .guideTitle, .upperList, #keyTitle {
+  font-family: 'Gilroy-Medium', sans-serif;
+}
+
+.tabbed, .lowerList {
+  font-family: 'Gilroy', sans-serif !important;
+}
+
+#introTitle {
+  margin-top: 0;
+}
+
+.tabbed {
+  margin-left: 2em;
+}
+
+ul {
+  list-style-type: none;
+}
+
+.intro, .guide {
+  font-size: 1.2em;
+}
+
+.intro {
+  margin-left: 1em;
+  margin-bottom: 1em;
+  text-indent: 2em;
+  p {
+    margin-top: 0;
+    margin-bottom: 0;
+  }
+}
+
+#keyTitle {
   font-size: 2.5em;
+}
+.guideTitle {
+  font-size: 2em;
+  margin-top: 0;
+}
+
+.upperList {
+  margin-bottom: 0.4em;
 }

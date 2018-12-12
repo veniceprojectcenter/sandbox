@@ -1,5 +1,5 @@
 import Loader from './visuals/helpers/Loader';
-import Data from './visuals/helpers/Data';
+import Data from './dataRetrieval/Data';
 import LoginModal from './visuals/helpers/LoginModal';
 
 let list = null;

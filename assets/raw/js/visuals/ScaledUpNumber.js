@@ -1,5 +1,5 @@
 import EditorGenerator from './helpers/EditorGenerator';
-import Visual from './helpers/Visual';
+import Visual from './Visual';
 import Filter from './helpers/Filter';
 
 

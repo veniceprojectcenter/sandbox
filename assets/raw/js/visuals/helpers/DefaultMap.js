@@ -1,4 +1,4 @@
-import Visual from './Visual';
+import Visual from '../Visual';
 import Map from './Map';
 import EditorGenerator from './EditorGenerator';
 
@@ -20,7 +20,7 @@ class DefaultMap extends Visual {
   }
 
   render() {
-    Visual.empty(this.renderID);
+    this.empty(this.renderID);
 
     this.map.render(this.renderID);
 
@@ -38,7 +38,7 @@ class DefaultMap extends Visual {
       return;
     }
 
-    Visual.empty(this.renderControlsID);
+    this.empty(this.renderControlsID);
     const controlsContainer = document.getElementById(this.renderControlsID);
 
     const editor = new EditorGenerator(controlsContainer);

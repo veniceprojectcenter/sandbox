@@ -26,6 +26,7 @@
   // Typed Input
   input[type=text], input[type=number] {
     color: $text;
+    margin-bottom: 5px;
 
     &:focus {
       border-color: $primary !important;

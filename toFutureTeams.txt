@@ -1,0 +1,47 @@
+## Brief Explanation of Sandbox Structure ##
+The program begins execution at routing.js, which does a few basic setup functions and then sends the user to a webpage
+based on the URL. This will most likely remain unchanged as Sandbox has one primary webpage. The bulk of Sandbox will
+be managed through the editor.js and Visual.js files, which contain the code for data structuring and the js code that
+adds to the html. The actual html file contains very little formatting except for templates that get used in
+EditorGenerator.js to create menu items. The graphs are rendered using a the d3.js library
+
+A large amount of effort was spent refactoring code from individual graphics to the Visual superclass. Because the
+different graphs had different ways to represent data, it was exceedingly difficult to standardize, especially because
+of the stacked bar graphs necessity for two levels of data filtration. The standard we decided on was a JavaScript
+object stored in the Visual object’s attributes, called ‘items.’ Between that and other code refactoring, we highly
+suggest using the functions in Visual for adding additional graph types. Furthermore, the past team’s code for graph
+types that we removed has been left in the repository, so their visualization code can be reused in combination with the
+abstracted functions in Visual.
+
+Many files remain unused because of the removal of many graph types. The others were left in their original state and
+would require a hefty overhaul to meet the new data structuring standards and abstracted functions. However, it is
+likely that the d3.js code will be usable. The Map graphics may also need a sizable overhaul because of the Google Maps
+API change that happened in 2018.
+
+The code for the original Knopen project (2017) can be found at commit '529065c7cdd3a8ff94e5f28663efb377dba4aa49' on the
+Sandbox github repository.
+
+## Recommendations ##
+We were unable to make Sandbox pull dynamically select data sets for several reasons. Primarily, the CK API does not
+have a way to pull all of the data sets or data set names, so we had to at least input those manually. Furthermore, the
+structure of tables is drastically different among different groups of data. We could not determine a way to
+algorithmically determine appropriate data sets, which would be a very useful feature in the future. One potential way
+would be to create a specific nomenclature for 'published' data sets, or add some other marker.
+
+Uploading custom data sets would be another feature that would make Sandbox more useful. An easy format to use would be
+.CSV files, as a header row could determine keys and is a common enough format that people would recognize it. We
+started to add it as an option in the Select Data Set dropdown, but were faced with issues related to data fetching.
+This could be accomplished by adding the csv data directly to Visual’s data attribute, and stopping calls to fetch data
+from the database. We left in the file for parsing .csv files for future teams’ use.
+
+Lastly, increasing user freedom in placing thing around the graph would be a nice feature to add. The current method
+for sorting the data uses the Visual’s ‘items’ attribute (as previously mentioned) and giving each data a weight (with
+0 being first and higher integers coming later) . The data can later be sorted using these weights, and reordering
+things would be as simple as changing the weights. Moving pieces of a bubble chart would require much more complicated
+use of d3.js.
+
+Good Luck
+ - Sam Hale, 30th Anniversary Team (2018)
+
+PS. I commented 90% of this by hand by myself, as there were almost no comments when I started. If stuff is weird, I
+tried my best. (Praise be to JSDoc)

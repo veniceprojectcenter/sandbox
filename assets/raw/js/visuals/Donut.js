@@ -1,4 +1,4 @@
-import Visual from './helpers/Visual';
+import Visual from './Visual';
 import EditorGenerator from './helpers/EditorGenerator';
 import ColorHelper from './helpers/ColorHelper';
 
@@ -44,64 +44,47 @@ class Donut extends Visual {
     const colorEditor = new EditorGenerator(document.getElementById('color-accordion-body'));
     const miscEditor = new EditorGenerator(document.getElementById('misc-accordion-body'));
 
-    /*
-    const cats = [];
-    let catsRaw = Object.keys(this.getCategoricalData(50)[0]);
-    catsRaw = catsRaw.concat(Object.keys(this.getNumericData(2)[0]));
-    for (let i = 0; i < catsRaw.length; i += 1) {
-      cats.push({ value: catsRaw[i], text: catsRaw[i] });
-    }
-    editor.createSelectBox('donut-column', 'Select column to display', cats,
-     this.attributes.group_by, (e) => {
-       const value = $(e.currentTarget).val();
-       this.attributes.group_by = value;
-       this.attributes.items = {};
-       this.changedBins = true;
-       if (this.isNumeric(this.attributes.group_by)) {
-         document.getElementById('bin-start').style.display = 'inherit';
-         document.getElementById('bin-size').style.display = 'inherit';
-         $(document.getElementById('bin-size-field')).val(1);
-         this.attributes.binSize = 1;
-         $(document.getElementById('bin-start-field')).val(this.getMin(value));
-         this.attributes.binStart = this.getMin(value);
-         document.getElementById('bin-start-field').click();
-         document.getElementById('bin-size-field').click();
-         Materialize.updateTextFields();
-       } else {
-         document.getElementById('bin-start').style.display = 'none';
-         document.getElementById('bin-size').style.display = 'none';
-       }
-       this.attributes.order = [];
-       this.render();
-       this.changedBins = false;
-     });
-     */
+    // creates the slider for the inner radius size
+    miscEditor.createNumberSlider('radius-multiple',
+      'Inner Radius Ratio', this.attributes.radius_multiple, 0, 0.99, 0.01,
+      (e) => {
+        const value = $(e.currentTarget).val();
+        this.attributes.radius_multiple = `${value}`;
+        this.render();
+      });
 
+    // unused -> but used to be for grouping numerical elements together
     miscEditor.createTextField('bin-start', 'Start Value of first Group', (e) => {
       this.attributes.binStart = $(e.currentTarget).val();
       this.changedBins = true;
       this.render();
       this.changedBins = false;
     });
+
     miscEditor.createTextField('bin-size', 'Group Size', (e) => {
       this.attributes.binSize = $(e.currentTarget).val();
       this.changedBins = true;
       this.render();
       this.changedBins = false;
     });
+
     const start = document.getElementById('bin-start');
     const size = document.getElementById('bin-size');
     start.style.display = 'none';
     size.style.display = 'none';
 
+    // render section color editor / clockwise/counterclockwise buttons if color mode == manual
     if (this.currentEditKey !== null && this.attributes.color.mode === 'manual') { // TODO: make pieces movable in non-manual mode
       miscEditor.createColorField('donut-piececolor',
        `${this.currentEditKey} Color`,
        this.attributes.items[this.currentEditKey].color, (e) => {
          this.attributes.items[this.currentEditKey].color = $(e.currentTarget).val();
+         this.reserveKeySpace();
          this.render();
+         this.renderKey();
        },
       );
+
       miscEditor.createLeftRightButtons('donut-order', 'Change Piece Position',
         (e) => {
           const currentWeight = this.attributes.items[this.currentEditKey].weight;
@@ -133,6 +116,7 @@ class Donut extends Visual {
         });
     }
 
+    // create selection box for labelmode
     const displayModes = [
       { value: 'hover', text: 'On Hover' },
       { value: 'always', text: 'Always Visible' },
@@ -141,7 +125,7 @@ class Donut extends Visual {
       (e) => {
         this.attributes.label_mode = $(e.currentTarget).val();
         this.render();
-      });
+      }, '', 'Select a Label Mode', 'drop-showlegend');
   }
 
   /**
@@ -152,31 +136,7 @@ class Donut extends Visual {
       return;
     }
 
-    // Empty the container, then place the SVG in there
-
-    /*
-    let data = null;
-    this.renderData = JSON.parse(JSON.stringify(this.data));
-
-    if (this.isNumeric(this.attributes.group_by)) {
-      this.renderData = this.makeBin(this.attributes.group_by, Number(this.attributes.binSize),
-      Number(this.attributes.binStart));
-    }
-
-    if (this.changedBins || this.orderedGroups == null) {
-      data = this.getGroupedListCounts(this.attributes.group_by, this.renderData);
-    } else {
-      data = [];
-      for (let i = 0; i < this.orderedGroups.length; i += 1) {
-        data.push({ key: this.orderedGroups[i].key, value: this.orderedGroups[i].value.length });
-      }
-    }
-
-    if (this.attributes.hide_empty) {
-      data = Visual.hideEmpty(data);
-    }
-    */
-
+    // sets width / height
     const width = document.getElementById('visual').clientWidth;
     const height = document.getElementById('visual').clientHeight;
     let radius = 0;
@@ -188,7 +148,7 @@ class Donut extends Visual {
 
     const arc = d3.arc()
       .outerRadius(radius - 10)
-      .innerRadius((radius - 10) * 0.6);
+      .innerRadius((radius - 10) * this.attributes.radius_multiple);
 
     const svg = d3.select(`#${this.renderID}`).append('svg')
       .attr('id', 'svgBox')
@@ -233,6 +193,7 @@ class Donut extends Visual {
       section.attr('d', arc);
     }
 
+    // renders the proper label mode based on selection
     if (this.attributes.label_mode === 'hover') {
       this.hoverTextDisplay(svg, section, [(width / 2), (height / 2)]);
     } else if (this.attributes.label_mode === 'always') {
@@ -255,12 +216,16 @@ class Donut extends Visual {
         .text(d => d.data.key);
     }
 
+    // sets onclick attribute for sections if they are being edited
     if (this.editmode) {
       section.on('click', (d) => {
         this.currentEditKey = d.data.key;
+        this.reserveKeySpace();
         this.renderControls();
         this.render();
+        this.renderKey();
       });
+
       const editKey = this.currentEditKey;
       if (editKey !== null) {
         section.attr('stroke-width', (d) => {
@@ -270,8 +235,6 @@ class Donut extends Visual {
         .attr('stroke', 'black');
       }
     }
-
-    this.renderBasics();
   }
 }
 export default Donut;

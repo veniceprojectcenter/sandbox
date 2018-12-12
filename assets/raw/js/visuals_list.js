@@ -1,7 +1,8 @@
-import Data from './visuals/helpers/Data';
+import Data from './dataRetrieval/Data';
 
+// I didn't want to do all this by hand for a useless feature so sorry future teams
 const visuals = [
-  { name: 'Bubble Map Chart', image: 'https://datavizproject.com/wp-content/uploads/2016/06/DVP_1_100-87-300x300.png', available: true },
+  { name: 'Bubble Map Chart', image: 'https://datavizproject.com/wp-content/uploads/2016/06/DVP_1_100-87-300x300.png', available: false },
   { name: 'Donut Chart', image: 'http://datavizproject.com/wp-content/uploads/2015/10/3-Donut-Chart-300x300.png', available: true },
   { name: 'Bubble Chart', image: 'https://datavizproject.com/wp-content/uploads/2015/10/DVP-23-300x300.png', available: true },
   { name: 'Bar Chart (vertical)', image: 'https://datavizproject.com/wp-content/uploads/2015/10/4-Bar-Chart-300x300.png', available: true },
@@ -43,7 +44,7 @@ const visuals = [
   { name: 'Parallel Sets', image: 'https://datavizproject.com/wp-content/uploads/2015/11/DVP_1_100-59-300x300.png' },
   { name: 'Proportional Area Chart (Square)', image: 'https://datavizproject.com/wp-content/uploads/2016/06/DVP_1_100-07-300x300.png' },
   { name: 'Funnel Chart', image: 'https://datavizproject.com/wp-content/uploads/2015/11/DVP-61-300x300.png' },
-  { name: 'Pie Chart', image: 'https://datavizproject.com/wp-content/uploads/2015/10/11-Pie-Chart-300x300.png' },
+  { name: 'Pie Chart', image: 'https://datavizproject.com/wp-content/uploads/2015/10/11-Pie-Chart-300x300.png', available: true },
   { name: 'Linear Process Diagram', image: 'https://datavizproject.com/wp-content/uploads/2016/06/DVP_1_100-97-300x300.png' },
   { name: 'Packed Circle Chart', image: 'https://datavizproject.com/wp-content/uploads/2016/06/DVP_1_100-67-300x300.png' },
   { name: 'Convex Treemap', image: 'https://datavizproject.com/wp-content/uploads/2015/10/DVP-37-300x300.png' },
