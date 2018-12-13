@@ -1530,7 +1530,7 @@ class Visual {
           colorIter2 += 1;
           return itemObj[tempString].color;
         }
-        return itemObj[(textArray[textIterator]).trim()].color;
+        return itemObj[keyArray[textIterator]].color;
       });
 
     textIterator = -1;
