@@ -9,7 +9,7 @@ class CKData {
    * @returns {Promise<Array>} Array of data points
    */
   static async fetchData(dataSet) { // TODO: address the content object in the return here?
-    const url = `https://ckdata2.herokuapp.com/api/v1/dataset.json?group_name=${dataSet}`;
+    const url = `https://ckdata.herokuapp.com/api/v1/dataset.json?group_name=${dataSet}`;
     let data = [];
     await fetch(url, { method: 'GET', mode: 'cors' })
     .then(response => response.json())
